@@ -25,14 +25,16 @@ class CommentsController {
         this._pageController = new PageController();
         this._pageController.run({
             parameters: ctx.parameters,
-            getClientUrlForPage: page => {
+            defaultLimit: 10,
+            getClientUrlForPage: (offset, limit) => {
                 const parameters = Object.assign(
-                    {}, ctx.parameters, {page: page});
+                    {}, ctx.parameters, {offset: offset, limit: limit});
                 return uri.formatClientLink('comments', parameters);
             },
-            requestPage: page => {
+            requestPage: (offset, limit) => {
                 return PostList.search(
-                    'sort:comment-date comment-count-min:1', page, 10, fields);
+                    'sort:comment-date comment-count-min:1',
+                    offset, limit, fields);
             },
             pageRenderer: pageCtx => {
                 Object.assign(pageCtx, {

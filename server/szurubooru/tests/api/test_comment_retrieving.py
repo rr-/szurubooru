@@ -23,12 +23,12 @@ def test_retrieving_multiple(user_factory, comment_factory, context_factory):
         comments.serialize_comment.return_value = 'serialized comment'
         result = api.comment_api.get_comments(
             context_factory(
-                params={'query': '', 'page': 1},
+                params={'query': '', 'offset': 0},
                 user=user_factory(rank=model.User.RANK_REGULAR)))
         assert result == {
             'query': '',
-            'page': 1,
-            'pageSize': 100,
+            'offset': 0,
+            'limit': 100,
             'total': 2,
             'results': ['serialized comment', 'serialized comment'],
         }
@@ -39,7 +39,7 @@ def test_trying_to_retrieve_multiple_without_privileges(
     with pytest.raises(errors.AuthError):
         api.comment_api.get_comments(
             context_factory(
-                params={'query': '', 'page': 1},
+                params={'query': '', 'offset': 0},
                 user=user_factory(rank=model.User.RANK_ANONYMOUS)))
 
 

@@ -1,7 +1,7 @@
 <div class='post-list'>
-    <% if (ctx.results.length) { %>
+    <% if (ctx.response.results.length) { %>
         <ul>
-            <% for (let post of ctx.results) { %>
+            <% for (let post of ctx.response.results) { %>
                 <li>
                     <a class='thumbnail-wrapper <%= post.tags.length > 0 ? "tags" : "no-tags" %>'
                             title='@<%- post.id %> (<%- post.type %>)&#10;&#10;Tags: <%- post.tags.map(tag => '#' + tag).join(' ') || 'none' %>'

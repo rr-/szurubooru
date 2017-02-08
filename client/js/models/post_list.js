@@ -12,13 +12,13 @@ class PostList extends AbstractList {
                 'post', id, 'around', {query: searchQuery, fields: 'id'}));
     }
 
-    static search(text, page, pageSize, fields) {
+    static search(text, offset, limit, fields) {
         return api.get(
                 uri.formatApiLink(
                     'posts', {
                         query: text,
-                        page: page,
-                        pageSize: pageSize,
+                        offset: offset,
+                        limit: limit,
                         fields: fields.join(','),
                     }))
             .then(response => {

@@ -28,11 +28,11 @@ def test_retrieving_multiple(user_factory, context_factory):
     db.session.flush()
     result = api.snapshot_api.get_snapshots(
         context_factory(
-            params={'query': '', 'page': 1},
+            params={'query': '', 'offset': 0},
             user=user_factory(rank=model.User.RANK_REGULAR)))
     assert result['query'] == ''
-    assert result['page'] == 1
-    assert result['pageSize'] == 100
+    assert result['offset'] == 0
+    assert result['limit'] == 100
     assert result['total'] == 2
     assert len(result['results']) == 2
 
@@ -42,5 +42,5 @@ def test_trying_to_retrieve_multiple_without_privileges(
     with pytest.raises(errors.AuthError):
         api.snapshot_api.get_snapshots(
             context_factory(
-                params={'query': '', 'page': 1},
+                params={'query': '', 'offset': 0},
                 user=user_factory(rank=model.User.RANK_ANONYMOUS)))

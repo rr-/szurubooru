@@ -1,6 +1,6 @@
 <div class='user-list'>
     <ul><!--
-        --><% for (let user of ctx.results) { %><!--
+        --><% for (let user of ctx.response.results) { %><!--
             --><li>
                 <div class='wrapper'>
                     <% if (ctx.canViewUsers) { %>

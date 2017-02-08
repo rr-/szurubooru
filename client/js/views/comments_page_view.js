@@ -13,7 +13,7 @@ class CommentsPageView extends events.EventTarget {
 
         const sourceNode = template(ctx);
 
-        for (let post of ctx.results) {
+        for (let post of ctx.response.results) {
             const commentListControl = new CommentListControl(
                 sourceNode.querySelector(
                     `.comments-container[data-for="${post.id}"]`),

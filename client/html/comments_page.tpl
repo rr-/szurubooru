@@ -1,6 +1,6 @@
 <div class='global-comment-list'>
     <ul><!--
-        --><% for (let post of ctx.results) { %><!--
+        --><% for (let post of ctx.response.results) { %><!--
             --><li><!--
                 --><div class='post-thumbnail'><!--
                     --><% if (ctx.canViewPosts) { %><!--

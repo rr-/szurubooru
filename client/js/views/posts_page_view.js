@@ -13,7 +13,7 @@ class PostsPageView extends events.EventTarget {
         views.replaceContent(this._hostNode, template(ctx));
 
         this._postIdToPost = {};
-        for (let post of ctx.results) {
+        for (let post of ctx.response.results) {
             this._postIdToPost[post.id] = post;
             post.addEventListener('change', e => this._evtPostChange(e));
         }

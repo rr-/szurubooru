@@ -89,7 +89,8 @@ class PostsHeaderView extends events.EventTarget {
         this._toggleMassTagVisibility(false);
         this.dispatchEvent(new CustomEvent('navigate', {detail: {parameters: {
             query: this._ctx.parameters.query,
-            page: this._ctx.parameters.page,
+            offset: this._ctx.parameters.offset,
+            limit: this._ctx.parameters.limit,
             tag: null,
         }}}));
     }
@@ -107,7 +108,7 @@ class PostsHeaderView extends events.EventTarget {
                 'navigate', {
                     detail: {
                         parameters: Object.assign(
-                            {}, this._ctx.parameters, {tag: null, page: 1}),
+                            {}, this._ctx.parameters, {tag: null, offset: 0}),
                     },
                 }));
     }
@@ -119,8 +120,8 @@ class PostsHeaderView extends events.EventTarget {
             this._masstagAutoCompleteControl.hide();
         }
         let parameters = {query: this._queryInputNode.value};
-        parameters.page = parameters.query === this._ctx.parameters.query ?
-            this._ctx.parameters.page : 1;
+        parameters.offset = parameters.query === this._ctx.parameters.query ?
+            this._ctx.parameters.offset : 0;
         if (this._massTagInputNode) {
             parameters.tag = this._massTagInputNode.value;
             this._massTagInputNode.blur();

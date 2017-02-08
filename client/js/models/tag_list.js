@@ -6,13 +6,13 @@ const AbstractList = require('./abstract_list.js');
 const Tag = require('./tag.js');
 
 class TagList extends AbstractList {
-    static search(text, page, pageSize, fields) {
+    static search(text, offset, limit, fields) {
         return api.get(
                 uri.formatApiLink(
                     'tags', {
                         query: text,
-                        page: page,
-                        pageSize: pageSize,
+                        offset: offset,
+                        limit: limit,
                         fields: fields.join(','),
                     }))
             .then(response => {

@@ -23,12 +23,12 @@ def test_retrieving_multiple(user_factory, tag_factory, context_factory):
         tags.serialize_tag.return_value = 'serialized tag'
         result = api.tag_api.get_tags(
             context_factory(
-                params={'query': '', 'page': 1},
+                params={'query': '', 'offset': 0},
                 user=user_factory(rank=model.User.RANK_REGULAR)))
         assert result == {
             'query': '',
-            'page': 1,
-            'pageSize': 100,
+            'offset': 0,
+            'limit': 100,
             'total': 2,
             'results': ['serialized tag', 'serialized tag'],
         }
@@ -39,7 +39,7 @@ def test_trying_to_retrieve_multiple_without_privileges(
     with pytest.raises(errors.AuthError):
         api.tag_api.get_tags(
             context_factory(
-                params={'query': '', 'page': 1},
+                params={'query': '', 'offset': 0},
                 user=user_factory(rank=model.User.RANK_ANONYMOUS)))
 
 

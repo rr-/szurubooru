@@ -22,13 +22,14 @@ class SnapshotsController {
         this._pageController = new PageController();
         this._pageController.run({
             parameters: ctx.parameters,
-            getClientUrlForPage: page => {
+            defaultLimit: 25,
+            getClientUrlForPage: (offset, limit) => {
                 const parameters = Object.assign(
-                    {}, ctx.parameters, {page: page});
+                    {}, ctx.parameters, {offset: offset, limit: limit});
                 return uri.formatClientLink('history', parameters);
             },
-            requestPage: page => {
-                return SnapshotList.search('', page, 25);
+            requestPage: (offset, limit) => {
+                return SnapshotList.search('', offset, limit);
             },
             pageRenderer: pageCtx => {
                 Object.assign(pageCtx, {

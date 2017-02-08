@@ -1,5 +1,5 @@
 <div class='tag-list'>
-    <% if (ctx.results.length) { %>
+    <% if (ctx.response.results.length) { %>
         <table>
             <thead>
                 <th class='names'>
@@ -39,7 +39,7 @@
                 </th>
             </thead>
             <tbody>
-                <% for (let tag of ctx.results) { %>
+                <% for (let tag of ctx.response.results) { %>
                     <tr>
                         <td class='names'>
                             <ul>

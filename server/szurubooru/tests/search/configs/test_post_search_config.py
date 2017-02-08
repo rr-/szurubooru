@@ -65,7 +65,7 @@ def auth_executor(executor, user_factory):
 def verify_unpaged(executor):
     def verify(input, expected_post_ids, test_order=False):
         actual_count, actual_posts = executor.execute(
-            input, page=1, page_size=100)
+            input, offset=0, limit=100)
         actual_post_ids = list([p.post_id for p in actual_posts])
         if not test_order:
             actual_post_ids = sorted(actual_post_ids)
@@ -381,7 +381,7 @@ def test_filter_by_safety(
 
 def test_filter_by_invalid_type(executor):
     with pytest.raises(errors.SearchError):
-        executor.execute('type:invalid', page=1, page_size=100)
+        executor.execute('type:invalid', offset=0, limit=100)
 
 
 @pytest.mark.parametrize('input,expected_post_ids', [
@@ -458,7 +458,7 @@ def test_filter_by_image_size(
 
 def test_filter_by_invalid_aspect_ratio(executor):
     with pytest.raises(errors.SearchError):
-        executor.execute('image-ar:1:1:1', page=1, page_size=100)
+        executor.execute('image-ar:1:1:1', offset=0, limit=100)
 
 
 @pytest.mark.parametrize('input,expected_post_ids', [
@@ -706,7 +706,7 @@ def test_own_disliked(
 ])
 def test_someones_score(executor, input):
     with pytest.raises(errors.SearchError):
-        executor.execute(input, page=1, page_size=100)
+        executor.execute(input, offset=0, limit=100)
 
 
 def test_own_fav(

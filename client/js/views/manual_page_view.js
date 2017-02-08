@@ -35,19 +35,20 @@ function _getVisiblePageNumbers(currentPage, totalPages) {
     return pagesVisible;
 }
 
-function _getPages(currentPage, pageNumbers, ctx) {
-    const pages = [];
-    let lastPage = 0;
+function _getPages(currentPage, pageNumbers, ctx, limit) {
+    const pages = new Map();
+    let prevPage = 0;
     for (let page of pageNumbers) {
-        if (page !== lastPage + 1) {
-            pages.push({ellipsis: true});
+        if (page !== prevPage + 1) {
+            pages.set(page - 1, {ellipsis: true});
         }
-        pages.push({
+        pages.set(page, {
             number: page,
-            link: ctx.getClientUrlForPage(page),
+            offset: (page - 1) * limit,
+            limit: limit === ctx.defaultLimit ? null : limit,
             active: currentPage === page,
         });
-        lastPage = page;
+        prevPage = page;
     }
     return pages;
 }
@@ -59,43 +60,30 @@ class ManualPageView {
     }
 
     run(ctx) {
-        const currentPage = ctx.parameters.page;
+        const offset = parseInt(ctx.parameters.offset || 0);
+        const limit = parseInt(ctx.parameters.limit || ctx.defaultLimit);
         this.clearMessages();
         views.emptyContent(this._pageNavNode);
 
-        ctx.requestPage(currentPage).then(response => {
-            Object.assign(ctx.pageContext, response);
-            ctx.pageContext.hostNode = this._pageContentHolderNode;
-            ctx.pageRenderer(ctx.pageContext);
-
-            const totalPages = Math.ceil(response.total / response.pageSize);
-            const pageNumbers = _getVisiblePageNumbers(currentPage, totalPages);
-            const pages = _getPages(currentPage, pageNumbers, ctx);
+        ctx.requestPage(offset, limit).then(response => {
+            ctx.pageRenderer({
+                parameters: ctx.parameters,
+                response: response,
+                hostNode: this._pageContentHolderNode,
+            });
 
             keyboard.bind(['a', 'left'], () => {
-                if (currentPage > 1) {
-                    router.show(ctx.getClientUrlForPage(currentPage - 1));
-                }
+                this._navigateToPrevNextPage('prev');
             });
             keyboard.bind(['d', 'right'], () => {
-                if (currentPage < totalPages) {
-                    router.show(ctx.getClientUrlForPage(currentPage + 1));
-                }
+                this._navigateToPrevNextPage('next');
             });
 
             if (response.total) {
-                views.replaceContent(
-                    this._pageNavNode,
-                    navTemplate({
-                        prevLink: ctx.getClientUrlForPage(currentPage - 1),
-                        nextLink: ctx.getClientUrlForPage(currentPage + 1),
-                        prevLinkActive: currentPage > 1,
-                        nextLinkActive: currentPage < totalPages,
-                        pages: pages,
-                    }));
+                this._refreshNav(response, ctx);
             }
 
-            if (response.total <= (currentPage - 1) * response.pageSize) {
+            if (!response.results.length) {
                 this.showInfo('No data to show');
             }
 
@@ -131,6 +119,33 @@ class ManualPageView {
 
     showInfo(message) {
         views.showInfo(this._hostNode, message);
+    }
+
+    _navigateToPrevNextPage(className) {
+        const linkNode = this._hostNode.querySelector('a.' + className);
+        if (linkNode.classList.contains('disabled')) {
+            return;
+        }
+        router.show(linkNode.getAttribute('href'));
+    }
+
+    _refreshNav(response, ctx) {
+        const currentPage = Math.ceil(
+            (response.offset + response.limit) / response.limit);
+        const totalPages = Math.ceil(response.total / response.limit);
+        const pageNumbers = _getVisiblePageNumbers(currentPage, totalPages);
+        const pages = _getPages(currentPage, pageNumbers, ctx, response.limit);
+
+        views.replaceContent(
+            this._pageNavNode,
+            navTemplate({
+                getClientUrlForPage: ctx.getClientUrlForPage,
+                prevPage: Math.min(totalPages, Math.max(1, currentPage - 1)),
+                nextPage: Math.min(totalPages, Math.max(1, currentPage + 1)),
+                currentPage: currentPage,
+                totalPages: totalPages,
+                pages: pages,
+            }));
     }
 }
 

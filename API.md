@@ -404,7 +404,7 @@ data.
 ## Listing tags
 - **Request**
 
-    `GET /tags/?page=<page>&pageSize=<page-size>&query=<query>`
+    `GET /tags/?offset=<initial-pos>&limit=<page-size>&query=<query>`
 
 - **Output**
 
@@ -675,7 +675,7 @@ data.
 ## Listing posts
 - **Request**
 
-    `GET /posts/?page=<page>&pageSize=<page-size>&query=<query>`
+    `GET /posts/?offset=<initial-pos>&limit=<page-size>&query=<query>`
 
 - **Output**
 
@@ -1102,7 +1102,7 @@ data.
 ## Listing comments
 - **Request**
 
-    `GET /comments/?page=<page>&pageSize=<page-size>&query=<query>`
+    `GET /comments/?offset=<initial-pos>&limit=<page-size>&query=<query>`
 
 - **Output**
 
@@ -1291,7 +1291,7 @@ data.
 ## Listing users
 - **Request**
 
-    `GET /users/?page=<page>&pageSize=<page-size>&query=<query>`
+    `GET /users/?offset=<initial-pos>&limit=<page-size>&query=<query>`
 
 - **Output**
 
@@ -1539,7 +1539,7 @@ data.
 ## Listing snapshots
 - **Request**
 
-    `GET /snapshots/?page=<page>&pageSize=<page-size>&query=<query>`
+    `GET /snapshots/?offset=<initial-pos>&limit=<page-size>&query=<query>`
 
 - **Output**
 
@@ -2166,9 +2166,9 @@ A result of search operation that involves paging.
 
 ```json5
 {
-    "query":    <query>, // same as in input
-    "page":     <page>,  // same as in input
-    "pageSize": <page-size>,
+    "query":    <query>,  // same as in input
+    "offset":   <offset>, // same as in input
+    "limit":    <page-size>,
     "total":    <total-count>,
     "results": [
         <resource>,
@@ -2181,7 +2181,7 @@ A result of search operation that involves paging.
 **Field meaning**
 - `<query>`: the query passed in the original request that contains standard
   [search query](#search).
-- `<page>`: the page number, passed in the original request.
+- `<offset>`: the record starting offset, passed in the original request.
 - `<page-size>`: number of records on one page.
 - `<total-count>`: how many resources were found. To get the page count, divide
   this number by `<page-size>`.

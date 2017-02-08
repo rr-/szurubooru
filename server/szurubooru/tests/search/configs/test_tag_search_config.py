@@ -13,7 +13,7 @@ def executor():
 def verify_unpaged(executor):
     def verify(input, expected_tag_names):
         actual_count, actual_tags = executor.execute(
-            input, page=1, page_size=100)
+            input, offset=0, limit=100)
         actual_tag_names = [u.names[0].name for u in actual_tags]
         assert actual_count == len(expected_tag_names)
         assert actual_tag_names == expected_tag_names
@@ -183,7 +183,7 @@ def test_filter_by_post_count(
 ])
 def test_filter_by_invalid_input(executor, input):
     with pytest.raises(errors.SearchError):
-        executor.execute(input, page=1, page_size=100)
+        executor.execute(input, offset=0, limit=100)
 
 
 @pytest.mark.parametrize('input,expected_tag_names', [

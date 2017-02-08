@@ -21,7 +21,7 @@ class PostMainController extends BasePostController {
                 Post.get(ctx.parameters.id),
                 PostList.getAround(
                     ctx.parameters.id, this._decorateSearchQuery(
-                        parameters ? parameters.query : '')),
+                        parameters ? parameters.query || '' : '')),
         ]).then(responses => {
             const [post, aroundResponse] = responses;
 

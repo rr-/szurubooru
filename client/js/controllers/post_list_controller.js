@@ -88,14 +88,17 @@ class PostListController {
     _syncPageController() {
         this._pageController.run({
             parameters: this._ctx.parameters,
-            getClientUrlForPage: page => {
-                return uri.formatClientLink('posts',
-                    Object.assign({}, this._ctx.parameters, {page: page}));
+            defaultLimit: parseInt(settings.get().postsPerPage),
+            getClientUrlForPage: (offset, limit) => {
+                const parameters = Object.assign(
+                    {}, this._ctx.parameters, {offset: offset, limit: limit});
+                return uri.formatClientLink('posts', parameters);
             },
-            requestPage: page => {
+            requestPage: (offset, limit) => {
                 return PostList.search(
-                    this._decorateSearchQuery(this._ctx.parameters.query),
-                    page, settings.get().postsPerPage, fields);
+                    this._decorateSearchQuery(
+                        this._ctx.parameters.query || ''),
+                    offset, limit, fields);
             },
             pageRenderer: pageCtx => {
                 Object.assign(pageCtx, {

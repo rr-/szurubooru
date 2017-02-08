@@ -57,14 +57,15 @@ class TagListController {
     _syncPageController() {
         this._pageController.run({
             parameters: this._ctx.parameters,
-            getClientUrlForPage: page => {
+            defaultLimit: 50,
+            getClientUrlForPage: (offset, limit) => {
                 const parameters = Object.assign(
-                    {}, this._ctx.parameters, {page: page});
+                    {}, this._ctx.parameters, {offset: offset, limit: limit});
                 return uri.formatClientLink('tags', parameters);
             },
-            requestPage: page => {
+            requestPage: (offset, limit) => {
                 return TagList.search(
-                    this._ctx.parameters.query, page, 50, fields);
+                    this._ctx.parameters.query, offset, limit, fields);
             },
             pageRenderer: pageCtx => {
                 return new TagsPageView(pageCtx);

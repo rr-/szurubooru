@@ -18,12 +18,6 @@ class PageController {
     }
 
     run(ctx) {
-        const extendedContext = {
-            getClientUrlForPage: ctx.getClientUrlForPage,
-            parameters: ctx.parameters,
-        };
-
-        ctx.pageContext = Object.assign({}, extendedContext);
         this._view.run(ctx);
     }
 

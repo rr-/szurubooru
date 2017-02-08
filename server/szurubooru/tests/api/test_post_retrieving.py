@@ -24,12 +24,12 @@ def test_retrieving_multiple(user_factory, post_factory, context_factory):
         posts.serialize_post.return_value = 'serialized post'
         result = api.post_api.get_posts(
             context_factory(
-                params={'query': '', 'page': 1},
+                params={'query': '', 'offset': 0},
                 user=user_factory(rank=model.User.RANK_REGULAR)))
         assert result == {
             'query': '',
-            'page': 1,
-            'pageSize': 100,
+            'offset': 0,
+            'limit': 100,
             'total': 2,
             'results': ['serialized post', 'serialized post'],
         }
@@ -48,12 +48,12 @@ def test_using_special_tokens(user_factory, post_factory, context_factory):
             'serialized post %d' % post.post_id
         result = api.post_api.get_posts(
             context_factory(
-                params={'query': 'special:fav', 'page': 1},
+                params={'query': 'special:fav', 'offset': 0},
                 user=auth_user))
         assert result == {
             'query': 'special:fav',
-            'page': 1,
-            'pageSize': 100,
+            'offset': 0,
+            'limit': 100,
             'total': 1,
             'results': ['serialized post 1'],
         }
@@ -67,7 +67,7 @@ def test_trying_to_use_special_tokens_without_logging_in(
     with pytest.raises(errors.SearchError):
         api.post_api.get_posts(
             context_factory(
-                params={'query': 'special:fav', 'page': 1},
+                params={'query': 'special:fav', 'offset': 0},
                 user=user_factory(rank=model.User.RANK_ANONYMOUS)))
 
 
@@ -76,7 +76,7 @@ def test_trying_to_retrieve_multiple_without_privileges(
     with pytest.raises(errors.AuthError):
         api.post_api.get_posts(
             context_factory(
-                params={'query': '', 'page': 1},
+                params={'query': '', 'offset': 0},
                 user=user_factory(rank=model.User.RANK_ANONYMOUS)))
 
 

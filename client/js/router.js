@@ -112,10 +112,6 @@ class Route {
             return false;
         }
 
-        // XXX: it is very unfitting place for this
-        parameters.query = parameters.query || '';
-        parameters.page = parseInt(parameters.page || '1');
-
         return true;
     }
 };

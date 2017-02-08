@@ -28,8 +28,8 @@ def test_retrieving_multiple(user_factory, context_factory):
                 user=user_factory(rank=model.User.RANK_REGULAR)))
         assert result == {
             'query': '',
-            'page': 1,
-            'pageSize': 100,
+            'offset': 0,
+            'limit': 100,
             'total': 2,
             'results': ['serialized user', 'serialized user'],
         }

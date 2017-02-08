@@ -78,8 +78,8 @@ class Executor:
     def execute(
         self,
         query_text: str,
-        page: int,
-        page_size: int
+        offset: int,
+        limit: int
     ) -> Tuple[int, List[model.Base]]:
         search_query = self.parser.parse(query_text)
         self.config.on_search_query_parsed(search_query)
@@ -89,7 +89,7 @@ class Executor:
             if token.name == 'random':
                 disable_eager_loads = True
 
-        key = (id(self.config), hash(search_query), page, page_size)
+        key = (id(self.config), hash(search_query), offset, limit)
         if cache.has(key):
             return cache.get(key)
 
@@ -97,8 +97,8 @@ class Executor:
         filter_query = filter_query.options(sa.orm.lazyload('*'))
         filter_query = self._prepare_db_query(filter_query, search_query, True)
         entities = filter_query \
-            .offset(max(page - 1, 0) * page_size) \
-            .limit(page_size) \
+            .offset(offset) \
+            .limit(limit) \
             .all()
 
         count_query = self.config.create_count_query(disable_eager_loads)
@@ -120,14 +120,13 @@ class Executor:
         serializer: Callable[[model.Base], rest.Response]
     ) -> rest.Response:
         query = ctx.get_param_as_string('query', default='')
-        page = ctx.get_param_as_int('page', default=1, min=1)
-        page_size = ctx.get_param_as_int(
-            'pageSize', default=100, min=1, max=100)
-        count, entities = self.execute(query, page, page_size)
+        offset = ctx.get_param_as_int('offset', default=0, min=0)
+        limit = ctx.get_param_as_int('limit', default=100, min=1, max=100)
+        count, entities = self.execute(query, offset, limit)
         return {
             'query': query,
-            'page': page,
-            'pageSize': page_size,
+            'offset': offset,
+            'limit': limit,
             'total': count,
             'results': [serializer(entity) for entity in entities],
         }

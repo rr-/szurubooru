@@ -6,10 +6,10 @@ const AbstractList = require('./abstract_list.js');
 const User = require('./user.js');
 
 class UserList extends AbstractList {
-    static search(text, page) {
+    static search(text, offset, limit) {
         return api.get(
                 uri.formatApiLink(
-                    'users', {query: text, page: page, pageSize: 30}))
+                    'users', {query: text, offset: offset, limit: limit}))
             .then(response => {
                 return Promise.resolve(Object.assign(
                     {},
