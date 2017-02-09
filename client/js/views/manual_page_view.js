@@ -35,7 +35,8 @@ function _getVisiblePageNumbers(currentPage, totalPages) {
     return pagesVisible;
 }
 
-function _getPages(currentPage, pageNumbers, ctx, limit) {
+function _getPages(
+        currentPage, pageNumbers, limit, defaultLimit, removedItems) {
     const pages = new Map();
     let prevPage = 0;
     for (let page of pageNumbers) {
@@ -44,8 +45,10 @@ function _getPages(currentPage, pageNumbers, ctx, limit) {
         }
         pages.set(page, {
             number: page,
-            offset: (page - 1) * limit,
-            limit: limit === ctx.defaultLimit ? null : limit,
+            offset:
+                (page - 1) * limit -
+                (page > currentPage ? removedItems : 0),
+            limit: limit === defaultLimit ? null : limit,
             active: currentPage === page,
         });
         prevPage = page;
@@ -79,13 +82,21 @@ class ManualPageView {
                 this._navigateToPrevNextPage('next');
             });
 
+            let removedItems = 0;
             if (response.total) {
-                this._refreshNav(response, ctx);
+                this._refreshNav(
+                    offset, limit, response.total, removedItems, ctx);
             }
 
             if (!response.results.length) {
                 this.showInfo('No data to show');
             }
+
+            response.results.addEventListener('remove', e => {
+                removedItems++;
+                this._refreshNav(
+                    offset, limit, response.total, removedItems, ctx);
+            });
 
             views.syncScrollPosition();
         }, response => {
@@ -129,12 +140,12 @@ class ManualPageView {
         router.show(linkNode.getAttribute('href'));
     }
 
-    _refreshNav(response, ctx) {
-        const currentPage = Math.ceil(
-            (response.offset + response.limit) / response.limit);
-        const totalPages = Math.ceil(response.total / response.limit);
+    _refreshNav(offset, limit, total, removedItems, ctx) {
+        const currentPage = Math.floor((offset + limit - 1) / limit) + 1;
+        const totalPages = Math.ceil((total - removedItems) / limit);
         const pageNumbers = _getVisiblePageNumbers(currentPage, totalPages);
-        const pages = _getPages(currentPage, pageNumbers, ctx, response.limit);
+        const pages = _getPages(
+            currentPage, pageNumbers, limit, ctx.defaultLimit, removedItems);
 
         views.replaceContent(
             this._pageNavNode,

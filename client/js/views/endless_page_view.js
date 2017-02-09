@@ -158,6 +158,10 @@ class EndlessPageView {
                 this.maxOffsetShown =
                     response.offset + response.results.length;
             }
+            response.results.addEventListener('remove', e => {
+                this.maxOffsetShown--;
+                this.totalRecords--;
+            });
 
             if (append) {
                 this._pagesHolderNode.appendChild(pageNode);
