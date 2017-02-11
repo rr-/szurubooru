@@ -1,5 +1,5 @@
 <div class='post-list-header'><%
-    %><form class='horizontal'><%
+    %><form class='horizontal search'><%
         %><%= ctx.makeTextInput({text: 'Search query', id: 'search-text', name: 'search-text', value: ctx.parameters.query}) %><%
         %><wbr/><%
         %><input class='mousetrap' type='submit' value='Search'/><%
@@ -9,16 +9,15 @@
         %><input data-safety=unsafe type='button' class='mousetrap safety safety-unsafe <%- ctx.settings.listPosts.unsafe ? '' : 'disabled' %>'/><%
         %><wbr/><%
         %><a class='mousetrap button append' href='<%- ctx.formatClientLink('help', 'search', 'posts') %>'>Syntax help</a><%
-        %><% if (ctx.canBulkEditTags) { %><%
-            %><wbr/><%
-            %><span class='bulk-edit-tags'><%
-                %><span class='append hint'>Tagging with:</span><%
-                %><a href class='mousetrap button append open'>Mass tag</a><%
-                %><wbr/><%
-                %><%= ctx.makeTextInput({name: 'tag', value: ctx.parameters.tag}) %><%
-                %><input class='mousetrap start-tagging' type='submit' value='Start tagging'/><%
-                %><a href class='mousetrap button append stop-tagging'>Stop tagging</a><%
-            %></span><%
-        %><% } %><%
     %></form><%
+    %><% if (ctx.canBulkEditTags) { %><%
+        %><form class='horizontal bulk-edit-tags'><%
+            %><span class='append hint'>Tagging with:</span><%
+            %><a href class='mousetrap button append open'>Mass tag</a><%
+            %><wbr/><%
+            %><%= ctx.makeTextInput({name: 'tag', value: ctx.parameters.tag}) %><%
+            %><input class='mousetrap start' type='submit' value='Start tagging'/><%
+            %><a href class='mousetrap button append close'>Stop tagging</a><%
+        %></form><%
+    %><% } %><%
 %></div>

@@ -54,33 +54,35 @@
                     .icon:not(:first-of-type)
                         margin-left: 1em
 
-            .tag-flipper
+            .edit-overlay
                 position: absolute
                 top: 0.5em
                 left: 0.5em
-                display: inline-block
-                padding: 0.5em
-                box-sizing: border-box
-                border: 0
-                &:after
+
+                .tag-flipper
                     display: inline-block
-                    width: 1em
-                    height: 1em
-                    text-align: center
-                    line-height: 1em
-                    font-size: 20pt
-                &.tagged
-                    background: rgba(0, 230, 0, 0.7)
+                    padding: 0.5em
+                    box-sizing: border-box
+                    border: 0
                     &:after
-                        color: white
-                        content: '-'
-                &:not(.tagged)
-                    background: rgba(255, 0, 0, 0.7)
-                    &:after
-                        color: white
-                        content: '+'
-                &[data-disabled]
-                    background: rgba(200, 200, 200, 0.7)
+                        display: inline-block
+                        width: 1em
+                        height: 1em
+                        text-align: center
+                        line-height: 1em
+                        font-size: 20pt
+                    &.tagged
+                        background: rgba(0, 230, 0, 0.7)
+                        &:after
+                            color: white
+                            content: '-'
+                    &:not(.tagged)
+                        background: rgba(255, 0, 0, 0.7)
+                        &:after
+                            color: white
+                            content: '+'
+                    &[data-disabled]
+                        background: rgba(200, 200, 200, 0.7)
 
             .thumbnail
                 background-position: 50% 30%
@@ -121,14 +123,14 @@
         font-size: 0.95em
         color: $inactive-link-color
     .bulk-edit-tags
-        &:not(.active)
+        &:not(.opened)
             [type=text],
-            .start-tagging,
-            .stop-tagging
+            .start,
+            .close
                 display: none
             .hint
                 display: none
-        &.active
+        &.opened
             .open
                 display: none
         input[name=tag]

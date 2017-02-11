@@ -27,7 +27,7 @@ class PostsPageView extends events.EventTarget {
                 'click', e => this._evtBulkEditTagsClick(e, post));
         }
 
-        this._syncBulkEditTagsHighlights();
+        this._syncTagFlippersHighlights();
     }
 
     get _tagFlipperNodes() {
@@ -37,19 +37,7 @@ class PostsPageView extends events.EventTarget {
     _evtPostChange(e) {
         const linkNode = this._postIdToLinkNode[e.detail.post.id];
         linkNode.removeAttribute('data-disabled');
-        this._syncBulkEditTagsHighlights();
-    }
-
-    _syncBulkEditTagsHighlights() {
-        for (let linkNode of this._tagFlipperNodes) {
-            const postId = linkNode.getAttribute('data-post-id');
-            const post = this._postIdToPost[postId];
-            let tagged = true;
-            for (let tag of this._ctx.bulkEdit.tags) {
-                tagged = tagged & post.isTaggedWith(tag);
-            }
-            linkNode.classList.toggle('tagged', tagged);
-        }
+        this._syncTagFlippersHighlights();
     }
 
     _evtBulkEditTagsClick(e, post) {
@@ -63,6 +51,18 @@ class PostsPageView extends events.EventTarget {
             new CustomEvent(
                 linkNode.classList.contains('tagged') ? 'untag' : 'tag',
                 {detail: {post: post}}));
+    }
+
+    _syncTagFlippersHighlights() {
+        for (let linkNode of this._tagFlipperNodes) {
+            const postId = linkNode.getAttribute('data-post-id');
+            const post = this._postIdToPost[postId];
+            let tagged = true;
+            for (let tag of this._ctx.bulkEdit.tags) {
+                tagged = tagged & post.isTaggedWith(tag);
+            }
+            linkNode.classList.toggle('tagged', tagged);
+        }
     }
 }
 

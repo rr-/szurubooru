@@ -33,10 +33,12 @@
                             </span>
                         <% } %>
                     </a>
-                    <% if (ctx.canBulkEditTags && ctx.parameters && ctx.parameters.tag) { %>
-                        <a href data-post-id='<%= post.id %>' class='tag-flipper'>
-                        </a>
-                    <% } %>
+                    <span class='edit-overlay'>
+                        <% if (ctx.canBulkEditTags && ctx.parameters && ctx.parameters.tag) { %>
+                            <a href data-post-id='<%= post.id %>' class='tag-flipper'>
+                            </a>
+                        <% } %>
+                    </span>
                 </li>
             <% } %>
             <%= ctx.makeFlexboxAlign() %>
