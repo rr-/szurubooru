@@ -54,7 +54,7 @@
                     .icon:not(:first-of-type)
                         margin-left: 1em
 
-            .masstag
+            .tag-flipper
                 position: absolute
                 top: 0.5em
                 left: 0.5em
@@ -117,24 +117,24 @@
         margin-right: 0.25em
     input[name=search-text]
         width: 25em
-    input[name=masstag]
-        width: 12em
-    .masstag-hint, .open-masstag
-        margin-right: 1em
     .append
         font-size: 0.95em
         color: $inactive-link-color
-    .masstag
+    .bulk-edit-tags
         &:not(.active)
             [type=text],
             .start-tagging,
             .stop-tagging
                 display: none
-            .masstag-hint
+            .hint
                 display: none
         &.active
-            .open-masstag
+            .open
                 display: none
+        input[name=tag]
+            width: 12em
+        .hint, .open
+            margin-right: 1em
 
     .safety
         margin-right: 0.25em

@@ -31,8 +31,10 @@ class PostListController {
         this._headerView = new PostsHeaderView({
             hostNode: this._pageController.view.pageHeaderHolderNode,
             parameters: ctx.parameters,
-            canMassTag: api.hasPrivilege('tags:masstag'),
-            massTagTags: this._massTagTags,
+            canBulkEditTags: api.hasPrivilege('posts:bulkEdit:tags'),
+            bulkEdit: {
+                tags: this._bulkEditTags
+            },
         });
         this._headerView.addEventListener(
             'navigate', e => this._evtNavigate(e));
@@ -44,7 +46,7 @@ class PostListController {
         this._pageController.showSuccess(message);
     }
 
-    get _massTagTags() {
+    get _bulkEditTags() {
         return (this._ctx.parameters.tag || '').split(/\s+/).filter(s => s);
     }
 
@@ -58,14 +60,14 @@ class PostListController {
     }
 
     _evtTag(e) {
-        for (let tag of this._massTagTags) {
+        for (let tag of this._bulkEditTags) {
             e.detail.post.addTag(tag);
         }
         e.detail.post.save().catch(error => window.alert(error.message));
     }
 
     _evtUntag(e) {
-        for (let tag of this._massTagTags) {
+        for (let tag of this._bulkEditTags) {
             e.detail.post.removeTag(tag);
         }
         e.detail.post.save().catch(error => window.alert(error.message));
@@ -103,8 +105,10 @@ class PostListController {
             pageRenderer: pageCtx => {
                 Object.assign(pageCtx, {
                     canViewPosts: api.hasPrivilege('posts:view'),
-                    canMassTag: api.hasPrivilege('tags:masstag'),
-                    massTagTags: this._massTagTags,
+                    canBulkEditTags: api.hasPrivilege('posts:bulkEdit:tags'),
+                    bulkEdit: {
+                        tags: this._bulkEditTags,
+                    },
                 });
                 const view = new PostsPageView(pageCtx);
                 view.addEventListener('tag', e => this._evtTag(e));

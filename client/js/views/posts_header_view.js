@@ -23,10 +23,6 @@ class PostsHeaderView extends events.EventTarget {
         this._queryAutoCompleteControl = new TagAutoCompleteControl(
             this._queryInputNode,
             {addSpace: true, transform: misc.escapeSearchTerm});
-        if (this._massTagInputNode) {
-            this._masstagAutoCompleteControl = new TagAutoCompleteControl(
-                this._massTagInputNode, {addSpace: false});
-        }
 
         keyboard.bind('p', () => this._focusFirstPostNode());
         search.searchInputNodeFocusHelper(this._queryInputNode);
@@ -38,19 +34,21 @@ class PostsHeaderView extends events.EventTarget {
         this._formNode.addEventListener(
             'submit', e => this._evtFormSubmit(e));
 
-        if (this._massTagInputNode) {
-            if (this._openMassTagLinkNode) {
-                this._openMassTagLinkNode.addEventListener(
-                    'click', e => this._evtMassTagClick(e));
+        if (this._bulkEditTagsInputNode) {
+            this._bulkEditTagsAutoCompleteControl = new TagAutoCompleteControl(
+                this._bulkEditTagsInputNode, {addSpace: false});
+            if (this._openBulkEditTagsLinkNode) {
+                this._openBulkEditTagsLinkNode.addEventListener(
+                    'click', e => this._evtBulkEditTagsClick(e));
             }
-            this._stopMassTagLinkNode.addEventListener(
+            this._stopBulkEditTagsLinkNode.addEventListener(
                 'click', e => this._evtStopTaggingClick(e));
-            this._toggleMassTagVisibility(!!ctx.parameters.tag);
+            this._toggleBulkEditTagsVisibility(!!ctx.parameters.tag);
         }
     }
 
-    _toggleMassTagVisibility(state) {
-        this._formNode.querySelector('.masstag')
+    _toggleBulkEditTagsVisibility(state) {
+        this._formNode.querySelector('.bulk-edit-tags')
             .classList.toggle('active', state);
     }
 
@@ -66,27 +64,28 @@ class PostsHeaderView extends events.EventTarget {
         return this._hostNode.querySelector('form [name=search-text]');
     }
 
-    get _massTagInputNode() {
-        return this._hostNode.querySelector('form [name=masstag]');
+    get _bulkEditTagsInputNode() {
+        return this._hostNode.querySelector('form .bulk-edit-tags [name=tag]');
     }
 
-    get _openMassTagLinkNode() {
-        return this._hostNode.querySelector('form .open-masstag');
+    get _openBulkEditTagsLinkNode() {
+        return this._hostNode.querySelector('form .bulk-edit-tags .open');
     }
 
-    get _stopMassTagLinkNode() {
-        return this._hostNode.querySelector('form .stop-tagging');
+    get _stopBulkEditTagsLinkNode() {
+        return this._hostNode.querySelector(
+            'form .bulk-edit-tags .stop-tagging');
     }
 
-    _evtMassTagClick(e) {
+    _evtBulkEditTagsClick(e) {
         e.preventDefault();
-        this._toggleMassTagVisibility(true);
+        this._toggleBulkEditTagsVisibility(true);
     }
 
     _evtStopTaggingClick(e) {
         e.preventDefault();
-        this._massTagInputNode.value = '';
-        this._toggleMassTagVisibility(false);
+        this._bulkEditTagsInputNode.value = '';
+        this._toggleBulkEditTagsVisibility(false);
         this.dispatchEvent(new CustomEvent('navigate', {detail: {parameters: {
             query: this._ctx.parameters.query,
             offset: this._ctx.parameters.offset,
@@ -116,15 +115,15 @@ class PostsHeaderView extends events.EventTarget {
     _evtFormSubmit(e) {
         e.preventDefault();
         this._queryAutoCompleteControl.hide();
-        if (this._masstagAutoCompleteControl) {
-            this._masstagAutoCompleteControl.hide();
+        if (this._bulkEditTagsAutoCompleteControl) {
+            this._bulkEditTagsAutoCompleteControl.hide();
         }
         let parameters = {query: this._queryInputNode.value};
         parameters.offset = parameters.query === this._ctx.parameters.query ?
             this._ctx.parameters.offset : 0;
-        if (this._massTagInputNode) {
-            parameters.tag = this._massTagInputNode.value;
-            this._massTagInputNode.blur();
+        if (this._bulkEditTagsInputNode) {
+            parameters.tag = this._bulkEditTagsInputNode.value;
+            this._bulkEditTagsInputNode.blur();
         } else {
             parameters.tag = null;
         }

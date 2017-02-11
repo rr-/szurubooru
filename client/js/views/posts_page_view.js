@@ -19,36 +19,40 @@ class PostsPageView extends events.EventTarget {
         }
 
         this._postIdToLinkNode = {};
-        for (let linkNode of this._hostNode.querySelectorAll('.masstag')) {
+        for (let linkNode of this._tagFlipperNodes) {
             const postId = linkNode.getAttribute('data-post-id');
             const post = this._postIdToPost[postId];
             this._postIdToLinkNode[postId] = linkNode;
             linkNode.addEventListener(
-                'click', e => this._evtMassTagClick(e, post));
+                'click', e => this._evtBulkEditTagsClick(e, post));
         }
 
-        this._syncMassTagHighlights();
+        this._syncBulkEditTagsHighlights();
+    }
+
+    get _tagFlipperNodes() {
+        return this._hostNode.querySelectorAll('.tag-flipper');
     }
 
     _evtPostChange(e) {
         const linkNode = this._postIdToLinkNode[e.detail.post.id];
         linkNode.removeAttribute('data-disabled');
-        this._syncMassTagHighlights();
+        this._syncBulkEditTagsHighlights();
     }
 
-    _syncMassTagHighlights() {
-        for (let linkNode of this._hostNode.querySelectorAll('.masstag')) {
+    _syncBulkEditTagsHighlights() {
+        for (let linkNode of this._tagFlipperNodes) {
             const postId = linkNode.getAttribute('data-post-id');
             const post = this._postIdToPost[postId];
             let tagged = true;
-            for (let tag of this._ctx.massTagTags) {
+            for (let tag of this._ctx.bulkEdit.tags) {
                 tagged = tagged & post.isTaggedWith(tag);
             }
             linkNode.classList.toggle('tagged', tagged);
         }
     }
 
-    _evtMassTagClick(e, post) {
+    _evtBulkEditTagsClick(e, post) {
         e.preventDefault();
         const linkNode = e.target;
         if (linkNode.getAttribute('data-disabled')) {

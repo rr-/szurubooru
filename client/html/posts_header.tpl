@@ -9,13 +9,13 @@
         %><input data-safety=unsafe type='button' class='mousetrap safety safety-unsafe <%- ctx.settings.listPosts.unsafe ? '' : 'disabled' %>'/><%
         %><wbr/><%
         %><a class='mousetrap button append' href='<%- ctx.formatClientLink('help', 'search', 'posts') %>'>Syntax help</a><%
-        %><% if (ctx.canMassTag) { %><%
+        %><% if (ctx.canBulkEditTags) { %><%
             %><wbr/><%
-            %><span class='masstag'><%
-                %><span class='append masstag-hint'>Tagging with:</span><%
-                %><a href class='mousetrap button append open-masstag'>Mass tag</a><%
+            %><span class='bulk-edit-tags'><%
+                %><span class='append hint'>Tagging with:</span><%
+                %><a href class='mousetrap button append open'>Mass tag</a><%
                 %><wbr/><%
-                %><%= ctx.makeTextInput({name: 'masstag', value: ctx.parameters.tag}) %><%
+                %><%= ctx.makeTextInput({name: 'tag', value: ctx.parameters.tag}) %><%
                 %><input class='mousetrap start-tagging' type='submit' value='Start tagging'/><%
                 %><a href class='mousetrap button append stop-tagging'>Stop tagging</a><%
             %></span><%

@@ -89,6 +89,7 @@ privileges:
     'posts:score':                  regular
     'posts:merge':                  moderator
     'posts:favorite':               regular
+    'posts:bulk-edit:tags':         power
 
     'tags:create':                  regular
     'tags:edit:names':              power
@@ -98,7 +99,6 @@ privileges:
     'tags:edit:suggestions':        power
     'tags:list':                    regular # note: will be available as data_url/tags.json anyway
     'tags:view':                    anonymous
-    'tags:masstag':                 power
     'tags:merge':                   moderator
     'tags:delete':                  moderator
 
