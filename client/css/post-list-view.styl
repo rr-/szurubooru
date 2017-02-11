@@ -84,6 +84,37 @@
                     &[data-disabled]
                         background: rgba(200, 200, 200, 0.7)
 
+                .safety-flipper a
+                    display: inline-block
+                    margin: 0.1em
+                    box-sizing: border-box
+                    border: 0
+                    display: inline-block
+                    width: 1.2em
+                    height: 1.2em
+                    text-align: center
+                    line-height: 1em
+                    font-size: 20pt
+                    border: 3px solid
+                    &.safety-safe
+                        background-color: darken($safety-safe, 5%)
+                        border-color: @background-color
+                        &:not(.active)
+                            background-color: alpha(@background-color, 0.3)
+                    &.safety-sketchy
+                        background-color: $safety-sketchy
+                        border-color: @background-color
+                        &:not(.active)
+                            background-color: alpha(@background-color, 0.3)
+                    &.safety-unsafe
+                        background-color: $safety-unsafe
+                        border-color: @background-color
+                        &:not(.active)
+                            background-color: alpha(@background-color, 0.3)
+                    &[data-disabled]
+                        background: rgba(200, 200, 200, 0.7)
+
+
             .thumbnail
                 background-position: 50% 30%
                 width: 100%
@@ -122,20 +153,25 @@
     .append
         font-size: 0.95em
         color: $inactive-link-color
-    .bulk-edit-tags
+    .bulk-edit
         &:not(.opened)
-            [type=text],
-            .start,
             .close
-                display: none
-            .hint
                 display: none
         &.opened
             .open
                 display: none
+        &.hidden
+            display: none
+    .bulk-edit-tags
+        &:not(.opened)
+            [type=text],
+            .start
+                display: none
+            .hint
+                display: none
         input[name=tag]
             width: 12em
-        .hint, .open
+        .hint
             margin-right: 1em
 
     .safety

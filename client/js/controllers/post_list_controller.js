@@ -11,7 +11,7 @@ const PostsPageView = require('../views/posts_page_view.js');
 const EmptyView = require('../views/empty_view.js');
 
 const fields = [
-    'id', 'thumbnailUrl', 'type',
+    'id', 'thumbnailUrl', 'type', 'safety',
     'score', 'favoriteCount', 'commentCount', 'tags', 'version'];
 
 class PostListController {
@@ -32,6 +32,7 @@ class PostListController {
             hostNode: this._pageController.view.pageHeaderHolderNode,
             parameters: ctx.parameters,
             canBulkEditTags: api.hasPrivilege('posts:bulkEdit:tags'),
+            canBulkEditSafety: api.hasPrivilege('posts:bulkEdit:safety'),
             bulkEdit: {
                 tags: this._bulkEditTags
             },
@@ -73,6 +74,11 @@ class PostListController {
         e.detail.post.save().catch(error => window.alert(error.message));
     }
 
+    _evtChangeSafety(e) {
+        e.detail.post.safety = e.detail.safety;
+        e.detail.post.save().catch(error => window.alert(error.message));
+    }
+
     _decorateSearchQuery(text) {
         const browsingSettings = settings.get();
         let disabledSafety = [];
@@ -106,6 +112,8 @@ class PostListController {
                 Object.assign(pageCtx, {
                     canViewPosts: api.hasPrivilege('posts:view'),
                     canBulkEditTags: api.hasPrivilege('posts:bulkEdit:tags'),
+                    canBulkEditSafety:
+                        api.hasPrivilege('posts:bulkEdit:safety'),
                     bulkEdit: {
                         tags: this._bulkEditTags,
                     },
@@ -113,6 +121,8 @@ class PostListController {
                 const view = new PostsPageView(pageCtx);
                 view.addEventListener('tag', e => this._evtTag(e));
                 view.addEventListener('untag', e => this._evtUntag(e));
+                view.addEventListener(
+                    'changeSafety', e => this._evtChangeSafety(e));
                 return view;
             },
         });

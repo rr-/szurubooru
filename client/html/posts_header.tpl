@@ -11,13 +11,19 @@
         %><a class='mousetrap button append' href='<%- ctx.formatClientLink('help', 'search', 'posts') %>'>Syntax help</a><%
     %></form><%
     %><% if (ctx.canBulkEditTags) { %><%
-        %><form class='horizontal bulk-edit-tags'><%
+        %><form class='horizontal bulk-edit bulk-edit-tags'><%
             %><span class='append hint'>Tagging with:</span><%
             %><a href class='mousetrap button append open'>Mass tag</a><%
             %><wbr/><%
             %><%= ctx.makeTextInput({name: 'tag', value: ctx.parameters.tag}) %><%
             %><input class='mousetrap start' type='submit' value='Start tagging'/><%
             %><a href class='mousetrap button append close'>Stop tagging</a><%
+        %></form><%
+    %><% } %><%
+    %><% if (ctx.canBulkEditSafety) { %><%
+        %><form class='horizontal bulk-edit bulk-edit-safety'><%
+            %><a href class='mousetrap button append open'>Mass edit safety</a><%
+            %><a href class='mousetrap button append close'>Stop editing safety</a><%
         %></form><%
     %><% } %><%
 %></div>

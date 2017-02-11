@@ -90,6 +90,7 @@ privileges:
     'posts:merge':                  moderator
     'posts:favorite':               regular
     'posts:bulk-edit:tags':         power
+    'posts:bulk-edit:safety':       power
 
     'tags:create':                  regular
     'tags:edit:names':              power
