@@ -8,6 +8,10 @@
         <% } %>
         <br/>
         Or just click on this box.
+        <% if (ctx.extraText) { %>
+            <br/>
+            <small><%= ctx.extraText %></small>
+        <% } %>
     </label>
     <% if (ctx.allowUrls) { %>
         <input type='text' name='url' placeholder='Alternatively, paste an URL here.'/>

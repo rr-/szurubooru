@@ -11,8 +11,9 @@ class FileDropperControl extends events.EventTarget {
 
         this._options = options;
         const source = template({
-            allowMultiple: this._options.allowMultiple,
-            allowUrls: this._options.allowUrls,
+            extraText: options.extraText,
+            allowMultiple: options.allowMultiple,
+            allowUrls: options.allowUrls,
             id: 'file-' + Math.random().toString(36).substring(7),
         });
 
@@ -21,7 +22,7 @@ class FileDropperControl extends events.EventTarget {
         this._urlConfirmButtonNode = source.querySelector('button');
         this._fileInputNode = source.querySelector('input[type=file]');
         this._fileInputNode.style.display = 'none';
-        this._fileInputNode.multiple = this._options.allowMultiple || false;
+        this._fileInputNode.multiple = options.allowMultiple || false;
 
         this._counter = 0;
         this._dropperNode.addEventListener(

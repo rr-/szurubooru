@@ -156,6 +156,8 @@ class PostUploadView extends events.EventTarget {
         this._contentFileDropper = new FileDropperControl(
             this._contentInputNode,
             {
+                extraText:
+                    'Allowed extensions: .jpg, .png, .gif, .webm, .mp4, .swf',
                 allowUrls: true,
                 allowMultiple: true,
                 lock: false,
