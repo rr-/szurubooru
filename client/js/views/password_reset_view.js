@@ -1,5 +1,6 @@
 'use strict';
 
+const config = require('../config.js');
 const events = require('../events.js');
 const views = require('../util/views.js');
 
@@ -10,7 +11,10 @@ class PasswordResetView extends events.EventTarget {
         super();
         this._hostNode = document.getElementById('content-holder');
 
-        views.replaceContent(this._hostNode, template());
+        views.replaceContent(this._hostNode, template({
+            canSendMails: config.canSendMails,
+            contactEmail: config.contactEmail,
+        }));
         views.syncScrollPosition();
 
         views.decorateValidator(this._formNode);

@@ -25,12 +25,18 @@ thumbnails:
     post_width: 300
     post_height: 300
 
-# used to send password reminders
+
+# used to send password reset e-mails
 smtp:
     host: # example: localhost
     port: # example: 25
     user: # example: bot
     pass: # example: groovy123
+    # host can be left empty, in which case it is recommended to fill contactEmail.
+
+
+contactEmail: # example: bob@example.com. Meant for manual password reset procedures
+
 
 # used for reverse image search
 elasticsearch:
@@ -38,21 +44,25 @@ elasticsearch:
     port: 9200
     index: szurubooru
 
+
 limits:
     users_per_page: 20
     posts_per_page: 40
     max_comment_length: 5000
 
+
 tag_name_regex: ^\S+$
 tag_category_name_regex: ^[^\s%+#/]+$
 
-default_rank: regular
 
 # don't change these, unless you want to annoy people. if you do customize
 # them though, make sure to update the instructions in the registration form
 # template as well.
 password_regex: '^.{5,}$'
 user_name_regex: '^[a-zA-Z0-9_-]{1,32}$'
+
+default_rank: regular
+
 
 privileges:
     'users:create':                 anonymous
