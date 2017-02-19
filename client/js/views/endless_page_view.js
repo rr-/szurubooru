@@ -6,6 +6,13 @@ const views = require('../util/views.js');
 const holderTemplate = views.getTemplate('endless-pager');
 const pageTemplate = views.getTemplate('endless-pager-page');
 
+function isScrolledIntoView(el) {
+    const elemTop = el.getBoundingClientRect().top;
+    const elemBottom = el.getBoundingClientRect().bottom;
+    const isVisible = (elemTop >= 0) && (elemBottom <= window.innerHeight);
+    return isVisible;
+}
+
 class EndlessPageView {
     constructor(ctx) {
         this._hostNode = document.getElementById('content-holder');
@@ -13,28 +20,35 @@ class EndlessPageView {
     }
 
     run(ctx) {
+        this._destroy();
+
         this._active = true;
-        this._working = 0;
-        this._init = false;
+        this._runningRequests = 0;
+        this._initialPageLoad = true;
 
         this.clearMessages();
         views.emptyContent(this._pagesHolderNode);
 
-        this.threshold = window.innerHeight / 3;
         this.minOffsetShown = null;
         this.maxOffsetShown = null;
         this.totalRecords = null;
         this.currentOffset = 0;
+        this.defaultLimit = parseInt(ctx.parameters.limit || ctx.defaultLimit);
 
-        const offset = parseInt(ctx.parameters.offset || 0);
-        const limit = parseInt(ctx.parameters.limit || ctx.defaultLimit);
-        this._loadPage(ctx, offset, limit, true)
+        const initialOffset = parseInt(ctx.parameters.offset || 0);
+        this._loadPage(ctx, initialOffset, this.defaultLimit, true)
             .then(pageNode => {
-                if (offset !== 0) {
+                if (initialOffset !== 0) {
                     pageNode.scrollIntoView();
                 }
             });
-        this._probePageLoad(ctx);
+
+        this._timeout = window.setInterval(() => {
+            window.requestAnimationFrame(() => {
+                this._probePageLoad(ctx);
+                this._syncUrl(ctx);
+            });
+        }, 250);
 
         views.monitorNodeRemoval(this._pagesHolderNode, () => this._destroy());
     }
@@ -43,27 +57,24 @@ class EndlessPageView {
         return this._hostNode.querySelector('.page-header-holder');
     }
 
+    get topPageGuardNode() {
+        return this._hostNode.querySelector('.page-guard.top');
+    }
+
+    get bottomPageGuardNode() {
+        return this._hostNode.querySelector('.page-guard.bottom');
+    }
+
     get _pagesHolderNode() {
         return this._hostNode.querySelector('.pages-holder');
     }
 
     _destroy() {
+        window.clearInterval(this._timeout);
         this._active = false;
     }
 
-    _probePageLoad(ctx) {
-        if (this._active) {
-            window.setTimeout(() => {
-                window.requestAnimationFrame(() => {
-                    this._probePageLoad(ctx);
-                });
-            }, 250);
-        }
-
-        if (this._working) {
-            return;
-        }
-
+    _syncUrl(ctx) {
         let topPageNode = null;
         let element = document.elementFromPoint(
             window.innerWidth / 2,
@@ -89,6 +100,12 @@ class EndlessPageView {
                 false);
             this.currentOffset = topOffset;
         }
+    }
+
+    _probePageLoad(ctx) {
+        if (!this._active || this._runningRequests) {
+            return;
+        }
 
         if (this.totalRecords === null) {
             return;
@@ -97,32 +114,41 @@ class EndlessPageView {
             document.documentElement.scrollHeight -
             document.documentElement.clientHeight;
 
-        if (this.minOffsetShown > 0 && window.scrollY < this.threshold) {
+        if (this.minOffsetShown > 0 &&
+                isScrolledIntoView(this.topPageGuardNode)) {
             this._loadPage(
-                ctx, this.minOffsetShown - topLimit, topLimit, false);
-        } else if (this.maxOffsetShown < this.totalRecords &&
-                window.scrollY + this.threshold > scrollHeight) {
+                ctx,
+                this.minOffsetShown - this.defaultLimit,
+                this.defaultLimit,
+                false);
+        }
+
+        if (this.maxOffsetShown < this.totalRecords &&
+                isScrolledIntoView(this.bottomPageGuardNode)) {
             this._loadPage(
-                ctx, this.maxOffsetShown, topLimit, true);
+                ctx,
+                this.maxOffsetShown,
+                this.defaultLimit,
+                true);
         }
     }
 
     _loadPage(ctx, offset, limit, append) {
-        this._working++;
+        this._runningRequests++;
         return new Promise((resolve, reject) => {
             ctx.requestPage(offset, limit).then(response => {
                 if (!this._active) {
-                    this._working--;
+                    this._runningRequests--;
                     return Promise.reject();
                 }
                 window.requestAnimationFrame(() => {
                     let pageNode = this._renderPage(ctx, append, response);
-                    this._working--;
+                    this._runningRequests--;
                     resolve(pageNode);
                 });
             }, error => {
                 this.showError(error.message);
-                this._working--;
+                this._runningRequests--;
                 reject();
             });
         });
@@ -165,7 +191,7 @@ class EndlessPageView {
 
             if (append) {
                 this._pagesHolderNode.appendChild(pageNode);
-                if (!this._init && response.offset > 0) {
+                if (this._initialPageLoad && response.offset > 0) {
                     window.scroll(0, pageNode.getBoundingClientRect().top);
                 }
             } else {
@@ -179,7 +205,7 @@ class EndlessPageView {
             this.showInfo('No data to show');
         }
 
-        this._init = true;
+        this._initialPageLoad = false;
         return pageNode;
     }
 
