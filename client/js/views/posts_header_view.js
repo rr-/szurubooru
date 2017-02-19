@@ -150,7 +150,7 @@ class PostsHeaderView extends events.EventTarget {
         }
 
         for (let editor of this._bulkEditors) {
-            this._bulkTagEditor.addEventListener('submit', e => {
+            editor.addEventListener('submit', e => {
                 this._navigate();
             });
             editor.addEventListener('open', e => {
