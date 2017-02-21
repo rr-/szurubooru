@@ -15,7 +15,7 @@
     </label>
     <% if (ctx.allowUrls) { %>
         <div class='url-holder'>
-            <input type='text' name='url' placeholder='Alternatively, paste an URL here.'/>
+            <input type='text' name='url' placeholder='<%- ctx.urlPlaceholder %>'/>
             <% if (ctx.lock) { %>
                 <button>Confirm</button>
             <% } else { %>

@@ -18,6 +18,8 @@ class FileDropperControl extends events.EventTarget {
             allowUrls: options.allowUrls,
             lock: options.lock,
             id: 'file-' + Math.random().toString(36).substring(7),
+            urlPlaceholder:
+                options.urlPlaceholder || 'Alternatively, paste an URL here.',
         });
 
         this._dropperNode = source.querySelector('.file-dropper');
