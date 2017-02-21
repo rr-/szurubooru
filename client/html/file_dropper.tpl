@@ -14,11 +14,13 @@
         <% } %>
     </label>
     <% if (ctx.allowUrls) { %>
-        <input type='text' name='url' placeholder='Alternatively, paste an URL here.'/>
-        <% if (ctx.lock) { %>
-            <button>Confirm</button>
-        <% } else { %>
-            <button>Add URL</button>
-        <% } %>
+        <div class='url-holder'>
+            <input type='text' name='url' placeholder='Alternatively, paste an URL here.'/>
+            <% if (ctx.lock) { %>
+                <button>Confirm</button>
+            <% } else { %>
+                <button>Add URL</button>
+            <% } %>
+        </div>
     <% } %>
 </div>

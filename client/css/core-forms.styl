@@ -245,11 +245,8 @@ input::-moz-focus-inner
  * File dropper
  */
 .file-dropper-holder
-    display: flex
-    flex-wrap: wrap
     .file-dropper
         display: block
-        width: 100%
         background: $window-color
         border: 3px dashed #eee
         padding: 0.3em 0.5em
@@ -258,14 +255,16 @@ input::-moz-focus-inner
         cursor: pointer
         overflow: hidden
         word-wrap: break-word
-    input
+    .url-holder
+        display: flex
         margin-top: 0.5em
-        margin-right: 0.5em
-        width: auto
-        flex: 1
-    button
-        margin-top: 0.5em
-        width: 8em
+        input, button
+            min-width: 0 /* firefox being sassy */
+            width: auto !important /* don't inherit anything weird */
+        input
+            flex: 1
+        button
+            margin-left: 0.5em
 
 input[type=file]:disabled+.file-dropper
     cursor: default
