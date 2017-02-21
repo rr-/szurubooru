@@ -72,9 +72,12 @@ class PostEditSidebarControl extends events.EventTarget {
 
         if (this._contentInputNode) {
             this._contentFileDropper = new FileDropperControl(
-                this._contentInputNode, {lock: true});
+                this._contentInputNode, {allowUrls: true, lock: true});
             this._contentFileDropper.addEventListener('fileadd', e => {
                 this._newPostContent = e.detail.files[0];
+            });
+            this._contentFileDropper.addEventListener('urladd', e => {
+                this._newPostContent = e.detail.urls[0];
             });
         }
 
