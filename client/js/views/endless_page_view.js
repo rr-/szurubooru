@@ -6,11 +6,15 @@ const views = require('../util/views.js');
 const holderTemplate = views.getTemplate('endless-pager');
 const pageTemplate = views.getTemplate('endless-pager-page');
 
-function isScrolledIntoView(el) {
-    const elemTop = el.getBoundingClientRect().top;
-    const elemBottom = el.getBoundingClientRect().bottom;
-    const isVisible = (elemTop >= 0) && (elemBottom <= window.innerHeight);
-    return isVisible;
+function isScrolledIntoView(element) {
+    let top = 0;
+    do {
+        top += element.offsetTop || 0;
+        element = element.offsetParent;
+    } while(element);
+    return (
+        (top >= window.scrollY) &&
+        (top <= window.scrollY + window.innerHeight));
 }
 
 class EndlessPageView {
@@ -110,9 +114,6 @@ class EndlessPageView {
         if (this.totalRecords === null) {
             return;
         }
-        let scrollHeight =
-            document.documentElement.scrollHeight -
-            document.documentElement.clientHeight;
 
         if (this.minOffsetShown > 0 &&
                 isScrolledIntoView(this.topPageGuardNode)) {
