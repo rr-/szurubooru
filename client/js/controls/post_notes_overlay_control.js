@@ -72,10 +72,8 @@ function _getNoteSize(note) {
 }
 
 class State {
-    constructor(control) {
+    constructor(control, stateName) {
         this._control = control;
-        const stateName = misc.decamelize(
-            this.constructor.name.replace(/State/, ''));
         _setNodeState(control._hostNode, stateName);
         _setNodeState(control._textNode, stateName);
     }
@@ -132,7 +130,7 @@ class State {
 
 class ReadOnlyState extends State {
     constructor(control) {
-        super(control);
+        super(control, 'read-only');
         if (_clearEditedNote(control._hostNode)) {
             this._control.dispatchEvent(new CustomEvent('blur'));
         }
@@ -146,7 +144,7 @@ class ReadOnlyState extends State {
 
 class PassiveState extends State {
     constructor(control) {
-        super(control);
+        super(control, 'passive');
         if (_clearEditedNote(control._hostNode)) {
             this._control.dispatchEvent(new CustomEvent('blur'));
         }
@@ -163,13 +161,13 @@ class PassiveState extends State {
 }
 
 class ActiveState extends State {
-    constructor(control, note) {
-        super(control);
+    constructor(control, note, stateName) {
+        super(control, stateName);
         if (_clearEditedNote(control._hostNode)) {
             this._control.dispatchEvent(new CustomEvent('blur'));
         }
         keyboard.pause();
-        if (note !== undefined) {
+        if (note !== null) {
             this._note = note;
             this._control.dispatchEvent(
                 new CustomEvent('focus', {
@@ -182,7 +180,7 @@ class ActiveState extends State {
 
 class SelectedState extends ActiveState {
     constructor(control, note) {
-        super(control, note);
+        super(control, note, 'selected');
         this._clickTimeout = null;
         this._control._hideNoteText();
     }
@@ -299,7 +297,7 @@ class SelectedState extends ActiveState {
 
 class MovingPointState extends ActiveState {
     constructor(control, note, notePoint, mousePoint) {
-        super(control, note);
+        super(control, note, 'moving-point');
         this._notePoint = notePoint;
         this._originalNotePoint = {x: notePoint.x, y: notePoint.y};
         this._originalPosition = mousePoint;
@@ -328,7 +326,7 @@ class MovingPointState extends ActiveState {
 
 class MovingNoteState extends ActiveState {
     constructor(control, note, mousePoint) {
-        super(control, note);
+        super(control, note, 'moving-note');
         this._originalPolygon = [...note.polygon].map(
             point => ({x: point.x, y: point.y}));
         this._originalPosition = mousePoint;
@@ -360,7 +358,7 @@ class MovingNoteState extends ActiveState {
 
 class ScalingNoteState extends ActiveState {
     constructor(control, note, mousePoint) {
-        super(control, note);
+        super(control, note, 'scaling-note');
         this._originalPolygon = [...note.polygon].map(
             point => ({x: point.x, y: point.y}));
         this._originalMousePoint = mousePoint;
@@ -402,7 +400,7 @@ class ScalingNoteState extends ActiveState {
 
 class ReadyToDrawState extends ActiveState {
     constructor(control) {
-        super(control);
+        super(control, null, 'ready-to-draw');
     }
 
     evtNoteMouseDown(e, hoveredNote) {
@@ -423,7 +421,7 @@ class ReadyToDrawState extends ActiveState {
 
 class DrawingRectangleState extends ActiveState {
     constructor(control, mousePoint) {
-        super(control);
+        super(control, null, 'drawing-rectangle');
         this._note = this._createNote();
         this._note.polygon.add(new Point(mousePoint.x, mousePoint.y));
         this._note.polygon.add(new Point(mousePoint.x, mousePoint.y));
@@ -460,7 +458,7 @@ class DrawingRectangleState extends ActiveState {
 
 class DrawingPolygonState extends ActiveState {
     constructor(control, mousePoint) {
-        super(control);
+        super(control, null, 'drawing-polygon');
         this._note = this._createNote();
         this._note.polygon.add(new Point(mousePoint.x, mousePoint.y));
         this._note.polygon.add(new Point(mousePoint.x, mousePoint.y));
