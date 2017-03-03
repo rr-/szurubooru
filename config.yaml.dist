@@ -10,6 +10,7 @@ api_url: # where frontend connects to, example: http://api.example.com/
 base_url: # used to form links to frontend, example: http://example.com/
 data_url: # used to form links to posts and avatars, example: http://example.com/data/
 data_dir: # absolute path for posts and avatars storage, example: /srv/www/booru/client/public/data/
+user_agent: # user agent name used to download files from the web on behalf of the api users
 
 
 # usage: schema://user:password@host:port/database_name
