@@ -75,7 +75,7 @@ class Tag extends events.EventTarget {
             });
     }
 
-    merge(targetName) {
+    merge(targetName, addAlias) {
         return api.get(uri.formatApiLink('tag', targetName))
             .then(response => {
                 return api.post(uri.formatApiLink('tag-merge'), {
@@ -83,6 +83,14 @@ class Tag extends events.EventTarget {
                     remove: this._origName,
                     mergeToVersion: response.version,
                     mergeTo: targetName,
+                });
+            }).then(response => {
+                if (!addAlias) {
+                    return Promise.resolve(response);
+                }
+                return api.put(uri.formatApiLink('tag', targetName), {
+                    version: response.version,
+                    names: response.names.concat(this._names),
                 });
             }).then(response => {
                 this._updateFromResponse(response);

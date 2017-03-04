@@ -51,6 +51,7 @@ class TagMergeView extends events.EventTarget {
             detail: {
                 tag: this._tag,
                 targetTagName: this._targetTagFieldNode.value,
+                addAlias: this._addAliasCheckboxNode.checked,
             },
         }));
     }
@@ -60,7 +61,11 @@ class TagMergeView extends events.EventTarget {
     }
 
     get _targetTagFieldNode() {
-        return this._formNode.querySelector('.target input');
+        return this._formNode.querySelector('input[name=target-tag]');
+    }
+
+    get _addAliasCheckboxNode() {
+        return this._formNode.querySelector('input[name=alias]');
     }
 }
 

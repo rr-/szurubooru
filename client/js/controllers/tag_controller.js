@@ -97,16 +97,19 @@ class TagController {
     _evtMerge(e) {
         this._view.clearMessages();
         this._view.disableForm();
-        e.detail.tag.merge(e.detail.targetTagName).then(() => {
-            this._view.showSuccess('Tag merged.');
-            this._view.enableForm();
-            router.replace(
-                uri.formatClientLink('tag', e.detail.targetTagName, 'merge'),
-                null, false);
-        }, error => {
-            this._view.showError(error.message);
-            this._view.enableForm();
-        });
+        e.detail.tag
+            .merge(e.detail.targetTagName, e.detail.addAlias)
+            .then(() => {
+                this._view.showSuccess('Tag merged.');
+                this._view.enableForm();
+                router.replace(
+                    uri.formatClientLink(
+                        'tag', e.detail.targetTagName, 'merge'),
+                    null, false);
+            }, error => {
+                this._view.showError(error.message);
+                this._view.enableForm();
+            });
     }
 
     _evtDelete(e) {
