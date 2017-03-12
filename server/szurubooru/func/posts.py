@@ -682,10 +682,12 @@ def search_by_image_exact(image_content: bytes) -> Optional[model.Post]:
 def search_by_image(image_content: bytes) -> List[PostLookalike]:
     ret = []
     for result in image_hash.search_by_image(image_content):
-        ret.append(PostLookalike(
-            score=result.score,
-            distance=result.distance,
-            post=get_post_by_id(result.path)))
+        post = try_get_post_by_id(result.path)
+        if post:
+            ret.append(PostLookalike(
+                score=result.score,
+                distance=result.distance,
+                post=post))
     return ret
 
 
