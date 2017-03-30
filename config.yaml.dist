@@ -1,11 +1,11 @@
 # rather than editing this file, it is strongly suggested to create config.yaml
 # and override only what you need.
 
-name: szurubooru
+name: szurubooru # shown in the website title and on the front page
 debug: 0 # generate source maps for JS debugging?
 show_sql: 0 # show sql in server logs?
 transpile: 1 # generate bigger JS to support older browsers?
-secret: change
+secret: change # used to salt the users' password hashes
 api_url: # where frontend connects to, example: http://api.example.com/
 base_url: # used to form links to frontend, example: http://example.com/
 data_url: # used to form links to posts and avatars, example: http://example.com/data/
@@ -17,7 +17,7 @@ user_agent: # user agent name used to download files from the web on behalf of t
 # example: postgres://szuru:dog@localhost:5432/szuru_test
 # example (useful for tests): sqlite:///:memory:
 database:
-test_database: 'sqlite:///:memory:' # required for runing the test suite
+test_database: 'sqlite:///:memory:' # required for running the test suite
 
 
 thumbnails:
@@ -56,8 +56,8 @@ tag_name_regex: ^\S+$
 tag_category_name_regex: ^[^\s%+#/]+$
 
 
-# don't change these, unless you want to annoy people. if you do customize
-# them though, make sure to update the instructions in the registration form
+# don't make these more restrictive unless you want to annoy people; if you do
+# customize them, make sure to update the instructions in the registration form
 # template as well.
 password_regex: '^.{5,}$'
 user_name_regex: '^[a-zA-Z0-9_-]{1,32}$'
