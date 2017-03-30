@@ -4,7 +4,7 @@
 
         <div class='messages'></div>
 
-        <% if (ctx.canEditPostSafety) { %>
+        <% if (ctx.enableSafety && ctx.canEditPostSafety) { %>
             <section class='safety'>
                 <label>Safety</label>
                 <div class='radio-wrapper'>

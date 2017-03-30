@@ -1,5 +1,6 @@
 'use strict';
 
+const config = require('../config.js');
 const api = require('../api.js');
 const settings = require('../models/settings.js');
 const uri = require('../util/uri.js');
@@ -31,6 +32,7 @@ class PostListController {
         this._headerView = new PostsHeaderView({
             hostNode: this._pageController.view.pageHeaderHolderNode,
             parameters: ctx.parameters,
+            enableSafety: config.enableSafety,
             canBulkEditTags: api.hasPrivilege('posts:bulkEdit:tags'),
             canBulkEditSafety: api.hasPrivilege('posts:bulkEdit:safety'),
             bulkEdit: {
@@ -79,20 +81,6 @@ class PostListController {
         e.detail.post.save().catch(error => window.alert(error.message));
     }
 
-    _decorateSearchQuery(text) {
-        const browsingSettings = settings.get();
-        let disabledSafety = [];
-        for (let key of Object.keys(browsingSettings.listPosts)) {
-            if (browsingSettings.listPosts[key] === false) {
-                disabledSafety.push(key);
-            }
-        }
-        if (disabledSafety.length) {
-            text = `-rating:${disabledSafety.join(',')} ${text}`;
-        }
-        return text.trim();
-    }
-
     _syncPageController() {
         this._pageController.run({
             parameters: this._ctx.parameters,
@@ -104,9 +92,7 @@ class PostListController {
             },
             requestPage: (offset, limit) => {
                 return PostList.search(
-                    this._decorateSearchQuery(
-                        this._ctx.parameters.query || ''),
-                    offset, limit, fields);
+                    this._ctx.parameters.query, offset, limit, fields);
             },
             pageRenderer: pageCtx => {
                 Object.assign(pageCtx, {

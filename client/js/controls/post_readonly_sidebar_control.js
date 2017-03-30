@@ -1,6 +1,7 @@
 'use strict';
 
 const api = require('../api.js');
+const config = require('../config.js');
 const events = require('../events.js');
 const tags = require('../tags.js');
 const views = require('../util/views.js');
@@ -23,6 +24,7 @@ class PostReadonlySidebarControl extends events.EventTarget {
             post: this._post,
             getTagCategory: this._getTagCategory,
             getTagUsages: this._getTagUsages,
+            enableSafety: config.enableSafety,
             canListPosts: api.hasPrivilege('posts:list'),
             canEditPosts: api.hasPrivilege('posts:edit'),
             canViewTags: api.hasPrivilege('tags:view'),

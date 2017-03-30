@@ -277,14 +277,20 @@ class PostUploadView extends events.EventTarget {
 
     _updateUploadableFromDom(uploadable) {
         const rowNode = uploadable.rowNode;
-        uploadable.safety =
-            rowNode.querySelector('.safety input:checked').value;
+
+        const safetyNode = rowNode.querySelector('.safety input:checked');
+        if (safetyNode) {
+            uploadable.safety = safetyNode.value;
+        }
+
         uploadable.anonymous =
             rowNode.querySelector('.anonymous input').checked;
+
         uploadable.flags = [];
         if (rowNode.querySelector('.loop-video input:checked')) {
             uploadable.flags.push('loop');
         }
+
         uploadable.tags = [];
         uploadable.relations = [];
         for (let [i, lookalike] of uploadable.lookalikes.entries()) {

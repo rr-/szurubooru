@@ -46,6 +46,8 @@ elasticsearch:
     index: szurubooru
 
 
+enable_safety: yes
+
 tag_name_regex: ^\S+$
 tag_category_name_regex: ^[^\s%+#/]+$
 

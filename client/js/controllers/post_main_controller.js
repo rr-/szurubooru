@@ -20,8 +20,8 @@ class PostMainController extends BasePostController {
         Promise.all([
                 Post.get(ctx.parameters.id),
                 PostList.getAround(
-                    ctx.parameters.id, this._decorateSearchQuery(
-                        parameters ? parameters.query || '' : '')),
+                    ctx.parameters.id,
+                    parameters ? parameters.query : null),
         ]).then(responses => {
             const [post, aroundResponse] = responses;
 
@@ -89,20 +89,6 @@ class PostMainController extends BasePostController {
             this._view = new EmptyView();
             this._view.showError(error.message);
         });
-    }
-
-    _decorateSearchQuery(text) {
-        const browsingSettings = settings.get();
-        let disabledSafety = [];
-        for (let key of Object.keys(browsingSettings.listPosts)) {
-            if (browsingSettings.listPosts[key] === false) {
-                disabledSafety.push(key);
-            }
-        }
-        if (disabledSafety.length) {
-            text = `-rating:${disabledSafety.join(',')} ${text}`;
-        }
-        return text.trim();
     }
 
     _evtFitModeChange(e) {

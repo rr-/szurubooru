@@ -1,6 +1,7 @@
 'use strict';
 
 const api = require('../api.js');
+const config = require('../config.js');
 const events = require('../events.js');
 const misc = require('../util/misc.js');
 const views = require('../util/views.js');
@@ -23,6 +24,7 @@ class PostEditSidebarControl extends events.EventTarget {
 
         views.replaceContent(this._hostNode, template({
             post: this._post,
+            enableSafety: config.enableSafety,
             canEditPostSafety: api.hasPrivilege('posts:edit:safety'),
             canEditPostSource: api.hasPrivilege('posts:edit:source'),
             canEditPostTags: api.hasPrivilege('posts:edit:tags'),

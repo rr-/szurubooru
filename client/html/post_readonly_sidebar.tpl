@@ -20,10 +20,12 @@
             <%= ctx.makeRelativeTime(ctx.post.creationTime) %>
         </section>
 
-        <section class='safety'>
-            <i class='fa fa-circle safety-<%- ctx.post.safety %>'></i><!--
-            --><%- ctx.post.safety[0].toUpperCase() + ctx.post.safety.slice(1) %>
-        </section>
+        <% if (ctx.enableSafety) { %>
+            <section class='safety'>
+                <i class='fa fa-circle safety-<%- ctx.post.safety %>'></i><!--
+                --><%- ctx.post.safety[0].toUpperCase() + ctx.post.safety.slice(1) %>
+            </section>
+        <% } %>
 
         <section class='zoom'>
             <a href class='fit-original'>Original zoom</a> &middot;

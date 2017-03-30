@@ -57,7 +57,7 @@ class UserListController {
             },
             requestPage: (offset, limit) => {
                 return UserList.search(
-                    this._ctx.parameters.query || '', offset, limit);
+                    this._ctx.parameters.query, offset, limit);
             },
             pageRenderer: pageCtx => {
                 Object.assign(pageCtx, {
