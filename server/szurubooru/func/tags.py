@@ -209,10 +209,13 @@ def get_tags_by_names(names: List[str]) -> List[model.Tag]:
     names = util.icase_unique(names)
     if len(names) == 0:
         return []
-    expr = sa.sql.false()
-    for name in names:
-        expr = expr | (sa.func.lower(model.TagName.name) == name.lower())
-    return db.session.query(model.Tag).join(model.TagName).filter(expr).all()
+    return (db.session.query(model.Tag)
+        .join(model.TagName)
+        .filter(
+            sa.sql.or_(
+                sa.func.lower(model.TagName.name) == name.lower()
+                for name in names))
+        .all())
 
 
 def get_or_create_tags_by_names(
