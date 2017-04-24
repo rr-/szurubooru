@@ -158,6 +158,13 @@ class Router {
         window.removeEventListener('popstate', this._onPopState, false);
     }
 
+    showNoDispatch(path, state) {
+        const ctx = new Context(path, state);
+        ctx.pushState();
+        this.ctx = ctx;
+        return ctx;
+    }
+
     show(path, state, push) {
         const ctx = new Context(path, state);
         const oldPath = this.ctx ? this.ctx.path : ctx.path;

@@ -1,6 +1,7 @@
 'use strict';
 
 const config = require('../config.js');
+const router = require('../router.js');
 const api = require('../api.js');
 const settings = require('../models/settings.js');
 const uri = require('../util/uri.js');
@@ -54,9 +55,7 @@ class PostListController {
     }
 
     _evtNavigate(e) {
-        history.pushState(
-            null,
-            window.title,
+        router.showNoDispatch(
             uri.formatClientLink('posts', e.detail.parameters));
         Object.assign(this._ctx.parameters, e.detail.parameters);
         this._syncPageController();

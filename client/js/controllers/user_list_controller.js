@@ -1,6 +1,7 @@
 'use strict';
 
 const api = require('../api.js');
+const router = require('../router.js');
 const uri = require('../util/uri.js');
 const UserList = require('../models/user_list.js');
 const topNavigation = require('../models/top_navigation.js');
@@ -38,9 +39,7 @@ class UserListController {
     }
 
     _evtNavigate(e) {
-        history.pushState(
-            null,
-            window.title,
+        router.showNoDispatch(
             uri.formatClientLink('users', e.detail.parameters));
         Object.assign(this._ctx.parameters, e.detail.parameters);
         this._syncPageController();

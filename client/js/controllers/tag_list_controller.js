@@ -1,5 +1,6 @@
 'use strict';
 
+const router = require('../router.js');
 const api = require('../api.js');
 const uri = require('../util/uri.js');
 const TagList = require('../models/tag_list.js');
@@ -46,9 +47,7 @@ class TagListController {
     }
 
     _evtNavigate(e) {
-        history.pushState(
-            null,
-            window.title,
+        router.showNoDispatch(
             uri.formatClientLink('tags', e.detail.parameters));
         Object.assign(this._ctx.parameters, e.detail.parameters);
         this._syncPageController();
