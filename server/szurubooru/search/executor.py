@@ -84,6 +84,10 @@ class Executor:
         search_query = self.parser.parse(query_text)
         self.config.on_search_query_parsed(search_query)
 
+        if offset < 0:
+            limit = max(0, limit + offset)
+            offset = 0
+
         disable_eager_loads = False
         for token in search_query.sort_tokens:
             if token.name == 'random':
