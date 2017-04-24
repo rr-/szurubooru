@@ -297,14 +297,12 @@ def test_update_post_content_for_new_post(
                 'post_height': 300,
             },
         })
-        output_file_path = str(tmpdir) + '/data/posts/' + output_file_name
-        post = post_factory()
+        output_file_path = '{}/data/posts/{}'.format(tmpdir, output_file_name)
+        post = post_factory(id=1)
         db.session.add(post)
         if is_existing:
             db.session.flush()
-            assert post.post_id
-        else:
-            assert not post.post_id
+        assert post.post_id
         assert not os.path.exists(output_file_path)
         content = read_asset(input_file)
         posts.update_post_content(post, content)
@@ -379,15 +377,13 @@ def test_update_post_thumbnail_to_new_one(
             'post_height': 300,
         },
     })
-    post = post_factory()
+    post = post_factory(id=1)
     db.session.add(post)
     if is_existing:
         db.session.flush()
-        assert post.post_id
-    else:
-        assert not post.post_id
-    generated_path = str(tmpdir) + '/data/generated-thumbnails/1.jpg'
-    source_path = str(tmpdir) + '/data/posts/custom-thumbnails/1.dat'
+    assert post.post_id
+    generated_path = '{}/data/generated-thumbnails/1.jpg'.format(tmpdir)
+    source_path = '{}/data/posts/custom-thumbnails/1.dat'.format(tmpdir)
     assert not os.path.exists(generated_path)
     assert not os.path.exists(source_path)
     posts.update_post_content(post, read_asset('png.png'))
@@ -411,15 +407,13 @@ def test_update_post_thumbnail_to_default(
             'post_height': 300,
         },
     })
-    post = post_factory()
+    post = post_factory(id=1)
     db.session.add(post)
     if is_existing:
         db.session.flush()
-        assert post.post_id
-    else:
-        assert not post.post_id
-    generated_path = str(tmpdir) + '/data/generated-thumbnails/1.jpg'
-    source_path = str(tmpdir) + '/data/posts/custom-thumbnails/1.dat'
+    assert post.post_id
+    generated_path = '{}/data/generated-thumbnails/1.jpg'.format(tmpdir)
+    source_path = '{}/data/posts/custom-thumbnails/1.dat'.format(tmpdir)
     assert not os.path.exists(generated_path)
     assert not os.path.exists(source_path)
     posts.update_post_content(post, read_asset('png.png'))
@@ -442,15 +436,13 @@ def test_update_post_thumbnail_with_broken_thumbnail(
             'post_height': 300,
         },
     })
-    post = post_factory()
+    post = post_factory(id=1)
     db.session.add(post)
     if is_existing:
         db.session.flush()
-        assert post.post_id
-    else:
-        assert not post.post_id
-    generated_path = str(tmpdir) + '/data/generated-thumbnails/1.jpg'
-    source_path = str(tmpdir) + '/data/posts/custom-thumbnails/1.dat'
+    assert post.post_id
+    generated_path = '{}/data/generated-thumbnails/1.jpg'.format(tmpdir)
+    source_path = '{}/data/posts/custom-thumbnails/1.dat'.format(tmpdir)
     assert not os.path.exists(generated_path)
     assert not os.path.exists(source_path)
     posts.update_post_content(post, read_asset('png.png'))
@@ -483,8 +475,10 @@ def test_update_post_content_leaving_custom_thumbnail(
     posts.update_post_thumbnail(post, read_asset('jpeg.jpg'))
     posts.update_post_content(post, read_asset('png.png'))
     db.session.flush()
-    assert os.path.exists(str(tmpdir) + '/data/posts/custom-thumbnails/1.dat')
-    assert os.path.exists(str(tmpdir) + '/data/generated-thumbnails/1.jpg')
+    generated_path = '{}/data/generated-thumbnails/1.jpg'.format(tmpdir)
+    source_path = '{}/data/posts/custom-thumbnails/1.dat'.format(tmpdir)
+    assert os.path.exists(source_path)
+    assert os.path.exists(generated_path)
 
 
 def test_update_post_tags(tag_factory):
@@ -840,20 +834,24 @@ def test_merge_posts_replaces_content(
             'post_height': 300,
         },
     })
-    source_post = post_factory()
-    target_post = post_factory()
+    source_post = post_factory(id=1)
+    target_post = post_factory(id=2)
     content = read_asset('png.png')
     db.session.add_all([source_post, target_post])
     db.session.commit()
     posts.update_post_content(source_post, content)
     db.session.flush()
-    assert os.path.exists(os.path.join(str(tmpdir), 'data/posts/1.png'))
-    assert not os.path.exists(os.path.join(str(tmpdir), 'data/posts/2.dat'))
-    assert not os.path.exists(os.path.join(str(tmpdir), 'data/posts/2.png'))
+    source_path = os.path.join('{}/data/posts/1.png'.format(tmpdir))
+    target_path1 = os.path.join('{}/data/posts/2.png'.format(tmpdir))
+    target_path2 = os.path.join('{}/data/posts/2.dat'.format(tmpdir))
+    assert os.path.exists(source_path)
+    assert not os.path.exists(target_path1)
+    assert not os.path.exists(target_path2)
     posts.merge_posts(source_post, target_post, True)
     db.session.flush()
     assert posts.try_get_post_by_id(source_post.post_id) is None
     post = posts.get_post_by_id(target_post.post_id)
     assert post is not None
-    assert os.path.exists(os.path.join(str(tmpdir), 'data/posts/1.png'))
-    assert os.path.exists(os.path.join(str(tmpdir), 'data/posts/2.png'))
+    assert os.path.exists(source_path)
+    assert os.path.exists(target_path1)
+    assert not os.path.exists(target_path2)
