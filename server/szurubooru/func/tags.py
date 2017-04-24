@@ -256,6 +256,7 @@ def get_tag_siblings(tag: model.Tag) -> List[model.Tag]:
         .filter(pt_alias1.tag_id != tag.tag_id)
         .group_by(tag_alias.tag_id)
         .order_by(sa.func.count(pt_alias2.post_id).desc())
+        .order_by(tag_alias.first_name)
         .limit(50))
     return result
 
