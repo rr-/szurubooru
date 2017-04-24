@@ -1,17 +1,20 @@
 import re
-from typing import List
+from typing import Match, List
 from szurubooru import errors
 from szurubooru.search import criteria, tokens
 from szurubooru.search.query import SearchQuery
+from szurubooru.search.configs import util
 
 
 def _create_criterion(
         original_value: str, value: str) -> criteria.BaseCriterion:
-    if ',' in value:
-        return criteria.ArrayCriterion(
-            original_value, value.split(','))
-    if '..' in value:
-        low, high = value.split('..', 1)
+    if re.search(r'(?<!\\),', value):
+        values = re.split(r'(?<!\\),', value)
+        if any(not term.strip() for term in values):
+            raise errors.SearchError('Empty compound value')
+        return criteria.ArrayCriterion(original_value, values)
+    if re.search(r'(?<!\\)\.(?<!\\)\.', value):
+        low, high = re.split(r'(?<!\\)\.(?<!\\)\.', value, 1)
         if not low and not high:
             raise errors.SearchError('Empty ranged value')
         return criteria.RangedCriterion(original_value, low, high)
@@ -82,9 +85,10 @@ class Parser:
                 negated = True
             if not chunk:
                 raise errors.SearchError('Empty negated token.')
-            match = re.match('([a-z_-]+):(.*)', chunk)
+            match = re.match(r'^(.*?)(?<!\\):(.*)$', chunk)
             if match:
                 key, value = list(match.groups())
+                key = util.unescape(key)
                 if key == 'sort':
                     query.sort_tokens.append(
                         _parse_sort(value, negated))

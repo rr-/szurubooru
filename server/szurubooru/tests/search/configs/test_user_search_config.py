@@ -86,12 +86,24 @@ def test_filter_by_name(
 
 @pytest.mark.parametrize('input,expected_user_names', [
     ('name:u1', ['u1']),
-    ('name:u2..', ['u2..']),
     ('name:u2*', ['u2..']),
-    ('name:*..*', ['u2..', 'u3..x']),
-    ('name:u3..x', ['u3..x']),
-    ('name:*..x', ['u3..x']),
     ('name:u1,u3..x', ['u1', 'u3..x']),
+    ('name:u2..', None),
+    ('name:*..*', None),
+    ('name:u3..x', None),
+    ('name:*..x', None),
+    ('name:u2\\..', ['u2..']),
+    ('name:*\\..*', ['u2..', 'u3..x']),
+    ('name:u3\\..x', ['u3..x']),
+    ('name:*\\..x', ['u3..x']),
+    ('name:u2.\\.', ['u2..']),
+    ('name:*.\\.*', ['u2..', 'u3..x']),
+    ('name:u3.\\.x', ['u3..x']),
+    ('name:*.\\.x', ['u3..x']),
+    ('name:u2\\.\\.', ['u2..']),
+    ('name:*\\.\\.*', ['u2..', 'u3..x']),
+    ('name:u3\\.\\.x', ['u3..x']),
+    ('name:*\\.\\.x', ['u3..x']),
 ])
 def test_filter_by_name_that_looks_like_range(
         verify_unpaged, input, expected_user_names, user_factory):
@@ -99,7 +111,11 @@ def test_filter_by_name_that_looks_like_range(
     db.session.add(user_factory(name='u2..'))
     db.session.add(user_factory(name='u3..x'))
     db.session.flush()
-    verify_unpaged(input, expected_user_names)
+    if not expected_user_names:
+        with pytest.raises(errors.SearchError):
+            verify_unpaged(input, expected_user_names)
+    else:
+        verify_unpaged(input, expected_user_names)
 
 
 @pytest.mark.parametrize('input,expected_user_names', [

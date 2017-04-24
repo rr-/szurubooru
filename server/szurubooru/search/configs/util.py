@@ -1,4 +1,4 @@
-from typing import Any, Optional, Union, Callable
+from typing import Any, Optional, Union, Dict, Callable
 import sqlalchemy as sa
 from szurubooru import db, errors
 from szurubooru.func import util
@@ -8,27 +8,62 @@ from szurubooru.search.configs.base_search_config import Filter
 
 
 Number = Union[int, float]
+WILDCARD = '(--wildcard--)'  # something unlikely to be used by the users
+
+
+def unescape(text: str, make_wildcards_special: bool = False) -> str:
+    output = ''
+    i = 0
+    while i < len(text):
+        if text[i] == '\\':
+            try:
+                char = text[i+1]
+                i += 1
+            except IndexError:
+                raise errors.SearchError(
+                    'Unterminated escape sequence (did you forget to escape '
+                    'the ending backslash?)')
+            if char not in '*\\:-.,':
+                raise errors.SearchError(
+                    'Unknown escape sequence (did you forget to escape '
+                    'the backslash?)')
+        elif text[i] == '*' and make_wildcards_special:
+            char = WILDCARD
+        else:
+            char = text[i]
+        output += char
+        i += 1
+    return output
 
 
 def wildcard_transformer(value: str) -> str:
     return (
-        value
+        unescape(value, make_wildcards_special=True)
         .replace('\\', '\\\\')
         .replace('%', '\\%')
         .replace('_', '\\_')
-        .replace('*', '%'))
+        .replace(WILDCARD, '%'))
+
+
+def enum_transformer(available_values: Dict[str, Any], value: str) -> str:
+    try:
+        return available_values[unescape(value.lower())]
+    except KeyError:
+        raise errors.SearchError(
+            'Invalid value: %r. Possible values: %r.' % (
+                value, list(sorted(available_values.keys()))))
 
 
 def integer_transformer(value: str) -> int:
-    return int(value)
+    return int(unescape(value))
 
 
 def float_transformer(value: str) -> float:
     for sep in list('/:'):
         if sep in value:
             a, b = value.split(sep, 1)
-            return float(a) / float(b)
-    return float(value)
+            return float(unescape(a)) / float(unescape(b))
+    return float(unescape(value))
 
 
 def apply_num_criterion_to_column(
@@ -84,23 +119,23 @@ def apply_str_criterion_to_column(
         for value in criterion.values:
             expr = expr | column.ilike(transformer(value))
     elif isinstance(criterion, criteria.RangedCriterion):
-        expr = column.ilike(transformer(criterion.original_text))
+        raise errors.SearchError(
+            'Ranged criterion is invalid in this context. '
+            'Did you forget to escape the dots?')
     else:
         assert False
     return expr
 
 
 def create_str_filter(
-    column: SaColumn,
-    transformer: Callable[[str], str]=wildcard_transformer
+    column: SaColumn, transformer: Callable[[str], str]=wildcard_transformer
 ) -> Filter:
     def wrapper(
             query: SaQuery,
             criterion: Optional[criteria.BaseCriterion],
             negated: bool) -> SaQuery:
         assert criterion
-        expr = apply_str_criterion_to_column(
-            column, criterion, transformer)
+        expr = apply_str_criterion_to_column(column, criterion, transformer)
         if negated:
             expr = ~expr
         return query.filter(expr)

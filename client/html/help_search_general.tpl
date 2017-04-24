@@ -80,6 +80,9 @@ take following form:</p>
 <code>,desc</code> to control the sort direction, which can be also controlled
 by negating the whole token.</p>
 
+<p>You can escape special characters such as <code>:</code> and <code>-</code>
+by prepending them with a backslash: <code>\\</code>.</p>
+
 <h1>Example</h1>
 
 <p>Searching for posts with following query:</p>
@@ -89,3 +92,8 @@ by negating the whole token.</p>
 <p>will show flash files tagged as sea, that were liked by seven people at
 most, uploaded by user Pirate.</p>
 
+<p>Searching for posts with <code>re:zero</code> will show an error message
+about unknown named token.</p>
+
+<p>Searching for posts with <code>re\:zero</code> will show posts tagged with
+<code>re:zero</code>.</p>

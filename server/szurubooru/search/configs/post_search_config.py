@@ -10,15 +10,6 @@ from szurubooru.search.configs.base_search_config import (
     BaseSearchConfig, Filter)
 
 
-def _enum_transformer(available_values: Dict[str, Any], value: str) -> str:
-    try:
-        return available_values[value.lower()]
-    except KeyError:
-        raise errors.SearchError(
-            'Invalid value: %r. Possible values: %r.' % (
-                value, list(sorted(available_values.keys()))))
-
-
 def _type_transformer(value: str) -> str:
     available_values = {
         'image': model.Post.TYPE_IMAGE,
@@ -31,7 +22,7 @@ def _type_transformer(value: str) -> str:
         'flash': model.Post.TYPE_FLASH,
         'swf': model.Post.TYPE_FLASH,
     }
-    return _enum_transformer(available_values, value)
+    return search_util.enum_transformer(available_values, value)
 
 
 def _safety_transformer(value: str) -> str:
@@ -41,7 +32,7 @@ def _safety_transformer(value: str) -> str:
         'questionable': model.Post.SAFETY_SKETCHY,
         'unsafe': model.Post.SAFETY_UNSAFE,
     }
-    return _enum_transformer(available_values, value)
+    return search_util.enum_transformer(available_values, value)
 
 
 def _create_score_filter(score: int) -> Filter:

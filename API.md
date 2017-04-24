@@ -2258,6 +2258,9 @@ Date/time values can be of following form:
 
 Some fields, such as user names, can take wildcards (`*`).
 
+You can escape special characters such as `:` and `-` by prepending them with a
+backslash: `\\`.
+
 **Example**
 
 Searching for posts with following query:
@@ -2266,3 +2269,8 @@ Searching for posts with following query:
 
 will show flash files tagged as sea, that were liked by seven people at most,
 uploaded by user Pirate.
+
+Searching for posts with `re:zero` will show an error message about unknown
+named token.
+
+Searching for posts with `re\:zero` will show posts tagged with `re:zero`.
