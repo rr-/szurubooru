@@ -77,9 +77,11 @@ class Parser:
             if not chunk:
                 continue
             negated = False
-            while chunk[0] == '-':
+            if chunk[0] == '-':
                 chunk = chunk[1:]
-                negated = not negated
+                negated = True
+            if not chunk:
+                raise errors.SearchError('Empty negated token.')
             match = re.match('([a-z_-]+):(.*)', chunk)
             if match:
                 key, value = list(match.groups())
