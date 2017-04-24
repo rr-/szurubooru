@@ -27,7 +27,7 @@ def _serialize(
 
 @rest.routes.get('/comments/?')
 def get_comments(
-        ctx: rest.Context, _params: Dict[str, str]={}) -> rest.Response:
+        ctx: rest.Context, _params: Dict[str, str] = {}) -> rest.Response:
     auth.verify_privilege(ctx.user, 'comments:list')
     return _search_executor.execute_and_serialize(
         ctx, lambda comment: _serialize(ctx, comment))
@@ -35,7 +35,7 @@ def get_comments(
 
 @rest.routes.post('/comments/?')
 def create_comment(
-        ctx: rest.Context, _params: Dict[str, str]={}) -> rest.Response:
+        ctx: rest.Context, _params: Dict[str, str] = {}) -> rest.Response:
     auth.verify_privilege(ctx.user, 'comments:create')
     text = ctx.get_param_as_string('text')
     post_id = ctx.get_param_as_int('postId')

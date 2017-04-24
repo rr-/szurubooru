@@ -12,7 +12,7 @@ def _serialize(
 
 @rest.routes.get('/tag-categories/?')
 def get_tag_categories(
-        ctx: rest.Context, _params: Dict[str, str]={}) -> rest.Response:
+        ctx: rest.Context, _params: Dict[str, str] = {}) -> rest.Response:
     auth.verify_privilege(ctx.user, 'tag_categories:list')
     categories = tag_categories.get_all_categories()
     return {
@@ -22,7 +22,7 @@ def get_tag_categories(
 
 @rest.routes.post('/tag-categories/?')
 def create_tag_category(
-        ctx: rest.Context, _params: Dict[str, str]={}) -> rest.Response:
+        ctx: rest.Context, _params: Dict[str, str] = {}) -> rest.Response:
     auth.verify_privilege(ctx.user, 'tag_categories:create')
     name = ctx.get_param_as_string('name')
     color = ctx.get_param_as_string('color')

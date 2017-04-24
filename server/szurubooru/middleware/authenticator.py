@@ -27,8 +27,9 @@ def _get_user(ctx: rest.Context) -> Optional[model.User]:
             credentials.encode('ascii')).decode('utf8').split(':')
         return _authenticate(username, password)
     except ValueError as err:
-        msg = 'Basic authentication header value are not properly formed. ' \
-            + 'Supplied header {0}. Got error: {1}'
+        msg = (
+            'Basic authentication header value are not properly formed. '
+            'Supplied header {0}. Got error: {1}')
         raise HttpBadRequest(
             'ValidationError',
             msg.format(ctx.get_header('Authorization'), str(err)))

@@ -122,7 +122,7 @@ class TagSerializer(serialization.BaseSerializer):
 
 
 def serialize_tag(
-        tag: model.Tag, options: List[str]=[]) -> Optional[rest.Response]:
+        tag: model.Tag, options: List[str] = []) -> Optional[rest.Response]:
     if not tag:
         return None
     return TagSerializer(tag).serialize(options)
@@ -209,7 +209,8 @@ def get_tags_by_names(names: List[str]) -> List[model.Tag]:
     names = util.icase_unique(names)
     if len(names) == 0:
         return []
-    return (db.session.query(model.Tag)
+    return (
+        db.session.query(model.Tag)
         .join(model.TagName)
         .filter(
             sa.sql.or_(

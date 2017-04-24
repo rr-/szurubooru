@@ -11,8 +11,8 @@ from szurubooru.func import mime, util
 logger = logging.getLogger(__name__)
 
 
-_SCALE_FIT_FMT = \
-    r'scale=iw*max({width}/iw\,{height}/ih):ih*max({width}/iw\,{height}/ih)'
+_SCALE_FIT_FMT = (
+    r'scale=iw*max({width}/iw\,{height}/ih):ih*max({width}/iw\,{height}/ih)')
 
 
 class Image:
@@ -77,7 +77,7 @@ class Image:
             '-',
         ])
 
-    def _execute(self, cli: List[str], program: str='ffmpeg') -> bytes:
+    def _execute(self, cli: List[str], program: str = 'ffmpeg') -> bytes:
         extension = mime.get_extension(mime.get_mime_type(self.content))
         assert extension
         with util.create_temp_file(suffix='.' + extension) as handle:

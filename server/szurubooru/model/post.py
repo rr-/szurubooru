@@ -211,10 +211,11 @@ class Post(Base):
 
     @property
     def is_featured(self) -> bool:
-        featured_post = sa.orm.object_session(self) \
-            .query(PostFeature) \
-            .order_by(PostFeature.time.desc()) \
-            .first()
+        featured_post = (
+            sa.orm.object_session(self)
+            .query(PostFeature)
+            .order_by(PostFeature.time.desc())
+            .first())
         return featured_post and featured_post.post_id == self.post_id
 
     score = sa.orm.column_property(

@@ -1,5 +1,4 @@
 import re
-from typing import Match, List
 from szurubooru import errors
 from szurubooru.search import criteria, tokens
 from szurubooru.search.query import SearchQuery

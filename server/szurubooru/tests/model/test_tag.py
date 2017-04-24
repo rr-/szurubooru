@@ -28,11 +28,12 @@ def test_saving_tag(tag_factory):
     tag.implications.append(imp2)
     db.session.commit()
 
-    tag = db.session \
-        .query(model.Tag) \
-        .join(model.TagName) \
-        .filter(model.TagName.name == 'alias1') \
-        .one()
+    tag = (
+        db.session
+        .query(model.Tag)
+        .join(model.TagName)
+        .filter(model.TagName.name == 'alias1')
+        .one())
     assert [tag_name.name for tag_name in tag.names] == ['alias1', 'alias2']
     assert tag.category.name == 'category'
     assert tag.creation_time == datetime(1997, 1, 1)

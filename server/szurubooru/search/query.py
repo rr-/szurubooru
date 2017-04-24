@@ -1,4 +1,5 @@
 from szurubooru.search import tokens
+from typing import List
 
 
 class SearchQuery:

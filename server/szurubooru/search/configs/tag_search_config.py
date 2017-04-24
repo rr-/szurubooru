@@ -14,8 +14,9 @@ class TagSearchConfig(BaseSearchConfig):
             sa.orm.lazyload
             if _disable_eager_loads
             else sa.orm.subqueryload)
-        return db.session.query(model.Tag) \
-            .join(model.TagCategory) \
+        return (
+            db.session.query(model.Tag)
+            .join(model.TagCategory)
             .options(
                 sa.orm.defer(model.Tag.first_name),
                 sa.orm.defer(model.Tag.suggestion_count),
@@ -23,7 +24,7 @@ class TagSearchConfig(BaseSearchConfig):
                 sa.orm.defer(model.Tag.post_count),
                 strategy(model.Tag.names),
                 strategy(model.Tag.suggestions).joinedload(model.Tag.names),
-                strategy(model.Tag.implications).joinedload(model.Tag.names))
+                strategy(model.Tag.implications).joinedload(model.Tag.names)))
 
     def create_count_query(self, _disable_eager_loads: bool) -> SaQuery:
         return db.session.query(model.Tag)

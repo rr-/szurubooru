@@ -28,14 +28,15 @@ def _create_if_needed(tag_names: List[str], user: model.User) -> None:
 
 
 @rest.routes.get('/tags/?')
-def get_tags(ctx: rest.Context, _params: Dict[str, str]={}) -> rest.Response:
+def get_tags(ctx: rest.Context, _params: Dict[str, str] = {}) -> rest.Response:
     auth.verify_privilege(ctx.user, 'tags:list')
     return _search_executor.execute_and_serialize(
         ctx, lambda tag: _serialize(ctx, tag))
 
 
 @rest.routes.post('/tags/?')
-def create_tag(ctx: rest.Context, _params: Dict[str, str]={}) -> rest.Response:
+def create_tag(
+        ctx: rest.Context, _params: Dict[str, str] = {}) -> rest.Response:
     auth.verify_privilege(ctx.user, 'tags:create')
 
     names = ctx.get_param_as_string_list('names')
@@ -112,7 +113,7 @@ def delete_tag(ctx: rest.Context, params: Dict[str, str]) -> rest.Response:
 
 @rest.routes.post('/tag-merge/?')
 def merge_tags(
-        ctx: rest.Context, _params: Dict[str, str]={}) -> rest.Response:
+        ctx: rest.Context, _params: Dict[str, str] = {}) -> rest.Response:
     source_tag_name = ctx.get_param_as_string('remove')
     target_tag_name = ctx.get_param_as_string('mergeTo')
     source_tag = tags.get_tag_by_name(source_tag_name)

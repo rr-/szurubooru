@@ -16,7 +16,8 @@ def _serialize(
 
 
 @rest.routes.get('/users/?')
-def get_users(ctx: rest.Context, _params: Dict[str, str]={}) -> rest.Response:
+def get_users(
+        ctx: rest.Context, _params: Dict[str, str] = {}) -> rest.Response:
     auth.verify_privilege(ctx.user, 'users:list')
     return _search_executor.execute_and_serialize(
         ctx, lambda user: _serialize(ctx, user))
@@ -24,7 +25,7 @@ def get_users(ctx: rest.Context, _params: Dict[str, str]={}) -> rest.Response:
 
 @rest.routes.post('/users/?')
 def create_user(
-        ctx: rest.Context, _params: Dict[str, str]={}) -> rest.Response:
+        ctx: rest.Context, _params: Dict[str, str] = {}) -> rest.Response:
     auth.verify_privilege(ctx.user, 'users:create')
     name = ctx.get_param_as_string('name')
     password = ctx.get_param_as_string('password')

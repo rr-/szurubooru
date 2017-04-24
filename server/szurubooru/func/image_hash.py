@@ -99,7 +99,7 @@ def _normalize_and_threshold(
 def _compute_grid_points(
         image: NpMatrix,
         n: float,
-        window: Window=None) -> Tuple[NpMatrix, NpMatrix]:
+        window: Window = None) -> Tuple[NpMatrix, NpMatrix]:
     if window is None:
         window = ((0, image.shape[0]), (0, image.shape[1]))
     x_coords = np.linspace(window[0][0], window[0][1], n + 2, dtype=int)[1:-1]
@@ -219,7 +219,7 @@ def _max_contrast(array: NpMatrix) -> None:
 def _normalized_distance(
         target_array: NpMatrix,
         vec: NpMatrix,
-        nan_value: float=1.0) -> List[float]:
+        nan_value: float = 1.0) -> List[float]:
     target_array = target_array.astype(int)
     vec = vec.astype(int)
     topvec = np.linalg.norm(vec - target_array, axis=1)

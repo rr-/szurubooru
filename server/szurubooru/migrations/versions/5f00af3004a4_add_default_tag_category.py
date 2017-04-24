@@ -50,13 +50,14 @@ def upgrade():
 
 def downgrade():
     session = sa.orm.session.Session(bind=op.get_bind())
-    default_category = session \
-        .query(TagCategory) \
-        .filter(TagCategory.name == 'default') \
-        .filter(TagCategory.color == 'default') \
-        .filter(TagCategory.version == 1) \
-        .filter(TagCategory.default == True) \
-        .one_or_none()
+    default_category = (
+        session
+        .query(TagCategory)
+        .filter(TagCategory.name == 'default')
+        .filter(TagCategory.color == 'default')
+        .filter(TagCategory.version == 1)
+        .filter(TagCategory.default == 1)
+        .one_or_none())
     if default_category:
         session.delete(default_category)
     session.commit()

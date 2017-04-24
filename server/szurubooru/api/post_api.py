@@ -31,7 +31,7 @@ def _serialize_post(
 
 @rest.routes.get('/posts/?')
 def get_posts(
-        ctx: rest.Context, _params: Dict[str, str]={}) -> rest.Response:
+        ctx: rest.Context, _params: Dict[str, str] = {}) -> rest.Response:
     auth.verify_privilege(ctx.user, 'posts:list')
     _search_executor_config.user = ctx.user
     return _search_executor.execute_and_serialize(
@@ -40,7 +40,7 @@ def get_posts(
 
 @rest.routes.post('/posts/?')
 def create_post(
-        ctx: rest.Context, _params: Dict[str, str]={}) -> rest.Response:
+        ctx: rest.Context, _params: Dict[str, str] = {}) -> rest.Response:
     anonymous = ctx.get_param_as_bool('anonymous', default=False)
     if anonymous:
         auth.verify_privilege(ctx.user, 'posts:create:anonymous')
@@ -144,7 +144,7 @@ def delete_post(ctx: rest.Context, params: Dict[str, str]) -> rest.Response:
 
 @rest.routes.post('/post-merge/?')
 def merge_posts(
-        ctx: rest.Context, _params: Dict[str, str]={}) -> rest.Response:
+        ctx: rest.Context, _params: Dict[str, str] = {}) -> rest.Response:
     source_post_id = ctx.get_param_as_int('remove')
     target_post_id = ctx.get_param_as_int('mergeTo')
     source_post = posts.get_post_by_id(source_post_id)
@@ -162,14 +162,14 @@ def merge_posts(
 
 @rest.routes.get('/featured-post/?')
 def get_featured_post(
-        ctx: rest.Context, _params: Dict[str, str]={}) -> rest.Response:
+        ctx: rest.Context, _params: Dict[str, str] = {}) -> rest.Response:
     post = posts.try_get_featured_post()
     return _serialize_post(ctx, post)
 
 
 @rest.routes.post('/featured-post/?')
 def set_featured_post(
-        ctx: rest.Context, _params: Dict[str, str]={}) -> rest.Response:
+        ctx: rest.Context, _params: Dict[str, str] = {}) -> rest.Response:
     auth.verify_privilege(ctx.user, 'posts:feature')
     post_id = ctx.get_param_as_int('id')
     post = posts.get_post_by_id(post_id)
@@ -235,7 +235,7 @@ def get_posts_around(
 
 @rest.routes.post('/posts/reverse-search/?')
 def get_posts_by_image(
-        ctx: rest.Context, _params: Dict[str, str]={}) -> rest.Response:
+        ctx: rest.Context, _params: Dict[str, str] = {}) -> rest.Response:
     auth.verify_privilege(ctx.user, 'posts:reverse_search')
     content = ctx.get_file('content')
 

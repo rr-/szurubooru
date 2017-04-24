@@ -21,9 +21,9 @@ class LruCache:
                 i
                 for i, v in enumerate(self.item_list)
                 if v.key == item.key)
-            self.item_list[:] \
-                = self.item_list[:item_index] \
-                + self.item_list[item_index + 1:]
+            self.item_list[:] = (
+                self.item_list[:item_index] +
+                self.item_list[item_index + 1:])
             self.item_list.insert(0, item)
         else:
             if len(self.item_list) > self.length:

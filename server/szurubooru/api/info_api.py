@@ -28,7 +28,7 @@ def _get_disk_usage() -> int:
 
 @rest.routes.get('/info/?')
 def get_info(
-        ctx: rest.Context, _params: Dict[str, str]={}) -> rest.Response:
+        ctx: rest.Context, _params: Dict[str, str] = {}) -> rest.Response:
     post_feature = posts.try_get_current_post_feature()
     return {
         'postCount': posts.get_post_count(),

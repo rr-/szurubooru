@@ -1,5 +1,5 @@
-from typing import Any, Optional, List, Dict, Callable
-from szurubooru import db, model, rest, errors
+from typing import Any, List, Dict, Callable
+from szurubooru import model, rest, errors
 
 
 def get_serialization_options(ctx: rest.Context) -> List[str]:

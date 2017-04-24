@@ -13,9 +13,9 @@ class Context:
             self,
             method: str,
             url: str,
-            headers: Dict[str, str]=None,
-            params: Request=None,
-            files: Dict[str, bytes]=None) -> None:
+            headers: Dict[str, str] = None,
+            params: Request = None,
+            files: Dict[str, bytes] = None) -> None:
         self.method = method
         self.url = url
         self._headers = headers or {}
@@ -34,7 +34,7 @@ class Context:
     def get_header(self, name: str) -> str:
         return self._headers.get(name, '')
 
-    def has_file(self, name: str, allow_tokens: bool=True) -> bool:
+    def has_file(self, name: str, allow_tokens: bool = True) -> bool:
         return (
             name in self._files or
             name + 'Url' in self._params or
@@ -43,8 +43,8 @@ class Context:
     def get_file(
             self,
             name: str,
-            default: Union[object, bytes]=MISSING,
-            allow_tokens: bool=True) -> bytes:
+            default: Union[object, bytes] = MISSING,
+            allow_tokens: bool = True) -> bytes:
         if name in self._files and self._files[name]:
             return self._files[name]
 
@@ -70,7 +70,7 @@ class Context:
     def get_param_as_list(
             self,
             name: str,
-            default: Union[object, List[Any]]=MISSING) -> List[Any]:
+            default: Union[object, List[Any]] = MISSING) -> List[Any]:
         if name not in self._params:
             if default is not MISSING:
                 return cast(List[Any], default)
@@ -89,7 +89,7 @@ class Context:
     def get_param_as_int_list(
             self,
             name: str,
-            default: Union[object, List[int]]=MISSING) -> List[int]:
+            default: Union[object, List[int]] = MISSING) -> List[int]:
         ret = self.get_param_as_list(name, default)
         for item in ret:
             if type(item) is not int:
@@ -100,7 +100,7 @@ class Context:
     def get_param_as_string_list(
             self,
             name: str,
-            default: Union[object, List[str]]=MISSING) -> List[str]:
+            default: Union[object, List[str]] = MISSING) -> List[str]:
         ret = self.get_param_as_list(name, default)
         for item in ret:
             if type(item) is not str:
@@ -111,7 +111,7 @@ class Context:
     def get_param_as_string(
             self,
             name: str,
-            default: Union[object, str]=MISSING) -> str:
+            default: Union[object, str] = MISSING) -> str:
         if name not in self._params:
             if default is not MISSING:
                 return cast(str, default)
@@ -135,9 +135,9 @@ class Context:
     def get_param_as_int(
             self,
             name: str,
-            default: Union[object, int]=MISSING,
-            min: Optional[int]=None,
-            max: Optional[int]=None) -> int:
+            default: Union[object, int] = MISSING,
+            min: Optional[int] = None,
+            max: Optional[int] = None) -> int:
         if name not in self._params:
             if default is not MISSING:
                 return cast(int, default)
@@ -161,7 +161,7 @@ class Context:
     def get_param_as_bool(
             self,
             name: str,
-            default: Union[object, bool]=MISSING) -> bool:
+            default: Union[object, bool] = MISSING) -> bool:
         if name not in self._params:
             if default is not MISSING:
                 return cast(bool, default)

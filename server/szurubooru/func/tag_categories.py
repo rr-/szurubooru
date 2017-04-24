@@ -66,7 +66,7 @@ class TagCategorySerializer(serialization.BaseSerializer):
 
 def serialize_category(
         category: Optional[model.TagCategory],
-        options: List[str]=[]) -> Optional[rest.Response]:
+        options: List[str] = []) -> Optional[rest.Response]:
     if not category:
         return None
     return TagCategorySerializer(category).serialize(options)
@@ -113,16 +113,17 @@ def update_category_color(category: model.TagCategory, color: str) -> None:
 
 
 def try_get_category_by_name(
-        name: str, lock: bool=False) -> Optional[model.TagCategory]:
-    query = db.session \
-        .query(model.TagCategory) \
-        .filter(sa.func.lower(model.TagCategory.name) == name.lower())
+        name: str, lock: bool = False) -> Optional[model.TagCategory]:
+    query = (
+        db.session
+        .query(model.TagCategory)
+        .filter(sa.func.lower(model.TagCategory.name) == name.lower()))
     if lock:
         query = query.with_lockmode('update')
     return query.one_or_none()
 
 
-def get_category_by_name(name: str, lock: bool=False) -> model.TagCategory:
+def get_category_by_name(name: str, lock: bool = False) -> model.TagCategory:
     category = try_get_category_by_name(name, lock)
     if not category:
         raise TagCategoryNotFoundError('Tag category %r not found.' % name)
@@ -137,26 +138,29 @@ def get_all_categories() -> List[model.TagCategory]:
     return db.session.query(model.TagCategory).all()
 
 
-def try_get_default_category(lock: bool=False) -> Optional[model.TagCategory]:
-    query = db.session \
-        .query(model.TagCategory) \
-        .filter(model.TagCategory.default)
+def try_get_default_category(
+        lock: bool = False) -> Optional[model.TagCategory]:
+    query = (
+        db.session
+        .query(model.TagCategory)
+        .filter(model.TagCategory.default))
     if lock:
         query = query.with_lockmode('update')
     category = query.first()
     # if for some reason (e.g. as a result of migration) there's no default
     # category, get the first record available.
     if not category:
-        query = db.session \
-            .query(model.TagCategory) \
-            .order_by(model.TagCategory.tag_category_id.asc())
+        query = (
+            db.session
+            .query(model.TagCategory)
+            .order_by(model.TagCategory.tag_category_id.asc()))
         if lock:
             query = query.with_lockmode('update')
         category = query.first()
     return category
 
 
-def get_default_category(lock: bool=False) -> model.TagCategory:
+def get_default_category(lock: bool = False) -> model.TagCategory:
     category = try_get_default_category(lock)
     if not category:
         raise TagCategoryNotFoundError('No tag category created yet.')

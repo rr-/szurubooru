@@ -1,6 +1,6 @@
 from unittest.mock import patch
 import pytest
-from szurubooru import api, db, model, errors
+from szurubooru import api, model, errors
 from szurubooru.func import users
 
 

@@ -1,4 +1,4 @@
-from typing import Callable, Dict, Any
+from typing import Callable, Dict
 from collections import defaultdict
 from szurubooru.rest.context import Context, Response
 

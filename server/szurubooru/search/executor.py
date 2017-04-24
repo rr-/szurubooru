@@ -100,18 +100,20 @@ class Executor:
         filter_query = self.config.create_filter_query(disable_eager_loads)
         filter_query = filter_query.options(sa.orm.lazyload('*'))
         filter_query = self._prepare_db_query(filter_query, search_query, True)
-        entities = filter_query \
-            .offset(offset) \
-            .limit(limit) \
-            .all()
+        entities = (
+            filter_query
+            .offset(offset)
+            .limit(limit)
+            .all())
 
         count_query = self.config.create_count_query(disable_eager_loads)
         count_query = count_query.options(sa.orm.lazyload('*'))
         count_query = self._prepare_db_query(count_query, search_query, False)
-        count_statement = count_query \
-            .statement \
-            .with_only_columns([sa.func.count()]) \
-            .order_by(None)
+        count_statement = (
+            count_query
+            .statement
+            .with_only_columns([sa.func.count()])
+            .order_by(None))
         count = db.session.execute(count_statement).scalar()
 
         ret = (count, entities)

@@ -4,7 +4,7 @@ from szurubooru import errors, rest, model
 def verify_version(
         entity: model.Base,
         context: rest.Context,
-        field_name: str='version') -> None:
+        field_name: str = 'version') -> None:
     actual_version = context.get_param_as_int(field_name)
     expected_version = entity.version
     if actual_version != expected_version:

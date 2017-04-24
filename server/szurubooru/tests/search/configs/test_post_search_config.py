@@ -300,7 +300,7 @@ def test_filter_by_note_count(
     ('note-text:text3*', [3]),
     ('note-text:text3a,text2', [2, 3]),
 ])
-def test_filter_by_note_count(
+def test_filter_by_note_text(
         verify_unpaged, post_factory, note_factory, input, expected_post_ids):
     post1 = post_factory(id=1)
     post2 = post_factory(id=2)

@@ -2,8 +2,7 @@ import os
 import hashlib
 import re
 import tempfile
-from typing import (
-    Any, Optional, Union, Tuple, List, Dict, Generator, Callable, TypeVar)
+from typing import Any, Optional, Union, Tuple, List, Dict, Generator, TypeVar
 from datetime import datetime, timedelta
 from contextlib import contextmanager
 from szurubooru import errors

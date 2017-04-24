@@ -69,7 +69,7 @@ def float_transformer(value: str) -> float:
 def apply_num_criterion_to_column(
         column: Any,
         criterion: criteria.BaseCriterion,
-        transformer: Callable[[str], Number]=integer_transformer) -> SaQuery:
+        transformer: Callable[[str], Number] = integer_transformer) -> SaQuery:
     try:
         if isinstance(criterion, criteria.PlainCriterion):
             expr = column == transformer(criterion.value)
@@ -95,7 +95,7 @@ def apply_num_criterion_to_column(
 
 def create_num_filter(
         column: Any,
-        transformer: Callable[[str], Number]=integer_transformer) -> SaQuery:
+        transformer: Callable[[str], Number] = integer_transformer) -> SaQuery:
     def wrapper(
             query: SaQuery,
             criterion: Optional[criteria.BaseCriterion],
@@ -111,7 +111,7 @@ def create_num_filter(
 def apply_str_criterion_to_column(
         column: SaColumn,
         criterion: criteria.BaseCriterion,
-        transformer: Callable[[str], str]=wildcard_transformer) -> SaQuery:
+        transformer: Callable[[str], str] = wildcard_transformer) -> SaQuery:
     if isinstance(criterion, criteria.PlainCriterion):
         expr = column.ilike(transformer(criterion.value))
     elif isinstance(criterion, criteria.ArrayCriterion):
@@ -128,8 +128,8 @@ def apply_str_criterion_to_column(
 
 
 def create_str_filter(
-    column: SaColumn, transformer: Callable[[str], str]=wildcard_transformer
-) -> Filter:
+        column: SaColumn,
+        transformer: Callable[[str], str] = wildcard_transformer) -> Filter:
     def wrapper(
             query: SaQuery,
             criterion: Optional[criteria.BaseCriterion],
@@ -187,7 +187,7 @@ def create_subquery_filter(
         right_id_column: SaColumn,
         filter_column: SaColumn,
         filter_factory: SaColumn,
-        subquery_decorator: Callable[[SaQuery], None]=None) -> Filter:
+        subquery_decorator: Callable[[SaQuery], None] = None) -> Filter:
     filter_func = filter_factory(filter_column)
 
     def wrapper(

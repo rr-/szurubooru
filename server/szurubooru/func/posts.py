@@ -7,10 +7,10 @@ from szurubooru.func import (
     mime, images, files, image_hash, serialization)
 
 
-EMPTY_PIXEL = \
-    b'\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00' \
-    b'\xff\xff\xff\x21\xf9\x04\x01\x00\x00\x01\x00\x2c\x00\x00\x00\x00' \
-    b'\x01\x00\x01\x00\x00\x02\x02\x4c\x01\x00\x3b'
+EMPTY_PIXEL = (
+    b'\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00'
+    b'\xff\xff\xff\x21\xf9\x04\x01\x00\x00\x01\x00\x2c\x00\x00\x00\x00'
+    b'\x01\x00\x01\x00\x00\x02\x02\x4c\x01\x00\x3b')
 
 
 class PostNotFoundError(errors.NotFoundError):
@@ -283,7 +283,7 @@ class PostSerializer(serialization.BaseSerializer):
 def serialize_post(
         post: Optional[model.Post],
         auth_user: model.User,
-        options: List[str]=[]) -> Optional[rest.Response]:
+        options: List[str] = []) -> Optional[rest.Response]:
     if not post:
         return None
     return PostSerializer(post, auth_user).serialize(options)
@@ -300,10 +300,11 @@ def get_post_count() -> int:
 
 
 def try_get_post_by_id(post_id: int) -> Optional[model.Post]:
-    return db.session \
-        .query(model.Post) \
-        .filter(model.Post.post_id == post_id) \
-        .one_or_none()
+    return (
+        db.session
+        .query(model.Post)
+        .filter(model.Post.post_id == post_id)
+        .one_or_none())
 
 
 def get_post_by_id(post_id: int) -> model.Post:
@@ -314,10 +315,11 @@ def get_post_by_id(post_id: int) -> model.Post:
 
 
 def try_get_current_post_feature() -> Optional[model.PostFeature]:
-    return db.session \
-        .query(model.PostFeature) \
-        .order_by(model.PostFeature.time.desc()) \
-        .first()
+    return (
+        db.session
+        .query(model.PostFeature)
+        .order_by(model.PostFeature.time.desc())
+        .first())
 
 
 def try_get_featured_post() -> Optional[model.Post]:
@@ -426,11 +428,12 @@ def update_post_content(post: model.Post, content: Optional[bytes]) -> None:
             'Unhandled file type: %r' % post.mime_type)
 
     post.checksum = util.get_sha1(content)
-    other_post = db.session \
-        .query(model.Post) \
-        .filter(model.Post.checksum == post.checksum) \
-        .filter(model.Post.post_id != post.post_id) \
-        .one_or_none()
+    other_post = (
+        db.session
+        .query(model.Post)
+        .filter(model.Post.checksum == post.checksum)
+        .filter(model.Post.post_id != post.post_id)
+        .one_or_none())
     if other_post \
             and other_post.post_id \
             and other_post.post_id != post.post_id:
@@ -452,7 +455,7 @@ def update_post_content(post: model.Post, content: Optional[bytes]) -> None:
 
 
 def update_post_thumbnail(
-        post: model.Post, content: Optional[bytes]=None) -> None:
+        post: model.Post, content: Optional[bytes] = None) -> None:
     assert post
     setattr(post, '__thumbnail', content)
 
@@ -492,10 +495,11 @@ def update_post_relations(post: model.Post, new_post_ids: List[int]) -> None:
     old_posts = post.relations
     old_post_ids = [int(p.post_id) for p in old_posts]
     if new_post_ids:
-        new_posts = db.session \
-            .query(model.Post) \
-            .filter(model.Post.post_id.in_(new_post_ids)) \
-            .all()
+        new_posts = (
+            db.session
+            .query(model.Post)
+            .filter(model.Post.post_id.in_(new_post_ids))
+            .all())
     else:
         new_posts = []
     if len(new_posts) != len(new_post_ids):
@@ -673,10 +677,11 @@ def merge_posts(
 
 def search_by_image_exact(image_content: bytes) -> Optional[model.Post]:
     checksum = util.get_sha1(image_content)
-    return db.session \
-        .query(model.Post) \
-        .filter(model.Post.checksum == checksum) \
-        .one_or_none()
+    return (
+        db.session
+        .query(model.Post)
+        .filter(model.Post.checksum == checksum)
+        .one_or_none())
 
 
 def search_by_image(image_content: bytes) -> List[PostLookalike]:

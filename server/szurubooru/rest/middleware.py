@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import List, Callable
 from szurubooru.rest.context import Context
 
 

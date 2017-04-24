@@ -1,4 +1,4 @@
-from typing import Callable, Type, Dict
+from typing import Optional, Callable, Type, Dict
 
 
 error_handlers = {}  # pylint: disable=invalid-name
@@ -12,8 +12,8 @@ class BaseHttpError(RuntimeError):
             self,
             name: str,
             description: str,
-            title: str=None,
-            extra_fields: Dict[str, str]=None) -> None:
+            title: Optional[str] = None,
+            extra_fields: Optional[Dict[str, str]] = None) -> None:
         super().__init__()
         # error name for programmers
         self.name = name

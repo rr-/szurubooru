@@ -86,7 +86,7 @@ class UserSerializer(serialization.BaseSerializer):
             self,
             user: model.User,
             auth_user: model.User,
-            force_show_email: bool=False) -> None:
+            force_show_email: bool = False) -> None:
         self.user = user
         self.auth_user = auth_user
         self.force_show_email = force_show_email
@@ -151,8 +151,8 @@ class UserSerializer(serialization.BaseSerializer):
 def serialize_user(
         user: Optional[model.User],
         auth_user: model.User,
-        options: List[str]=[],
-        force_show_email: bool=False) -> Optional[rest.Response]:
+        options: List[str] = [],
+        force_show_email: bool = False) -> Optional[rest.Response]:
     if not user:
         return None
     return UserSerializer(user, auth_user, force_show_email).serialize(options)
@@ -170,10 +170,11 @@ def get_user_count() -> int:
 
 
 def try_get_user_by_name(name: str) -> Optional[model.User]:
-    return db.session \
-        .query(model.User) \
-        .filter(sa.func.lower(model.User.name) == sa.func.lower(name)) \
-        .one_or_none()
+    return (
+        db.session
+        .query(model.User)
+        .filter(sa.func.lower(model.User.name) == sa.func.lower(name))
+        .one_or_none())
 
 
 def get_user_by_name(name: str) -> model.User:
@@ -276,7 +277,7 @@ def update_user_rank(
 def update_user_avatar(
         user: model.User,
         avatar_style: str,
-        avatar_content: Optional[bytes]=None) -> None:
+        avatar_content: Optional[bytes] = None) -> None:
     assert user
     if avatar_style == 'gravatar':
         user.avatar_style = user.AVATAR_GRAVATAR

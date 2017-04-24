@@ -1,4 +1,4 @@
-from typing import Optional, List, Callable
+from typing import Optional, List
 from szurubooru.search.typing import SaQuery
 
 

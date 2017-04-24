@@ -52,10 +52,11 @@ def _create_score_filter(score: int) -> Filter:
             user_alias.name, criterion)
         if negated:
             expr = ~expr
-        ret = query \
-            .join(score_alias, score_alias.post_id == model.Post.post_id) \
-            .join(user_alias, user_alias.user_id == score_alias.user_id) \
-            .filter(expr)
+        ret = (
+            query
+            .join(score_alias, score_alias.post_id == model.Post.post_id)
+            .join(user_alias, user_alias.user_id == score_alias.user_id)
+            .filter(expr))
         return ret
     return wrapper
 
@@ -124,7 +125,8 @@ class PostSearchConfig(BaseSearchConfig):
             sa.orm.lazyload
             if disable_eager_loads
             else sa.orm.subqueryload)
-        return db.session.query(model.Post) \
+        return (
+            db.session.query(model.Post)
             .options(
                 sa.orm.lazyload('*'),
                 # use config optimized for official client
@@ -141,7 +143,7 @@ class PostSearchConfig(BaseSearchConfig):
                 strategy(model.Post.tags).subqueryload(model.Tag.names),
                 strategy(model.Post.tags).defer(model.Tag.post_count),
                 strategy(model.Post.tags).lazyload(model.Tag.implications),
-                strategy(model.Post.tags).lazyload(model.Tag.suggestions))
+                strategy(model.Post.tags).lazyload(model.Tag.suggestions)))
 
     def create_count_query(self, _disable_eager_loads: bool) -> SaQuery:
         return db.session.query(model.Post)

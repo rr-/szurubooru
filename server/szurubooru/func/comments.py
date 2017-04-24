@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Any, Optional, List, Dict, Callable
 from szurubooru import db, model, errors, rest
-from szurubooru.func import users, scores, util, serialization
+from szurubooru.func import users, scores, serialization
 
 
 class InvalidCommentIdError(errors.ValidationError):
@@ -65,7 +65,7 @@ class CommentSerializer(serialization.BaseSerializer):
 def serialize_comment(
         comment: model.Comment,
         auth_user: model.User,
-        options: List[str]=[]) -> rest.Response:
+        options: List[str] = []) -> rest.Response:
     if comment is None:
         return None
     return CommentSerializer(comment, auth_user).serialize(options)
@@ -73,10 +73,11 @@ def serialize_comment(
 
 def try_get_comment_by_id(comment_id: int) -> Optional[model.Comment]:
     comment_id = int(comment_id)
-    return db.session \
-        .query(model.Comment) \
-        .filter(model.Comment.comment_id == comment_id) \
-        .one_or_none()
+    return (
+        db.session
+        .query(model.Comment)
+        .filter(model.Comment.comment_id == comment_id)
+        .one_or_none())
 
 
 def get_comment_by_id(comment_id: int) -> model.Comment:

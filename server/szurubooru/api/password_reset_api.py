@@ -5,10 +5,10 @@ from hashlib import md5
 
 
 MAIL_SUBJECT = 'Password reset for {name}'
-MAIL_BODY = \
-    'You (or someone else) requested to reset your password on {name}.\n' \
-    'If you wish to proceed, click this link: {url}\n' \
-    'Otherwise, please ignore this email.'
+MAIL_BODY = (
+    'You (or someone else) requested to reset your password on {name}.\n'
+    'If you wish to proceed, click this link: {url}\n'
+    'Otherwise, please ignore this email.')
 
 
 @rest.routes.get('/password-reset/(?P<user_name>[^/]+)/?')
