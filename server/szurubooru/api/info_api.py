@@ -14,7 +14,7 @@ def _get_disk_usage() -> int:
     threshold = timedelta(hours=48)
     now = datetime.utcnow()
     if _cache_time and _cache_time > now - threshold:
-        assert _cache_result
+        assert _cache_result is not None
         return _cache_result
     total_size = 0
     for dir_path, _, file_names in os.walk(config.config['data_dir']):
