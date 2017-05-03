@@ -50,8 +50,10 @@ class Image:
                     '-ss',
                     '%d' % math.floor(duration * 0.3),
                 ] + cli
-        self.content = self._execute(cli)
-        assert self.content
+        content = self._execute(cli)
+        if not content:
+            raise errors.ProcessingError('Error while resizing image.')
+        self.content = content
         self._reload_info()
 
     def to_png(self) -> bytes:
