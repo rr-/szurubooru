@@ -24,7 +24,7 @@
     "nprogress": "^0.2.0",
     "stylus": "^0.54.2",
     "superagent": "^1.8.3",
-    "uglify-js": "git://github.com/mishoo/UglifyJS2.git#harmony",
+    "uglify-es": "^3.0.27",
     "underscore": "^1.8.3"
   }
 }
