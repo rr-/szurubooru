@@ -270,6 +270,7 @@ def test_errors_not_spending_ids(
         'privileges': {
             'posts:create:identified': model.User.RANK_REGULAR,
         },
+        'secret': 'test',
     })
     auth_user = user_factory(rank=model.User.RANK_REGULAR)
 

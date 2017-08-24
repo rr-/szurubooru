@@ -1,3 +1,4 @@
+import hmac
 from typing import Any, Optional, Tuple, List, Dict, Callable
 from datetime import datetime
 import sqlalchemy as sa
@@ -83,36 +84,49 @@ FLAG_MAP = {
 }
 
 
+def get_post_security_hash(id: int) -> str:
+    return hmac.new(
+        config.config['secret'].encode('utf8'),
+        str(id).encode('utf-8')).hexdigest()[0:16]
+
+
 def get_post_content_url(post: model.Post) -> str:
     assert post
-    return '%s/posts/%d.%s' % (
+    return '%s/posts/%d_%s.%s' % (
         config.config['data_url'].rstrip('/'),
         post.post_id,
+        get_post_security_hash(post.post_id),
         mime.get_extension(post.mime_type) or 'dat')
 
 
 def get_post_thumbnail_url(post: model.Post) -> str:
     assert post
-    return '%s/generated-thumbnails/%d.jpg' % (
+    return '%s/generated-thumbnails/%d_%s.jpg' % (
         config.config['data_url'].rstrip('/'),
-        post.post_id)
+        post.post_id,
+        get_post_security_hash(post.post_id))
 
 
 def get_post_content_path(post: model.Post) -> str:
     assert post
     assert post.post_id
-    return 'posts/%d.%s' % (
-        post.post_id, mime.get_extension(post.mime_type) or 'dat')
+    return 'posts/%d_%s.%s' % (
+        post.post_id,
+        get_post_security_hash(post.post_id),
+        mime.get_extension(post.mime_type) or 'dat')
 
 
 def get_post_thumbnail_path(post: model.Post) -> str:
     assert post
-    return 'generated-thumbnails/%d.jpg' % (post.post_id)
+    return 'generated-thumbnails/%d_%s.jpg' % (
+        post.post_id,
+        get_post_security_hash(post.post_id))
 
 
 def get_post_thumbnail_backup_path(post: model.Post) -> str:
     assert post
-    return 'posts/custom-thumbnails/%d.dat' % (post.post_id)
+    return 'posts/custom-thumbnails/%d_%s.dat' % (
+        post.post_id, get_post_security_hash(post.post_id))
 
 
 def serialize_note(note: model.PostNote) -> rest.Response:

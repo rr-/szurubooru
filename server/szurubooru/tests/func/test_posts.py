@@ -8,12 +8,12 @@ from szurubooru.func import (
 
 
 @pytest.mark.parametrize('input_mime_type,expected_url', [
-    ('image/jpeg', 'http://example.com/posts/1.jpg'),
-    ('image/gif', 'http://example.com/posts/1.gif'),
-    ('totally/unknown', 'http://example.com/posts/1.dat'),
+    ('image/jpeg', 'http://example.com/posts/1_244c8840887984c4.jpg'),
+    ('image/gif', 'http://example.com/posts/1_244c8840887984c4.gif'),
+    ('totally/unknown', 'http://example.com/posts/1_244c8840887984c4.dat'),
 ])
 def test_get_post_url(input_mime_type, expected_url, config_injector):
-    config_injector({'data_url': 'http://example.com/'})
+    config_injector({'data_url': 'http://example.com/', 'secret': 'test'})
     post = model.Post()
     post.post_id = 1
     post.mime_type = input_mime_type
@@ -22,18 +22,18 @@ def test_get_post_url(input_mime_type, expected_url, config_injector):
 
 @pytest.mark.parametrize('input_mime_type', ['image/jpeg', 'image/gif'])
 def test_get_post_thumbnail_url(input_mime_type, config_injector):
-    config_injector({'data_url': 'http://example.com/'})
+    config_injector({'data_url': 'http://example.com/', 'secret': 'test'})
     post = model.Post()
     post.post_id = 1
     post.mime_type = input_mime_type
     assert posts.get_post_thumbnail_url(post) \
-        == 'http://example.com/generated-thumbnails/1.jpg'
+        == 'http://example.com/generated-thumbnails/1_244c8840887984c4.jpg'
 
 
 @pytest.mark.parametrize('input_mime_type,expected_path', [
-    ('image/jpeg', 'posts/1.jpg'),
-    ('image/gif', 'posts/1.gif'),
-    ('totally/unknown', 'posts/1.dat'),
+    ('image/jpeg', 'posts/1_244c8840887984c4.jpg'),
+    ('image/gif', 'posts/1_244c8840887984c4.gif'),
+    ('totally/unknown', 'posts/1_244c8840887984c4.dat'),
 ])
 def test_get_post_content_path(input_mime_type, expected_path):
     post = model.Post()
@@ -47,7 +47,8 @@ def test_get_post_thumbnail_path(input_mime_type):
     post = model.Post()
     post.post_id = 1
     post.mime_type = input_mime_type
-    assert posts.get_post_thumbnail_path(post) == 'generated-thumbnails/1.jpg'
+    assert posts.get_post_thumbnail_path(post) \
+        == 'generated-thumbnails/1_244c8840887984c4.jpg'
 
 
 @pytest.mark.parametrize('input_mime_type', ['image/jpeg', 'image/gif'])
@@ -56,7 +57,7 @@ def test_get_post_thumbnail_backup_path(input_mime_type):
     post.post_id = 1
     post.mime_type = input_mime_type
     assert posts.get_post_thumbnail_backup_path(post) \
-        == 'posts/custom-thumbnails/1.dat'
+        == 'posts/custom-thumbnails/1_244c8840887984c4.dat'
 
 
 def test_serialize_note():
@@ -75,7 +76,7 @@ def test_serialize_post_when_empty():
 
 def test_serialize_post(
         user_factory, comment_factory, tag_factory, config_injector):
-    config_injector({'data_url': 'http://example.com/'})
+    config_injector({'data_url': 'http://example.com/', 'secret': 'test'})
     with patch('szurubooru.func.comments.serialize_comment'), \
             patch('szurubooru.func.users.serialize_micro_user'), \
             patch('szurubooru.func.posts.files.has'):
@@ -156,8 +157,10 @@ def test_serialize_post(
             'fileSize': 100,
             'canvasWidth': 200,
             'canvasHeight': 300,
-            'contentUrl': 'http://example.com/posts/1.jpg',
-            'thumbnailUrl': 'http://example.com/generated-thumbnails/1.jpg',
+            'contentUrl': 'http://example.com/posts/1_244c8840887984c4.jpg',
+            'thumbnailUrl':
+                'http://example.com/'
+                'generated-thumbnails/1_244c8840887984c4.jpg',
             'flags': ['loop'],
             'tags': ['tag1', 'tag3'],
             'relations': [],
@@ -264,25 +267,61 @@ def test_update_post_source_with_too_long_string():
 @pytest.mark.parametrize(
     'is_existing,input_file,expected_mime_type,expected_type,output_file_name',
     [
-        (True, 'png.png', 'image/png', model.Post.TYPE_IMAGE, '1.png'),
-        (False, 'png.png', 'image/png', model.Post.TYPE_IMAGE, '1.png'),
-        (False, 'jpeg.jpg', 'image/jpeg', model.Post.TYPE_IMAGE, '1.jpg'),
-        (False, 'gif.gif', 'image/gif', model.Post.TYPE_IMAGE, '1.gif'),
+        (
+            True,
+            'png.png',
+            'image/png',
+            model.Post.TYPE_IMAGE,
+            '1_244c8840887984c4.png',
+        ),
+        (
+            False,
+            'png.png',
+            'image/png',
+            model.Post.TYPE_IMAGE,
+            '1_244c8840887984c4.png',
+        ),
+        (
+            False,
+            'jpeg.jpg',
+            'image/jpeg',
+            model.Post.TYPE_IMAGE,
+            '1_244c8840887984c4.jpg',
+        ),
+        (
+            False,
+            'gif.gif',
+            'image/gif',
+            model.Post.TYPE_IMAGE,
+            '1_244c8840887984c4.gif',
+        ),
         (
             False,
             'gif-animated.gif',
             'image/gif',
             model.Post.TYPE_ANIMATION,
-            '1.gif',
+            '1_244c8840887984c4.gif',
         ),
-        (False, 'webm.webm', 'video/webm', model.Post.TYPE_VIDEO, '1.webm'),
-        (False, 'mp4.mp4', 'video/mp4', model.Post.TYPE_VIDEO, '1.mp4'),
+        (
+            False,
+            'webm.webm',
+            'video/webm',
+            model.Post.TYPE_VIDEO,
+            '1_244c8840887984c4.webm',
+        ),
+        (
+            False,
+            'mp4.mp4',
+            'video/mp4',
+            model.Post.TYPE_VIDEO,
+            '1_244c8840887984c4.mp4',
+        ),
         (
             False,
             'flash.swf',
             'application/x-shockwave-flash',
             model.Post.TYPE_FLASH,
-            '1.swf'
+            '1_244c8840887984c4.swf',
         ),
     ])
 def test_update_post_content_for_new_post(
@@ -296,6 +335,7 @@ def test_update_post_content_for_new_post(
                 'post_width': 300,
                 'post_height': 300,
             },
+            'secret': 'test',
         })
         output_file_path = '{}/data/posts/{}'.format(tmpdir, output_file_name)
         post = post_factory(id=1)
@@ -329,6 +369,7 @@ def test_update_post_content_to_existing_content(
             'post_width': 300,
             'post_height': 300,
         },
+        'secret': 'test',
     })
     post = post_factory()
     another_post = post_factory()
@@ -350,6 +391,7 @@ def test_update_post_content_with_broken_content(
             'post_width': 300,
             'post_height': 300,
         },
+        'secret': 'test',
     })
     post = post_factory()
     another_post = post_factory()
@@ -376,14 +418,19 @@ def test_update_post_thumbnail_to_new_one(
             'post_width': 300,
             'post_height': 300,
         },
+        'secret': 'test',
     })
     post = post_factory(id=1)
     db.session.add(post)
     if is_existing:
         db.session.flush()
     assert post.post_id
-    generated_path = '{}/data/generated-thumbnails/1.jpg'.format(tmpdir)
-    source_path = '{}/data/posts/custom-thumbnails/1.dat'.format(tmpdir)
+    generated_path = (
+        '{}/data/generated-thumbnails/1_244c8840887984c4.jpg'
+        .format(tmpdir))
+    source_path = (
+        '{}/data/posts/custom-thumbnails/1_244c8840887984c4.dat'
+        .format(tmpdir))
     assert not os.path.exists(generated_path)
     assert not os.path.exists(source_path)
     posts.update_post_content(post, read_asset('png.png'))
@@ -406,14 +453,19 @@ def test_update_post_thumbnail_to_default(
             'post_width': 300,
             'post_height': 300,
         },
+        'secret': 'test',
     })
     post = post_factory(id=1)
     db.session.add(post)
     if is_existing:
         db.session.flush()
     assert post.post_id
-    generated_path = '{}/data/generated-thumbnails/1.jpg'.format(tmpdir)
-    source_path = '{}/data/posts/custom-thumbnails/1.dat'.format(tmpdir)
+    generated_path = (
+        '{}/data/generated-thumbnails/1_244c8840887984c4.jpg'
+        .format(tmpdir))
+    source_path = (
+        '{}/data/posts/custom-thumbnails/1_244c8840887984c4.dat'
+        .format(tmpdir))
     assert not os.path.exists(generated_path)
     assert not os.path.exists(source_path)
     posts.update_post_content(post, read_asset('png.png'))
@@ -435,14 +487,19 @@ def test_update_post_thumbnail_with_broken_thumbnail(
             'post_width': 300,
             'post_height': 300,
         },
+        'secret': 'test',
     })
     post = post_factory(id=1)
     db.session.add(post)
     if is_existing:
         db.session.flush()
     assert post.post_id
-    generated_path = '{}/data/generated-thumbnails/1.jpg'.format(tmpdir)
-    source_path = '{}/data/posts/custom-thumbnails/1.dat'.format(tmpdir)
+    generated_path = (
+        '{}/data/generated-thumbnails/1_244c8840887984c4.jpg'
+        .format(tmpdir))
+    source_path = (
+        '{}/data/posts/custom-thumbnails/1_244c8840887984c4.dat'
+        .format(tmpdir))
     assert not os.path.exists(generated_path)
     assert not os.path.exists(source_path)
     posts.update_post_content(post, read_asset('png.png'))
@@ -468,6 +525,7 @@ def test_update_post_content_leaving_custom_thumbnail(
             'post_width': 300,
             'post_height': 300,
         },
+        'secret': 'test',
     })
     post = post_factory(id=1)
     db.session.add(post)
@@ -475,8 +533,12 @@ def test_update_post_content_leaving_custom_thumbnail(
     posts.update_post_thumbnail(post, read_asset('jpeg.jpg'))
     posts.update_post_content(post, read_asset('png.png'))
     db.session.flush()
-    generated_path = '{}/data/generated-thumbnails/1.jpg'.format(tmpdir)
-    source_path = '{}/data/posts/custom-thumbnails/1.dat'.format(tmpdir)
+    generated_path = (
+        '{}/data/generated-thumbnails/1_244c8840887984c4.jpg'
+        .format(tmpdir))
+    source_path = (
+        '{}/data/posts/custom-thumbnails/1_244c8840887984c4.dat'
+        .format(tmpdir))
     assert os.path.exists(source_path)
     assert os.path.exists(generated_path)
 
@@ -833,6 +895,7 @@ def test_merge_posts_replaces_content(
             'post_width': 300,
             'post_height': 300,
         },
+        'secret': 'test',
     })
     source_post = post_factory(id=1)
     target_post = post_factory(id=2)
@@ -841,9 +904,12 @@ def test_merge_posts_replaces_content(
     db.session.commit()
     posts.update_post_content(source_post, content)
     db.session.flush()
-    source_path = os.path.join('{}/data/posts/1.png'.format(tmpdir))
-    target_path1 = os.path.join('{}/data/posts/2.png'.format(tmpdir))
-    target_path2 = os.path.join('{}/data/posts/2.dat'.format(tmpdir))
+    source_path = (
+        os.path.join('{}/data/posts/1_244c8840887984c4.png'.format(tmpdir)))
+    target_path1 = (
+        os.path.join('{}/data/posts/2_49caeb3ec1643406.png'.format(tmpdir)))
+    target_path2 = (
+        os.path.join('{}/data/posts/2_49caeb3ec1643406.dat'.format(tmpdir)))
     assert os.path.exists(source_path)
     assert not os.path.exists(target_path1)
     assert not os.path.exists(target_path2)
