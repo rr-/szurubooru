@@ -1,11 +1,14 @@
 from datetime import datetime
-from szurubooru import api, db
+from szurubooru import api, db, model
 
 
 def test_info_api(
-        tmpdir, config_injector, context_factory, post_factory, fake_datetime):
+        tmpdir, config_injector, context_factory, post_factory, user_factory,
+        fake_datetime):
     directory = tmpdir.mkdir('data')
     directory.join('test.txt').write('abc')
+    auth_user = user_factory(rank=model.User.RANK_REGULAR)
+    anon_user = user_factory(rank=model.User.RANK_ANONYMOUS)
     config_injector({
         'data_dir': str(directory),
         'user_name_regex': '1',
@@ -16,6 +19,7 @@ def test_info_api(
         'privileges': {
             'test_key1': 'test_value1',
             'test_key2': 'test_value2',
+            'posts:view:featured': 'regular',
         },
     })
     db.session.add_all([post_factory(), post_factory()])
@@ -30,11 +34,12 @@ def test_info_api(
         'privileges': {
             'testKey1': 'test_value1',
             'testKey2': 'test_value2',
+            'posts:view:featured': 'regular',
         },
     }
 
     with fake_datetime('2016-01-01 13:00'):
-        assert api.info_api.get_info(context_factory()) == {
+        assert api.info_api.get_info(context_factory(user=auth_user)) == {
             'postCount': 2,
             'diskUsage': 3,
             'featuredPost': None,
@@ -45,7 +50,7 @@ def test_info_api(
         }
     directory.join('test2.txt').write('abc')
     with fake_datetime('2016-01-03 12:59'):
-        assert api.info_api.get_info(context_factory()) == {
+        assert api.info_api.get_info(context_factory(user=auth_user)) == {
             'postCount': 2,
             'diskUsage': 3,  # still 3 - it's cached
             'featuredPost': None,
@@ -55,12 +60,19 @@ def test_info_api(
             'config': expected_config_key,
         }
     with fake_datetime('2016-01-03 13:01'):
-        assert api.info_api.get_info(context_factory()) == {
+        assert api.info_api.get_info(context_factory(user=auth_user)) == {
             'postCount': 2,
             'diskUsage': 6,  # cache expired
             'featuredPost': None,
             'featuringTime': None,
             'featuringUser': None,
+            'serverTime': datetime(2016, 1, 3, 13, 1),
+            'config': expected_config_key,
+        }
+    with fake_datetime('2016-01-03 13:01'):
+        assert api.info_api.get_info(context_factory(user=anon_user)) == {
+            'postCount': 2,
+            'diskUsage': 6,  # cache expired
             'serverTime': datetime(2016, 1, 3, 13, 1),
             'config': expected_config_key,
         }

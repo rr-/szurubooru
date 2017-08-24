@@ -10,6 +10,7 @@ def inject_config(config_injector):
         'privileges': {
             'posts:feature': model.User.RANK_REGULAR,
             'posts:view': model.User.RANK_REGULAR,
+            'posts:view:featured': model.User.RANK_REGULAR,
         },
     })
 
@@ -92,15 +93,14 @@ def test_trying_to_feature_non_existing(user_factory, context_factory):
                 user=user_factory(rank=model.User.RANK_REGULAR)))
 
 
+def test_trying_to_retrieve_without_privileges(
+        user_factory, context_factory):
+    with pytest.raises(errors.AuthError):
+        api.post_api.get_featured_post(
+            context_factory(user=user_factory(rank=model.User.RANK_ANONYMOUS)))
+
+
 def test_trying_to_feature_without_privileges(user_factory, context_factory):
     with pytest.raises(errors.AuthError):
         api.post_api.set_featured_post(
-            context_factory(
-                params={'id': 1},
-                user=user_factory(rank=model.User.RANK_ANONYMOUS)))
-
-
-def test_getting_featured_post_without_privileges_to_view(
-        user_factory, context_factory):
-    api.post_api.get_featured_post(
-        context_factory(user=user_factory(rank=model.User.RANK_ANONYMOUS)))
+            context_factory(user=user_factory(rank=model.User.RANK_ANONYMOUS)))

@@ -83,6 +83,7 @@ privileges:
     'posts:list':                   anonymous
     'posts:reverse_search':         regular
     'posts:view':                   anonymous
+    'posts:view:featured':          anonymous
     'posts:edit:content':           power
     'posts:edit:flags':             regular
     'posts:edit:notes':             regular

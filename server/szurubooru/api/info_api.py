@@ -2,7 +2,7 @@ import os
 from typing import Optional, Dict
 from datetime import datetime, timedelta
 from szurubooru import config, rest
-from szurubooru.func import posts, users, util
+from szurubooru.func import auth, posts, users, util
 
 
 _cache_time = None  # type: Optional[datetime]
@@ -30,16 +30,9 @@ def _get_disk_usage() -> int:
 def get_info(
         ctx: rest.Context, _params: Dict[str, str] = {}) -> rest.Response:
     post_feature = posts.try_get_current_post_feature()
-    return {
+    ret = {
         'postCount': posts.get_post_count(),
         'diskUsage': _get_disk_usage(),
-        'featuredPost':
-            posts.serialize_post(post_feature.post, ctx.user)
-            if post_feature else None,
-        'featuringTime': post_feature.time if post_feature else None,
-        'featuringUser':
-            users.serialize_user(post_feature.user, ctx.user)
-            if post_feature else None,
         'serverTime': datetime.utcnow(),
         'config': {
             'userNameRegex': config.config['user_name_regex'],
@@ -52,3 +45,12 @@ def get_info(
                     config.config['privileges']),
         },
     }
+    if auth.has_privilege(ctx.user, 'posts:view:featured'):
+        ret['featuredPost'] = (
+            posts.serialize_post(post_feature.post, ctx.user)
+            if post_feature else None)
+        ret['featuringUser'] = (
+            users.serialize_user(post_feature.user, ctx.user)
+            if post_feature else None)
+        ret['featuringTime'] = post_feature.time if post_feature else None
+    return ret

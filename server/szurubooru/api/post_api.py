@@ -163,6 +163,7 @@ def merge_posts(
 @rest.routes.get('/featured-post/?')
 def get_featured_post(
         ctx: rest.Context, _params: Dict[str, str] = {}) -> rest.Response:
+    auth.verify_privilege(ctx.user, 'posts:view:featured')
     post = posts.try_get_featured_post()
     return _serialize_post(ctx, post)
 
