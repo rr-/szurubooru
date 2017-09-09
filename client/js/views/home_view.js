@@ -62,6 +62,11 @@ class HomeView {
             this._postNotesOverlay = new PostNotesOverlayControl(
                 this._postContainerNode.querySelector('.post-overlay'),
                 postInfo.featuredPost);
+
+            if (postInfo.featuredPost.type === 'video'
+            || postInfo.featuredPost.type === 'flash') {
+                this._postContentControl.disableOverlay();
+            }
         }
     }
 
