@@ -69,12 +69,12 @@ class PostMainView {
         });
         keyboard.bind(['a', 'left'], () => {
             if (ctx.prevPostId) {
-                router.show(uri.formatClientLink('post', ctx.prevPostId));
+                router.show(ctx.getPostUrl(ctx.prevPostId, ctx.parameters));
             }
         });
         keyboard.bind(['d', 'right'], () => {
             if (ctx.nextPostId) {
-                router.show(uri.formatClientLink('post', ctx.nextPostId));
+                router.show(ctx.getPostUrl(ctx.nextPostId, ctx.parameters));
             }
         });
     }
