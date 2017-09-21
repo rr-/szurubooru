@@ -33,6 +33,11 @@ shortcuts:</p>
             <td><kbd>P</kbd></td>
             <td>Focus first post in post list</td>
         </tr>
+
+        <tr>
+            <td><kbd>Delete</kbd></td>
+            <td>Delete post (while in edit mode)</td>
+        </tr>
     </tbody>
 </table>
 

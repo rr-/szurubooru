@@ -77,6 +77,11 @@ class PostMainView {
                 router.show(uri.formatClientLink('post', ctx.nextPostId));
             }
         });
+        keyboard.bind('del', (e) => {
+            if (ctx.editMode) {
+                this.sidebarControl._evtDeleteClick(e);
+            }
+        });
     }
 
     _installSidebar(ctx) {
