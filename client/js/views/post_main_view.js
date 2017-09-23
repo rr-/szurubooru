@@ -82,6 +82,11 @@ class PostMainView {
                 this.sidebarControl._evtDeleteClick(e);
             }
         });
+        keyboard.bind('del', (e) => {
+            if (ctx.editMode) {
+                this.sidebarControl._evtDeleteClick(e);
+            }
+        });
     }
 
     _installSidebar(ctx) {
