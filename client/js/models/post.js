@@ -4,16 +4,10 @@ const api = require('../api.js');
 const uri = require('../util/uri.js');
 const tags = require('../tags.js');
 const events = require('../events.js');
+const TagList = require('./tag_list.js');
 const NoteList = require('./note_list.js');
 const CommentList = require('./comment_list.js');
 const misc = require('../util/misc.js');
-
-function _syncObservableCollection(target, plainList) {
-    target.clear();
-    for (let item of (plainList || [])) {
-        target.add(target.constructor._itemClass.fromResponse(item));
-    }
-}
 
 class Post extends events.EventTarget {
     constructor() {
@@ -21,6 +15,7 @@ class Post extends events.EventTarget {
         this._orig = {};
 
         for (let obj of [this, this._orig]) {
+            obj._tags = new TagList();
             obj._notes = new NoteList();
             obj._comments = new CommentList();
         }
@@ -56,7 +51,6 @@ class Post extends events.EventTarget {
     get hasCustomThumbnail() { return this._hasCustomThumbnail; }
 
     set flags(value)         { this._flags = value; }
-    set tags(value)          { this._tags = value; }
     set safety(value)        { this._safety = value; }
     set relations(value)     { this._relations = value; }
     set newContent(value)    { this._newContent = value; }
@@ -94,29 +88,6 @@ class Post extends events.EventTarget {
             });
     }
 
-    isTaggedWith(tagName) {
-        return this._tags
-            .map(s => s.toLowerCase())
-            .includes(tagName.toLowerCase());
-    }
-
-    addTag(tagName, addImplications) {
-        if (this.isTaggedWith(tagName)) {
-            return;
-        }
-        this._tags.push(tagName);
-        if (addImplications !== false) {
-            for (let otherTag of tags.getAllImplications(tagName)) {
-                this.addTag(otherTag, addImplications);
-            }
-        }
-    }
-
-    removeTag(tagName) {
-        this._tags = this._tags.filter(
-            s => s.toLowerCase() != tagName.toLowerCase());
-    }
-
     save(anonymous) {
         const files = {};
         const detail = {version: this._version};
@@ -132,15 +103,14 @@ class Post extends events.EventTarget {
             detail.flags = this._flags;
         }
         if (misc.arraysDiffer(this._tags, this._orig._tags)) {
-            detail.tags = this._tags;
+            detail.tags = this._tags.map(tag => tag.names[0]);
         }
         if (misc.arraysDiffer(this._relations, this._orig._relations)) {
             detail.relations = this._relations;
         }
         if (misc.arraysDiffer(this._notes, this._orig._notes)) {
-            detail.notes = [...this._notes].map(note => ({
-                polygon: [...note.polygon].map(
-                    point => [point.x, point.y]),
+            detail.notes = this._notes.map(note => ({
+                polygon: note.polygon.map(point => [point.x, point.y]),
                 text: note.text,
             }));
         }
@@ -310,7 +280,6 @@ class Post extends events.EventTarget {
             _fileSize:      response.fileSize,
 
             _flags:         [...response.flags || []],
-            _tags:          [...response.tags || []],
             _relations:     [...response.relations || []],
 
             _score:         response.score,
@@ -322,8 +291,9 @@ class Post extends events.EventTarget {
         });
 
         for (let obj of [this, this._orig]) {
-            _syncObservableCollection(obj._notes, response.notes);
-            _syncObservableCollection(obj._comments, response.comments);
+            obj._tags.sync(response.tags);
+            obj._notes.sync(response.notes);
+            obj._comments.sync(response.comments);
         }
 
         Object.assign(this, map());

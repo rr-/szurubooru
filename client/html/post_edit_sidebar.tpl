@@ -55,9 +55,7 @@
 
         <% if (ctx.canEditPostTags) { %>
             <section class='tags'>
-                <%= ctx.makeTextInput({
-                    value: ctx.post.tags.join(' '),
-                }) %>
+                <%= ctx.makeTextInput({}) %>
             </section>
         <% } %>
 

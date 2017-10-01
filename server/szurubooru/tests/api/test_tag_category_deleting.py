@@ -17,8 +17,7 @@ def test_deleting(user_factory, tag_category_factory, context_factory):
     db.session.add(tag_category_factory(name='root'))
     db.session.add(category)
     db.session.flush()
-    with patch('szurubooru.func.snapshots.delete'), \
-            patch('szurubooru.func.tags.export_to_json'):
+    with patch('szurubooru.func.snapshots.delete'):
         result = api.tag_category_api.delete_tag_category(
             context_factory(params={'version': 1}, user=auth_user),
             {'category_name': 'category'})
@@ -26,7 +25,6 @@ def test_deleting(user_factory, tag_category_factory, context_factory):
         assert db.session.query(model.TagCategory).count() == 1
         assert db.session.query(model.TagCategory).one().name == 'root'
         snapshots.delete.assert_called_once_with(category, auth_user)
-        tags.export_to_json.assert_called_once_with()
 
 
 def test_trying_to_delete_used(

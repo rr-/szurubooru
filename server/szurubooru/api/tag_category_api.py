@@ -31,7 +31,6 @@ def create_tag_category(
     ctx.session.flush()
     snapshots.create(category, ctx.user)
     ctx.session.commit()
-    tags.export_to_json()
     return _serialize(ctx, category)
 
 
@@ -61,7 +60,6 @@ def update_tag_category(
     ctx.session.flush()
     snapshots.modify(category, ctx.user)
     ctx.session.commit()
-    tags.export_to_json()
     return _serialize(ctx, category)
 
 
@@ -75,7 +73,6 @@ def delete_tag_category(
     tag_categories.delete_category(category)
     snapshots.delete(category, ctx.user)
     ctx.session.commit()
-    tags.export_to_json()
     return {}
 
 
@@ -89,5 +86,4 @@ def set_tag_category_as_default(
     ctx.session.flush()
     snapshots.modify(category, ctx.user)
     ctx.session.commit()
-    tags.export_to_json()
     return _serialize(ctx, category)

@@ -24,8 +24,7 @@ def test_creating_category(
     with patch('szurubooru.func.tag_categories.create_category'), \
             patch('szurubooru.func.tag_categories.serialize_category'), \
             patch('szurubooru.func.tag_categories.update_category_name'), \
-            patch('szurubooru.func.snapshots.create'), \
-            patch('szurubooru.func.tags.export_to_json'):
+            patch('szurubooru.func.snapshots.create'):
         tag_categories.create_category.return_value = category
         tag_categories.update_category_name.side_effect = _update_category_name
         tag_categories.serialize_category.return_value = 'serialized category'
@@ -35,7 +34,6 @@ def test_creating_category(
         assert result == 'serialized category'
         tag_categories.create_category.assert_called_once_with('meta', 'black')
         snapshots.create.assert_called_once_with(category, auth_user)
-        tags.export_to_json.assert_called_once_with()
 
 
 @pytest.mark.parametrize('field', ['name', 'color'])

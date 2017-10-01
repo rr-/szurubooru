@@ -8,6 +8,7 @@ const misc = require('../util/misc.js');
 const progress = require('../util/progress.js');
 const topNavigation = require('../models/top_navigation.js');
 const Post = require('../models/post.js');
+const Tag = require('../models/tag.js');
 const PostUploadView = require('../views/post_upload_view.js');
 const EmptyView = require('../views/empty_view.js');
 
@@ -144,7 +145,11 @@ class PostUploadController {
         let post = new Post();
         post.safety = uploadable.safety;
         post.flags = uploadable.flags;
-        post.tags = uploadable.tags;
+        for (let tagName of uploadable.tags) {
+            const tag = new Tag();
+            tag.names = [tagName];
+            post.tags.add(tag);
+        }
         post.relations = uploadable.relations;
         post.newContent = uploadable.url || uploadable.file;
         return post;

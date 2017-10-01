@@ -24,10 +24,12 @@ class TagEditView extends events.EventTarget {
         }
 
         if (this._implicationsFieldNode) {
-            new TagInputControl(this._implicationsFieldNode);
+            new TagInputControl(
+                this._implicationsFieldNode, this._tag.implications);
         }
         if (this._suggestionsFieldNode) {
-            new TagInputControl(this._suggestionsFieldNode);
+            new TagInputControl(
+                this._suggestionsFieldNode, this._tag.suggestions);
         }
 
         for (let node of this._formNode.querySelectorAll(

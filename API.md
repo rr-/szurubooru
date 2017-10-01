@@ -72,6 +72,7 @@
    - [Micro user](#micro-user)
    - [Tag category](#tag-category)
    - [Tag](#tag)
+   - [Micro tag](#micro-tag)
    - [Post](#post)
    - [Micro post](#micro-post)
    - [Note](#note)
@@ -254,12 +255,6 @@ data.
 
     Lists all tag categories. Doesn't use paging.
 
-    **Note**: independently, the server exports current tag category list
-    snapshots to the data directory under `tags.json` name. Its purpose is to
-    reduce the trips frontend needs to make when doing autocompletion, and ease
-    caching. The data directory and its URL are controlled with `data_dir` and
-    `data_url` variables in server's configuration.
-
 ## Creating tag category
 - **Request**
 
@@ -418,12 +413,6 @@ data.
 - **Description**
 
     Searches for tags.
-
-    **Note**: independently, the server exports current tag list snapshots to
-    the data directory under `tags.json` name. Its purpose is to reduce the
-    trips frontend needs to make when doing autocompletion, and ease caching.
-    The data directory and its URL are controlled with `data_dir` and
-    `data_url` variables in server's configuration.
 
     **Anonymous tokens**
 
@@ -1766,15 +1755,22 @@ A single tag. Tags are used to let users search for posts.
 - `<names>`: a list of tag names (aliases). Tagging a post with any name will
   automatically assign the first name from this list.
 - `<category>`: the name of the category the given tag belongs to.
-- `<implications>`: a list of implied tag names. Implied tags are automatically
-  appended by the web client on usage.
-- `<suggestions>`: a list of suggested tag names. Suggested tags are shown to
-  the user by the web client on usage.
+- `<implications>`: a list of implied tags, serialized as [micro
+  tag resource](#micro-tag). Implied tags are automatically appended by the web
+  client on usage.
+- `<suggestions>`: a list of suggested tags, serialized as [micro
+  tag resource](#micro-tag). Suggested tags are shown to the user by the web
+  client on usage.
 - `<creation-time>`: time the tag was created, formatted as per RFC 3339.
 - `<last-edit-time>`: time the tag was edited, formatted as per RFC 3339.
 - `<usage-count>`: the number of posts the tag was used in.
 - `<description>`: the tag description (instructions how to use, history etc.)
   The client should render is as Markdown.
+
+## Micro tag
+**Description**
+
+A [tag resource](#tag) stripped down to `names`, `category` and `usages` fields.
 
 ## Post
 **Description**
@@ -1814,12 +1810,12 @@ One file together with its metadata posted to the site.
     "lastFeatureTime":    <last-feature-time>,
     "favoritedBy":        <favorited-by>,
     "hasCustomThumbnail": <has-custom-thumbnail>,
-    "mimeType":           <mime-type>
-    "comments": {
+    "mimeType":           <mime-type>,
+    "comments": [
         <comment>,
         <comment>,
         <comment>
-    }
+    ]
 }
 ```
 
@@ -1856,7 +1852,8 @@ One file together with its metadata posted to the site.
 - `<thumbnail-url>`: where the post thumbnail is located.
 - `<flags>`: various flags such as whether the post is looped, represented as
   array of plain strings.
-- `<tags>`: list of tag names the post is tagged with.
+- `<tags>`: list of tags the post is tagged with, serialized as [micro
+  tag resource](#micro-tag).
 - `<relations>`: a list of related posts, serialized as [micro post
   resources](#micro-post). Links to related posts are shown
   to the user by the web client.

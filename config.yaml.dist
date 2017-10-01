@@ -106,7 +106,7 @@ privileges:
     'tags:edit:description':        power
     'tags:edit:implications':       power
     'tags:edit:suggestions':        power
-    'tags:list':                    regular # note: will be available as data_url/tags.json anyway
+    'tags:list':                    regular
     'tags:view':                    anonymous
     'tags:merge':                   moderator
     'tags:delete':                  moderator
@@ -114,7 +114,7 @@ privileges:
     'tag_categories:create':        moderator
     'tag_categories:edit:name':     moderator
     'tag_categories:edit:color':    moderator
-    'tag_categories:list':          anonymous # note: will be available as data_url/tags.json anyway
+    'tag_categories:list':          anonymous
     'tag_categories:view':          anonymous
     'tag_categories:delete':        moderator
     'tag_categories:set_default':   moderator

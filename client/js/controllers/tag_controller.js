@@ -4,8 +4,8 @@ const router = require('../router.js');
 const api = require('../api.js');
 const misc = require('../util/misc.js');
 const uri = require('../util/uri.js');
-const tags = require('../tags.js');
 const Tag = require('../models/tag.js');
+const TagCategoryList = require('../models/tag_category_list.js');
 const topNavigation = require('../models/top_navigation.js');
 const TagView = require('../views/tag_view.js');
 const EmptyView = require('../views/empty_view.js');
@@ -18,7 +18,12 @@ class TagController {
             return;
         }
 
-        Tag.get(ctx.parameters.name).then(tag => {
+        Promise.all([
+            TagCategoryList.get(),
+            Tag.get(ctx.parameters.name),
+        ]).then(responses => {
+            const [tagCategoriesResponse, tag] = responses;
+
             topNavigation.activate('tags');
             topNavigation.setTitle('Tag #' + tag.names[0]);
 
@@ -26,7 +31,7 @@ class TagController {
             tag.addEventListener('change', e => this._evtSaved(e, section));
 
             const categories = {};
-            for (let category of tags.getAllCategories()) {
+            for (let category of tagCategoriesResponse.results) {
                 categories[category.name] = category.name;
             }
 
@@ -75,12 +80,6 @@ class TagController {
         }
         if (e.detail.category !== undefined) {
             e.detail.tag.category = e.detail.category;
-        }
-        if (e.detail.implications !== undefined) {
-            e.detail.tag.implications = e.detail.implications;
-        }
-        if (e.detail.suggestions !== undefined) {
-            e.detail.tag.suggestions = e.detail.suggestions;
         }
         if (e.detail.description !== undefined) {
             e.detail.tag.description = e.detail.description;

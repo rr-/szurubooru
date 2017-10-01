@@ -27,6 +27,13 @@ class AbstractList extends events.EventTarget {
         return ret;
     }
 
+    sync(plainList) {
+        this.clear();
+        for (let item of (plainList || [])) {
+            this.add(this.constructor._itemClass.fromResponse(item));
+        }
+    }
+
     add(item) {
         if (item.addEventListener) {
             item.addEventListener('delete', e => {
@@ -73,6 +80,10 @@ class AbstractList extends events.EventTarget {
 
     at(index) {
         return this._list[index];
+    }
+
+    map(...args) {
+        return this._list.map(...args);
     }
 
     [Symbol.iterator]() {

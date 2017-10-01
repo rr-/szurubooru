@@ -44,15 +44,15 @@
                         <td class='names'>
                             <ul>
                                 <% for (let name of tag.names) { %>
-                                    <li><%= ctx.makeTagLink(name) %></li>
+                                    <li><%= ctx.makeTagLink(name, false, false, tag) %></li>
                                 <% } %>
                             </ul>
                         </td>
                         <td class='implications'>
                             <% if (tag.implications.length) { %>
                                 <ul>
-                                    <% for (let name of tag.implications) { %>
-                                        <li><%= ctx.makeTagLink(name) %></li>
+                                    <% for (let relation of tag.implications) { %>
+                                        <li><%= ctx.makeTagLink(relation.names[0], false, false, relation) %></li>
                                     <% } %>
                                 </ul>
                             <% } else { %>
@@ -62,8 +62,8 @@
                         <td class='suggestions'>
                             <% if (tag.suggestions.length) { %>
                                 <ul>
-                                    <% for (let name of tag.suggestions) { %>
-                                        <li><%= ctx.makeTagLink(name) %></li>
+                                    <% for (let relation of tag.suggestions) { %>
+                                        <li><%= ctx.makeTagLink(relation.names[0], false, false, relation) %></li>
                                     <% } %>
                                 </ul>
                             <% } else { %>

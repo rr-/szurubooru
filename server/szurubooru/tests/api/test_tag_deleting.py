@@ -14,15 +14,13 @@ def test_deleting(user_factory, tag_factory, context_factory):
     tag = tag_factory(names=['tag'])
     db.session.add(tag)
     db.session.commit()
-    with patch('szurubooru.func.tags.export_to_json'), \
-            patch('szurubooru.func.snapshots.delete'):
+    with patch('szurubooru.func.snapshots.delete'):
         result = api.tag_api.delete_tag(
             context_factory(params={'version': 1}, user=auth_user),
             {'tag_name': 'tag'})
         assert result == {}
         assert db.session.query(model.Tag).count() == 0
         snapshots.delete.assert_called_once_with(tag, auth_user)
-        tags.export_to_json.assert_called_once_with()
 
 
 def test_deleting_used(
@@ -32,15 +30,14 @@ def test_deleting_used(
     post.tags.append(tag)
     db.session.add_all([tag, post])
     db.session.commit()
-    with patch('szurubooru.func.tags.export_to_json'):
-        api.tag_api.delete_tag(
-            context_factory(
-                params={'version': 1},
-                user=user_factory(rank=model.User.RANK_REGULAR)),
-            {'tag_name': 'tag'})
-        db.session.refresh(post)
-        assert db.session.query(model.Tag).count() == 0
-        assert post.tags == []
+    api.tag_api.delete_tag(
+        context_factory(
+            params={'version': 1},
+            user=user_factory(rank=model.User.RANK_REGULAR)),
+        {'tag_name': 'tag'})
+    db.session.refresh(post)
+    assert db.session.query(model.Tag).count() == 0
+    assert post.tags == []
 
 
 def test_trying_to_delete_non_existing(user_factory, context_factory):

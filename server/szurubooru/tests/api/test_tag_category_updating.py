@@ -27,8 +27,7 @@ def test_simple_updating(user_factory, tag_category_factory, context_factory):
     with patch('szurubooru.func.tag_categories.serialize_category'), \
             patch('szurubooru.func.tag_categories.update_category_name'), \
             patch('szurubooru.func.tag_categories.update_category_color'), \
-            patch('szurubooru.func.snapshots.modify'), \
-            patch('szurubooru.func.tags.export_to_json'):
+            patch('szurubooru.func.snapshots.modify'):
         tag_categories.update_category_name.side_effect = _update_category_name
         tag_categories.serialize_category.return_value = 'serialized category'
         result = api.tag_category_api.update_tag_category(
@@ -42,7 +41,6 @@ def test_simple_updating(user_factory, tag_category_factory, context_factory):
         tag_categories.update_category_color.assert_called_once_with(
             category, 'white')
         snapshots.modify.assert_called_once_with(category, auth_user)
-        tags.export_to_json.assert_called_once_with()
 
 
 @pytest.mark.parametrize('field', ['name', 'color'])
@@ -56,8 +54,7 @@ def test_omitting_optional_field(
     }
     del params[field]
     with patch('szurubooru.func.tag_categories.serialize_category'), \
-            patch('szurubooru.func.tag_categories.update_category_name'), \
-            patch('szurubooru.func.tags.export_to_json'):
+            patch('szurubooru.func.tag_categories.update_category_name'):
         api.tag_category_api.update_tag_category(
             context_factory(
                 params={**params, **{'version': 1}},
@@ -95,8 +92,7 @@ def test_set_as_default(user_factory, tag_category_factory, context_factory):
     db.session.add(category)
     db.session.commit()
     with patch('szurubooru.func.tag_categories.serialize_category'), \
-            patch('szurubooru.func.tag_categories.set_default_category'), \
-            patch('szurubooru.func.tags.export_to_json'):
+            patch('szurubooru.func.tag_categories.set_default_category'):
         tag_categories.update_category_name.side_effect = _update_category_name
         tag_categories.serialize_category.return_value = 'serialized category'
         result = api.tag_category_api.set_tag_category_as_default(

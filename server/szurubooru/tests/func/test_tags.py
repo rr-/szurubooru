@@ -45,15 +45,18 @@ def test_serialize_tag_when_empty():
 
 
 def test_serialize_tag(post_factory, tag_factory, tag_category_factory):
-    tag = tag_factory(
-        names=['tag1', 'tag2'],
-        category=tag_category_factory(name='cat'))
+    cat = tag_category_factory(name='cat')
+    tag = tag_factory(names=['tag1', 'tag2'], category=cat)
     tag.tag_id = 1
     tag.description = 'description'
     tag.suggestions = [
-        tag_factory(names=['sug1']), tag_factory(names=['sug2'])]
+        tag_factory(names=['sug1'], category=cat),
+        tag_factory(names=['sug2'], category=cat),
+    ]
     tag.implications = [
-        tag_factory(names=['impl1']), tag_factory(names=['impl2'])]
+        tag_factory(names=['impl1'], category=cat),
+        tag_factory(names=['impl2'], category=cat),
+    ]
     tag.last_edit_time = datetime(1998, 1, 1)
     post1 = post_factory()
     post2 = post_factory()
@@ -62,8 +65,8 @@ def test_serialize_tag(post_factory, tag_factory, tag_category_factory):
     db.session.add_all([tag, post1, post2])
     db.session.flush()
     result = tags.serialize_tag(tag)
-    result['suggestions'].sort()
-    result['implications'].sort()
+    result['suggestions'].sort(key=lambda relation: relation['names'][0])
+    result['implications'].sort(key=lambda relation: relation['names'][0])
     assert result == {
         'names': ['tag1', 'tag2'],
         'version': 1,
@@ -71,67 +74,16 @@ def test_serialize_tag(post_factory, tag_factory, tag_category_factory):
         'creationTime': datetime(1996, 1, 1, 0, 0),
         'lastEditTime': datetime(1998, 1, 1, 0, 0),
         'description': 'description',
-        'suggestions': ['sug1', 'sug2'],
-        'implications': ['impl1', 'impl2'],
+        'suggestions': [
+            {'names': ['sug1'], 'category': 'cat', 'usages': 0},
+            {'names': ['sug2'], 'category': 'cat', 'usages': 0},
+        ],
+        'implications': [
+            {'names': ['impl1'], 'category': 'cat', 'usages': 0},
+            {'names': ['impl2'], 'category': 'cat', 'usages': 0},
+        ],
         'usages': 2,
     }
-
-
-def test_export_to_json(
-        tmpdir,
-        query_counter,
-        config_injector,
-        post_factory,
-        tag_factory,
-        tag_category_factory):
-    config_injector({'data_dir': str(tmpdir)})
-    cat1 = tag_category_factory(name='cat1', color='black')
-    cat2 = tag_category_factory(name='cat2', color='white')
-    tag = tag_factory(names=['alias1', 'alias2'], category=cat2)
-    tag.suggestions = [
-        tag_factory(names=['sug1'], category=cat1),
-        tag_factory(names=['sug2'], category=cat1),
-    ]
-    tag.implications = [
-        tag_factory(names=['imp1'], category=cat1),
-        tag_factory(names=['imp2'], category=cat1),
-    ]
-    post = post_factory()
-    post.tags = [tag]
-    db.session.add_all([post, tag])
-    db.session.flush()
-
-    with query_counter:
-        tags.export_to_json()
-        assert len(query_counter.statements) == 5
-
-    export_path = os.path.join(str(tmpdir), 'tags.json')
-    assert os.path.exists(export_path)
-    with open(export_path, 'r') as handle:
-        actual_json = json.loads(handle.read())
-        assert actual_json['tags']
-        assert actual_json['categories']
-        actual_json['tags'].sort(key=lambda tag: tag['names'][0])
-        actual_json['categories'].sort(key=lambda category: category['name'])
-        assert actual_json == {
-            'tags': [
-                {
-                    'names': ['alias1', 'alias2'],
-                    'usages': 1,
-                    'category': 'cat2',
-                    'suggestions': ['sug1', 'sug2'],
-                    'implications': ['imp1', 'imp2'],
-                },
-                {'names': ['imp1'], 'usages': 0, 'category': 'cat1'},
-                {'names': ['imp2'], 'usages': 0, 'category': 'cat1'},
-                {'names': ['sug1'], 'usages': 0, 'category': 'cat1'},
-                {'names': ['sug2'], 'usages': 0, 'category': 'cat1'},
-            ],
-            'categories': [
-                {'name': 'cat1', 'color': 'black'},
-                {'name': 'cat2', 'color': 'white'},
-            ]
-        }
 
 
 @pytest.mark.parametrize('name_to_search,expected_to_find', [

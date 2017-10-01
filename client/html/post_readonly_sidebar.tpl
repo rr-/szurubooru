@@ -69,20 +69,20 @@
                 --><% for (let tag of ctx.post.tags) { %><!--
                     --><li><!--
                         --><% if (ctx.canViewTags) { %><!--
-                        --><a href='<%- ctx.formatClientLink('tag', tag) %>' class='<%= ctx.makeCssName(ctx.getTagCategory(tag), 'tag') %>'><!--
+                        --><a href='<%- ctx.formatClientLink('tag', tag.names[0]) %>' class='<%= ctx.makeCssName(tag.category, 'tag') %>'><!--
                             --><i class='fa fa-tag'></i><!--
                         --><% } %><!--
                         --><% if (ctx.canViewTags) { %><!--
                             --></a><!--
                         --><% } %><!--
                         --><% if (ctx.canListPosts) { %><!--
-                            --><a href='<%- ctx.formatClientLink('posts', {query: tag}) %>' class='<%= ctx.makeCssName(ctx.getTagCategory(tag), 'tag') %>'><!--
+                            --><a href='<%- ctx.formatClientLink('posts', {query: tag.names[0]}) %>' class='<%= ctx.makeCssName(tag.category, 'tag') %>'><!--
                         --><% } %><!--
-                            --><%- tag %>&#32;<!--
+                            --><%- tag.names[0] %>&#32;<!--
                         --><% if (ctx.canListPosts) { %><!--
                             --></a><!--
                         --><% } %><!--
-                        --><span class='tag-usages' data-pseudo-content='<%- ctx.getTagUsages(tag) %>'></span><!--
+                        --><span class='tag-usages' data-pseudo-content='<%- tag.postCount %>'></span><!--
                     --></li><!--
                 --><% } %><!--
             --></ul>

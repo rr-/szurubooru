@@ -73,7 +73,12 @@ class BulkTagEditor extends BulkEditor {
     constructor(hostNode) {
         super(hostNode);
         this._autoCompleteControl = new TagAutoCompleteControl(
-            this._inputNode, {addSpace: false});
+            this._inputNode,
+            {
+                confirm: tag =>
+                    this._autoCompleteControl.replaceSelectedText(
+                        tag.names[0], false),
+            });
         this._hostNode.addEventListener('submit', e => this._evtFormSubmit(e));
     }
 
@@ -124,9 +129,13 @@ class PostsHeaderView extends events.EventTarget {
         this._hostNode = ctx.hostNode;
         views.replaceContent(this._hostNode, template(ctx));
 
-        this._queryAutoCompleteControl = new TagAutoCompleteControl(
+        this._autoCompleteControl = new TagAutoCompleteControl(
             this._queryInputNode,
-            {addSpace: true, transform: misc.escapeSearchTerm});
+            {
+                confirm: tag =>
+                    this._autoCompleteControl.replaceSelectedText(
+                        misc.escapeSearchTerm(tag.names[0]), true),
+            });
 
         keyboard.bind('p', () => this._focusFirstPostNode());
         search.searchInputNodeFocusHelper(this._queryInputNode);
@@ -235,7 +244,7 @@ class PostsHeaderView extends events.EventTarget {
     }
 
     _navigate() {
-        this._queryAutoCompleteControl.hide();
+        this._autoCompleteControl.hide();
         let parameters = {query: this._queryInputNode.value};
         parameters.offset = parameters.query === this._ctx.parameters.query ?
             this._ctx.parameters.offset : 0;

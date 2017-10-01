@@ -2,6 +2,7 @@
 
 const router = require('../router.js');
 const uri = require('../util/uri.js');
+const misc = require('../util/misc.js');
 const views = require('../util/views.js');
 const PostContentControl = require('../controls/post_content_control.js');
 const PostNotesOverlayControl
@@ -23,12 +24,16 @@ class HomeView {
         views.syncScrollPosition();
 
         if (this._formNode) {
-            this._tagAutoCompleteControl = new TagAutoCompleteControl(
-                this._searchInputNode);
+            this._autoCompleteControl = new TagAutoCompleteControl(
+                this._searchInputNode,
+                {
+                    confirm: tag =>
+                        this._autoCompleteControl.replaceSelectedText(
+                            misc.escapeSearchTerm(tag.names[0]), true),
+                });
             this._formNode.addEventListener(
                 'submit', e => this._evtFormSubmit(e));
         }
-
     }
 
     showSuccess(text) {

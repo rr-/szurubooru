@@ -224,7 +224,13 @@ class PostSerializer(serialization.BaseSerializer):
         return self.post.flags
 
     def serialize_tags(self) -> Any:
-        return [tag.names[0].name for tag in tags.sort_tags(self.post.tags)]
+        return [
+            {
+                'names': [name.name for name in tag.names],
+                'category': tag.category.name,
+                'usages': tag.post_count,
+            }
+            for tag in tags.sort_tags(self.post.tags)]
 
     def serialize_relations(self) -> Any:
         return sorted(

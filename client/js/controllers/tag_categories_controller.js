@@ -40,7 +40,7 @@ class TagCategoriesController {
         this._view.disableForm();
         this._tagCategories.save()
             .then(() => {
-                tags.refreshExport();
+                tags.refreshCategoryColorMap();
                 this._view.enableForm();
                 this._view.showSuccess('Changes saved.');
             }, error => {

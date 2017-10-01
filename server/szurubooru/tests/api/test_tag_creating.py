@@ -15,8 +15,7 @@ def test_creating_simple_tags(tag_factory, user_factory, context_factory):
     with patch('szurubooru.func.tags.create_tag'), \
             patch('szurubooru.func.tags.get_or_create_tags_by_names'), \
             patch('szurubooru.func.tags.serialize_tag'), \
-            patch('szurubooru.func.snapshots.create'), \
-            patch('szurubooru.func.tags.export_to_json'):
+            patch('szurubooru.func.snapshots.create'):
         tags.get_or_create_tags_by_names.return_value = ([], [])
         tags.create_tag.return_value = tag
         tags.serialize_tag.return_value = 'serialized tag'
@@ -34,7 +33,6 @@ def test_creating_simple_tags(tag_factory, user_factory, context_factory):
         tags.create_tag.assert_called_once_with(
             ['tag1', 'tag2'], 'meta', ['sug1', 'sug2'], ['imp1', 'imp2'])
         snapshots.create.assert_called_once_with(tag, auth_user)
-        tags.export_to_json.assert_called_once_with()
 
 
 @pytest.mark.parametrize('field', ['names', 'category'])
@@ -64,8 +62,7 @@ def test_omitting_optional_field(
     }
     del params[field]
     with patch('szurubooru.func.tags.create_tag'), \
-            patch('szurubooru.func.tags.serialize_tag'), \
-            patch('szurubooru.func.tags.export_to_json'):
+            patch('szurubooru.func.tags.serialize_tag'):
         tags.create_tag.return_value = tag_factory()
         api.tag_api.create_tag(
             context_factory(

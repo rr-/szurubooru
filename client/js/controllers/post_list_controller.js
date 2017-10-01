@@ -62,15 +62,16 @@ class PostListController {
     }
 
     _evtTag(e) {
-        for (let tag of this._bulkEditTags) {
-            e.detail.post.addTag(tag);
-        }
-        e.detail.post.save().catch(error => window.alert(error.message));
+        Promise.all(
+            this._bulkEditTags.map(tag =>
+                e.detail.post.tags.addByName(tag)))
+            .then(() => { e.detail.post.save(); })
+            .catch(error => window.alert(error.message));
     }
 
     _evtUntag(e) {
         for (let tag of this._bulkEditTags) {
-            e.detail.post.removeTag(tag);
+            e.detail.post.tags.removeByName(tag);
         }
         e.detail.post.save().catch(error => window.alert(error.message));
     }

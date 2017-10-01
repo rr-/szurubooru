@@ -22,18 +22,12 @@
             </li>
             <li class='implications'>
                 <% if (ctx.canEditImplications) { %>
-                    <%= ctx.makeTextInput({
-                        text: 'Implications',
-                        value: ctx.tag.implications.join(' '),
-                    }) %>
+                    <%= ctx.makeTextInput({text: 'Implications'}) %>
                 <% } %>
             </li>
             <li class='suggestions'>
                 <% if (ctx.canEditSuggestions) { %>
-                    <%= ctx.makeTextInput({
-                        text: 'Suggestions',
-                        value: ctx.tag.suggestions.join(' '),
-                    }) %>
+                    <%= ctx.makeTextInput({text: 'Suggestions'}) %>
                 <% } %>
             </li>
             <li class='description'>

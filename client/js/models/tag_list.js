@@ -22,6 +22,48 @@ class TagList extends AbstractList {
                     {results: TagList.fromResponse(response.results)}));
             });
     }
+
+    isTaggedWith(testName) {
+        for (let tag of this._list) {
+            for (let tagName of tag.names) {
+                if (tagName.toLowerCase() === testName.toLowerCase()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    addByName(tagName, addImplications) {
+        if (this.isTaggedWith(tagName)) {
+            return Promise.resolve();
+        }
+
+        const tag = new Tag();
+        tag.names = [tagName];
+
+        this.add(tag);
+
+        if (addImplications !== false) {
+            return Tag.get(tagName).then(actualTag => {
+                return Promise.all(
+                    actualTag.implications.map(
+                        relation => this.addByName(relation.names[0], true)));
+            });
+        }
+
+        return Promise.resolve();
+    }
+
+    removeByName(testName) {
+        for (let tag of this._list) {
+            for (let tagName of tag.names) {
+                if (tagName.toLowerCase() === testName.toLowerCase()) {
+                    this.remove(tag);
+                }
+            }
+        }
+    }
 }
 
 TagList._itemClass = Tag;

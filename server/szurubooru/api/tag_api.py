@@ -54,7 +54,6 @@ def create_tag(
     ctx.session.flush()
     snapshots.create(tag, ctx.user)
     ctx.session.commit()
-    tags.export_to_json()
     return _serialize(ctx, tag)
 
 
@@ -95,7 +94,6 @@ def update_tag(ctx: rest.Context, params: Dict[str, str]) -> rest.Response:
     ctx.session.flush()
     snapshots.modify(tag, ctx.user)
     ctx.session.commit()
-    tags.export_to_json()
     return _serialize(ctx, tag)
 
 
@@ -107,7 +105,6 @@ def delete_tag(ctx: rest.Context, params: Dict[str, str]) -> rest.Response:
     snapshots.delete(tag, ctx.user)
     tags.delete(tag)
     ctx.session.commit()
-    tags.export_to_json()
     return {}
 
 
@@ -125,7 +122,6 @@ def merge_tags(
     tags.merge_tags(source_tag, target_tag)
     snapshots.merge(source_tag, target_tag, ctx.user)
     ctx.session.commit()
-    tags.export_to_json()
     return _serialize(ctx, target_tag)
 
 

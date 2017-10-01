@@ -28,10 +28,7 @@ class AutoCompleteControl {
         this._sourceInputNode = sourceInputNode;
         this._options = {};
         Object.assign(this._options, {
-            transform: null,
             verticalShift: 2,
-            source: null,
-            addSpace: false,
             maxResults: 15,
             getTextToFind: () => {
                 const value = sourceInputNode.value;
@@ -56,7 +53,7 @@ class AutoCompleteControl {
         this._isVisible = false;
     }
 
-    defaultConfirmStrategy(text) {
+    replaceSelectedText(result, addSpace) {
         const start = _getSelectionStart(this._sourceInputNode);
         let prefix = '';
         let suffix = this._sourceInputNode.value.substring(start);
@@ -66,30 +63,25 @@ class AutoCompleteControl {
             prefix = this._sourceInputNode.value.substring(0, index + 1);
             middle = this._sourceInputNode.value.substring(index + 1);
         }
-        this._sourceInputNode.value = prefix + text + ' ' + suffix.trimLeft();
-        if (!this._options.addSpace) {
+        this._sourceInputNode.value = (
+            prefix + result.toString() + ' ' + suffix.trimLeft());
+        if (!addSpace) {
             this._sourceInputNode.value = this._sourceInputNode.value.trim();
         }
         this._sourceInputNode.focus();
     }
 
-    _delete(text) {
-        if (this._options.transform) {
-            text = this._options.transform(text);
-        }
+    _delete(result) {
         if (this._options.delete) {
-            this._options.delete(text);
+            this._options.delete(result);
         }
     }
 
-    _confirm(text) {
-        if (this._options.transform) {
-            text = this._options.transform(text);
-        }
+    _confirm(result) {
         if (this._options.confirm) {
-            this._options.confirm(text);
+            this._options.confirm(result);
         } else {
-            this.defaultConfirmStrategy(text);
+            this.defaultConfirmStrategy(result);
         }
     }
 
@@ -104,7 +96,6 @@ class AutoCompleteControl {
             this.hide();
         } else {
             this._updateResults(textToFind);
-            this._refreshList();
         }
     }
 
@@ -209,15 +200,16 @@ class AutoCompleteControl {
     }
 
     _updateResults(textToFind) {
-        const oldResults = this._results.slice();
-        this._results =
-            this._options.getMatches(textToFind)
-            .slice(0, this._options.maxResults);
-        const oldResultsHash = JSON.stringify(oldResults);
-        const newResultsHash = JSON.stringify(this._results);
-        if (oldResultsHash !== newResultsHash) {
-            this._activeResult = -1;
-        }
+        this._options.getMatches(textToFind).then(matches => {
+            const oldResults = this._results.slice();
+            this._results = matches.slice(0, this._options.maxResults);
+            const oldResultsHash = JSON.stringify(oldResults);
+            const newResultsHash = JSON.stringify(this._results);
+            if (oldResultsHash !== newResultsHash) {
+                this._activeResult = -1;
+            }
+            this._refreshList();
+        });
     }
 
     _refreshList() {

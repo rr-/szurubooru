@@ -3,7 +3,6 @@
 require('../util/polyfill.js');
 const api = require('../api.js');
 const templates = require('../templates.js');
-const tags = require('../tags.js');
 const domParser = new DOMParser();
 const misc = require('./misc.js');
 const uri = require('./uri.js');
@@ -194,12 +193,14 @@ function makePostLink(id, includeHash) {
         misc.escapeHtml(text);
 }
 
-function makeTagLink(name, includeHash) {
-    const tag = tags.getTagByName(name);
+function makeTagLink(name, includeHash, includeCount, tag) {
     const category = tag ? tag.category : 'unknown';
     let text = name;
     if (includeHash === true) {
         text = '#' + text;
+    }
+    if (includeCount === true) {
+        text += ' (' + (tag ? tag.postCount : 0) + ')';
     }
     return api.hasPrivilege('tags:view') ?
         makeElement(

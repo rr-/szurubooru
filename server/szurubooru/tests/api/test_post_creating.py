@@ -30,7 +30,6 @@ def test_creating_minimal_posts(
             patch('szurubooru.func.posts.update_post_flags'), \
             patch('szurubooru.func.posts.update_post_thumbnail'), \
             patch('szurubooru.func.posts.serialize_post'), \
-            patch('szurubooru.func.tags.export_to_json'), \
             patch('szurubooru.func.snapshots.create'):
         posts.create_post.return_value = (post, [])
         posts.serialize_post.return_value = 'serialized post'
@@ -62,7 +61,6 @@ def test_creating_minimal_posts(
         posts.serialize_post.assert_called_once_with(
             post, auth_user, options=[])
         snapshots.create.assert_called_once_with(post, auth_user)
-        tags.export_to_json.assert_called_once_with()
 
 
 def test_creating_full_posts(context_factory, post_factory, user_factory):
@@ -78,7 +76,6 @@ def test_creating_full_posts(context_factory, post_factory, user_factory):
             patch('szurubooru.func.posts.update_post_notes'), \
             patch('szurubooru.func.posts.update_post_flags'), \
             patch('szurubooru.func.posts.serialize_post'), \
-            patch('szurubooru.func.tags.export_to_json'), \
             patch('szurubooru.func.snapshots.create'):
         posts.create_post.return_value = (post, [])
         posts.serialize_post.return_value = 'serialized post'
@@ -111,7 +108,6 @@ def test_creating_full_posts(context_factory, post_factory, user_factory):
         posts.serialize_post.assert_called_once_with(
             post, auth_user, options=[])
         snapshots.create.assert_called_once_with(post, auth_user)
-        tags.export_to_json.assert_called_once_with()
 
 
 def test_anonymous_uploads(
@@ -121,8 +117,7 @@ def test_anonymous_uploads(
     db.session.add(post)
     db.session.flush()
 
-    with patch('szurubooru.func.tags.export_to_json'), \
-            patch('szurubooru.func.posts.serialize_post'), \
+    with patch('szurubooru.func.posts.serialize_post'), \
             patch('szurubooru.func.posts.create_post'), \
             patch('szurubooru.func.posts.update_post_source'):
         config_injector({
@@ -152,7 +147,6 @@ def test_creating_from_url_saves_source(
     db.session.flush()
 
     with patch('szurubooru.func.net.download'), \
-            patch('szurubooru.func.tags.export_to_json'), \
             patch('szurubooru.func.posts.serialize_post'), \
             patch('szurubooru.func.posts.create_post'), \
             patch('szurubooru.func.posts.update_post_source'):
@@ -183,7 +177,6 @@ def test_creating_from_url_with_source_specified(
     db.session.flush()
 
     with patch('szurubooru.func.net.download'), \
-            patch('szurubooru.func.tags.export_to_json'), \
             patch('szurubooru.func.posts.serialize_post'), \
             patch('szurubooru.func.posts.create_post'), \
             patch('szurubooru.func.posts.update_post_source'):
@@ -245,7 +238,6 @@ def test_omitting_optional_field(
             patch('szurubooru.func.posts.update_post_notes'), \
             patch('szurubooru.func.posts.update_post_flags'), \
             patch('szurubooru.func.posts.serialize_post'), \
-            patch('szurubooru.func.tags.export_to_json'), \
             patch('szurubooru.func.snapshots.create'):
         posts.create_post.return_value = (post, [])
         posts.serialize_post.return_value = 'serialized post'

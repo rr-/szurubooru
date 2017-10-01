@@ -2,6 +2,7 @@
 
 const config = require('../config.js');
 const events = require('../events.js');
+const misc = require('../util/misc.js');
 const views = require('../util/views.js');
 const TagAutoCompleteControl =
     require('../controls/tag_auto_complete_control.js');
@@ -19,7 +20,13 @@ class TagMergeView extends events.EventTarget {
 
         views.decorateValidator(this._formNode);
         if (this._targetTagFieldNode) {
-            new TagAutoCompleteControl(this._targetTagFieldNode);
+            this._autoCompleteControl = new TagAutoCompleteControl(
+                this._targetTagFieldNode,
+                {
+                    confirm: tag =>
+                        this._autoCompleteControl.replaceSelectedText(
+                            tag.names[0], false),
+                });
         }
 
         this._formNode.addEventListener('submit', e => this._evtSubmit(e));

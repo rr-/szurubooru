@@ -73,7 +73,6 @@ def create_post(
     for tag in new_tags:
         snapshots.create(tag, None if anonymous else ctx.user)
     ctx.session.commit()
-    tags.export_to_json()
     return _serialize_post(ctx, post)
 
 
@@ -126,7 +125,6 @@ def update_post(ctx: rest.Context, params: Dict[str, str]) -> rest.Response:
     ctx.session.flush()
     snapshots.modify(post, ctx.user)
     ctx.session.commit()
-    tags.export_to_json()
     return _serialize_post(ctx, post)
 
 
@@ -138,7 +136,6 @@ def delete_post(ctx: rest.Context, params: Dict[str, str]) -> rest.Response:
     snapshots.delete(post, ctx.user)
     posts.delete(post)
     ctx.session.commit()
-    tags.export_to_json()
     return {}
 
 

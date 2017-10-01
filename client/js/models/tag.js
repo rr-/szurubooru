@@ -7,8 +7,16 @@ const misc = require('../util/misc.js');
 
 class Tag extends events.EventTarget {
     constructor() {
+        const TagList = require('./tag_list.js');
+
         super();
         this._orig = {};
+
+        for (let obj of [this, this._orig]) {
+            obj._suggestions = new TagList();
+            obj._implications = new TagList();
+        }
+
         this._updateFromResponse({});
     }
 
@@ -24,8 +32,6 @@ class Tag extends events.EventTarget {
     set names(value)        { this._names = value; }
     set category(value)     { this._category = value; }
     set description(value)  { this._description = value; }
-    set implications(value) { this._implications = value; }
-    set suggestions(value)  { this._suggestions = value; }
 
     static fromResponse(response) {
         const ret = new Tag();
@@ -54,10 +60,12 @@ class Tag extends events.EventTarget {
             detail.description = this._description;
         }
         if (misc.arraysDiffer(this._implications, this._orig._implications)) {
-            detail.implications = this._implications;
+            detail.implications = this._implications.map(
+                relation => relation.names[0]);
         }
         if (misc.arraysDiffer(this._suggestions, this._orig._suggestions)) {
-            detail.suggestions = this._suggestions;
+            detail.suggestions = this._suggestions.map(
+                relation => relation.names[0]);
         }
 
         let promise = this._origName ?
@@ -124,12 +132,15 @@ class Tag extends events.EventTarget {
             _names:        response.names,
             _category:     response.category,
             _description:  response.description,
-            _implications: response.implications,
-            _suggestions:  response.suggestions,
             _creationTime: response.creationTime,
             _lastEditTime: response.lastEditTime,
-            _postCount:    response.usages,
+            _postCount:    response.usages || 0,
         };
+
+        for (let obj of [this, this._orig]) {
+            obj._suggestions.sync(response.suggestions);
+            obj._implications.sync(response.implications);
+        }
 
         Object.assign(this, map);
         Object.assign(this._orig, map);

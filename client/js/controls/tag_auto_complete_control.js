@@ -1,8 +1,32 @@
 'use strict';
 
-const tags = require('../tags.js');
 const misc = require('../util/misc.js');
+const views = require('../util/views.js');
+const TagList = require('../models/tag_list.js');
 const AutoCompleteControl = require('./auto_complete_control.js');
+
+function _escapeSearch(text) {
+    return text.replace('\\', '\\\\').replace(':', '\\:');
+}
+
+function _tagListToMatches(tags, options) {
+    return [...tags].sort((tag1, tag2) => {
+        return tag2.usages - tag1.usages;
+    }).map(tag => {
+        let cssName = misc.makeCssName(tag.category, 'tag');
+        if (options.isTaggedWith(tag.names[0])) {
+            cssName += ' disabled';
+        }
+        const caption = (
+            '<span class="' + cssName + '">'
+            + misc.escapeHtml(tag.names[0] + ' (' + tag.postCount + ')')
+            + '</span>');
+        return {
+            caption: caption,
+            value: tag,
+        };
+    });
+}
 
 class TagAutoCompleteControl extends AutoCompleteControl {
     constructor(input, options) {
@@ -13,32 +37,21 @@ class TagAutoCompleteControl extends AutoCompleteControl {
         }, options);
 
         options.getMatches = text => {
-            const transform = x => x.toLowerCase();
-            const match = text.length < minLengthForPartialSearch ?
-                (a, b) => a.startsWith(b) :
-                (a, b) => a.includes(b);
-            text = transform(text);
-            return Array.from(tags.getNameToTagMap().entries())
-                .filter(kv => match(transform(kv[0]), text))
-                .sort((kv1, kv2) => {
-                    return kv2[1].usages - kv1[1].usages;
-                })
-                .map(kv => {
-                    const origName = tags.getOriginalTagName(kv[0]);
-                    const category = kv[1].category;
-                    const usages = kv[1].usages;
-                    let cssName = misc.makeCssName(category, 'tag');
-                    if (options.isTaggedWith(kv[0])) {
-                        cssName += ' disabled';
-                    }
-                    return {
-                        caption: misc.unindent`
-                            <span class="${cssName}">
-                                ${misc.escapeHtml(origName)} (${usages})
-                            </span>`,
-                        value: origName,
-                    };
-                });
+            const term = misc.escapeSearchTerm(text);
+            const query = (
+                text.length < minLengthForPartialSearch
+                ? term + '*'
+                : '*' + term + '*') + ' sort:usages';
+
+            return new Promise((resolve, reject) => {
+                TagList.search(
+                    query, 0, this._options.maxResults,
+                    ['names', 'category', 'usages'])
+                .then(
+                    response => resolve(
+                        _tagListToMatches(response.results, this._options)),
+                    reject);
+            });
         };
 
         super(input, options);

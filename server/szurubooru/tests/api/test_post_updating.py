@@ -39,7 +39,6 @@ def test_post_updating(
             patch('szurubooru.func.posts.update_post_notes'), \
             patch('szurubooru.func.posts.update_post_flags'), \
             patch('szurubooru.func.posts.serialize_post'), \
-            patch('szurubooru.func.tags.export_to_json'), \
             patch('szurubooru.func.snapshots.modify'), \
             fake_datetime('1997-01-01'):
         posts.serialize_post.return_value = 'serialized post'
@@ -78,7 +77,6 @@ def test_post_updating(
         posts.serialize_post.assert_called_once_with(
             post, auth_user, options=[])
         snapshots.modify.assert_called_once_with(post, auth_user)
-        tags.export_to_json.assert_called_once_with()
         assert post.last_edit_time == datetime(1997, 1, 1)
 
 
@@ -88,7 +86,6 @@ def test_uploading_from_url_saves_source(
     db.session.add(post)
     db.session.flush()
     with patch('szurubooru.func.net.download'), \
-            patch('szurubooru.func.tags.export_to_json'), \
             patch('szurubooru.func.posts.serialize_post'), \
             patch('szurubooru.func.posts.update_post_content'), \
             patch('szurubooru.func.posts.update_post_source'), \
@@ -110,7 +107,6 @@ def test_uploading_from_url_with_source_specified(
     db.session.add(post)
     db.session.flush()
     with patch('szurubooru.func.net.download'), \
-            patch('szurubooru.func.tags.export_to_json'), \
             patch('szurubooru.func.posts.serialize_post'), \
             patch('szurubooru.func.posts.update_post_content'), \
             patch('szurubooru.func.posts.update_post_source'), \

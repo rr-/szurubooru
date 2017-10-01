@@ -55,7 +55,7 @@ for (let controller of controllers) {
 
 const tags = require('./tags.js');
 const api = require('./api.js');
-tags.refreshExport(); // we don't care about errors
+tags.refreshCategoryColorMap(); // we don't care about errors
 api.loginFromCookies().then(() => {
         router.start();
     }, error => {

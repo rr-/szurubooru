@@ -72,6 +72,14 @@ def sort_tags(tags: List[model.Tag]) -> List[model.Tag]:
     )
 
 
+def serialize_relation(tag):
+    return {
+        'names': [tag_name.name for tag_name in tag.names],
+        'category': tag.category.name,
+        'usages': tag.post_count,
+    }
+
+
 class TagSerializer(serialization.BaseSerializer):
     def __init__(self, tag: model.Tag) -> None:
         self.tag = tag
@@ -112,12 +120,12 @@ class TagSerializer(serialization.BaseSerializer):
 
     def serialize_suggestions(self) -> Any:
         return [
-            relation.names[0].name
+            serialize_relation(relation)
             for relation in sort_tags(self.tag.suggestions)]
 
     def serialize_implications(self) -> Any:
         return [
-            relation.names[0].name
+            serialize_relation(relation)
             for relation in sort_tags(self.tag.implications)]
 
 
@@ -126,67 +134,6 @@ def serialize_tag(
     if not tag:
         return None
     return TagSerializer(tag).serialize(options)
-
-
-def export_to_json() -> None:
-    tags = {}  # type: Dict[int, Any]
-    categories = {}  # type: Dict[int, Any]
-
-    for result in db.session.query(
-            model.TagCategory.tag_category_id,
-            model.TagCategory.name,
-            model.TagCategory.color).all():
-        categories[result[0]] = {
-            'name': result[1],
-            'color': result[2],
-        }
-
-    for result in (
-            db.session
-            .query(model.TagName.tag_id, model.TagName.name)
-            .order_by(model.TagName.order)
-            .all()):
-        if not result[0] in tags:
-            tags[result[0]] = {'names': []}
-        tags[result[0]]['names'].append(result[1])
-
-    for result in (
-            db.session
-            .query(model.TagSuggestion.parent_id, model.TagName.name)
-            .join(
-                model.TagName,
-                model.TagName.tag_id == model.TagSuggestion.child_id)
-            .all()):
-        if 'suggestions' not in tags[result[0]]:
-            tags[result[0]]['suggestions'] = []
-        tags[result[0]]['suggestions'].append(result[1])
-
-    for result in (
-            db.session
-            .query(model.TagImplication.parent_id, model.TagName.name)
-            .join(
-                model.TagName,
-                model.TagName.tag_id == model.TagImplication.child_id)
-            .all()):
-        if 'implications' not in tags[result[0]]:
-            tags[result[0]]['implications'] = []
-        tags[result[0]]['implications'].append(result[1])
-
-    for result in db.session.query(
-            model.Tag.tag_id,
-            model.Tag.category_id,
-            model.Tag.post_count).all():
-        tags[result[0]]['category'] = categories[result[1]]['name']
-        tags[result[0]]['usages'] = result[2]
-
-    output = {
-        'categories': list(categories.values()),
-        'tags': list(tags.values()),
-    }
-
-    export_path = os.path.join(config.config['data_dir'], 'tags.json')
-    with open(export_path, 'w') as handle:
-        handle.write(json.dumps(output, separators=(',', ':')))
 
 
 def try_get_tag_by_name(name: str) -> Optional[model.Tag]:

@@ -14,15 +14,13 @@ def test_deleting(user_factory, post_factory, context_factory):
     post = post_factory(id=1)
     db.session.add(post)
     db.session.flush()
-    with patch('szurubooru.func.tags.export_to_json'), \
-            patch('szurubooru.func.snapshots.delete'):
+    with patch('szurubooru.func.snapshots.delete'):
         result = api.post_api.delete_post(
             context_factory(params={'version': 1}, user=auth_user),
             {'post_id': 1})
         assert result == {}
         assert db.session.query(model.Post).count() == 0
         snapshots.delete.assert_called_once_with(post, auth_user)
-        tags.export_to_json.assert_called_once_with()
 
 
 def test_trying_to_delete_non_existing(user_factory, context_factory):

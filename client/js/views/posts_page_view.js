@@ -100,7 +100,7 @@ class PostsPageView extends events.EventTarget {
             if (tagFlipperNode) {
                 let tagged = true;
                 for (let tag of this._ctx.bulkEdit.tags) {
-                    tagged = tagged & post.isTaggedWith(tag);
+                    tagged = tagged & post.tags.isTaggedWith(tag);
                 }
                 tagFlipperNode.classList.toggle('tagged', tagged);
             }

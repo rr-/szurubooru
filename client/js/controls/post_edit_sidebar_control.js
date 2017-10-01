@@ -72,7 +72,8 @@ class PostEditSidebarControl extends events.EventTarget {
         }
 
         if (this._tagInputNode) {
-            this._tagControl = new TagInputControl(this._tagInputNode);
+            this._tagControl = new TagInputControl(
+                this._tagInputNode, post.tags);
         }
 
         if (this._contentInputNode) {
@@ -171,10 +172,11 @@ class PostEditSidebarControl extends events.EventTarget {
             });
         }
 
-        this._tagControl.addEventListener('change', e => {
-            this._post.tags = this._tagControl.tags;
-            this._syncExpanderTitles();
-        });
+        this._tagControl.addEventListener(
+            'change', e => {
+                this.dispatchEvent(new CustomEvent('change'));
+                this._syncExpanderTitles();
+            });
 
         if (this._noteTextareaNode) {
             this._noteTextareaNode.addEventListener(

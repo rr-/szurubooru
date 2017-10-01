@@ -134,7 +134,7 @@ class Executor:
             'offset': offset,
             'limit': limit,
             'total': count,
-            'results': [serializer(entity) for entity in entities],
+            'results': list([serializer(entity) for entity in entities]),
         }
 
     def _prepare_db_query(

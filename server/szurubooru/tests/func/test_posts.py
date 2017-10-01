@@ -75,7 +75,11 @@ def test_serialize_post_when_empty():
 
 
 def test_serialize_post(
-        user_factory, comment_factory, tag_factory, config_injector):
+        user_factory,
+        comment_factory,
+        tag_factory,
+        tag_category_factory,
+        config_injector):
     config_injector({'data_url': 'http://example.com/', 'secret': 'test'})
     with patch('szurubooru.func.comments.serialize_comment'), \
             patch('szurubooru.func.users.serialize_micro_user'), \
@@ -92,8 +96,12 @@ def test_serialize_post(
         post.creation_time = datetime(1997, 1, 1)
         post.last_edit_time = datetime(1998, 1, 1)
         post.tags = [
-            tag_factory(names=['tag1', 'tag2']),
-            tag_factory(names=['tag3'])
+            tag_factory(
+                names=['tag1', 'tag2'],
+                category=tag_category_factory('test-cat1')),
+            tag_factory(
+                names=['tag3'],
+                category=tag_category_factory('test-cat2'))
         ]
         post.safety = model.Post.SAFETY_SAFE
         post.source = '4gag'
@@ -143,7 +151,7 @@ def test_serialize_post(
         db.session.flush()
 
         result = posts.serialize_post(post, auth_user)
-        result['tags'].sort()
+        result['tags'].sort(key=lambda tag: tag['names'][0])
 
         assert result == {
             'id': 1,
@@ -162,7 +170,17 @@ def test_serialize_post(
                 'http://example.com/'
                 'generated-thumbnails/1_244c8840887984c4.jpg',
             'flags': ['loop'],
-            'tags': ['tag1', 'tag3'],
+            'tags': [
+                {
+                    'names': ['tag1', 'tag2'],
+                    'category': 'test-cat1', 'usages': 1,
+                },
+                {
+                    'names': ['tag3'],
+                    'category': 'test-cat2',
+                    'usages': 1,
+                },
+            ],
             'relations': [],
             'notes': [],
             'user': 'post author',

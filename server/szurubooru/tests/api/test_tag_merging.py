@@ -25,8 +25,7 @@ def test_merging(user_factory, tag_factory, context_factory, post_factory):
     assert target_tag.post_count == 0
     with patch('szurubooru.func.tags.serialize_tag'), \
             patch('szurubooru.func.tags.merge_tags'), \
-            patch('szurubooru.func.snapshots.merge'), \
-            patch('szurubooru.func.tags.export_to_json'):
+            patch('szurubooru.func.snapshots.merge'):
         api.tag_api.merge_tags(
             context_factory(
                 params={
@@ -39,7 +38,6 @@ def test_merging(user_factory, tag_factory, context_factory, post_factory):
         tags.merge_tags.called_once_with(source_tag, target_tag)
         snapshots.merge.assert_called_once_with(
             source_tag, target_tag, auth_user)
-        tags.export_to_json.assert_called_once_with()
 
 
 @pytest.mark.parametrize(
