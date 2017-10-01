@@ -2,7 +2,6 @@
 
 const config = require('../config.js');
 const events = require('../events.js');
-const misc = require('../util/misc.js');
 const views = require('../util/views.js');
 const TagAutoCompleteControl =
     require('../controls/tag_auto_complete_control.js');

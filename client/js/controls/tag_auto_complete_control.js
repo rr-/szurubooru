@@ -5,10 +5,6 @@ const views = require('../util/views.js');
 const TagList = require('../models/tag_list.js');
 const AutoCompleteControl = require('./auto_complete_control.js');
 
-function _escapeSearch(text) {
-    return text.replace('\\', '\\\\').replace(':', '\\:');
-}
-
 function _tagListToMatches(tags, options) {
     return [...tags].sort((tag1, tag2) => {
         return tag2.usages - tag1.usages;
