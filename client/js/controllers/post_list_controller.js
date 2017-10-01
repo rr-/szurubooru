@@ -65,7 +65,7 @@ class PostListController {
         Promise.all(
             this._bulkEditTags.map(tag =>
                 e.detail.post.tags.addByName(tag)))
-            .then(() => { e.detail.post.save(); })
+            .then(e.detail.post.save())
             .catch(error => window.alert(error.message));
     }
 
