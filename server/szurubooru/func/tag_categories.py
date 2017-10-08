@@ -105,7 +105,7 @@ def update_category_color(category: model.TagCategory, color: str) -> None:
     assert category
     if not color:
         raise InvalidTagCategoryColorError('Color cannot be empty.')
-    if not re.match(r'^#?[0-9a-z]+$', color):
+    if not re.match(r'^#?[0-9A-Za-z]+$', color):
         raise InvalidTagCategoryColorError('Invalid color.')
     if util.value_exceeds_column_size(color, model.TagCategory.color):
         raise InvalidTagCategoryColorError('Color is too long.')
