@@ -41,7 +41,7 @@ shortcuts:</p>
     </tbody>
 </table>
 
-<p>Additionally, each item in top navigation can be accessed using feature
-called &ldquo;access keys&rdquo;. Pressing underlined letter while holding
-Shfit or Alt+Shift (depending on your browser) will go to the desired page
-(most browsers) or focus the link (IE).</p>
+<p>Additionally, each item in the top navigation can be accessed using a
+feature called &ldquo;access keys&rdquo;. Pressing the underlined letter while
+holding Shift or Alt+Shift (depending on your browser) will go to the desired
+page (most browsers) or focus the link (IE).</p>
