@@ -62,7 +62,8 @@ class HomeView {
                         window.innerWidth * 0.8,
                         window.innerHeight * 0.7,
                     ];
-                });
+                },
+                'fit-both');
 
             this._postNotesOverlay = new PostNotesOverlayControl(
                 this._postContainerNode.querySelector('.post-overlay'),
