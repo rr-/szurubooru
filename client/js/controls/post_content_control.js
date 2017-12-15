@@ -5,18 +5,23 @@ const views = require('../util/views.js');
 const optimizedResize = require('../util/optimized_resize.js');
 
 class PostContentControl {
-    constructor(hostNode, post, viewportSizeCalculator) {
+    constructor(hostNode, post, viewportSizeCalculator, fitFunctionOverride) {
         this._post = post;
         this._viewportSizeCalculator = viewportSizeCalculator;
         this._hostNode = hostNode;
         this._template = views.getTemplate('post-content');
+
+        let fitMode = settings.get().fitMode;
+        if (typeof fitFunctionOverride !== 'undefined') {
+            fitMode = fitFunctionOverride;
+        }
 
         this._currentFitFunction = {
             'fit-both': this.fitBoth,
             'fit-original': this.fitOriginal,
             'fit-width': this.fitWidth,
             'fit-height': this.fitHeight,
-        }[settings.get().fitMode] || this.fitBoth;
+        }[fitMode] || this.fitBoth;
 
         this._install();
 
