@@ -15,6 +15,7 @@
             margin: 0 auto 2em auto
 
     form
+        display: inline-block
         width: auto
         vertical-align: middle
         margin: 0 0 2em 0
@@ -52,6 +53,8 @@
             li
                 display: inline
                 white-space: nowrap
+                @media (max-width: 800px)
+                    display: block
             .sep
                 word-spacing: 1.1em
                 background-repeat: no-repeat

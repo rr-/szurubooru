@@ -1,6 +1,7 @@
 'use strict';
 
 const api = require('../api.js');
+const config = require('../config.js');
 const topNavigation = require('../models/top_navigation.js');
 const TopNavigationView = require('../views/top_navigation_view.js');
 
@@ -64,6 +65,7 @@ class TopNavigationController {
         this._updateNavigationFromPrivileges();
         this._topNavigationView.render({
             items: topNavigation.getAll(),
+            name: config.name
         });
         this._topNavigationView.activate(
             topNavigation.activeItem ? topNavigation.activeItem.key : '');

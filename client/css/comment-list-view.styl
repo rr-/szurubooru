@@ -1,15 +1,24 @@
+@import colors
+$comment-border-color = $top-navigation-color
+
 .global-comment-list
     text-align: left
 
     &>ul
         list-style-type: none
-        margin: 1em 0
+        margin: 1em 0 0
         padding: 0
 
+        &>li
+            margin-top: 2em
+            padding-top: 2em
+            border-top: 3px solid $comment-border-color
+            &:first-child
+                margin-top: 0
+                padding-top: 0
+                border-top: none
+
         @media (max-width: 700px)
-            &>li
-                margin-bottom: 5em
-                padding: 1vw
             .post-thumbnail
                 margin-bottom: 1em
                 .thumbnail
@@ -19,7 +28,6 @@
         @media (min-width: 700px)
             &>li
                 padding-left: 13em
-                margin-bottom: 2em
             .post-thumbnail
                 float: left
                 margin: 0 0 1em -13em

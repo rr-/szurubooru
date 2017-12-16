@@ -145,12 +145,19 @@
         margin-bottom: 0.75em
         *
             vertical-align: top
+        @media (max-width: 1000px)
+            display: block
     input
         margin-bottom: 0.25em
         margin-right: 0.25em
     input[name=search-text]
         width: 25em
+        @media (max-width: 1000px)
+            display: block
+            width: 100%
+            margin-bottom: 0.5em
     .append
+        vertical-align: middle
         font-size: 0.95em
         color: $inactive-link-color
     .bulk-edit
@@ -163,6 +170,11 @@
         &.hidden
             display: none
     .bulk-edit-tags
+        &.opened
+            .hint
+                @media (max-width: 1000px)
+                    display: block
+                    margin-bottom: 0.5em
         &:not(.opened)
             [type=text],
             .start
@@ -171,8 +183,21 @@
                 display: none
         input[name=tag]
             width: 12em
+            @media (max-width: 1000px)
+                display: block
+                width: 100%
+                margin-bottom: 0.5em
+        .append
+            &.open,
+            &.hint
+                @media (max-width: 1000px)
+                    margin-left: 0
         .hint
             margin-right: 1em
+    .bulk-edit-safety
+        .append
+            @media (max-width: 1000px)
+                margin-left: 0
 
     .safety
         margin-right: 0.25em
