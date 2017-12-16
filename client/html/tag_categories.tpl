@@ -1,17 +1,19 @@
 <div class='content-wrapper tag-categories'>
     <form>
         <h1>Tag categories</h1>
-        <table>
-            <thead>
-                <tr>
-                    <th class='name'>Category name</th>
-                    <th class='color'>CSS color</th>
-                    <th class='usages'>Usages</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th class='name'>Category name</th>
+                        <th class='color'>CSS color</th>
+                        <th class='usages'>Usages</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
 
         <% if (ctx.canCreate) { %>
             <p><a href class='add'>Add new category</a></p>

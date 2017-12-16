@@ -1,4 +1,4 @@
-<div class='tag-list'>
+<div class='tag-list table-wrap'>
     <% if (ctx.response.results.length) { %>
         <table>
             <thead>

@@ -8,11 +8,16 @@ $snapshot-merged-background-color = #FEC
 
     ul
         margin: 0 auto
+        padding: 0
         width: 100%
         max-width: 35em
         list-style-type: none
 
         li
+            margin-bottom: 1em
+            &:last-child
+                margin-bottom: 0
+
             .time
                 float: right
 
@@ -39,6 +44,3 @@ $snapshot-merged-background-color = #FEC
                 background: $snapshot-merged-background-color
                 &+.details
                     background: lighten($snapshot-merged-background-color, 50%)
-
-            div.details
-                margin-bottom: 2em

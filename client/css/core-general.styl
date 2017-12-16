@@ -125,6 +125,37 @@ nav
             li
                 display: inline-block
                 float: left
+            #mobile-navigation-toggle
+                display: none
+                width: 100%
+                padding: 0 1.5vw
+                line-height: 2.3em
+                font-family: inherit
+                border: none
+                background: none
+                color: $active-tab-text-color
+                .site-name
+                    display: block
+                    float: left
+                    max-width: 50vw
+                    overflow: hidden
+                    text-overflow: ellipsis
+                .toggle-icon
+                    display: block
+                    float: right
+            @media (max-width: 1000px)
+                text-align: left
+                li
+                    display: none
+                    float: none
+                    a
+                        display: block
+                        padding: 0 1.5vw
+                #mobile-navigation-toggle
+                    display: block
+                &.opened
+                    li
+                        display: block
         ul li[data-name=account],
         ul li[data-name=register],
         ul li[data-name=login],
@@ -141,6 +172,8 @@ nav
             margin-right: 0.6em
             margin-left: calc(0.6em - 1.2em)
             float: left
+            @media (max-width: 1000px)
+                display: none
 
 a .access-key
     text-decoration: underline
@@ -193,6 +226,9 @@ a .access-key
     padding-bottom: 0 !important
     margin-top: 0 !important
     margin-bottom: 0 !important
+
+.table-wrap
+    overflow-x: scroll
 
 /* hack to prevent text from being copied */
 [data-pseudo-content]:before {

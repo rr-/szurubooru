@@ -31,13 +31,22 @@ form.horizontal
     margin-bottom: 1em
     .input, .buttons, ul
         display: inline-block
-        vertical-align: middle
+        vertical-align: top
         margin: 0
         padding: 0
         input
-            vertical-align: middle
+            vertical-align: top
     .buttons
         margin-right: 0.5em
+    @media (max-width: 1000px)
+        display: block
+        .input, .buttons, ul
+            display: block
+            margin-top: 0.5em
+            &:first-child
+                margin-top: 0
+        .buttons
+            margin-right: 0
 
 
 
@@ -213,10 +222,13 @@ input[type=submit]
     cursor: pointer
     font-size: 100%
     padding: 0.2em 0.7em
+    border-radius: 0
     border: 2px solid $button-enabled-background-color
     background: $button-enabled-background-color
     color: $button-enabled-text-color
     outline: 0 /* something on Chrome */
+    -moz-appearance: none
+    -webkit-appearance: none
 
     &:disabled
         cursor: default
