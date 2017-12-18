@@ -238,7 +238,12 @@ a .access-key
     margin-bottom: 0 !important
 
 .table-wrap
-    overflow-x: scroll
+    overflow-x: auto
+    &::-webkit-scrollbar
+        height: 6px
+        background-color: $scrollbar-bg-color
+    &::-webkit-scrollbar-thumb
+        background-color: $scrollbar-thumb-color
 
 /* hack to prevent text from being copied */
 [data-pseudo-content]:before {
