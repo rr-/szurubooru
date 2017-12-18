@@ -44,11 +44,18 @@ class HelpView {
                 subsectionTemplates[section][subsection](ctx));
         }
 
+        views.replaceContent(this._hostNode, sourceNode);
+
         for (let itemNode of
                 sourceNode.querySelectorAll('.primary [data-name]')) {
             itemNode.classList.toggle(
                 'active',
                 itemNode.getAttribute('data-name') === section);
+            if (itemNode.getAttribute('data-name') === section) {
+                itemNode.parentNode.scrollLeft =
+                    itemNode.getBoundingClientRect().left -
+                    itemNode.parentNode.getBoundingClientRect().left
+            }
         }
 
         for (let itemNode of
@@ -56,9 +63,13 @@ class HelpView {
             itemNode.classList.toggle(
                 'active',
                 itemNode.getAttribute('data-name') === subsection);
+            if (itemNode.getAttribute('data-name') === subsection) {
+                itemNode.parentNode.scrollLeft =
+                    itemNode.getBoundingClientRect().left -
+                    itemNode.parentNode.getBoundingClientRect().left
+            }
         }
 
-        views.replaceContent(this._hostNode, sourceNode);
         views.syncScrollPosition();
     }
 }

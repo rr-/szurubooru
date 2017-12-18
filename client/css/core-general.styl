@@ -76,6 +76,17 @@ form .fa-question-circle-o
         margin: 0 auto
         >*:first-child, form h1
             margin-top: 0
+        nav.buttons
+            ul
+                display: block
+                max-width: 100%
+                white-space: nowrap
+                overflow-x: auto
+                &::-webkit-scrollbar
+                    height: 6px
+                    background-color: $scrollbar-bg-color
+                &::-webkit-scrollbar-thumb
+                    background-color: $scrollbar-thumb-color
     >.content-wrapper:not(.transparent)
         background: $top-navigation-color
         padding: 1.8em

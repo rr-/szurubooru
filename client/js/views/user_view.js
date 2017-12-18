@@ -24,11 +24,14 @@ class UserView extends events.EventTarget {
     _install() {
         const ctx = this._ctx;
         views.replaceContent(this._hostNode, template(ctx));
+
         for (let item of this._hostNode.querySelectorAll('[data-name]')) {
+            item.classList.toggle(
+                'active', item.getAttribute('data-name') === ctx.section);
             if (item.getAttribute('data-name') === ctx.section) {
-                item.className = 'active';
-            } else {
-                item.className = '';
+                item.parentNode.scrollLeft =
+                    item.getBoundingClientRect().left -
+                    item.parentNode.getBoundingClientRect().left
             }
         }
 
