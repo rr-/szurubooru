@@ -29,6 +29,11 @@ class TagView extends events.EventTarget {
         for (let item of this._hostNode.querySelectorAll('[data-name]')) {
             item.classList.toggle(
                 'active', item.getAttribute('data-name') === ctx.section);
+            if (item.getAttribute('data-name') === ctx.section) {
+                item.parentNode.scrollLeft =
+                    item.getBoundingClientRect().left -
+                    item.parentNode.getBoundingClientRect().left
+            }
         }
 
         ctx.hostNode = this._hostNode.querySelector('.tag-content-holder');
