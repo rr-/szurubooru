@@ -59,8 +59,10 @@ form .fa-question-circle-o
     vertical-align: middle
 
 #content-holder
-    padding: 1.5vw
+    padding: 1.5em
     text-align: center
+    @media (max-width: 1000px)
+        padding: 1em
     >.content-wrapper
         box-sizing: border-box /* make max-width: 100% on this element include padding */
         text-align: left
@@ -70,7 +72,9 @@ form .fa-question-circle-o
             margin-top: 0
     >.content-wrapper:not(.transparent)
         background: $top-navigation-color
-        padding: 2vw
+        padding: 1.8em
+        @media (max-width: 1000px)
+            padding: 1.5em
 
 hr
     border: 0
@@ -123,10 +127,12 @@ nav
             li
                 display: inline-block
                 float: left
+                a
+                    padding: 0 1.5em
             #mobile-navigation-toggle
                 display: none
                 width: 100%
-                padding: 0 1.5vw
+                padding: 0 1em
                 line-height: 2.3em
                 font-family: inherit
                 border: none
@@ -148,7 +154,7 @@ nav
                     float: none
                     a
                         display: block
-                        padding: 0 1.5vw
+                        padding: 0 1em
                 #mobile-navigation-toggle
                     display: block
                 &.opened
