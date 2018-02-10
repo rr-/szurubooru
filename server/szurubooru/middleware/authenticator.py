@@ -24,7 +24,7 @@ def _get_user(ctx: rest.Context) -> Optional[model.User]:
                 'ValidationError',
                 'Only basic HTTP authentication is supported.')
         username, password = base64.decodebytes(
-            credentials.encode('ascii')).decode('utf8').split(':')
+            credentials.encode('ascii')).decode('utf8').split(':', 1)
         return _authenticate(username, password)
     except ValueError as err:
         msg = (
