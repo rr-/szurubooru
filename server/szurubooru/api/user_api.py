@@ -26,24 +26,29 @@ def get_users(
 @rest.routes.post('/users/?')
 def create_user(
         ctx: rest.Context, _params: Dict[str, str] = {}) -> rest.Response:
-    if config.config['registration_enabled']:
-        auth.verify_privilege(ctx.user, 'users:create')
-        name = ctx.get_param_as_string('name')
-        password = ctx.get_param_as_string('password')
-        email = ctx.get_param_as_string('email', default='')
-        user = users.create_user(name, password, email)
-        if ctx.has_param('rank'):
-            users.update_user_rank(user, ctx.get_param_as_string('rank'), ctx.user)
-        if ctx.has_param('avatarStyle'):
-            users.update_user_avatar(
-                user,
-                ctx.get_param_as_string('avatarStyle'),
-                ctx.get_file('avatar', default=b''))
-        ctx.session.add(user)
-        ctx.session.commit()
-        return _serialize(ctx, user, force_show_email=True)
+    if ctx.user.user_id is None:
+        auth.verify_privilege(ctx.user, 'users:create:self')
     else:
-        raise errors.ValidationError('User Registration Disabled')
+        auth.verify_privilege(ctx.user, 'users:create:any')
+
+    name = ctx.get_param_as_string('name')
+    password = ctx.get_param_as_string('password')
+    email = ctx.get_param_as_string('email', default='')
+    user = users.create_user(name, password, email)
+    if ctx.has_param('rank'):
+        users.update_user_rank(user, ctx.get_param_as_string('rank'), ctx.user)
+    if ctx.has_param('avatarStyle'):
+        users.update_user_avatar(
+            user,
+            ctx.get_param_as_string('avatarStyle'),
+            ctx.get_file('avatar', default=b''))
+    ctx.session.add(user)
+    ctx.session.commit()
+
+    if ctx.user.user_id is not None:
+        user = ctx.user
+
+    return _serialize(ctx, user, force_show_email=True)
 
 
 @rest.routes.get('/user/(?P<user_name>[^/]+)/?')

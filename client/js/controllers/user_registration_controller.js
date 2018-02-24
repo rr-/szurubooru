@@ -10,7 +10,7 @@ const EmptyView = require('../views/empty_view.js');
 
 class UserRegistrationController {
     constructor() {
-        if (!api.hasPrivilege('users:create')) {
+        if (!api.hasPrivilege('users:create:self')) {
             this._view = new EmptyView();
             this._view.showError('Registration is closed.');
             return;
@@ -30,6 +30,7 @@ class UserRegistrationController {
         user.email = e.detail.email;
         user.password = e.detail.password;
         user.save().then(() => {
+            // TODO: Support the flow where an admin creates a user. Don't log them out...
             api.forget();
             return api.login(e.detail.name, e.detail.password, false);
         }).then(() => {
