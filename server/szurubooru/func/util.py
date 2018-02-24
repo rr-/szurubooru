@@ -41,6 +41,16 @@ def create_temp_file(**kwargs: Any) -> Generator:
         os.remove(path)
 
 
+@contextmanager
+def create_temp_file_path(**kwargs: Any) -> Generator:
+    (descriptor, path) = tempfile.mkstemp(**kwargs)
+    os.close(descriptor)
+    try:
+        yield path
+    finally:
+        os.remove(path)
+
+
 def unalias_dict(source: List[Tuple[List[str], T]]) -> Dict[str, T]:
     output_dict = {}  # type: Dict[str, T]
     for aliases, value in source:

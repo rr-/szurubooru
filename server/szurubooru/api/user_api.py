@@ -1,5 +1,5 @@
 from typing import Any, Dict
-from szurubooru import model, search, rest
+from szurubooru import model, search, rest, config, errors
 from szurubooru.func import auth, users, serialization, versions
 
 
@@ -26,7 +26,11 @@ def get_users(
 @rest.routes.post('/users/?')
 def create_user(
         ctx: rest.Context, _params: Dict[str, str] = {}) -> rest.Response:
-    auth.verify_privilege(ctx.user, 'users:create')
+    if ctx.user.user_id is None:
+        auth.verify_privilege(ctx.user, 'users:create:self')
+    else:
+        auth.verify_privilege(ctx.user, 'users:create:any')
+
     name = ctx.get_param_as_string('name')
     password = ctx.get_param_as_string('password')
     email = ctx.get_param_as_string('email', default='')
@@ -40,6 +44,10 @@ def create_user(
             ctx.get_file('avatar', default=b''))
     ctx.session.add(user)
     ctx.session.commit()
+
+    if ctx.user.user_id is not None:
+        user = ctx.user
+
     return _serialize(ctx, user, force_show_email=True)
 
 

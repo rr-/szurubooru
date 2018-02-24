@@ -33,10 +33,14 @@ class Image:
         return self.info['streams'][0]['nb_read_frames']
 
     def resize_fill(self, width: int, height: int) -> None:
+
+        width_greater = self.width > self.height
+        scale_param = "scale='%d:%d" % ((-1, height) if width_greater else (width, -1))
+
         cli = [
             '-i', '{path}',
             '-f', 'image2',
-            '-vf', _SCALE_FIT_FMT.format(width=width, height=height),
+            '-filter:v', scale_param,
             '-map', '0:v:0',
             '-vframes', '1',
             '-vcodec', 'png',
@@ -50,7 +54,7 @@ class Image:
                     '-ss',
                     '%d' % math.floor(duration * 0.3),
                 ] + cli
-        content = self._execute(cli)
+        content = self._execute(cli, ignore_error_if_data=True)
         if not content:
             raise errors.ProcessingError('Error while resizing image.')
         self.content = content
@@ -79,7 +83,73 @@ class Image:
             '-',
         ])
 
-    def _execute(self, cli: List[str], program: str = 'ffmpeg') -> bytes:
+    def to_webm(self) -> bytes:
+        with util.create_temp_file_path(suffix='.log') as phase_log_path:
+            # Pass 1
+            self._execute([
+                '-i', '{path}',
+                '-pass', '1',
+                '-passlogfile', phase_log_path,
+                '-vcodec', 'libvpx-vp9',
+                '-crf', '4',
+                '-b:v', '2500K',
+                '-acodec', 'libvorbis',
+                '-f', 'webm',
+                '-y', '/dev/null'
+            ])
+
+            # Pass 2
+            return self._execute([
+                '-i', '{path}',
+                '-pass', '2',
+                '-passlogfile', phase_log_path,
+                '-vcodec', 'libvpx-vp9',
+                '-crf', '4',
+                '-b:v', '2500K',
+                '-acodec', 'libvorbis',
+                '-f', 'webm',
+                '-'
+            ])
+
+    def to_mp4(self) -> bytes:
+
+        with util.create_temp_file_path(suffix='.dat') as mp4_temp_path:
+
+            width = self.width
+            height = self.height
+            altered_dimensions = False
+
+            if self.width % 2 != 0:
+                width = self.width - 1
+                altered_dimensions = True
+
+            if self.height % 2 != 0:
+                height = self.height - 1
+                altered_dimensions = True
+
+            args = [
+                '-i', '{path}',
+                '-vcodec', 'libx264',
+                '-preset', 'slow',
+                '-crf', '22',
+                '-b:v', '200K',
+                '-profile:v', 'main',
+                '-pix_fmt', 'yuv420p',
+                '-acodec', 'aac',
+                '-f', 'mp4'
+            ]
+
+            if altered_dimensions:
+                args = args + [
+                    '-filter:v', 'scale=\'%d:%d\'' % (width, height)
+                ]
+
+            self._execute(args + ['-y', mp4_temp_path])
+
+            with open(mp4_temp_path, 'rb') as mp4_temp:
+                return mp4_temp.read()
+
+    def _execute(self, cli: List[str], program: str = 'ffmpeg', ignore_error_if_data: bool = False) -> bytes:
         extension = mime.get_extension(mime.get_mime_type(self.content))
         assert extension
         with util.create_temp_file(suffix='.' + extension) as handle:
@@ -98,8 +168,9 @@ class Image:
                     'Failed to execute ffmpeg command (cli=%r, err=%r)',
                     ' '.join(shlex.quote(arg) for arg in cli),
                     err)
-                raise errors.ProcessingError(
-                    'Error while processing image.\n' + err.decode('utf-8'))
+                if (not ignore_error_if_data and len(out) > 0) or len(out) == 0:
+                    raise errors.ProcessingError(
+                        'Error while processing image.\n' + err.decode('utf-8'))
             return out
 
     def _reload_info(self) -> None:
