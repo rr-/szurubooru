@@ -62,7 +62,8 @@ default_rank: regular
 
 
 privileges:
-    'users:create':                 anonymous
+    'users:create:self':            anonymous # Registration permission
+    'users:create:any':             administrator
     'users:list':                   regular
     'users:view':                   regular
     'users:edit:any:name':          moderator
