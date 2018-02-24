@@ -399,7 +399,9 @@ def _after_post_update(
 def _before_post_delete(
         _mapper: Any, _connection: Any, post: model.Post) -> None:
     if post.post_id:
-        image_hash.delete_image(post.post_id)
+        image_hash.delete_image(str(post.post_id))
+        files.delete(get_post_content_path(post))
+        files.delete(get_post_thumbnail_path(post))
 
 
 def _sync_post_content(post: model.Post) -> None:
