@@ -1,6 +1,6 @@
-import os
-from unittest.mock import patch
 from datetime import datetime
+from unittest.mock import patch
+import os
 import pytest
 from szurubooru import db, model
 from szurubooru.func import (
@@ -675,7 +675,8 @@ def test_feature_post(post_factory, user_factory):
     assert new_featured_post == post
 
 
-def test_delete(post_factory):
+def test_delete(post_factory, config_injector):
+    config_injector({'delete_source_files': False})
     post = post_factory()
     db.session.add(post)
     db.session.flush()
@@ -685,7 +686,8 @@ def test_delete(post_factory):
     assert posts.get_post_count() == 0
 
 
-def test_merge_posts_deletes_source_post(post_factory):
+def test_merge_posts_deletes_source_post(post_factory, config_injector):
+    config_injector({'delete_source_files': False})
     source_post = post_factory()
     target_post = post_factory()
     db.session.add_all([source_post, target_post])
@@ -697,7 +699,8 @@ def test_merge_posts_deletes_source_post(post_factory):
     assert post is not None
 
 
-def test_merge_posts_with_itself(post_factory):
+def test_merge_posts_with_itself(post_factory, config_injector):
+    config_injector({'delete_source_files': False})
     source_post = post_factory()
     db.session.add(source_post)
     db.session.flush()
@@ -705,7 +708,8 @@ def test_merge_posts_with_itself(post_factory):
         posts.merge_posts(source_post, source_post, False)
 
 
-def test_merge_posts_moves_tags(post_factory, tag_factory):
+def test_merge_posts_moves_tags(post_factory, tag_factory, config_injector):
+    config_injector({'delete_source_files': False})
     source_post = post_factory()
     target_post = post_factory()
     tag = tag_factory()
@@ -720,7 +724,9 @@ def test_merge_posts_moves_tags(post_factory, tag_factory):
     assert posts.get_post_by_id(target_post.post_id).tag_count == 1
 
 
-def test_merge_posts_doesnt_duplicate_tags(post_factory, tag_factory):
+def test_merge_posts_doesnt_duplicate_tags(
+        post_factory, tag_factory, config_injector):
+    config_injector({'delete_source_files': False})
     source_post = post_factory()
     target_post = post_factory()
     tag = tag_factory()
@@ -735,7 +741,9 @@ def test_merge_posts_doesnt_duplicate_tags(post_factory, tag_factory):
     assert posts.get_post_by_id(target_post.post_id).tag_count == 1
 
 
-def test_merge_posts_moves_comments(post_factory, comment_factory):
+def test_merge_posts_moves_comments(
+        post_factory, comment_factory, config_injector):
+    config_injector({'delete_source_files': False})
     source_post = post_factory()
     target_post = post_factory()
     comment = comment_factory(post=source_post)
@@ -749,7 +757,9 @@ def test_merge_posts_moves_comments(post_factory, comment_factory):
     assert posts.get_post_by_id(target_post.post_id).comment_count == 1
 
 
-def test_merge_posts_moves_scores(post_factory, post_score_factory):
+def test_merge_posts_moves_scores(
+        post_factory, post_score_factory, config_injector):
+    config_injector({'delete_source_files': False})
     source_post = post_factory()
     target_post = post_factory()
     score = post_score_factory(post=source_post, score=1)
@@ -764,7 +774,8 @@ def test_merge_posts_moves_scores(post_factory, post_score_factory):
 
 
 def test_merge_posts_doesnt_duplicate_scores(
-        post_factory, user_factory, post_score_factory):
+        post_factory, user_factory, post_score_factory, config_injector):
+    config_injector({'delete_source_files': False})
     source_post = post_factory()
     target_post = post_factory()
     user = user_factory()
@@ -780,7 +791,9 @@ def test_merge_posts_doesnt_duplicate_scores(
     assert posts.get_post_by_id(target_post.post_id).score == 1
 
 
-def test_merge_posts_moves_favorites(post_factory, post_favorite_factory):
+def test_merge_posts_moves_favorites(
+        post_factory, post_favorite_factory, config_injector):
+    config_injector({'delete_source_files': False})
     source_post = post_factory()
     target_post = post_factory()
     favorite = post_favorite_factory(post=source_post)
@@ -795,7 +808,8 @@ def test_merge_posts_moves_favorites(post_factory, post_favorite_factory):
 
 
 def test_merge_posts_doesnt_duplicate_favorites(
-        post_factory, user_factory, post_favorite_factory):
+        post_factory, user_factory, post_favorite_factory, config_injector):
+    config_injector({'delete_source_files': False})
     source_post = post_factory()
     target_post = post_factory()
     user = user_factory()
@@ -811,7 +825,8 @@ def test_merge_posts_doesnt_duplicate_favorites(
     assert posts.get_post_by_id(target_post.post_id).favorite_count == 1
 
 
-def test_merge_posts_moves_child_relations(post_factory):
+def test_merge_posts_moves_child_relations(post_factory, config_injector):
+    config_injector({'delete_source_files': False})
     source_post = post_factory()
     target_post = post_factory()
     related_post = post_factory()
@@ -826,7 +841,9 @@ def test_merge_posts_moves_child_relations(post_factory):
     assert posts.get_post_by_id(target_post.post_id).relation_count == 1
 
 
-def test_merge_posts_doesnt_duplicate_child_relations(post_factory):
+def test_merge_posts_doesnt_duplicate_child_relations(
+        post_factory, config_injector):
+    config_injector({'delete_source_files': False})
     source_post = post_factory()
     target_post = post_factory()
     related_post = post_factory()
@@ -842,7 +859,8 @@ def test_merge_posts_doesnt_duplicate_child_relations(post_factory):
     assert posts.get_post_by_id(target_post.post_id).relation_count == 1
 
 
-def test_merge_posts_moves_parent_relations(post_factory):
+def test_merge_posts_moves_parent_relations(post_factory, config_injector):
+    config_injector({'delete_source_files': False})
     source_post = post_factory()
     target_post = post_factory()
     related_post = post_factory()
@@ -859,7 +877,9 @@ def test_merge_posts_moves_parent_relations(post_factory):
     assert posts.get_post_by_id(related_post.post_id).relation_count == 1
 
 
-def test_merge_posts_doesnt_duplicate_parent_relations(post_factory):
+def test_merge_posts_doesnt_duplicate_parent_relations(
+        post_factory, config_injector):
+    config_injector({'delete_source_files': False})
     source_post = post_factory()
     target_post = post_factory()
     related_post = post_factory()
@@ -876,7 +896,9 @@ def test_merge_posts_doesnt_duplicate_parent_relations(post_factory):
     assert posts.get_post_by_id(related_post.post_id).relation_count == 1
 
 
-def test_merge_posts_doesnt_create_relation_loop_for_children(post_factory):
+def test_merge_posts_doesnt_create_relation_loop_for_children(
+        post_factory, config_injector):
+    config_injector({'delete_source_files': False})
     source_post = post_factory()
     target_post = post_factory()
     source_post.relations = [target_post]
@@ -890,7 +912,9 @@ def test_merge_posts_doesnt_create_relation_loop_for_children(post_factory):
     assert posts.get_post_by_id(target_post.post_id).relation_count == 0
 
 
-def test_merge_posts_doesnt_create_relation_loop_for_parents(post_factory):
+def test_merge_posts_doesnt_create_relation_loop_for_parents(
+        post_factory, config_injector):
+    config_injector({'delete_source_files': False})
     source_post = post_factory()
     target_post = post_factory()
     target_post.relations = [source_post]
@@ -909,6 +933,7 @@ def test_merge_posts_replaces_content(
     config_injector({
         'data_dir': str(tmpdir.mkdir('data')),
         'data_url': 'example.com',
+        'delete_source_files': False,
         'thumbnails': {
             'post_width': 300,
             'post_height': 300,

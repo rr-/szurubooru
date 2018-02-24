@@ -400,6 +400,9 @@ def _before_post_delete(
         _mapper: Any, _connection: Any, post: model.Post) -> None:
     if post.post_id:
         image_hash.delete_image(post.post_id)
+        if config.config['delete_source_files']:
+            files.delete(get_post_content_path(post))
+            files.delete(get_post_thumbnail_path(post))
 
 
 def _sync_post_content(post: model.Post) -> None:
@@ -727,12 +730,14 @@ def merge_posts(
     merge_favorites(source_post.post_id, target_post.post_id)
     merge_relations(source_post.post_id, target_post.post_id)
 
-    delete(source_post)
-
-    db.session.flush()
-
+    content = None
     if replace_content:
         content = files.get(get_post_content_path(source_post))
+
+    delete(source_post)
+    db.session.flush()
+
+    if content is not None:
         update_post_content(target_post, content)
 
 

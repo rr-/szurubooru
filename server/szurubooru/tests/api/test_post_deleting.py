@@ -1,12 +1,19 @@
 from unittest.mock import patch
 import pytest
 from szurubooru import api, db, model, errors
-from szurubooru.func import posts, tags, snapshots
+from szurubooru.func import posts, snapshots
 
 
 @pytest.fixture(autouse=True)
 def inject_config(config_injector):
-    config_injector({'privileges': {'posts:delete': model.User.RANK_REGULAR}})
+    config_injector({
+        'secret': 'secret',
+        'data_dir': '',
+        'delete_source_files': False,
+        'privileges': {
+            'posts:delete': model.User.RANK_REGULAR
+        }
+    })
 
 
 def test_deleting(user_factory, post_factory, context_factory):
