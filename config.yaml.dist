@@ -51,6 +51,8 @@ enable_safety: yes
 tag_name_regex: ^\S+$
 tag_category_name_regex: ^[^\s%+#/]+$
 
+# Disable registration by setting false
+registration_enabled: true
 
 # don't make these more restrictive unless you want to annoy people; if you do
 # customize them, make sure to update the instructions in the registration form
