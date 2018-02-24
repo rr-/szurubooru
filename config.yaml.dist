@@ -27,6 +27,12 @@ thumbnails:
     post_height: 300
 
 
+convert:
+   gif:
+     generate_webm: false
+     generate_mp4: false
+
+
 # used to send password reset e-mails
 smtp:
     host: # example: localhost

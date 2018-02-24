@@ -5,7 +5,7 @@ import sqlalchemy as sa
 from szurubooru import config, db, model, errors, rest
 from szurubooru.func import (
     users, scores, comments, tags, util,
-    mime, images, files, image_hash, serialization)
+    mime, images, files, image_hash, serialization, snapshots)
 
 
 EMPTY_PIXEL = (
@@ -427,6 +427,40 @@ def _sync_post_content(post: model.Post) -> None:
 
     if regenerate_thumb:
         generate_post_thumbnail(post)
+
+
+def generate_alternate_formats(post: model.Post, content: bytes) -> None:
+    assert post
+    assert content
+    if mime.is_animated_gif(content):
+        tag_names = [tag_name.name for tag_name in [tag.names for tag in post.tags]]
+        new_posts = []
+
+        if config.config['convert']['gif']['generate_mp4']:
+            mp4_post, new_tags = create_post(images.Image(content).to_mp4(), tag_names, post.user)
+            update_post_flags(mp4_post, ['loop'])
+            update_post_safety(mp4_post, post.safety)
+            update_post_source(mp4_post, post.source)
+            new_posts += [(mp4_post, new_tags)]
+
+        if config.config['convert']['gif']['generate_webm']:
+            webm_post, new_tags = create_post(images.Image(content).to_webm(), tag_names, post.user)
+            update_post_flags(webm_post, ['loop'])
+            update_post_safety(webm_post, post.safety)
+            update_post_source(webm_post, post.source)
+            new_posts += [(webm_post, new_tags)]
+
+        db.session.flush()
+
+        new_posts = list(filter(lambda i: i[0] is not None, new_posts))
+
+        for new_post, new_tags in new_posts:
+            snapshots.create(new_post, post.user)
+            for tag in new_tags:
+                snapshots.create(tag, post.user)
+
+        new_relations = [p[0].post_id for p in new_posts]
+        update_post_relations(post, new_relations) if len(new_relations) > 0 else None
 
 
 def update_post_content(post: model.Post, content: Optional[bytes]) -> None:
