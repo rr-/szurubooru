@@ -6,7 +6,7 @@ from szurubooru.func import users
 
 @pytest.fixture(autouse=True)
 def inject_config(config_injector):
-    config_injector({'privileges': {'users:create': 'regular'}})
+    config_injector({'privileges': {'users:create:self': 'regular'}})
 
 
 def test_creating_user(user_factory, context_factory, fake_datetime):
