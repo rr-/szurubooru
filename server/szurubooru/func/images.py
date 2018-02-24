@@ -33,10 +33,14 @@ class Image:
         return self.info['streams'][0]['nb_read_frames']
 
     def resize_fill(self, width: int, height: int) -> None:
+
+        width_greater = self.width > self.height
+        scale_param = "scale='%d:%d" % ((-1, height) if width_greater else (width, -1))
+
         cli = [
             '-i', '{path}',
             '-f', 'image2',
-            '-vf', _SCALE_FIT_FMT.format(width=width, height=height),
+            '-filter:v', scale_param,
             '-map', '0:v:0',
             '-vframes', '1',
             '-vcodec', 'png',
@@ -50,7 +54,7 @@ class Image:
                     '-ss',
                     '%d' % math.floor(duration * 0.3),
                 ] + cli
-        content = self._execute(cli)
+        content = self._execute(cli, ignore_error_if_data=True)
         if not content:
             raise errors.ProcessingError('Error while resizing image.')
         self.content = content
@@ -79,7 +83,7 @@ class Image:
             '-',
         ])
 
-    def _execute(self, cli: List[str], program: str = 'ffmpeg') -> bytes:
+    def _execute(self, cli: List[str], program: str = 'ffmpeg', ignore_error_if_data: bool = False) -> bytes:
         extension = mime.get_extension(mime.get_mime_type(self.content))
         assert extension
         with util.create_temp_file(suffix='.' + extension) as handle:
@@ -98,8 +102,9 @@ class Image:
                     'Failed to execute ffmpeg command (cli=%r, err=%r)',
                     ' '.join(shlex.quote(arg) for arg in cli),
                     err)
-                raise errors.ProcessingError(
-                    'Error while processing image.\n' + err.decode('utf-8'))
+                if (not ignore_error_if_data and len(out) > 0) or len(out) == 0:
+                    raise errors.ProcessingError(
+                        'Error while processing image.\n' + err.decode('utf-8'))
             return out
 
     def _reload_info(self) -> None:
