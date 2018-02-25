@@ -15,6 +15,7 @@ class Api extends events.EventTarget {
         this.user = null;
         this.userName = null;
         this.userPassword = null;
+        this.userToken = null;
         this.cache = {};
         this.allRanks = [
             'anonymous',
@@ -87,9 +88,68 @@ class Api extends events.EventTarget {
 
     loginFromCookies() {
         const auth = cookies.getJSON('auth');
-        return auth && auth.user && auth.password ?
-            this.login(auth.user, auth.password, true) :
+        return auth && auth.user && auth.token ?
+            this.login_with_token(auth.user, auth.token, true) :
             Promise.resolve();
+    }
+
+    login_with_token(userName, token, doRemember) {
+        this.cache = {};
+        return new Promise((resolve, reject) => {
+            this.userName = userName;
+            this.userToken = token;
+            this.get('/user/' + userName + '?bump-login=true')
+                .then(response => {
+                    const options = {};
+                    if (doRemember) {
+                        options.expires = 365;
+                    }
+                    cookies.set(
+                        'auth',
+                        {'user': userName, 'token': token},
+                        options);
+                    this.user = response;
+                    resolve();
+                    this.dispatchEvent(new CustomEvent('login'));
+                }, error => {
+                    reject(error);
+                    this.logout();
+                });
+        });
+    }
+
+    get_token(userName, options) {
+        return new Promise((resolve, reject) => {
+            this.post('/user-tokens', {})
+                .then(response => {
+                    cookies.set(
+                        'auth',
+                        {'user': userName, 'token': response.token},
+                        options);
+                    this.userName = userName;
+                    this.userToken = response.token;
+                    this.userPassword = null;
+                }, error => {
+                    reject(error);
+                });
+        });
+    }
+
+    delete_token(userName, userToken) {
+        return new Promise((resolve, reject) => {
+            this.delete('/user-tokens/' + userToken, {})
+                .then(response => {
+                    const options = {};
+                    cookies.set(
+                        'auth',
+                        {'user': userName, 'token': null},
+                        options);
+                    this.userName = userName;
+                    this.userToken = null;
+                }, error => {
+                    reject(error);
+                });
+        });
     }
 
     login(userName, userPassword, doRemember) {
@@ -103,10 +163,7 @@ class Api extends events.EventTarget {
                     if (doRemember) {
                         options.expires = 365;
                     }
-                    cookies.set(
-                        'auth',
-                        {'user': userName, 'password': userPassword},
-                        options);
+                    this.get_token(this.userName, options);
                     this.user = response;
                     resolve();
                     this.dispatchEvent(new CustomEvent('login'));
@@ -118,9 +175,11 @@ class Api extends events.EventTarget {
     }
 
     logout() {
+        this.delete_token(this.userName, this.userToken);
         this.user = null;
         this.userName = null;
         this.userPassword = null;
+        this.userToken = null;
         this.dispatchEvent(new CustomEvent('logout'));
     }
 
@@ -258,7 +317,11 @@ class Api extends events.EventTarget {
             }
 
             try {
-                if (this.userName && this.userPassword) {
+                if (this.userName && this.userToken) {
+                    req.auth = null;
+                    req.set('Authorization', 'Token ' + new Buffer(this.userName + ":" + this.userToken).toString('base64'))
+                }
+                else if (this.userName && this.userPassword) {
                     req.auth(
                         this.userName,
                         encodeURIComponent(this.userPassword)
