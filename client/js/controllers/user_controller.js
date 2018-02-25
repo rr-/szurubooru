@@ -7,6 +7,7 @@ const misc = require('../util/misc.js');
 const config = require('../config.js');
 const views = require('../util/views.js');
 const User = require('../models/user.js');
+const UserToken = require('../models/user_token.js');
 const topNavigation = require('../models/top_navigation.js');
 const UserView = require('../views/user_view.js');
 const EmptyView = require('../views/empty_view.js');
@@ -21,8 +22,28 @@ class UserController {
             return;
         }
 
+        this._successMessages = [];
+        this._errorMessages = [];
+
+        let userTokenPromise = Promise.resolve([]);
+        if (section === 'list-tokens') {
+            userTokenPromise = UserToken.get(userName)
+                .then(userTokens => {
+                    return userTokens.map(token => {
+                        token.isCurrentAuthToken = api.isCurrentAuthToken(token);
+                        return token;
+                    });
+                }, error => {
+                    return [];
+                });
+        }
+
         topNavigation.setTitle('User ' + userName);
-        User.get(userName).then(user => {
+        Promise.all([
+            userTokenPromise,
+            User.get(userName)
+        ]).then(responses => {
+            const [userTokens, user]  = responses;
             const isLoggedIn = api.isLoggedIn(user);
             const infix = isLoggedIn ? 'self' : 'any';
 
@@ -48,6 +69,7 @@ class UserController {
             } else {
                 topNavigation.activate('users');
             }
+
             this._view = new UserView({
                 user: user,
                 section: section,
@@ -58,16 +80,49 @@ class UserController {
                 canEditRank: api.hasPrivilege(`users:edit:${infix}:rank`),
                 canEditAvatar: api.hasPrivilege(`users:edit:${infix}:avatar`),
                 canEditAnything: api.hasPrivilege(`users:edit:${infix}`),
+                canListTokens: api.hasPrivilege(`userTokens:list:${infix}`),
+                canCreateToken: api.hasPrivilege(`userTokens:create:${infix}`),
+                canEditToken: api.hasPrivilege(`userTokens:edit:${infix}`),
+                canDeleteToken: api.hasPrivilege(`userTokens:delete:${infix}`),
                 canDelete: api.hasPrivilege(`users:delete:${infix}`),
                 ranks: ranks,
+                tokens: userTokens,
             });
             this._view.addEventListener('change', e => this._evtChange(e));
             this._view.addEventListener('submit', e => this._evtUpdate(e));
             this._view.addEventListener('delete', e => this._evtDelete(e));
+            this._view.addEventListener('create-token', e => this._evtCreateToken(e));
+            this._view.addEventListener('delete-token', e => this._evtDeleteToken(e));
+            this._view.addEventListener('update-token', e => this._evtUpdateToken(e));
+
+            for (let message of this._successMessages) {
+                this.showSuccess(message);
+            }
+
+            for (let message of this._errorMessages) {
+                this.showError(message);
+            }
+
         }, error => {
             this._view = new EmptyView();
             this._view.showError(error.message);
         });
+    }
+
+    showSuccess(message) {
+        if (typeof this._view === 'undefined') {
+            this._successMessages.push(message)
+        } else {
+            this._view.showSuccess(message);
+        }
+    }
+
+    showError(message) {
+        if (typeof this._view === 'undefined') {
+            this._errorMessages.push(message)
+        } else {
+            this._view.showError(message);
+        }
     }
 
     _evtChange(e) {
@@ -148,6 +203,53 @@ class UserController {
                 this._view.enableForm();
             });
     }
+
+    _evtCreateToken(e) {
+        this._view.clearMessages();
+        this._view.disableForm();
+        UserToken.create(e.detail.user.name, e.detail.note, e.detail.expirationTime)
+            .then(response => {
+                const ctx = router.show(uri.formatClientLink('user', e.detail.user.name, 'list-tokens'));
+                ctx.controller.showSuccess('Token ' + response.token + ' created.');
+            }, error => {
+                this._view.showError(error.message);
+                this._view.enableForm();
+            });
+    }
+
+    _evtDeleteToken(e) {
+        this._view.clearMessages();
+        this._view.disableForm();
+        if (api.isCurrentAuthToken(e.detail.userToken)) {
+            router.show(uri.formatClientLink('logout'));
+        } else {
+            e.detail.userToken.delete(e.detail.user.name)
+                .then(() => {
+                    const ctx = router.show(uri.formatClientLink('user', e.detail.user.name, 'list-tokens'));
+                    ctx.controller.showSuccess('Token ' + e.detail.userToken.token + ' deleted.');
+                }, error => {
+                    this._view.showError(error.message);
+                    this._view.enableForm();
+                });
+        }
+    }
+
+    _evtUpdateToken(e) {
+        this._view.clearMessages();
+        this._view.disableForm();
+
+        if (e.detail.note !== undefined) {
+            e.detail.userToken.note = e.detail.note;
+        }
+
+        e.detail.userToken.save(e.detail.user.name).then(response => {
+            const ctx = router.show(uri.formatClientLink('user', e.detail.user.name, 'list-tokens'));
+            ctx.controller.showSuccess('Token ' + response.token + ' updated.');
+        }, error => {
+            this._view.showError(error.message);
+            this._view.enableForm();
+        });
+    }
 }
 
 module.exports = router => {
@@ -156,6 +258,9 @@ module.exports = router => {
     });
     router.enter(['user', ':name', 'edit'], (ctx, next) => {
         ctx.controller = new UserController(ctx, 'edit');
+    });
+    router.enter(['user', ':name', 'list-tokens'], (ctx, next) => {
+        ctx.controller = new UserController(ctx, 'list-tokens');
     });
     router.enter(['user', ':name', 'delete'], (ctx, next) => {
         ctx.controller = new UserController(ctx, 'delete');

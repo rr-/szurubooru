@@ -168,6 +168,11 @@ function makeNumericInput(options) {
     return makeInput(options);
 }
 
+function makeDateInput(options) {
+    options.type = 'date';
+    return makeInput(options)
+}
+
 function getPostUrl(id, parameters) {
     return uri.formatClientLink(
         'post', id,
@@ -392,6 +397,7 @@ function getTemplate(templatePath) {
             makePasswordInput: makePasswordInput,
             makeEmailInput:    makeEmailInput,
             makeColorInput:    makeColorInput,
+            makeDateInput:     makeDateInput,
             makePostLink:      makePostLink,
             makeTagLink:       makeTagLink,
             makeUserLink:      makeUserLink,

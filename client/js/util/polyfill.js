@@ -59,3 +59,10 @@ Number.prototype.between = function(a, b, inclusive) {
 
 // non standard
 Promise.prototype.abort = () => {};
+
+// non standard
+Date.prototype.addDays = function(days) {
+    let dat = new Date(this.valueOf());
+    dat.setDate(dat.getDate() + days);
+    return dat;
+};

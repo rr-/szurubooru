@@ -7,6 +7,7 @@
 1. [General rules](#general-rules)
 
    - [Authentication](#authentication)
+   - [User token authentication](#user-token-authentication)
    - [Basic requests](#basic-requests)
    - [File uploads](#file-uploads)
    - [Error handling](#error-handling)
@@ -56,6 +57,11 @@
         - [Updating user](#updating-user)
         - [Getting user](#getting-user)
         - [Deleting user](#deleting-user)
+    - User Tokens
+        - [Listing user tokens](#listing-user-tokens)
+        - [Creating user token](#creating-user-token)
+        - [Updating user token](#updating-user-token)
+        - [Deleting user token](#deleting-user-token)
     - Password reset
         - [Password reset - step 1: mail request](#password-reset---step-2-confirmation)
         - [Password reset - step 2: confirmation](#password-reset---step-2-confirmation)
@@ -70,6 +76,7 @@
 
    - [User](#user)
    - [Micro user](#micro-user)
+   - [User token](#user-token)
    - [Tag category](#tag-category)
    - [Tag](#tag)
    - [Micro tag](#micro-tag)
@@ -91,7 +98,8 @@
 ## Authentication
 
 Authentication is achieved by means of [basic HTTP
-auth](https://en.wikipedia.org/wiki/Basic_access_authentication). For this
+auth](https://en.wikipedia.org/wiki/Basic_access_authentication) or through the
+use of [user token authentication](#user-token-authentication). For this
 reason, it is recommended to connect through HTTPS. There are no sessions, so
 every privileged request must be authenticated. Available privileges depend on
 the user's rank. The way how rank translates to privileges is defined in the
@@ -100,6 +108,24 @@ server's configuration.
 It is recommended to add `?bump-login` GET parameter to the first request in a
 client "session" (where the definition of a session is up to the client), so
 that the user's last login time is kept up to date.
+
+## User token authentication
+
+User token authentication works similarly to [basic HTTP
+auth](https://en.wikipedia.org/wiki/Basic_access_authentication). Because it
+operates similarly to ***basic HTTP auth*** it is still recommended to connect
+through HTTPS. The authorization header uses the type of `Token` and the
+username and token are encoded as Base64 and sent as the second parameter.
+
+Example header for user1:token-is-more-secure
+```
+Authorization: Token dXNlcjE6dG9rZW4taXMtbW9yZS1zZWN1cmU=
+```
+
+The benefit of token authentication is that beyond the initial login to acquire
+the first token, there is no need to transmit the user password in plaintext
+via basic auth. Additionally tokens can be revoked at anytime allowing a
+cleaner interface for isolating clients from user credentials.
 
 ## Basic requests
 
@@ -1469,6 +1495,112 @@ data.
 
     Deletes existing user.
 
+## Listing user tokens
+- **Request**
+
+    `GET /user-tokens/<user_name>`
+
+- **Output**
+
+    An [unpaged search result resource](#unpaged-search-result), for which
+    `<resource>` is a [user token resource](#user-token).
+
+- **Errors**
+
+    - privileges are too low
+
+- **Description**
+
+    Searches for user tokens for the given user.
+
+## Creating user token
+- **Request**
+
+    `POST /user-token/<user_name>`
+
+- **Input**
+
+    ```json5
+    {
+        "enabled":        <enabled>,        // optional
+        "note":           <note>,           // optional
+        "expirationTime": <expiration-time> // optional
+    }
+    ```
+
+- **Output**
+
+    A [user token resource](#user-token).
+
+- **Errors**
+
+    - privileges are too low
+
+- **Description**
+
+    Creates a new user token that can be used for authentication of API
+    endpoints instead of a password.
+
+## Updating user token
+- **Request**
+
+    `PUT /user-token/<user_name>/<token>`
+
+- **Input**
+
+    ```json5
+    {
+        "version":        <version>,
+        "enabled":        <enabled>,        // optional
+        "note":           <note>,           // optional
+        "expirationTime": <expiration-time> // optional
+    }
+    ```
+
+- **Output**
+
+    A [user token resource](#user-token).
+
+- **Errors**
+
+    - the version is outdated
+    - the user token does not exist
+    - privileges are too low
+
+- **Description**
+
+    Updates an existing user token using specified parameters. All fields
+    except the [`version`](#versioning) are optional - update concerns only
+    provided fields.
+
+## Deleting user token
+- **Request**
+
+    `DELETE /user-token/<user_name>/<token>`
+
+- **Input**
+
+    ```json5
+    {
+        "version": <version>
+    }
+    ```
+
+- **Output**
+
+    ```json5
+    {}
+    ```
+
+- **Errors**
+
+    - the token does not exist
+    - privileges are too low
+
+- **Description**
+
+    Deletes existing user token.
+
 ## Password reset - step 1: mail request
 - **Request**
 
@@ -1700,6 +1832,38 @@ A single user.
 **Description**
 
 A [user resource](#user) stripped down to `name` and `avatarUrl` fields.
+
+## User token
+**Description**
+
+A single user token.
+
+**Structure**
+
+```json5
+{
+    "user":           <user>,
+    "token":          <token>,
+    "note":           <token>,
+    "enabled":        <enabled>,
+    "expirationTime": <expiration-time>,
+    "version":        <version>,
+    "creationTime":   <creation-time>,
+    "lastEditTime":   <last-edit-time>,
+    "lastUsageTime":  <last-usage-time>
+}
+```
+
+**Field meaning**
+- `<user>`: micro user. See [micro user](#micro-user).
+- `<token>`: the token that can be used to authenticate the user.
+- `<note>`: a note that describes the token.
+- `<enabled>`: whether the token is still valid for authentication.
+- `<expiration-time>`: time when the token expires. It must include the timezone as per RFC 3339.
+- `<version>`: resource version. See [versioning](#versioning).
+- `<creation-time>`: time the user token was created, formatted as per RFC 3339.
+- `<last-edit-time>`: time the user token was edited, formatted as per RFC 3339.
+- `<last-usage-time>`: the last time this token was used during a login involving `?bump-login`, formatted as per RFC 3339.
 
 ## Tag category
 **Description**

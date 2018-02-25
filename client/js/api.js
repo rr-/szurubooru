@@ -15,6 +15,7 @@ class Api extends events.EventTarget {
         this.user = null;
         this.userName = null;
         this.userPassword = null;
+        this.token = null;
         this.cache = {};
         this.allRanks = [
             'anonymous',
@@ -87,9 +88,74 @@ class Api extends events.EventTarget {
 
     loginFromCookies() {
         const auth = cookies.getJSON('auth');
-        return auth && auth.user && auth.password ?
-            this.login(auth.user, auth.password, true) :
+        return auth && auth.user && auth.token ?
+            this.loginWithToken(auth.user, auth.token, true) :
             Promise.resolve();
+    }
+
+    loginWithToken(userName, token, doRemember) {
+        this.cache = {};
+        return new Promise((resolve, reject) => {
+            this.userName = userName;
+            this.token = token;
+            this.get('/user/' + userName + '?bump-login=true')
+                .then(response => {
+                    const options = {};
+                    if (doRemember) {
+                        options.expires = 365;
+                    }
+                    cookies.set(
+                        'auth',
+                        {'user': userName, 'token': token},
+                        options);
+                    this.user = response;
+                    resolve();
+                    this.dispatchEvent(new CustomEvent('login'));
+                }, error => {
+                    reject(error);
+                    this.logout();
+                });
+        });
+    }
+
+    createToken(userName, options) {
+        let userTokenRequest = {
+            enabled: true,
+            note: 'Web Login Token'
+        };
+        if (typeof options.expires !== 'undefined') {
+            userTokenRequest.expirationTime = new Date().addDays(options.expires).toISOString()
+        }
+        return new Promise((resolve, reject) => {
+            this.post('/user-token/' + userName, userTokenRequest)
+                .then(response => {
+                    cookies.set(
+                        'auth',
+                        {'user': userName, 'token': response.token},
+                        options);
+                    this.userName = userName;
+                    this.token = response.token;
+                    this.userPassword = null;
+                }, error => {
+                    reject(error);
+                });
+        });
+    }
+
+    deleteToken(userName, userToken) {
+        return new Promise((resolve, reject) => {
+            this.delete('/user-token/' + userName + '/' + userToken, {})
+                .then(response => {
+                    const options = {};
+                    cookies.set(
+                        'auth',
+                        {'user': userName, 'token': null},
+                        options);
+                    resolve();
+                }, error => {
+                    reject(error);
+                });
+        });
     }
 
     login(userName, userPassword, doRemember) {
@@ -103,10 +169,7 @@ class Api extends events.EventTarget {
                     if (doRemember) {
                         options.expires = 365;
                     }
-                    cookies.set(
-                        'auth',
-                        {'user': userName, 'password': userPassword},
-                        options);
+                    this.createToken(this.userName, options);
                     this.user = response;
                     resolve();
                     this.dispatchEvent(new CustomEvent('login'));
@@ -118,9 +181,20 @@ class Api extends events.EventTarget {
     }
 
     logout() {
+        let self = this;
+        this.deleteToken(this.userName, this.token)
+            .then(response => {
+                self._logout();
+            }, error => {
+                self._logout();
+            });
+    }
+
+    _logout() {
         this.user = null;
         this.userName = null;
         this.userPassword = null;
+        this.token = null;
         this.dispatchEvent(new CustomEvent('logout'));
     }
 
@@ -135,6 +209,10 @@ class Api extends events.EventTarget {
         } else {
             return this.userName !== null;
         }
+    }
+
+    isCurrentAuthToken(userToken) {
+        return userToken.token === this.token;
     }
 
     _getFullUrl(url) {
@@ -258,7 +336,11 @@ class Api extends events.EventTarget {
             }
 
             try {
-                if (this.userName && this.userPassword) {
+                if (this.userName && this.token) {
+                    req.auth = null;
+                    req.set('Authorization', 'Token '
+                        + new Buffer(this.userName + ":" + this.token).toString('base64'))
+                } else if (this.userName && this.userPassword) {
                     req.auth(
                         this.userName,
                         encodeURIComponent(this.userPassword)

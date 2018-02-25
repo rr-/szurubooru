@@ -160,6 +160,12 @@ def value_exceeds_column_size(value: Optional[str], column: Any) -> bool:
     return len(value) > max_length
 
 
+def get_column_size(column: Any) -> Optional[int]:
+    if not column:
+        return None
+    return column.property.columns[0].type.length
+
+
 def chunks(source_list: List[Any], part_size: int) -> Generator:
     for i in range(0, len(source_list), part_size):
         yield source_list[i:i + part_size]

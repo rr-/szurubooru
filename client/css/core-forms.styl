@@ -138,6 +138,38 @@ input[type=checkbox]:focus + .checkbox:before
 
 
 /*
+ * Date and time inputs
+ */
+
+input[type=date],
+input[type=time]
+    vertical-align: top
+    font-family: 'Droid Sans', sans-serif
+    font-size: 100%
+    padding: 0.2em 0.3em
+    box-sizing: border-box
+    border: 2px solid $input-enabled-border-color
+    background: $input-enabled-background-color
+    color: $input-enabled-text-color
+    box-shadow: none /* :-moz-submit-invalid on FF */
+    transition: border-color 0.1s linear, background-color 0.1s linear
+
+    &:disabled
+        border: 2px solid $input-disabled-border-color
+        background: $input-disabled-background-color
+        color: $input-disabled-text-color
+
+    &:focus
+        border-color: $main-color
+
+    &[readonly]
+        border: 2px solid $input-disabled-border-color
+        background: $input-disabled-background-color
+        color: $input-disabled-text-color
+
+
+
+/*
  * Regular inputs
  */
 select,

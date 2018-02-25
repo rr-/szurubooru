@@ -1,6 +1,6 @@
-import re
-from typing import Any, Optional, Union, List, Dict, Callable
 from datetime import datetime
+from typing import Any, Optional, Union, List, Dict, Callable
+import re
 import sqlalchemy as sa
 from szurubooru import config, db, model, errors, rest
 from szurubooru.func import auth, util, serialization, files, images
