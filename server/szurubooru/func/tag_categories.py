@@ -1,9 +1,10 @@
-import re
 from typing import Any, Optional, Dict, List, Callable
+
+import re
 import sqlalchemy as sa
+
 from szurubooru import config, db, model, errors, rest
 from szurubooru.func import util, serialization, cache
-
 
 DEFAULT_CATEGORY_NAME_CACHE_KEY = 'default-tag-category'
 
@@ -88,9 +89,9 @@ def update_category_name(category: model.TagCategory, name: str) -> None:
     expr = sa.func.lower(model.TagCategory.name) == name.lower()
     if category.tag_category_id:
         expr = expr & (
-            model.TagCategory.tag_category_id != category.tag_category_id)
+                model.TagCategory.tag_category_id != category.tag_category_id)
     already_exists = (
-        db.session.query(model.TagCategory).filter(expr).count() > 0)
+            db.session.query(model.TagCategory).filter(expr).count() > 0)
     if already_exists:
         raise TagCategoryAlreadyExistsError(
             'A category with this name already exists.')
@@ -115,9 +116,8 @@ def update_category_color(category: model.TagCategory, color: str) -> None:
 def try_get_category_by_name(
         name: str, lock: bool = False) -> Optional[model.TagCategory]:
     query = (
-        db.session
-        .query(model.TagCategory)
-        .filter(sa.func.lower(model.TagCategory.name) == name.lower()))
+        db.session.query(model.TagCategory)
+            .filter(sa.func.lower(model.TagCategory.name) == name.lower()))
     if lock:
         query = query.with_lockmode('update')
     return query.one_or_none()
@@ -141,9 +141,8 @@ def get_all_categories() -> List[model.TagCategory]:
 def try_get_default_category(
         lock: bool = False) -> Optional[model.TagCategory]:
     query = (
-        db.session
-        .query(model.TagCategory)
-        .filter(model.TagCategory.default))
+        db.session.query(model.TagCategory)
+            .filter(model.TagCategory.default))
     if lock:
         query = query.with_lockmode('update')
     category = query.first()
@@ -151,9 +150,8 @@ def try_get_default_category(
     # category, get the first record available.
     if not category:
         query = (
-            db.session
-            .query(model.TagCategory)
-            .order_by(model.TagCategory.tag_category_id.asc()))
+            db.session.query(model.TagCategory)
+                .order_by(model.TagCategory.tag_category_id.asc()))
         if lock:
             query = query.with_lockmode('update')
         category = query.first()

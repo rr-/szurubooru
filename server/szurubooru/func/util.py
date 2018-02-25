@@ -1,12 +1,13 @@
-import os
+from contextlib import contextmanager
+from datetime import datetime, timedelta
+from typing import Any, Optional, Union, Tuple, List, Dict, Generator, TypeVar
+
 import hashlib
+import os
 import re
 import tempfile
-from typing import Any, Optional, Union, Tuple, List, Dict, Generator, TypeVar
-from datetime import datetime, timedelta
-from contextlib import contextmanager
-from szurubooru import errors
 
+from szurubooru import errors
 
 T = TypeVar('T')
 
@@ -14,7 +15,7 @@ T = TypeVar('T')
 def snake_case_to_lower_camel_case(text: str) -> str:
     components = text.split('_')
     return components[0].lower() + \
-        ''.join(word[0].upper() + word[1:].lower() for word in components[1:])
+           ''.join(word[0].upper() + word[1:].lower() for word in components[1:])
 
 
 def snake_case_to_upper_train_case(text: str) -> str:
@@ -86,6 +87,7 @@ def is_valid_email(email: Optional[str]) -> bool:
 
 class dotdict(dict):  # pylint: disable=invalid-name
     ''' dot.notation access to dictionary attributes. '''
+
     def __getattr__(self, attr: str) -> Any:
         return self.get(attr)
 

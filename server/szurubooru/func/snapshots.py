@@ -1,5 +1,6 @@
-from typing import Any, Optional, Dict, Callable
 from datetime import datetime
+from typing import Any, Optional, Dict, Callable
+
 from szurubooru import db, model
 from szurubooru.func import diff, users
 
@@ -96,7 +97,7 @@ def modify(entity: model.Base, auth_user: Optional[model.User]) -> None:
             cls
             for cls in model.Base._decl_class_registry.values()
             if hasattr(cls, '__table__')
-            and cls.__table__.fullname == entity.__table__.fullname
+               and cls.__table__.fullname == entity.__table__.fullname
         ),
         None)
     assert table

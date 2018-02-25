@@ -1,6 +1,6 @@
 import urllib.request
-from szurubooru import config
-from szurubooru import errors
+
+from szurubooru import config, errors
 
 
 def download(url: str) -> bytes:

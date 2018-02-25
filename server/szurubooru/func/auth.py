@@ -1,13 +1,13 @@
+import uuid
+
 import hashlib
 import random
 from collections import OrderedDict
 from nacl.exceptions import InvalidkeyError
+from nacl.pwhash import argon2id, verify
 
 from szurubooru import config, model, errors, db
 from szurubooru.func import util
-from nacl.pwhash import argon2id, verify
-import uuid
-
 
 RANK_MAP = OrderedDict([
     (model.User.RANK_ANONYMOUS, 'anonymous'),

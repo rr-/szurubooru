@@ -1,4 +1,5 @@
 from typing import Any, List, Dict, Callable
+
 from szurubooru import model, rest, errors
 
 

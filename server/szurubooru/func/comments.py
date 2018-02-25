@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import Any, Optional, List, Dict, Callable
+
 from szurubooru import db, model, errors, rest
 from szurubooru.func import users, scores, serialization
 
@@ -75,9 +76,9 @@ def try_get_comment_by_id(comment_id: int) -> Optional[model.Comment]:
     comment_id = int(comment_id)
     return (
         db.session
-        .query(model.Comment)
-        .filter(model.Comment.comment_id == comment_id)
-        .one_or_none())
+            .query(model.Comment)
+            .filter(model.Comment.comment_id == comment_id)
+            .one_or_none())
 
 
 def get_comment_by_id(comment_id: int) -> model.Comment:

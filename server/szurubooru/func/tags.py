@@ -1,9 +1,9 @@
-import json
-import os
-import re
-from typing import Any, Optional, Tuple, List, Dict, Callable
 from datetime import datetime
+from typing import Any, Optional, Tuple, List, Dict, Callable
+
+import re
 import sqlalchemy as sa
+
 from szurubooru import config, db, model, errors, rest
 from szurubooru.func import util, tag_categories, serialization
 
@@ -138,11 +138,10 @@ def serialize_tag(
 
 def try_get_tag_by_name(name: str) -> Optional[model.Tag]:
     return (
-        db.session
-        .query(model.Tag)
-        .join(model.TagName)
-        .filter(sa.func.lower(model.TagName.name) == name.lower())
-        .one_or_none())
+        db.session.query(model.Tag)
+            .join(model.TagName)
+            .filter(sa.func.lower(model.TagName.name) == name.lower())
+            .one_or_none())
 
 
 def get_tag_by_name(name: str) -> model.Tag:
@@ -158,12 +157,12 @@ def get_tags_by_names(names: List[str]) -> List[model.Tag]:
         return []
     return (
         db.session.query(model.Tag)
-        .join(model.TagName)
-        .filter(
+            .join(model.TagName)
+            .filter(
             sa.sql.or_(
                 sa.func.lower(model.TagName.name) == name.lower()
                 for name in names))
-        .all())
+            .all())
 
 
 def get_or_create_tags_by_names(
@@ -196,16 +195,15 @@ def get_tag_siblings(tag: model.Tag) -> List[model.Tag]:
     pt_alias1 = sa.orm.aliased(model.PostTag)
     pt_alias2 = sa.orm.aliased(model.PostTag)
     result = (
-        db.session
-        .query(tag_alias, sa.func.count(pt_alias2.post_id))
-        .join(pt_alias1, pt_alias1.tag_id == tag_alias.tag_id)
-        .join(pt_alias2, pt_alias2.post_id == pt_alias1.post_id)
-        .filter(pt_alias2.tag_id == tag.tag_id)
-        .filter(pt_alias1.tag_id != tag.tag_id)
-        .group_by(tag_alias.tag_id)
-        .order_by(sa.func.count(pt_alias2.post_id).desc())
-        .order_by(tag_alias.first_name)
-        .limit(50))
+        db.session.query(tag_alias, sa.func.count(pt_alias2.post_id))
+            .join(pt_alias1, pt_alias1.tag_id == tag_alias.tag_id)
+            .join(pt_alias2, pt_alias2.post_id == pt_alias1.post_id)
+            .filter(pt_alias2.tag_id == tag.tag_id)
+            .filter(pt_alias1.tag_id != tag.tag_id)
+            .group_by(tag_alias.tag_id)
+            .order_by(sa.func.count(pt_alias2.post_id).desc())
+            .order_by(tag_alias.first_name)
+            .limit(50))
     return result
 
 
@@ -213,10 +211,10 @@ def delete(source_tag: model.Tag) -> None:
     assert source_tag
     db.session.execute(
         sa.sql.expression.delete(model.TagSuggestion)
-        .where(model.TagSuggestion.child_id == source_tag.tag_id))
+            .where(model.TagSuggestion.child_id == source_tag.tag_id))
     db.session.execute(
         sa.sql.expression.delete(model.TagImplication)
-        .where(model.TagImplication.child_id == source_tag.tag_id))
+            .where(model.TagImplication.child_id == source_tag.tag_id))
     db.session.delete(source_tag)
 
 
@@ -231,13 +229,12 @@ def merge_tags(source_tag: model.Tag, target_tag: model.Tag) -> None:
         alias2 = sa.orm.util.aliased(model.PostTag)
         update_stmt = (
             sa.sql.expression.update(alias1)
-            .where(alias1.tag_id == source_tag_id))
+                .where(alias1.tag_id == source_tag_id))
         update_stmt = (
             update_stmt
-            .where(
-                ~sa.exists()
-                .where(alias1.post_id == alias2.post_id)
-                .where(alias2.tag_id == target_tag_id)))
+                .where(~sa.exists()
+                       .where(alias1.post_id == alias2.post_id)
+                       .where(alias2.tag_id == target_tag_id)))
         update_stmt = update_stmt.values(tag_id=target_tag_id)
         db.session.execute(update_stmt)
 
@@ -247,24 +244,22 @@ def merge_tags(source_tag: model.Tag, target_tag: model.Tag) -> None:
         alias2 = sa.orm.util.aliased(table)
         update_stmt = (
             sa.sql.expression.update(alias1)
-            .where(alias1.parent_id == source_tag_id)
-            .where(alias1.child_id != target_tag_id)
-            .where(
-                ~sa.exists()
-                .where(alias2.child_id == alias1.child_id)
-                .where(alias2.parent_id == target_tag_id))
-            .values(parent_id=target_tag_id))
+                .where(alias1.parent_id == source_tag_id)
+                .where(alias1.child_id != target_tag_id)
+                .where(~sa.exists()
+                       .where(alias2.child_id == alias1.child_id)
+                       .where(alias2.parent_id == target_tag_id))
+                .values(parent_id=target_tag_id))
         db.session.execute(update_stmt)
 
         update_stmt = (
             sa.sql.expression.update(alias1)
-            .where(alias1.child_id == source_tag_id)
-            .where(alias1.parent_id != target_tag_id)
-            .where(
-                ~sa.exists()
-                .where(alias2.parent_id == alias1.parent_id)
-                .where(alias2.child_id == target_tag_id))
-            .values(child_id=target_tag_id))
+                .where(alias1.child_id == source_tag_id)
+                .where(alias1.parent_id != target_tag_id)
+                .where(~sa.exists()
+                    .where(alias2.parent_id == alias1.parent_id)
+                    .where(alias2.child_id == target_tag_id))
+                .values(child_id=target_tag_id))
         db.session.execute(update_stmt)
 
     def merge_suggestions(source_tag_id: int, target_tag_id: int) -> None:

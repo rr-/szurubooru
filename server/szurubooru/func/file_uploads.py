@@ -1,7 +1,7 @@
-from typing import Optional
 from datetime import datetime, timedelta
-from szurubooru.func import files, util
+from typing import Optional
 
+from szurubooru.func import files, util
 
 MAX_MINUTES = 60
 

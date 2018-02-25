@@ -1,15 +1,14 @@
-from typing import List
-import logging
 import json
+import logging
+import math
 import shlex
 import subprocess
-import math
+from typing import List
+
 from szurubooru import errors
 from szurubooru.func import mime, util
 
-
 logger = logging.getLogger(__name__)
-
 
 _SCALE_FIT_FMT = (
     r'scale=iw*max({width}/iw\,{height}/ih):ih*max({width}/iw\,{height}/ih)')

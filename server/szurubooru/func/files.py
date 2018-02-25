@@ -1,5 +1,7 @@
 from typing import Any, Optional, List
+
 import os
+
 from szurubooru import config
 
 
