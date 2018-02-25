@@ -23,7 +23,7 @@ class User(Base):
     last_login_time = sa.Column('last_login_time', sa.DateTime)
     version = sa.Column('version', sa.Integer, default=1, nullable=False)
     name = sa.Column('name', sa.Unicode(50), nullable=False, unique=True)
-    password_hash = sa.Column('password_hash', sa.Unicode(64), nullable=False)
+    password_hash = sa.Column('password_hash', sa.Unicode(128), nullable=False)
     password_salt = sa.Column('password_salt', sa.Unicode(32))
     email = sa.Column('email', sa.Unicode(64), nullable=True)
     rank = sa.Column('rank', sa.Unicode(32), nullable=False)
