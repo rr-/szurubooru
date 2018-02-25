@@ -115,11 +115,16 @@ def config_injector():
 
 @pytest.fixture
 def user_factory():
-    def factory(name=None, rank=model.User.RANK_REGULAR, email='dummy'):
+    def factory(
+            name=None,
+            rank=model.User.RANK_REGULAR,
+            email='dummy',
+            password_salt=None,
+            password_hash=None):
         user = model.User()
         user.name = name or get_unique_name()
-        user.password_salt = 'dummy'
-        user.password_hash = 'dummy'
+        user.password_salt = password_salt or 'dummy'
+        user.password_hash = password_hash or 'dummy'
         user.email = email
         user.rank = rank
         user.creation_time = datetime(1997, 1, 1)
