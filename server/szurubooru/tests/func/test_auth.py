@@ -41,3 +41,13 @@ def test_is_valid_password_auto_upgrades_user_password_hash(user_factory):
     assert result is True
     assert user.password_hash != hash
     assert user.password_revision > revision
+
+
+def test_is_valid_token(user_token_factory):
+    user_token = user_token_factory()
+    assert auth.is_valid_token(user_token)
+
+
+def test_generate_authorization_token():
+    result = auth.generate_authorization_token()
+    assert result != auth.generate_authorization_token()

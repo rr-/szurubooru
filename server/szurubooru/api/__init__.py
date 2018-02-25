@@ -1,5 +1,6 @@
 import szurubooru.api.info_api
 import szurubooru.api.user_api
+import szurubooru.api.user_token_api
 import szurubooru.api.post_api
 import szurubooru.api.tag_api
 import szurubooru.api.tag_category_api

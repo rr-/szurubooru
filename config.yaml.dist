@@ -91,6 +91,15 @@ privileges:
     'users:delete:any':             administrator
     'users:delete:self':            regular
 
+    'user_tokens:list:any':         administrator
+    'user_tokens:list:self':        regular
+    'user_tokens:create:any':       administrator
+    'user_tokens:create:self':      regular
+    'user_tokens:edit:any':         administrator
+    'user_tokens:edit:self':        regular
+    'user_tokens:delete:any':       administrator
+    'user_tokens:delete:self':      regular
+
     'posts:create:anonymous':       regular
     'posts:create:identified':      regular
     'posts:list':                   anonymous

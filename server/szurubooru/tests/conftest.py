@@ -93,11 +93,11 @@ def session(query_logger):  # pylint: disable=unused-argument
 
 @pytest.fixture
 def context_factory(session):
-    def factory(params=None, files=None, user=None):
+    def factory(params=None, files=None, user=None, headers=None):
         ctx = rest.Context(
             method=None,
             url=None,
-            headers={},
+            headers=headers or {},
             params=params or {},
             files=files or {})
         ctx.session = session
@@ -130,6 +130,21 @@ def user_factory():
         user.creation_time = datetime(1997, 1, 1)
         user.avatar_style = model.User.AVATAR_GRAVATAR
         return user
+    return factory
+
+
+@pytest.fixture
+def user_token_factory(user_factory):
+    def factory(user=None, token=None, enabled=None, creation_time=None):
+        if user is None:
+            user = user_factory()
+            db.session.add(user)
+        user_token = model.UserToken()
+        user_token.user = user
+        user_token.token = token or 'dummy'
+        user_token.enabled = enabled or True
+        user_token.creation_time = creation_time or datetime(1997, 1, 1)
+        return user_token
     return factory
 
 

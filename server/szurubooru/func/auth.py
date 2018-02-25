@@ -6,6 +6,7 @@ from nacl import pwhash
 from nacl.exceptions import InvalidkeyError
 from szurubooru import config, model, errors, db
 from szurubooru.func import util
+import uuid
 
 
 RANK_MAP = OrderedDict([
@@ -78,6 +79,10 @@ def is_valid_password(user: model.User, password: str) -> bool:
     return False
 
 
+def is_valid_token(user_token: model.UserToken) -> bool:
+    return user_token is not None and user_token.enabled
+
+
 def has_privilege(user: model.User, privilege_name: str) -> bool:
     assert user
     all_ranks = list(RANK_MAP.keys())
@@ -102,3 +107,7 @@ def generate_authentication_token(user: model.User) -> str:
     digest.update(config.config['secret'].encode('utf8'))
     digest.update(user.password_salt.encode('utf8'))
     return digest.hexdigest()
+
+
+def generate_authorization_token() -> str:
+    return uuid.uuid4().__str__()
