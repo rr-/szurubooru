@@ -17,7 +17,7 @@ def get_user_tokens(ctx: rest.Context, _params: Dict[str, str] = {}) -> rest.Res
     auth.verify_privilege(ctx.user, 'user_token:list')
     user_token_list = user_tokens.get_user_tokens(ctx.user)
     return {
-        "tokens": [_serialize(ctx, token) for token in user_token_list]
+        "results": [_serialize(ctx, token) for token in user_token_list]
     }
 
 
