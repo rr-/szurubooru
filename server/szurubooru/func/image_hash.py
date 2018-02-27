@@ -1,14 +1,12 @@
 import logging
+from io import BytesIO
 from datetime import datetime
 from typing import Any, Optional, Tuple, Set, List, Callable
-
 import elasticsearch
 import elasticsearch_dsl
 import numpy as np
-from PIL import Image
-from io import BytesIO
 from skimage.color import rgb2gray
-
+from PIL import Image
 from szurubooru import config, errors
 
 # pylint: disable=invalid-name
@@ -135,7 +133,7 @@ def _compute_differentials(grey_level_matrix: NpMatrix) -> NpMatrix:
             np.diff(grey_level_matrix),
             (
                 np.zeros(grey_level_matrix.shape[0])
-                    .reshape((grey_level_matrix.shape[0], 1))
+                .reshape((grey_level_matrix.shape[0], 1))
             )
         ), axis=1)
     down_neighbors = -np.concatenate(
@@ -143,7 +141,7 @@ def _compute_differentials(grey_level_matrix: NpMatrix) -> NpMatrix:
             np.diff(grey_level_matrix, axis=0),
             (
                 np.zeros(grey_level_matrix.shape[1])
-                    .reshape((1, grey_level_matrix.shape[1]))
+                .reshape((1, grey_level_matrix.shape[1]))
             )
         ))
     left_neighbors = -np.concatenate(
@@ -209,7 +207,7 @@ def _get_words(array: NpMatrix, k: int, n: int) -> NpMatrix:
 
 def _words_to_int(word_array: NpMatrix) -> NpMatrix:
     width = word_array.shape[1]
-    coding_vector = 3 ** np.arange(width)
+    coding_vector = 3**np.arange(width)
     return np.dot(word_array + 1, coding_vector)
 
 
@@ -249,9 +247,7 @@ def _safety_blanket(default_param_factory: Callable[[], Any]) -> Callable:
                 raise errors.ProcessingError('Not an image.')
             except Exception as ex:
                 raise errors.ThirdPartyError('Unknown error (%s).' % ex)
-
         return wrapper_inner
-
     return wrapper_outer
 
 
@@ -353,5 +349,5 @@ def get_all_paths() -> Set[str]:
             using=_get_session(),
             index=config.config['elasticsearch']['index'],
             doc_type=ES_DOC_TYPE)
-            .source(['path']))
+        .source(['path']))
     return set(h.path for h in search.scan())

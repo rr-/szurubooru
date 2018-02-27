@@ -1,13 +1,12 @@
-from datetime import datetime
-from typing import Any, Optional, Tuple, List, Dict, Callable
-
 import hmac
+from typing import Any, Optional, Tuple, List, Dict, Callable
+from datetime import datetime
 import sqlalchemy as sa
-
 from szurubooru import config, db, model, errors, rest
 from szurubooru.func import (
     users, scores, comments, tags, util,
     mime, images, files, image_hash, serialization, snapshots)
+
 
 EMPTY_PIXEL = (
     b'\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00'
@@ -238,8 +237,8 @@ class PostSerializer(serialization.BaseSerializer):
             {
                 post['id']: post
                 for post in [
-                serialize_micro_post(rel, self.auth_user)
-                for rel in self.post.relations]
+                    serialize_micro_post(rel, self.auth_user)
+                    for rel in self.post.relations]
             }.values(),
             key=lambda post: post['id'])
 
@@ -323,9 +322,9 @@ def get_post_count() -> int:
 def try_get_post_by_id(post_id: int) -> Optional[model.Post]:
     return (
         db.session
-            .query(model.Post)
-            .filter(model.Post.post_id == post_id)
-            .one_or_none())
+        .query(model.Post)
+        .filter(model.Post.post_id == post_id)
+        .one_or_none())
 
 
 def get_post_by_id(post_id: int) -> model.Post:
@@ -338,9 +337,9 @@ def get_post_by_id(post_id: int) -> model.Post:
 def try_get_current_post_feature() -> Optional[model.PostFeature]:
     return (
         db.session
-            .query(model.PostFeature)
-            .order_by(model.PostFeature.time.desc())
-            .first())
+        .query(model.PostFeature)
+        .order_by(model.PostFeature.time.desc())
+        .first())
 
 
 def try_get_featured_post() -> Optional[model.Post]:
@@ -487,10 +486,10 @@ def update_post_content(post: model.Post, content: Optional[bytes]) -> None:
     post.checksum = util.get_sha1(content)
     other_post = (
         db.session
-            .query(model.Post)
-            .filter(model.Post.checksum == post.checksum)
-            .filter(model.Post.post_id != post.post_id)
-            .one_or_none())
+        .query(model.Post)
+        .filter(model.Post.checksum == post.checksum)
+        .filter(model.Post.post_id != post.post_id)
+        .one_or_none())
     if other_post \
             and other_post.post_id \
             and other_post.post_id != post.post_id:
@@ -554,9 +553,9 @@ def update_post_relations(post: model.Post, new_post_ids: List[int]) -> None:
     if new_post_ids:
         new_posts = (
             db.session
-                .query(model.Post)
-                .filter(model.Post.post_id.in_(new_post_ids))
-                .all())
+            .query(model.Post)
+            .filter(model.Post.post_id.in_(new_post_ids))
+            .all())
     else:
         new_posts = []
     if len(new_posts) != len(new_post_ids):
@@ -655,13 +654,15 @@ def merge_posts(
         alias2 = sa.orm.util.aliased(table)
         update_stmt = (
             sa.sql.expression.update(alias1)
-                .where(alias1.post_id == source_post_id))
+            .where(alias1.post_id == source_post_id))
 
         if anti_dup_func is not None:
             update_stmt = (
-                update_stmt.where(~sa.exists()
-                                  .where(anti_dup_func(alias1, alias2))
-                                  .where(alias2.post_id == target_post_id)))
+                update_stmt
+                .where(
+                    ~sa.exists()
+                    .where(anti_dup_func(alias1, alias2))
+                    .where(alias2.post_id == target_post_id)))
 
         update_stmt = update_stmt.values(post_id=target_post_id)
         db.session.execute(update_stmt)
@@ -695,24 +696,24 @@ def merge_posts(
         alias2 = sa.orm.util.aliased(model.PostRelation)
         update_stmt = (
             sa.sql.expression.update(alias1)
-                .where(alias1.parent_id == source_post_id)
-                .where(alias1.child_id != target_post_id)
-                .where(
+            .where(alias1.parent_id == source_post_id)
+            .where(alias1.child_id != target_post_id)
+            .where(
                 ~sa.exists()
-                    .where(alias2.child_id == alias1.child_id)
-                    .where(alias2.parent_id == target_post_id))
-                .values(parent_id=target_post_id))
+                .where(alias2.child_id == alias1.child_id)
+                .where(alias2.parent_id == target_post_id))
+            .values(parent_id=target_post_id))
         db.session.execute(update_stmt)
 
         update_stmt = (
             sa.sql.expression.update(alias1)
-                .where(alias1.child_id == source_post_id)
-                .where(alias1.parent_id != target_post_id)
-                .where(
+            .where(alias1.child_id == source_post_id)
+            .where(alias1.parent_id != target_post_id)
+            .where(
                 ~sa.exists()
-                    .where(alias2.parent_id == alias1.parent_id)
-                    .where(alias2.child_id == target_post_id))
-                .values(child_id=target_post_id))
+                .where(alias2.parent_id == alias1.parent_id)
+                .where(alias2.child_id == target_post_id))
+            .values(child_id=target_post_id))
         db.session.execute(update_stmt)
 
     merge_tags(source_post.post_id, target_post.post_id)
@@ -733,9 +734,10 @@ def merge_posts(
 def search_by_image_exact(image_content: bytes) -> Optional[model.Post]:
     checksum = util.get_sha1(image_content)
     return (
-        db.session.query(model.Post)
-            .filter(model.Post.checksum == checksum)
-            .one_or_none())
+        db.session
+        .query(model.Post)
+        .filter(model.Post.checksum == checksum)
+        .one_or_none())
 
 
 def search_by_image(image_content: bytes) -> List[PostLookalike]:
@@ -754,19 +756,21 @@ def populate_reverse_search() -> None:
     excluded_post_ids = image_hash.get_all_paths()
 
     post_ids_to_hash = (
-        db.session.query(model.Post.post_id)
-            .filter(
+        db.session
+        .query(model.Post.post_id)
+        .filter(
             (model.Post.type == model.Post.TYPE_IMAGE) |
             (model.Post.type == model.Post.TYPE_ANIMATION))
-            .filter(~model.Post.post_id.in_(excluded_post_ids))
-            .order_by(model.Post.post_id.asc())
-            .all())
+        .filter(~model.Post.post_id.in_(excluded_post_ids))
+        .order_by(model.Post.post_id.asc())
+        .all())
 
     for post_ids_chunk in util.chunks(post_ids_to_hash, 100):
         posts_chunk = (
-            db.session.query(model.Post)
-                .filter(model.Post.post_id.in_(post_ids_chunk))
-                .all())
+            db.session
+            .query(model.Post)
+            .filter(model.Post.post_id.in_(post_ids_chunk))
+            .all())
         for post in posts_chunk:
             content_path = get_post_content_path(post)
             if files.has(content_path):

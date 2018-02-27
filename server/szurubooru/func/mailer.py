@@ -1,6 +1,5 @@
-import email.mime.text
 import smtplib
-
+import email.mime.text
 from szurubooru import config
 
 

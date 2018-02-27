@@ -1,6 +1,5 @@
-from datetime import datetime
 from typing import Any, Optional, Callable, Tuple
-
+from datetime import datetime
 from szurubooru import db, model, errors
 
 

@@ -1,6 +1,5 @@
 import datetime
 from typing import Any, Tuple, Callable
-
 from szurubooru import db, model, errors
 
 
@@ -41,10 +40,11 @@ def get_score(entity: model.Base, user: model.User) -> int:
     assert user
     table, get_column = _get_table_info(entity)
     row = (
-        db.session.query(table.score)
-            .filter(get_column(table) == get_column(entity))
-            .filter(table.user_id == user.user_id)
-            .one_or_none())
+        db.session
+        .query(table.score)
+        .filter(get_column(table) == get_column(entity))
+        .filter(table.user_id == user.user_id)
+        .one_or_none())
     return row[0] if row else 0
 
 
