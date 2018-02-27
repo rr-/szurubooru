@@ -175,11 +175,18 @@ class Api extends events.EventTarget {
     }
 
     logout() {
-        this.delete_token(this.userName, this.userToken);
+        this.delete_token(this.userName, this.userToken).then(response => {
+            this._logout()
+        }, error => {
+            this._logout()
+        });
+
+    }
+
+    _logout() {
         this.user = null;
         this.userName = null;
         this.userPassword = null;
-        this.userToken = null;
         this.dispatchEvent(new CustomEvent('logout'));
     }
 

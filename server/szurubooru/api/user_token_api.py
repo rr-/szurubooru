@@ -30,9 +30,9 @@ def create_user_token(ctx: rest.Context, _params: Dict[str, str] = {}) -> rest.R
 
 @rest.routes.delete('/user-tokens/(?P<user_token>[^/]+)/?')
 def create_user_token(ctx: rest.Context, params: Dict[str, str]) -> rest.Response:
+    auth.verify_privilege(ctx.user, 'user_token:delete')
     user_token = user_tokens.get_user_token_by_user_and_token(ctx.user, params['user_token'])
     if user_token is not None:
-        auth.verify_privilege(ctx.user, 'user_token:delete')
         ctx.session.delete(user_token)
         ctx.session.commit()
     return {}
