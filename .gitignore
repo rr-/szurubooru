@@ -5,3 +5,4 @@ config.yaml
 __pycache__
 .idea/
 *.iml
+data/
