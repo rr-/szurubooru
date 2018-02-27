@@ -100,5 +100,6 @@ class UserToken(Base):
     enabled = sa.Column('enabled', sa.Boolean, nullable=False, default=True)
     creation_time = sa.Column('creation_time', sa.DateTime, nullable=False)
     last_edit_time = sa.Column('last_edit_time', sa.DateTime)
+    version = sa.Column('version', sa.Integer, default=1, nullable=False)
 
     user = sa.orm.relationship('User')

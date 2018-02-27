@@ -118,9 +118,9 @@ class Api extends events.EventTarget {
         });
     }
 
-    get_token(userName, options) {
+    create_token(userName, options) {
         return new Promise((resolve, reject) => {
-            this.post('/user-tokens', {})
+            this.post('/user-token', {})
                 .then(response => {
                     cookies.set(
                         'auth',
@@ -137,15 +137,14 @@ class Api extends events.EventTarget {
 
     delete_token(userName, userToken) {
         return new Promise((resolve, reject) => {
-            this.delete('/user-tokens/' + userToken, {})
+            this.delete('/user-token/' + userToken, {})
                 .then(response => {
                     const options = {};
                     cookies.set(
                         'auth',
                         {'user': userName, 'token': null},
                         options);
-                    this.userName = userName;
-                    this.userToken = null;
+                    resolve();
                 }, error => {
                     reject(error);
                 });
@@ -163,7 +162,7 @@ class Api extends events.EventTarget {
                     if (doRemember) {
                         options.expires = 365;
                     }
-                    this.get_token(this.userName, options);
+                    this.create_token(this.userName, options);
                     this.user = response;
                     resolve();
                     this.dispatchEvent(new CustomEvent('login'));
@@ -175,18 +174,20 @@ class Api extends events.EventTarget {
     }
 
     logout() {
-        this.delete_token(this.userName, this.userToken).then(response => {
-            this._logout()
-        }, error => {
-            this._logout()
-        });
-
+        let self = this;
+        this.delete_token(this.userName, this.userToken)
+            .then(response => {
+                self._logout();
+            }, error => {
+                self._logout();
+            });
     }
 
     _logout() {
         this.user = null;
         this.userName = null;
         this.userPassword = null;
+        this.userToken = null;
         this.dispatchEvent(new CustomEvent('logout'));
     }
 

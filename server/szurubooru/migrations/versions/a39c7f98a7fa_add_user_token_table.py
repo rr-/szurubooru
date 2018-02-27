@@ -23,6 +23,7 @@ def upgrade():
     sa.Column('enabled', sa.Boolean(), nullable=False),
     sa.Column('creation_time', sa.DateTime(), nullable=False),
     sa.Column('last_edit_time', sa.DateTime(), nullable=True),
+    sa.Column('version', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )

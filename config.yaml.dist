@@ -88,6 +88,7 @@ privileges:
 
     'user_token:list':              regular
     'user_token:create':            regular
+    'user_token:edit':            regular
     'user_token:delete':            regular
 
     'posts:create:anonymous':       regular

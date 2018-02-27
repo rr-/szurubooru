@@ -20,6 +20,7 @@ class UserTokenSerializer(serialization.BaseSerializer):
             'user': self.serialize_user,
             'token': self.serialize_token,
             'enabled': self.serialize_enabled,
+            'version': self.serialize_version,
             'creationTime': self.serialize_creation_time,
             'lastLoginTime': self.serialize_last_edit_time,
         }
@@ -38,6 +39,9 @@ class UserTokenSerializer(serialization.BaseSerializer):
 
     def serialize_enabled(self) -> Any:
         return self.user_token.enabled
+
+    def serialize_version(self) -> Any:
+        return self.user_token.version
 
 
 def serialize_user_token(

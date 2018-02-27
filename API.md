@@ -60,6 +60,7 @@
     - User Tokens
         - [Listing tokens](#listing-tokens)
         - [Creating token](#creating-token)
+        - [Updating token](#updating-token)
         - [Deleting token](#deleting-token)
     - Password reset
         - [Password reset - step 1: mail request](#password-reset---step-2-confirmation)
@@ -1535,6 +1536,36 @@ data.
 
     Creates a new user token that can be used for authentication of api
     endpoints instead of a password.
+    
+## Updating user
+- **Request**
+
+    `PUT /user-token/<token>`
+
+- **Input**
+
+    ```json5
+    {
+        "version": <version>,
+        "enabled": <enabled>, // optional
+    }
+    ```
+
+- **Output**
+
+    A [user token resource](#user-token).
+
+- **Errors**
+
+    - the version is outdated
+    - the user token does not exist
+    - privileges are too low
+
+- **Description**
+
+    Updates an existing user token using specified parameters. All fields 
+    except the [`version`](#versioning) are optional - update concerns only 
+    provided fields.
 
 ## Deleting token
 - **Request**
@@ -1806,6 +1837,7 @@ A single user token.
     "user":         <user>,
     "token":        <token>,
     "enabled":      <enabled>,
+    "version":      <version>,
     "creationTime": <creation-time>,
     "lastEditTime": <last-edit-time>,
 }
@@ -1815,6 +1847,7 @@ A single user token.
 - `<user>`: micro user. See [micro user](#micro-user).
 - `<token>`: the token that can be used to authenticate the user.
 - `<enabled>`: whether the token is still valid for authentication.
+- `<version>`: resource version. See [versioning](#versioning).
 - `<creation-time>`: time the user token was created , formatted as per RFC 3339.
 - `<last-edit-time>`: time the user token was edited, formatted as per RFC 3339.
 
