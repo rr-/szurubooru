@@ -49,7 +49,6 @@ def _get_user(ctx: rest.Context) -> Optional[model.User]:
             msg.format(ctx.get_header('Authorization'), str(err)))
 
 
-@rest.middleware.pre_hook
 def process_request(ctx: rest.Context) -> None:
     ''' Bind the user to request. Update last login time if needed. '''
     auth_user = _get_user(ctx)
@@ -58,3 +57,8 @@ def process_request(ctx: rest.Context) -> None:
     if ctx.get_param_as_bool('bump-login', default=False) and ctx.user.user_id:
         users.bump_user_login_time(ctx.user)
         ctx.session.commit()
+
+
+@rest.middleware.pre_hook
+def process_request_hook(ctx: rest.Context) -> None:
+    process_request(ctx)

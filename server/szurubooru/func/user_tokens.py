@@ -1,8 +1,6 @@
 from datetime import datetime
 from typing import Any, Optional, List, Dict, Callable
 
-import sqlalchemy as sa
-
 from szurubooru import db, model, rest
 from szurubooru.func import auth, serialization, users
 
@@ -22,7 +20,7 @@ class UserTokenSerializer(serialization.BaseSerializer):
             'enabled': self.serialize_enabled,
             'version': self.serialize_version,
             'creationTime': self.serialize_creation_time,
-            'lastLoginTime': self.serialize_last_edit_time,
+            'lastEditTime': self.serialize_last_edit_time,
         }
 
     def serialize_user(self) -> Any:
@@ -76,3 +74,13 @@ def create_user_token(user: model.User) -> model.UserToken:
     db.session.add(user_token)
     db.session.commit()
     return user_token
+
+
+def update_user_token_enabled(user_token: model.UserToken, enabled: bool) -> None:
+    assert user_token
+    user_token.enabled = enabled if enabled is not None else True
+
+
+def update_user_token_edit_time(user_token: model.UserToken) -> None:
+    assert user_token
+    user_token.last_edit_time = datetime.utcnow()
