@@ -120,7 +120,7 @@ class Api extends events.EventTarget {
 
     create_token(userName, options) {
         return new Promise((resolve, reject) => {
-            this.post('/user-token', {})
+            this.post('/user-token/' + userName, {})
                 .then(response => {
                     cookies.set(
                         'auth',
@@ -137,7 +137,7 @@ class Api extends events.EventTarget {
 
     delete_token(userName, userToken) {
         return new Promise((resolve, reject) => {
-            this.delete('/user-token/' + userToken, {})
+            this.delete('/user-token/' + userName + '/' + userToken, {})
                 .then(response => {
                     const options = {};
                     cookies.set(

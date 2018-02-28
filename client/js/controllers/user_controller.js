@@ -7,6 +7,7 @@ const misc = require('../util/misc.js');
 const config = require('../config.js');
 const views = require('../util/views.js');
 const User = require('../models/user.js');
+const UserToken = require('../models/user_token.js');
 const topNavigation = require('../models/top_navigation.js');
 const UserView = require('../views/user_view.js');
 const EmptyView = require('../views/empty_view.js');
@@ -21,8 +22,11 @@ class UserController {
             return;
         }
 
+        this._successMessages = [];
+        this._errorMessages = [];
+
         topNavigation.setTitle('User ' + userName);
-        User.get(userName).then(user => {
+        User.get(userName).then(async user => {
             const isLoggedIn = api.isLoggedIn(user);
             const infix = isLoggedIn ? 'self' : 'any';
 
@@ -48,6 +52,17 @@ class UserController {
             } else {
                 topNavigation.activate('users');
             }
+
+            let userTokens = [];
+            if (section === 'list-tokens') {
+                userTokens = await UserToken.get(userName)
+                    .then(response => {
+                        return response;
+                    }, error => {
+                        return [];
+                    });
+            }
+
             this._view = new UserView({
                 user: user,
                 section: section,
@@ -58,16 +73,48 @@ class UserController {
                 canEditRank: api.hasPrivilege(`users:edit:${infix}:rank`),
                 canEditAvatar: api.hasPrivilege(`users:edit:${infix}:avatar`),
                 canEditAnything: api.hasPrivilege(`users:edit:${infix}`),
+                canListTokens: api.hasPrivilege(`userToken:list:${infix}`),
+                canCreateToken: api.hasPrivilege(`userToken:create:${infix}`),
+                canEditToken: api.hasPrivilege(`userToken:edit:${infix}`),
+                canDeleteToken: api.hasPrivilege(`userToken:delete:${infix}`),
                 canDelete: api.hasPrivilege(`users:delete:${infix}`),
                 ranks: ranks,
+                tokens: userTokens,
             });
             this._view.addEventListener('change', e => this._evtChange(e));
             this._view.addEventListener('submit', e => this._evtUpdate(e));
             this._view.addEventListener('delete', e => this._evtDelete(e));
+            this._view.addEventListener('create-token', e => this._evtCreateToken(e));
+            this._view.addEventListener('delete-token', e => this._evtDeleteToken(e));
+
+            for (let i = 0; i < this._successMessages.length; i++) {
+                this.showSuccess(this._successMessages[i]);
+            }
+
+            for (let i = 0; i < this._errorMessages.length; i++) {
+                this.showError(this._errorMessages[i]);
+            }
+
         }, error => {
             this._view = new EmptyView();
             this._view.showError(error.message);
         });
+    }
+
+    showSuccess(message) {
+        if (typeof this._view === 'undefined') {
+            this._successMessages.push(message)
+        } else {
+            this._view.showSuccess(message);
+        }
+    }
+
+    showError(message) {
+        if (typeof this._view === 'undefined') {
+            this._errorMessages.push(message)
+        } else {
+            this._view.showError(message);
+        }
     }
 
     _evtChange(e) {
@@ -148,6 +195,32 @@ class UserController {
                 this._view.enableForm();
             });
     }
+
+    _evtCreateToken(e) {
+        this._view.clearMessages();
+        this._view.disableForm();
+        UserToken.create(e.detail.user.name)
+            .then(response => {
+                const ctx = router.show(uri.formatClientLink('user', e.detail.user.name, 'list-tokens'));
+                ctx.controller.showSuccess('Token ' + response.token + ' created.');
+            }, error => {
+                this._view.showError(error.message);
+                this._view.enableForm();
+            });
+    }
+
+    _evtDeleteToken(e) {
+        this._view.clearMessages();
+        this._view.disableForm();
+        e.detail.userToken.delete(e.detail.user.name)
+            .then(() => {
+                const ctx = router.show(uri.formatClientLink('user', e.detail.user.name, 'list-tokens'));
+                ctx.controller.showSuccess('Token ' + e.detail.userToken.token + ' deleted.');
+            }, error => {
+                this._view.showError(error.message);
+                this._view.enableForm();
+            });
+    }
 }
 
 module.exports = router => {
@@ -156,6 +229,9 @@ module.exports = router => {
     });
     router.enter(['user', ':name', 'edit'], (ctx, next) => {
         ctx.controller = new UserController(ctx, 'edit');
+    });
+    router.enter(['user', ':name', 'list-tokens'], (ctx, next) => {
+        ctx.controller = new UserController(ctx, 'list-tokens');
     });
     router.enter(['user', ':name', 'delete'], (ctx, next) => {
         ctx.controller = new UserController(ctx, 'delete');

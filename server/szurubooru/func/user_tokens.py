@@ -62,7 +62,7 @@ def get_user_token_by_user_and_token(user: model.User, token: str) -> model.User
 def get_user_tokens(user: model.User) -> List[model.UserToken]:
     assert user
     return (db.session.query(model.UserToken)
-            .filter(sa.func.lower(model.UserToken.user_id) == sa.func.lower(user.user_id))
+            .filter(model.UserToken.user_id == user.user_id)
             .all())
 
 

@@ -86,10 +86,14 @@ privileges:
     'users:delete:any':             administrator
     'users:delete:self':            regular
 
-    'user_token:list':              regular
-    'user_token:create':            regular
-    'user_token:edit':            regular
-    'user_token:delete':            regular
+    'user_token:list:any':          administrator
+    'user_token:list:self':         regular
+    'user_token:create:any':        administrator
+    'user_token:create:self':       regular
+    'user_token:edit:any':          administrator
+    'user_token:edit:self':         regular
+    'user_token:delete:any':        administrator
+    'user_token:delete:self':       regular
 
     'posts:create:anonymous':       regular
     'posts:create:identified':      regular
