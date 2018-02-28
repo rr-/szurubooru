@@ -69,6 +69,7 @@ def create_post(
         posts.update_post_thumbnail(post, ctx.get_file('thumbnail'))
     ctx.session.add(post)
     ctx.session.flush()
+    posts.generate_alternate_formats(post, content)
     snapshots.create(post, None if anonymous else ctx.user)
     for tag in new_tags:
         snapshots.create(tag, None if anonymous else ctx.user)

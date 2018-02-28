@@ -1,5 +1,11 @@
 from datetime import datetime
 from szurubooru import db, model
+import pytest
+
+
+@pytest.fixture(autouse=True)
+def inject_config(config_injector):
+    config_injector({'secret': 'test', 'data_dir': 'test'})
 
 
 def test_saving_post(post_factory, user_factory, tag_factory):

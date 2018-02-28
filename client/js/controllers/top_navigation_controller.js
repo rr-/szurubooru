@@ -47,10 +47,12 @@ class TopNavigationController {
             topNavigation.hide('users');
         }
         if (api.isLoggedIn()) {
-            topNavigation.hide('register');
+            if (!api.hasPrivilege('users:create:any')) {
+                topNavigation.hide('register');
+            }
             topNavigation.hide('login');
         } else {
-            if (!api.hasPrivilege('users:create')) {
+            if (!api.hasPrivilege('users:create:self')) {
                 topNavigation.hide('register');
             }
             topNavigation.hide('account');

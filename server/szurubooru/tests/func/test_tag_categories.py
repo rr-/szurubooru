@@ -116,7 +116,7 @@ def test_update_category_color_with_too_long_string(tag_category_factory):
 def test_update_category_color_with_invalid_string(tag_category_factory):
     category = tag_category_factory()
     with pytest.raises(tag_categories.InvalidTagCategoryColorError):
-        tag_categories.update_category_color(category, 'NOPE')
+        tag_categories.update_category_color(category, 'NOPE#')
 
 
 @pytest.mark.parametrize('attempt', ['#aaaaaa', '#012345', '012345', 'red'])
