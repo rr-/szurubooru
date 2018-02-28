@@ -722,12 +722,14 @@ def merge_posts(
     merge_favorites(source_post.post_id, target_post.post_id)
     merge_relations(source_post.post_id, target_post.post_id)
 
-    delete(source_post)
-
-    db.session.flush()
-
+    content = None
     if replace_content:
         content = files.get(get_post_content_path(source_post))
+
+    delete(source_post)
+    db.session.flush()
+
+    if content is not None:
         update_post_content(target_post, content)
 
 

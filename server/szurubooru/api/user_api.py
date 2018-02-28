@@ -1,5 +1,5 @@
 from typing import Any, Dict
-from szurubooru import model, search, rest, config, errors
+from szurubooru import model, search, rest
 from szurubooru.func import auth, users, serialization, versions
 
 

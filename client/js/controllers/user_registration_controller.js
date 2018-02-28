@@ -29,13 +29,22 @@ class UserRegistrationController {
         user.name = e.detail.name;
         user.email = e.detail.email;
         user.password = e.detail.password;
+        const isLoggedIn = api.isLoggedIn();
         user.save().then(() => {
-            // TODO: Support the flow where an admin creates a user. Don't log them out...
-            api.forget();
-            return api.login(e.detail.name, e.detail.password, false);
+            if (isLoggedIn) {
+                return Promise.resolve();
+            } else {
+                api.forget();
+                return api.login(e.detail.name, e.detail.password, false);
+            }
         }).then(() => {
-            const ctx = router.show(uri.formatClientLink());
-            ctx.controller.showSuccess('Welcome aboard!');
+            if (isLoggedIn) {
+                const ctx = router.show(uri.formatClientLink('users'));
+                ctx.controller.showSuccess('User added!');
+            } else {
+                const ctx = router.show(uri.formatClientLink());
+                ctx.controller.showSuccess('Welcome aboard!');
+            }
         }, error => {
             this._view.showError(error.message);
             this._view.enableForm();

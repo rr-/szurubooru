@@ -6,6 +6,9 @@
             --><% if (ctx.canEditAnything) { %><!--
                 --><li data-name='edit'><a href='<%- ctx.formatClientLink('user', ctx.user.name, 'edit') %>'>Account settings</a></li><!--
             --><% } %><!--
+            --><% if (ctx.canListTokens) { %><!--
+                --><li data-name='list-tokens'><a href='<%- ctx.formatClientLink('user', ctx.user.name, 'list-tokens') %>'>Manage tokens</a></li><!--
+            --><% } %><!--
             --><% if (ctx.canDelete) { %><!--
                 --><li data-name='delete'><a href='<%- ctx.formatClientLink('user', ctx.user.name, 'delete') %>'>Account deletion</a></li><!--
             --><% } %><!--
