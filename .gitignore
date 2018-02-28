@@ -2,3 +2,7 @@ config.yaml
 */*_modules/
 .coverage
 .cache
+__pycache__
+.idea/
+*.iml
+data/

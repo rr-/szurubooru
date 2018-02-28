@@ -936,6 +936,6 @@ def test_merge_posts_replaces_content(
     assert posts.try_get_post_by_id(source_post.post_id) is None
     post = posts.get_post_by_id(target_post.post_id)
     assert post is not None
-    assert os.path.exists(source_path)
+    assert not os.path.exists(source_path)
     assert os.path.exists(target_path1)
     assert not os.path.exists(target_path2)

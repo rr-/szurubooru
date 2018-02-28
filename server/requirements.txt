@@ -11,3 +11,4 @@ scipy>=0.18.1
 elasticsearch>=5.0.0
 elasticsearch-dsl>=5.0.0
 scikit-image>=0.12
+pynacl>=1.2.1
