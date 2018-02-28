@@ -16,8 +16,8 @@ def _serialize(
 def get_user_tokens(ctx: rest.Context, params: Dict[str, str] = {}) -> rest.Response:
     user = users.get_user_by_name(params['user_name'])
     infix = 'self' if ctx.user.user_id == user.user_id else 'any'
-    auth.verify_privilege(ctx.user, 'user_token:list:%s' % infix)
-    user_token_list = user_tokens.get_user_tokens(ctx.user)
+    auth.verify_privilege(ctx.user, 'user_tokens:list:%s' % infix)
+    user_token_list = user_tokens.get_user_tokens(user)
     return {
         "results": [_serialize(ctx, token) for token in user_token_list]
     }
@@ -27,8 +27,8 @@ def get_user_tokens(ctx: rest.Context, params: Dict[str, str] = {}) -> rest.Resp
 def create_user_token(ctx: rest.Context, params: Dict[str, str] = {}) -> rest.Response:
     user = users.get_user_by_name(params['user_name'])
     infix = 'self' if ctx.user.user_id == user.user_id else 'any'
-    auth.verify_privilege(ctx.user, 'user_token:create:%s' % infix)
-    user_token = user_tokens.create_user_token(ctx.user)
+    auth.verify_privilege(ctx.user, 'user_tokens:create:%s' % infix)
+    user_token = user_tokens.create_user_token(user)
     return _serialize(ctx, user_token)
 
 
@@ -36,8 +36,8 @@ def create_user_token(ctx: rest.Context, params: Dict[str, str] = {}) -> rest.Re
 def edit_user_token(ctx: rest.Context, params: Dict[str, str] = {}) -> rest.Response:
     user = users.get_user_by_name(params['user_name'])
     infix = 'self' if ctx.user.user_id == user.user_id else 'any'
-    auth.verify_privilege(ctx.user, 'user_token:edit:%s' % infix)
-    user_token = user_tokens.get_user_token_by_user_and_token(ctx.user, params['user_token'])
+    auth.verify_privilege(ctx.user, 'user_tokens:edit:%s' % infix)
+    user_token = user_tokens.get_user_token_by_user_and_token(user, params['user_token'])
     versions.verify_version(user_token, ctx)
     versions.bump_version(user_token)
     return _serialize(ctx, user_token)
@@ -47,8 +47,8 @@ def edit_user_token(ctx: rest.Context, params: Dict[str, str] = {}) -> rest.Resp
 def delete_user_token(ctx: rest.Context, params: Dict[str, str]) -> rest.Response:
     user = users.get_user_by_name(params['user_name'])
     infix = 'self' if ctx.user.user_id == user.user_id else 'any'
-    auth.verify_privilege(ctx.user, 'user_token:delete:%s' % infix)
-    user_token = user_tokens.get_user_token_by_user_and_token(ctx.user, params['user_token'])
+    auth.verify_privilege(ctx.user, 'user_tokens:delete:%s' % infix)
+    user_token = user_tokens.get_user_token_by_user_and_token(user, params['user_token'])
     if user_token is not None:
         ctx.session.delete(user_token)
         ctx.session.commit()
