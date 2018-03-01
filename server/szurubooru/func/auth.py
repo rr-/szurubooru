@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import hashlib
 import random
 from collections import OrderedDict
@@ -5,7 +7,7 @@ from nacl.exceptions import InvalidkeyError
 
 from szurubooru import config, model, errors, db
 from szurubooru.func import util
-from nacl.pwhash import argon2id, verify
+from nacl import pwhash
 
 
 RANK_MAP = OrderedDict([
@@ -19,29 +21,29 @@ RANK_MAP = OrderedDict([
 ])
 
 
-def get_password_hash(salt: str, password: str) -> str:
-    """ Retrieve argon2id password hash."""
-    return argon2id.str(
+def get_password_hash(salt: str, password: str) -> Tuple[str, int]:
+    ''' Retrieve argon2id password hash. '''
+    return pwhash.argon2id.str(
         (config.config['secret'] + salt + password).encode('utf8')
-    ).decode('utf8')
+    ).decode('utf8'), 3
 
 
-def get_sha256_legacy_password_hash(salt: str, password: str) -> str:
-    """ Retrieve old-style sha256 password hash."""
+def get_sha256_legacy_password_hash(salt: str, password: str) -> Tuple[str, int]:
+    ''' Retrieve old-style sha256 password hash. '''
     digest = hashlib.sha256()
     digest.update(config.config['secret'].encode('utf8'))
     digest.update(salt.encode('utf8'))
     digest.update(password.encode('utf8'))
-    return digest.hexdigest()
+    return digest.hexdigest(), 2
 
 
-def get_sha1_legacy_password_hash(salt: str, password: str) -> str:
-    """ Retrieve old-style sha1 password hash."""
+def get_sha1_legacy_password_hash(salt: str, password: str) -> Tuple[str, int]:
+    ''' Retrieve old-style sha1 password hash. '''
     digest = hashlib.sha1()
     digest.update(b'1A2/$_4xVa')
     digest.update(salt.encode('utf8'))
     digest.update(password.encode('utf8'))
-    return digest.hexdigest()
+    return digest.hexdigest(), 1
 
 
 def create_password() -> str:
@@ -59,16 +61,19 @@ def is_valid_password(user: model.User, password: str) -> bool:
     salt, valid_hash = user.password_salt, user.password_hash
 
     try:
-        return verify(user.password_hash.encode('utf8'),
-                      (config.config['secret'] + salt + password).encode('utf8'))
+        return pwhash.verify(
+            user.password_hash.encode('utf8'),
+            (config.config['secret'] + salt + password).encode('utf8'))
     except InvalidkeyError:
         possible_hashes = [
-            get_sha256_legacy_password_hash(salt, password),
-            get_sha1_legacy_password_hash(salt, password)
+            get_sha256_legacy_password_hash(salt, password)[0],
+            get_sha1_legacy_password_hash(salt, password)[0]
         ]
         if valid_hash in possible_hashes:
             # Convert the user password hash to the new hash
-            user.password_hash = get_password_hash(salt, password)
+            new_hash, revision = get_password_hash(salt, password)
+            user.password_hash = new_hash
+            user.password_revision = revision
             db.session.commit()
             return True
 

@@ -320,10 +320,11 @@ def test_update_user_password(user_factory, config_injector):
     with patch('szurubooru.func.auth.create_password'), \
             patch('szurubooru.func.auth.get_password_hash'):
         auth.create_password.return_value = 'salt'
-        auth.get_password_hash.return_value = 'hash'
+        auth.get_password_hash.return_value = ('hash', 3)
         users.update_user_password(user, 'a')
         assert user.password_salt == 'salt'
         assert user.password_hash == 'hash'
+        assert user.password_revision == 3
 
 
 def test_update_user_email_with_too_long_string(user_factory):
@@ -447,7 +448,8 @@ def test_reset_user_password(user_factory):
             patch('szurubooru.func.auth.get_password_hash'):
         user = user_factory()
         auth.create_password.return_value = 'salt'
-        auth.get_password_hash.return_value = 'hash'
+        auth.get_password_hash.return_value = ('hash', 3)
         users.reset_user_password(user)
         assert user.password_salt == 'salt'
         assert user.password_hash == 'hash'
+        assert user.password_revision == 3

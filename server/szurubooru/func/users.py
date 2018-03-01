@@ -243,7 +243,9 @@ def update_user_password(user: model.User, password: str) -> None:
         raise InvalidPasswordError(
             'Password must satisfy regex %r.' % password_regex)
     user.password_salt = auth.create_password()
-    user.password_hash = auth.get_password_hash(user.password_salt, password)
+    hash, revision = auth.get_password_hash(user.password_salt, password)
+    user.password_hash = hash
+    user.password_revision = revision
 
 
 def update_user_email(user: model.User, email: str) -> None:
@@ -308,5 +310,7 @@ def reset_user_password(user: model.User) -> str:
     assert user
     password = auth.create_password()
     user.password_salt = auth.create_password()
-    user.password_hash = auth.get_password_hash(user.password_salt, password)
+    hash, revision = auth.get_password_hash(user.password_salt, password)
+    user.password_hash = hash
+    user.password_revision = revision
     return password
