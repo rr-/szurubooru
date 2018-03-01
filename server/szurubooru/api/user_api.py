@@ -45,9 +45,6 @@ def create_user(
     ctx.session.add(user)
     ctx.session.commit()
 
-    if ctx.user.user_id is not None:
-        user = ctx.user
-
     return _serialize(ctx, user, force_show_email=True)
 
 
