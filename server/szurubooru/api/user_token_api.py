@@ -13,7 +13,8 @@ def _serialize(
 
 
 @rest.routes.get('/user-tokens/(?P<user_name>[^/]+)/?')
-def get_user_tokens(ctx: rest.Context, params: Dict[str, str] = {}) -> rest.Response:
+def get_user_tokens(
+        ctx: rest.Context, params: Dict[str, str] = {}) -> rest.Response:
     user = users.get_user_by_name(params['user_name'])
     infix = 'self' if ctx.user.user_id == user.user_id else 'any'
     auth.verify_privilege(ctx.user, 'user_tokens:list:%s' % infix)
@@ -24,7 +25,8 @@ def get_user_tokens(ctx: rest.Context, params: Dict[str, str] = {}) -> rest.Resp
 
 
 @rest.routes.post('/user-token/(?P<user_name>[^/]+)/?')
-def create_user_token(ctx: rest.Context, params: Dict[str, str] = {}) -> rest.Response:
+def create_user_token(
+        ctx: rest.Context, params: Dict[str, str] = {}) -> rest.Response:
     user = users.get_user_by_name(params['user_name'])
     infix = 'self' if ctx.user.user_id == user.user_id else 'any'
     auth.verify_privilege(ctx.user, 'user_tokens:create:%s' % infix)
@@ -33,27 +35,30 @@ def create_user_token(ctx: rest.Context, params: Dict[str, str] = {}) -> rest.Re
 
 
 @rest.routes.put('/user-token/(?P<user_name>[^/]+)/(?P<user_token>[^/]+)/?')
-def update_user_token(ctx: rest.Context, params: Dict[str, str] = {}) -> rest.Response:
+def update_user_token(
+        ctx: rest.Context, params: Dict[str, str] = {}) -> rest.Response:
     user = users.get_user_by_name(params['user_name'])
     infix = 'self' if ctx.user.user_id == user.user_id else 'any'
     auth.verify_privilege(ctx.user, 'user_tokens:edit:%s' % infix)
-    user_token = user_tokens.get_user_token_by_user_and_token(user, params['user_token'])
+    user_token = user_tokens.get_by_user_and_token(user, params['user_token'])
     versions.verify_version(user_token, ctx)
     versions.bump_version(user_token)
     if ctx.has_param('enabled'):
         auth.verify_privilege(ctx.user, 'user_tokens:edit:%s' % infix)
-        user_tokens.update_user_token_enabled(user_token, ctx.get_param_as_bool('enabled'))
+        user_tokens.update_user_token_enabled(user_token,
+                                              ctx.get_param_as_bool('enabled'))
     user_tokens.update_user_token_edit_time(user_token)
     ctx.session.commit()
     return _serialize(ctx, user_token)
 
 
 @rest.routes.delete('/user-token/(?P<user_name>[^/]+)/(?P<user_token>[^/]+)/?')
-def delete_user_token(ctx: rest.Context, params: Dict[str, str]) -> rest.Response:
+def delete_user_token(
+        ctx: rest.Context, params: Dict[str, str]) -> rest.Response:
     user = users.get_user_by_name(params['user_name'])
     infix = 'self' if ctx.user.user_id == user.user_id else 'any'
     auth.verify_privilege(ctx.user, 'user_tokens:delete:%s' % infix)
-    user_token = user_tokens.get_user_token_by_user_and_token(user, params['user_token'])
+    user_token = user_tokens.get_by_user_and_token(user, params['user_token'])
     if user_token is not None:
         ctx.session.delete(user_token)
         ctx.session.commit()

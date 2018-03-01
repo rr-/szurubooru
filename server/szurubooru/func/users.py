@@ -172,8 +172,7 @@ def get_user_count() -> int:
 
 
 def try_get_user_by_name(name: str) -> Optional[model.User]:
-    return (
-        db.session
+    return (db.session
             .query(model.User)
             .filter(sa.func.lower(model.User.name) == sa.func.lower(name))
             .one_or_none())
@@ -189,11 +188,11 @@ def get_user_by_name(name: str) -> model.User:
 def try_get_user_by_name_or_email(name_or_email: str) -> Optional[model.User]:
     return (
         db.session
-            .query(model.User)
-            .filter(
+        .query(model.User)
+        .filter(
             (sa.func.lower(model.User.name) == sa.func.lower(name_or_email)) |
             (sa.func.lower(model.User.email) == sa.func.lower(name_or_email)))
-            .one_or_none())
+        .one_or_none())
 
 
 def get_user_by_name_or_email(name_or_email: str) -> model.User:

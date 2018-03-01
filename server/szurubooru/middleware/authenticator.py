@@ -16,7 +16,7 @@ def _authenticate(username: str, password: str) -> model.User:
 def _authenticate_token(username: str, token: str) -> model.User:
     """Try to authenticate user. Throw AuthError for invalid users."""
     user = users.get_user_by_name(username)
-    user_token = user_tokens.get_user_token_by_user_and_token(user, token)
+    user_token = user_tokens.get_by_user_and_token(user, token)
     if not auth.is_valid_token(user_token):
         raise errors.AuthError('Invalid token.')
     return user

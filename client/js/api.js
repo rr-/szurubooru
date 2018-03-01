@@ -89,11 +89,11 @@ class Api extends events.EventTarget {
     loginFromCookies() {
         const auth = cookies.getJSON('auth');
         return auth && auth.user && auth.token ?
-            this.login_with_token(auth.user, auth.token, true) :
+            this.loginWithToken(auth.user, auth.token, true) :
             Promise.resolve();
     }
 
-    login_with_token(userName, token, doRemember) {
+    loginWithToken(userName, token, doRemember) {
         this.cache = {};
         return new Promise((resolve, reject) => {
             this.userName = userName;
@@ -118,7 +118,7 @@ class Api extends events.EventTarget {
         });
     }
 
-    create_token(userName, options) {
+    createToken(userName, options) {
         return new Promise((resolve, reject) => {
             this.post('/user-token/' + userName, {})
                 .then(response => {
@@ -135,7 +135,7 @@ class Api extends events.EventTarget {
         });
     }
 
-    delete_token(userName, userToken) {
+    deleteToken(userName, userToken) {
         return new Promise((resolve, reject) => {
             this.delete('/user-token/' + userName + '/' + userToken, {})
                 .then(response => {
@@ -162,7 +162,7 @@ class Api extends events.EventTarget {
                     if (doRemember) {
                         options.expires = 365;
                     }
-                    this.create_token(this.userName, options);
+                    this.createToken(this.userName, options);
                     this.user = response;
                     resolve();
                     this.dispatchEvent(new CustomEvent('login'));
@@ -175,7 +175,7 @@ class Api extends events.EventTarget {
 
     logout() {
         let self = this;
-        this.delete_token(this.userName, this.userToken)
+        this.deleteToken(this.userName, this.userToken)
             .then(response => {
                 self._logout();
             }, error => {

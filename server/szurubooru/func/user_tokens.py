@@ -1,8 +1,11 @@
 from datetime import datetime
 from typing import Any, Optional, List, Dict, Callable
-
-from szurubooru import db, model, rest
+from szurubooru import db, model, rest, errors
 from szurubooru.func import auth, serialization, users
+
+
+class InvalidEnabledFieldError(errors.ValidationError):
+    pass
 
 
 class UserTokenSerializer(serialization.BaseSerializer):
@@ -51,9 +54,11 @@ def serialize_user_token(
     return UserTokenSerializer(user_token, auth_user).serialize(options)
 
 
-def get_user_token_by_user_and_token(user: model.User, token: str) -> model.UserToken:
+def get_by_user_and_token(
+        user: model.User, token: str) -> model.UserToken:
     return (db.session.query(model.UserToken)
-            .filter(model.UserToken.user_id == user.user_id, model.UserToken.token == token)
+            .filter(model.UserToken.user_id == user.user_id,
+                    model.UserToken.token == token)
             .one_or_none())
 
 
@@ -76,9 +81,12 @@ def create_user_token(user: model.User) -> model.UserToken:
     return user_token
 
 
-def update_user_token_enabled(user_token: model.UserToken, enabled: bool) -> None:
+def update_user_token_enabled(
+        user_token: model.UserToken, enabled: bool) -> None:
     assert user_token
-    user_token.enabled = enabled if enabled is not None else True
+    if enabled is None:
+        raise InvalidEnabledFieldError('Enabled cannot be empty.')
+    user_token.enabled = enabled
 
 
 def update_user_token_edit_time(user_token: model.UserToken) -> None:

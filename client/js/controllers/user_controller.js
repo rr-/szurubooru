@@ -87,12 +87,12 @@ class UserController {
             this._view.addEventListener('create-token', e => this._evtCreateToken(e));
             this._view.addEventListener('delete-token', e => this._evtDeleteToken(e));
 
-            for (let i = 0; i < this._successMessages.length; i++) {
-                this.showSuccess(this._successMessages[i]);
+            for (let message of this._successMessages) {
+                this.showSuccess(message);
             }
 
-            for (let i = 0; i < this._errorMessages.length; i++) {
-                this.showError(this._errorMessages[i]);
+            for (let message of this._errorMessages) {
+                this.showError(message);
             }
 
         }, error => {

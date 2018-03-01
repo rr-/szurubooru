@@ -22,11 +22,12 @@ class UserTokenView extends events.EventTarget {
     }
 
     _decorateTokenForms() {
+        this._tokenFormNodes = [];
         for (let i = 0; i < this._tokens.length; i++) {
-            let formNode = this._hostNode.querySelector('#token' + i);
+            let formNode = this._hostNode.querySelector('.token[data-token-id=\"' + i + '\"]');
             views.decorateValidator(formNode);
             formNode.addEventListener('submit', e => this._evtDelete(e));
-            this._tokenFormNodes.push(formNode)
+            this._tokenFormNodes.push(formNode);
         }
     }
 
@@ -44,23 +45,21 @@ class UserTokenView extends events.EventTarget {
 
     enableForm() {
         views.enableForm(this._formNode);
-        for (let i = 0; i < this._tokenFormNodes.length; i++) {
-            let formNode = this._tokenFormNodes[i];
+        for (let formNode of this._tokenFormNodes) {
             views.enableForm(formNode);
         }
     }
 
     disableForm() {
         views.disableForm(this._formNode);
-        for (let i = 0; i < this._tokenFormNodes.length; i++) {
-            let formNode = this._tokenFormNodes[i];
+        for (let formNode of this._tokenFormNodes) {
             views.disableForm(formNode);
         }
     }
 
     _evtDelete(e) {
         e.preventDefault();
-        const userToken = this._tokens[parseInt(e.target.id.replace('token', ''))];
+        const userToken = this._tokens[parseInt(e.target.getAttribute('data-token-id'))];
         this.dispatchEvent(new CustomEvent('delete', {
             detail: {
                 user: this._user,

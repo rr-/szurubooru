@@ -17,17 +17,18 @@ depends_on = None
 
 def upgrade():
     op.create_table('user_token',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('user_id', sa.Integer(), nullable=False),
-    sa.Column('token', sa.Unicode(length=36), nullable=False),
-    sa.Column('enabled', sa.Boolean(), nullable=False),
-    sa.Column('creation_time', sa.DateTime(), nullable=False),
-    sa.Column('last_edit_time', sa.DateTime(), nullable=True),
-    sa.Column('version', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['user_id'], ['user.id'], ondelete='CASCADE'),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_index(op.f('ix_user_token_user_id'), 'user_token', ['user_id'], unique=False)
+                    sa.Column('id', sa.Integer(), nullable=False),
+                    sa.Column('user_id', sa.Integer(), nullable=False),
+                    sa.Column('token', sa.Unicode(length=36), nullable=False),
+                    sa.Column('enabled', sa.Boolean(), nullable=False),
+                    sa.Column('creation_time', sa.DateTime(), nullable=False),
+                    sa.Column('last_edit_time', sa.DateTime(), nullable=True),
+                    sa.Column('version', sa.Integer(), nullable=False),
+                    sa.ForeignKeyConstraint(['user_id'], ['user.id'],
+                                            ondelete='CASCADE'),
+                    sa.PrimaryKeyConstraint('id'))
+    op.create_index(op.f('ix_user_token_user_id'), 'user_token',
+                    ['user_id'], unique=False)
 
 
 def downgrade():

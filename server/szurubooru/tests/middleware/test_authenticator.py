@@ -32,9 +32,9 @@ def test_process_request_token_auth_valid(context_factory, user_token_factory):
     })
     with patch('szurubooru.func.auth.is_valid_token'), \
             patch('szurubooru.func.users.get_user_by_name'), \
-            patch('szurubooru.func.user_tokens.get_user_token_by_user_and_token'):
+            patch('szurubooru.func.user_tokens.get_by_user_and_token'):
         users.get_user_by_name.return_value = user_token.user
-        user_tokens.get_user_token_by_user_and_token.return_value = user_token
+        user_tokens.get_by_user_and_token.return_value = user_token
         auth.is_valid_password.return_value = True
         authenticator.process_request(ctx)
         assert ctx.user == user_token.user

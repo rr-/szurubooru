@@ -10,7 +10,7 @@
         <div class="token-flex-row">
             <div><%= token.token %></div>
             <div>
-                <form id='token<%= index %>'>
+                <form class='token' data-token-id='<%= index %>'>
                     <input type='hidden' name='token' value='<%= token.token %>'/>
                     <input type='submit' value='Delete token'/>
                 </form>

@@ -27,12 +27,13 @@ def test_serialize_user_token_none():
     assert result is None
 
 
-def test_get_user_token_by_user_and_token(user_token_factory):
+def test_get_by_user_and_token(user_token_factory):
     user_token = user_token_factory()
     db.session.add(user_token)
     db.session.flush()
     db.session.commit()
-    result = user_tokens.get_user_token_by_user_and_token(user_token.user, user_token.token)
+    result = user_tokens.get_by_user_and_token(user_token.user,
+                                               user_token.token)
     assert result == user_token
 
 
