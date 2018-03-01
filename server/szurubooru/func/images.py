@@ -108,9 +108,7 @@ class Image:
             ])
 
     def to_mp4(self) -> bytes:
-
         with util.create_temp_file_path(suffix='.dat') as mp4_temp_path:
-
             width = self.width
             height = self.height
             altered_dimensions = False

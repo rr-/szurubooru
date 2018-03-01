@@ -429,22 +429,26 @@ def _sync_post_content(post: model.Post) -> None:
         generate_post_thumbnail(post)
 
 
-def generate_alternate_formats(post: model.Post, content: bytes) -> List[Tuple[model.Post, List[model.Tag]]]:
+def generate_alternate_formats(post: model.Post, content: bytes) \
+        -> List[Tuple[model.Post, List[model.Tag]]]:
     assert post
     assert content
     new_posts = []
     if mime.is_animated_gif(content):
-        tag_names = [tag_name.name for tag_name in [tag.names for tag in post.tags]]
+        tag_names = [tag_name.name for tag_name in
+                     [tag.names for tag in post.tags]]
 
         if config.config['convert']['gif']['to_mp4']:
-            mp4_post, new_tags = create_post(images.Image(content).to_mp4(), tag_names, post.user)
+            mp4_post, new_tags = create_post(images.Image(content).to_mp4(),
+                                             tag_names, post.user)
             update_post_flags(mp4_post, ['loop'])
             update_post_safety(mp4_post, post.safety)
             update_post_source(mp4_post, post.source)
             new_posts += [(mp4_post, new_tags)]
 
         if config.config['convert']['gif']['to_webm']:
-            webm_post, new_tags = create_post(images.Image(content).to_webm(), tag_names, post.user)
+            webm_post, new_tags = create_post(images.Image(content).to_webm(),
+                                              tag_names, post.user)
             update_post_flags(webm_post, ['loop'])
             update_post_safety(webm_post, post.safety)
             update_post_source(webm_post, post.source)
@@ -455,7 +459,8 @@ def generate_alternate_formats(post: model.Post, content: bytes) -> List[Tuple[m
         new_posts = list(filter(lambda i: i[0] is not None, new_posts))
 
         new_relations = [p[0].post_id for p in new_posts]
-        update_post_relations(post, new_relations) if len(new_relations) > 0 else None
+        if len(new_relations) > 0:
+            update_post_relations(post, new_relations)
 
     return new_posts
 
