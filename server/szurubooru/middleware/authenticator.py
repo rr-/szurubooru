@@ -14,7 +14,7 @@ def _authenticate(username: str, password: str) -> model.User:
 
 
 def _authenticate_token(username: str, token: str) -> model.User:
-    """Try to authenticate user. Throw AuthError for invalid users."""
+    ''' Try to authenticate user. Throw AuthError for invalid users. '''
     user = users.get_user_by_name(username)
     user_token = user_tokens.get_by_user_and_token(user, token)
     if not auth.is_valid_token(user_token):
@@ -39,10 +39,10 @@ def _get_user(ctx: rest.Context) -> Optional[model.User]:
         else:
             raise HttpBadRequest(
                 'ValidationError',
-                'Only basic HTTP authentication is supported.')
+                'Only basic or token HTTP authentication is supported.')
     except ValueError as err:
         msg = (
-            'Basic authentication header value are not properly formed. '
+            'Authorization header values are not properly formed. '
             'Supplied header {0}. Got error: {1}')
         raise HttpBadRequest(
             'ValidationError',
