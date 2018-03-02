@@ -1,12 +1,13 @@
 from typing import Tuple
 import hashlib
 import random
+import uuid
 from collections import OrderedDict
+from datetime import datetime
 from nacl import pwhash
 from nacl.exceptions import InvalidkeyError
-from szurubooru import config, model, errors, db
+from szurubooru import config, db, model, errors
 from szurubooru.func import util
-import uuid
 
 
 RANK_MAP = OrderedDict([
@@ -80,7 +81,15 @@ def is_valid_password(user: model.User, password: str) -> bool:
 
 
 def is_valid_token(user_token: model.UserToken) -> bool:
-    return user_token is not None and user_token.enabled
+    ''' Token must be enabled and if it has an expiration,
+        it must be greater than now. '''
+    assert user_token
+    if not user_token.enabled:
+        return False
+    if (user_token.expiration_time is not None
+            and user_token.expiration_time < datetime.utcnow()):
+        return False
+    return True
 
 
 def has_privilege(user: model.User, privilege_name: str) -> bool:

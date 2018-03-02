@@ -199,7 +199,7 @@ class UserController {
     _evtCreateToken(e) {
         this._view.clearMessages();
         this._view.disableForm();
-        UserToken.create(e.detail.user.name)
+        UserToken.create(e.detail.user.name, e.detail.note, e.detail.expirationTime)
             .then(response => {
                 const ctx = router.show(uri.formatClientLink('user', e.detail.user.name, 'list-tokens'));
                 ctx.controller.showSuccess('Token ' + response.token + ' created.');

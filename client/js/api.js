@@ -1,5 +1,6 @@
 'use strict';
 
+require('./util/date.js');
 const cookies = require('js-cookie');
 const request = require('superagent');
 const config = require('./config.js');
@@ -119,8 +120,15 @@ class Api extends events.EventTarget {
     }
 
     createToken(userName, options) {
+        let userTokenRequest = {
+            enabled: true,
+            note: 'Client Login Token'
+        };
+        if (typeof options.expires !== 'undefined') {
+            userTokenRequest.expirationTime = new Date().addDays(options.expires).toISOString()
+        }
         return new Promise((resolve, reject) => {
-            this.post('/user-token/' + userName, {})
+            this.post('/user-token/' + userName, userTokenRequest)
                 .then(response => {
                     cookies.set(
                         'auth',
@@ -327,7 +335,8 @@ class Api extends events.EventTarget {
             try {
                 if (this.userName && this.userToken) {
                     req.auth = null;
-                    req.set('Authorization', 'Token ' + new Buffer(this.userName + ":" + this.userToken).toString('base64'))
+                    req.set('Authorization', 'Token '
+                        + new Buffer(this.userName + ":" + this.userToken).toString('base64'))
                 }
                 else if (this.userName && this.userPassword) {
                     req.auth(

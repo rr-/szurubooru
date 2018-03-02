@@ -11,10 +11,12 @@ class UserToken extends events.EventTarget {
         this._updateFromResponse({});
     }
 
-    get token()         { return this._token; }
-    get enabled()       { return this._enabled; }
-    get version()       { return this._version; }
-    get creationTime()  { return this._creationTime; }
+    get token()          { return this._token; }
+    get note()           { return this._note; }
+    get enabled()        { return this._enabled; }
+    get version()        { return this._version; }
+    get expirationTime() { return this._expirationTime; }
+    get creationTime()   { return this._creationTime; }
 
     static fromResponse(response) {
         if (typeof response.results !== 'undefined') {
@@ -39,8 +41,17 @@ class UserToken extends events.EventTarget {
             });
     }
 
-    static create(userName) {
-        return api.post(uri.formatApiLink('user-token', userName))
+    static create(userName, note, expirationTime) {
+        let userTokenRequest = {
+            enabled: true
+        };
+        if (note){
+            userTokenRequest.note = note;
+        }
+        if (expirationTime) {
+            userTokenRequest.expirationTime = expirationTime;
+        }
+        return api.post(uri.formatApiLink('user-token', userName), userTokenRequest)
             .then(response => {
                 return Promise.resolve(UserToken.fromResponse(response))
             });
@@ -62,10 +73,12 @@ class UserToken extends events.EventTarget {
 
     _updateFromResponse(response) {
         const map = {
-            _token:        response.token,
-            _enabled:      response.enabled,
-            _version:      response.version,
-            _creationTime: response.creationTime,
+            _token:          response.token,
+            _note:           response.note,
+            _enabled:        response.enabled,
+            _expirationTime: response.expirationTime,
+            _version:        response.version,
+            _creationTime:   response.creationTime,
         };
 
         Object.assign(this, map);

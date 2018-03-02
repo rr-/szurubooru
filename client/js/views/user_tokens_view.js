@@ -72,13 +72,30 @@ class UserTokenView extends events.EventTarget {
         e.preventDefault();
         this.dispatchEvent(new CustomEvent('submit', {
             detail: {
-                user: this._user
+                user: this._user,
+
+                note: this._userTokenNoteInputNode ?
+                    this._userTokenNoteInputNode.value :
+                    undefined,
+
+                expirationTime: this._userTokenExpirationTimeInputNode && this._userTokenExpirationTimeInputNode.value.length > 0 ?
+                    new Date(this._userTokenExpirationTimeInputNode.value).toISOString() :
+                    undefined,
+
             },
         }));
     }
 
     get _formNode() {
         return this._hostNode.querySelector('#create-token-form');
+    }
+
+    get _userTokenNoteInputNode() {
+        return this._formNode.querySelector('[name=note]');
+    }
+
+    get _userTokenExpirationTimeInputNode() {
+        return this._formNode.querySelector('[name=expirationTime]');
     }
 }
 
