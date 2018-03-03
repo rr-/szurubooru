@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 _SCALE_FIT_FMT = (
-    r'scale=\'{width}:{height}\'')
+    r"scale='{width}:{height}'")
 
 
 class Image:
