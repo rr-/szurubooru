@@ -124,7 +124,7 @@ def update_user_token_expiration_time(
                 'Expiration cannot be missing timezone')
         else:
             expiration_time = expiration_time.astimezone(pytz.UTC)
-        if expiration_time < datetime.utcnow().astimezone(pytz.UTC):
+        if expiration_time < datetime.utcnow().replace(tzinfo=pytz.UTC):
             raise InvalidExpirationError(
                 'Expiration cannot happen in the past')
     user_token.expiration_time = expiration_time
