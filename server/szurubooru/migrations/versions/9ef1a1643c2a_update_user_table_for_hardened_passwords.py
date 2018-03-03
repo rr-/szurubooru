@@ -65,7 +65,7 @@ def upgrade():
             elif password_hash_length == 64:
                 user.password_revision = 2
             else:
-                user.password_revision = 3
+                user.password_revision = 0
         session.flush()
     session.commit()
 
