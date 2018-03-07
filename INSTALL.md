@@ -173,6 +173,25 @@ server {
     }
 }
 ```
+**Caddy configuration**:
+```
+*:80 {
+        root /srv/www/booru/client/public
+        gzip
+        log / /var/log/szurubooru.access.log
+        errors /var/log/szurubooru.error.log
+
+        proxy /api http://127.0.0.1:6666 {
+                without /api
+                transparent
+        }
+
+        rewrite {
+                if {uri} not_starts_with /api
+                to {uri} /
+        }
+}
+```
 
 **`config.yaml`**:
 
