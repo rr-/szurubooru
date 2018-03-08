@@ -11,10 +11,6 @@ from szurubooru.func import mime, util
 logger = logging.getLogger(__name__)
 
 
-_SCALE_FIT_FMT = (
-    r"scale='{width}:{height}'")
-
-
 class Image:
     def __init__(self, content: bytes) -> None:
         self.content = content
@@ -39,7 +35,8 @@ class Image:
         cli = [
             '-i', '{path}',
             '-f', 'image2',
-            '-filter:v', _SCALE_FIT_FMT.format(width=width, height=height),
+            '-filter:v', "scale='{width}:{height}'".format(
+                width=width, height=height),
             '-map', '0:v:0',
             '-vframes', '1',
             '-vcodec', 'png',
@@ -82,8 +79,11 @@ class Image:
             '-',
         ])
 
-    def _execute(self, cli: List[str], program: str = 'ffmpeg',
-                 ignore_error_if_data: bool = False) -> bytes:
+    def _execute(
+            self,
+            cli: List[str],
+            program: str = 'ffmpeg',
+            ignore_error_if_data: bool = False) -> bytes:
         extension = mime.get_extension(mime.get_mime_type(self.content))
         assert extension
         with util.create_temp_file(suffix='.' + extension) as handle:
