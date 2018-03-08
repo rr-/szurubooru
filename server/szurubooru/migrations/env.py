@@ -38,8 +38,7 @@ def run_migrations_offline():
         url=url,
         target_metadata=target_metadata,
         literal_binds=True,
-        compare_type=True
-    )
+        compare_type=True)
 
     with alembic.context.begin_transaction():
         alembic.context.run_migrations()
@@ -61,8 +60,7 @@ def run_migrations_online():
         alembic.context.configure(
             connection=connection,
             target_metadata=target_metadata,
-            compare_type=True
-        )
+            compare_type=True)
 
         with alembic.context.begin_transaction():
             alembic.context.run_migrations()

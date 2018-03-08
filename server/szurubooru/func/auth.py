@@ -1,13 +1,11 @@
 from typing import Tuple
-
 import hashlib
 import random
 from collections import OrderedDict
+from nacl import pwhash
 from nacl.exceptions import InvalidkeyError
-
 from szurubooru import config, model, errors, db
 from szurubooru.func import util
-from nacl import pwhash
 
 
 RANK_MAP = OrderedDict([
