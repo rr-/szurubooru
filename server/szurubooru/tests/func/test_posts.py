@@ -912,8 +912,8 @@ def test_merge_posts_doesnt_create_relation_loop_for_children(
     assert posts.get_post_by_id(target_post.post_id).relation_count == 0
 
 
-def test_merge_posts_doesnt_create_relation_loop_for_parents(post_factory,
-                                                             config_injector):
+def test_merge_posts_doesnt_create_relation_loop_for_parents(
+        post_factory, config_injector):
     config_injector({'delete_source_files': False})
     source_post = post_factory()
     target_post = post_factory()
