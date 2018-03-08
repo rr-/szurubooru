@@ -134,9 +134,7 @@ class Image:
             ]
 
             if altered_dimensions:
-                args = args + [
-                    '-filter:v', 'scale=\'%d:%d\'' % (width, height)
-                ]
+                args += ['-filter:v', 'scale=\'%d:%d\'' % (width, height)]
 
             self._execute(args + ['-y', mp4_temp_path])
 
