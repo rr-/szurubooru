@@ -32,8 +32,8 @@ class User(Base):
     name = sa.Column('name', sa.Unicode(50), nullable=False, unique=True)
     password_hash = sa.Column('password_hash', sa.Unicode(128), nullable=False)
     password_salt = sa.Column('password_salt', sa.Unicode(32))
-    password_revision = sa.Column('password_revision', sa.SmallInteger,
-                                  default=0, nullable=False)
+    password_revision = sa.Column(
+        'password_revision', sa.SmallInteger, default=0, nullable=False)
     email = sa.Column('email', sa.Unicode(64), nullable=True)
     rank = sa.Column('rank', sa.Unicode(32), nullable=False)
     avatar_style = sa.Column(
