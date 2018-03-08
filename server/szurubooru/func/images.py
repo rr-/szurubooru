@@ -79,6 +79,68 @@ class Image:
             '-',
         ])
 
+    def to_webm(self) -> bytes:
+        with util.create_temp_file_path(suffix='.log') as phase_log_path:
+            # Pass 1
+            self._execute([
+                '-i', '{path}',
+                '-pass', '1',
+                '-passlogfile', phase_log_path,
+                '-vcodec', 'libvpx-vp9',
+                '-crf', '4',
+                '-b:v', '2500K',
+                '-acodec', 'libvorbis',
+                '-f', 'webm',
+                '-y', '/dev/null'
+            ])
+
+            # Pass 2
+            return self._execute([
+                '-i', '{path}',
+                '-pass', '2',
+                '-passlogfile', phase_log_path,
+                '-vcodec', 'libvpx-vp9',
+                '-crf', '4',
+                '-b:v', '2500K',
+                '-acodec', 'libvorbis',
+                '-f', 'webm',
+                '-'
+            ])
+
+    def to_mp4(self) -> bytes:
+        with util.create_temp_file_path(suffix='.dat') as mp4_temp_path:
+            width = self.width
+            height = self.height
+            altered_dimensions = False
+
+            if self.width % 2 != 0:
+                width = self.width - 1
+                altered_dimensions = True
+
+            if self.height % 2 != 0:
+                height = self.height - 1
+                altered_dimensions = True
+
+            args = [
+                '-i', '{path}',
+                '-vcodec', 'libx264',
+                '-preset', 'slow',
+                '-crf', '22',
+                '-b:v', '200K',
+                '-profile:v', 'main',
+                '-pix_fmt', 'yuv420p',
+                '-acodec', 'aac',
+                '-f', 'mp4'
+            ]
+
+            if altered_dimensions:
+                args += ['-filter:v', 'scale=\'%d:%d\'' % (width, height)]
+
+            self._execute(args + ['-y', mp4_temp_path])
+
+            with open(mp4_temp_path, 'rb') as mp4_temp:
+                return mp4_temp.read()
+
     def _execute(
             self,
             cli: List[str],

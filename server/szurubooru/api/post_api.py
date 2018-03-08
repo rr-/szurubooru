@@ -1,4 +1,4 @@
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 from datetime import datetime
 from szurubooru import db, model, errors, rest, search
 from szurubooru.func import (
@@ -69,11 +69,24 @@ def create_post(
         posts.update_post_thumbnail(post, ctx.get_file('thumbnail'))
     ctx.session.add(post)
     ctx.session.flush()
-    snapshots.create(post, None if anonymous else ctx.user)
-    for tag in new_tags:
-        snapshots.create(tag, None if anonymous else ctx.user)
+    create_snapshots_for_post(post, new_tags, None if anonymous else ctx.user)
+    alternate_format_posts = posts.generate_alternate_formats(post, content)
+    for alternate_post, alternate_post_new_tags in alternate_format_posts:
+        create_snapshots_for_post(
+            alternate_post,
+            alternate_post_new_tags,
+            None if anonymous else ctx.user)
     ctx.session.commit()
     return _serialize_post(ctx, post)
+
+
+def create_snapshots_for_post(
+        post: model.Post,
+        new_tags: List[model.Tag],
+        user: Optional[model.User]):
+    snapshots.create(post, user)
+    for tag in new_tags:
+        snapshots.create(tag, user)
 
 
 @rest.routes.get('/post/(?P<post_id>[^/]+)/?')
