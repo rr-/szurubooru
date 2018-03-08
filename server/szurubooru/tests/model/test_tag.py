@@ -1,14 +1,15 @@
 from datetime import datetime
-
 import pytest
-
 from szurubooru import db, model
 
 
 @pytest.fixture(autouse=True)
 def inject_config(config_injector):
-    config_injector({'delete_source_files': False,
-                     'secret': 'secret', 'data_dir': ''})
+    config_injector({
+        'delete_source_files': False,
+        'secret': 'secret',
+        'data_dir': ''
+    })
 
 
 def test_saving_tag(tag_factory):

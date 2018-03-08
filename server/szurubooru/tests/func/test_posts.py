@@ -1,9 +1,7 @@
 from datetime import datetime
 from unittest.mock import patch
-
 import os
 import pytest
-
 from szurubooru import db, model
 from szurubooru.func import (
     posts, users, comments, tags, images, files, util, image_hash)
@@ -843,8 +841,8 @@ def test_merge_posts_moves_child_relations(post_factory, config_injector):
     assert posts.get_post_by_id(target_post.post_id).relation_count == 1
 
 
-def test_merge_posts_doesnt_duplicate_child_relations(post_factory,
-                                                      config_injector):
+def test_merge_posts_doesnt_duplicate_child_relations(
+        post_factory, config_injector):
     config_injector({'delete_source_files': False})
     source_post = post_factory()
     target_post = post_factory()
@@ -879,8 +877,8 @@ def test_merge_posts_moves_parent_relations(post_factory, config_injector):
     assert posts.get_post_by_id(related_post.post_id).relation_count == 1
 
 
-def test_merge_posts_doesnt_duplicate_parent_relations(post_factory,
-                                                       config_injector):
+def test_merge_posts_doesnt_duplicate_parent_relations(
+        post_factory, config_injector):
     config_injector({'delete_source_files': False})
     source_post = post_factory()
     target_post = post_factory()
@@ -898,8 +896,8 @@ def test_merge_posts_doesnt_duplicate_parent_relations(post_factory,
     assert posts.get_post_by_id(related_post.post_id).relation_count == 1
 
 
-def test_merge_posts_doesnt_create_relation_loop_for_children(post_factory,
-                                                              config_injector):
+def test_merge_posts_doesnt_create_relation_loop_for_children(
+        post_factory, config_injector):
     config_injector({'delete_source_files': False})
     source_post = post_factory()
     target_post = post_factory()

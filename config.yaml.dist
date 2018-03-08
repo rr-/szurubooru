@@ -21,7 +21,7 @@ test_database: 'sqlite:///:memory:' # required for running the test suite
 
 
 # Delete thumbnails and source files on post delete
-# Original functionality is false, to mitigate the impacts of admins going
+# Original functionality is no, to mitigate the impacts of admins going
 # on unchecked post purges.
 delete_source_files: no
 
