@@ -12,14 +12,16 @@ def test_serialize_user_token(user_token_factory):
     with patch('szurubooru.func.users.get_avatar_url'):
         users.get_avatar_url.return_value = 'https://example.com/avatar.png'
         result = user_tokens.serialize_user_token(user_token, user_token.user)
-        assert result == {'creationTime': datetime(1997, 1, 1, 0, 0),
-                          'enabled': True,
-                          'lastEditTime': None,
-                          'token': 'dummy',
-                          'user': {
-                              'avatarUrl': 'https://example.com/avatar.png',
-                              'name': user_token.user.name},
-                          'version': 1}
+        assert result == {
+            'creationTime': datetime(1997, 1, 1, 0, 0),
+            'enabled': True,
+            'lastEditTime': None,
+            'token': 'dummy',
+            'user': {
+                'avatarUrl': 'https://example.com/avatar.png',
+                'name': user_token.user.name},
+            'version': 1
+        }
 
 
 def test_serialize_user_token_none():

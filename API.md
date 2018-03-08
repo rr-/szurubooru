@@ -1495,10 +1495,10 @@ data.
 
     Deletes existing user.
 
-## Listing tokens
+## Listing user tokens
 - **Request**
 
-    `GET /user-tokens/`
+    `GET /user-tokens/<user_name>`
 
 - **Output**
 
@@ -1513,15 +1513,19 @@ data.
 
     Searches for users tokens for the currently logged in user.
 
-## Creating token
+## Creating a user token
 - **Request**
 
-    `POST /user-token`
+    `POST /user-token/<user_name>`
 
 - **Input**
 
     ```json5
-    {}
+    {
+        "enabled":    <enabled>, // optional
+        "note":       <note>, // optional
+        "expiration": <expiration>, // optional
+    }
     ```
 
 - **Output**
@@ -1537,17 +1541,19 @@ data.
     Creates a new user token that can be used for authentication of api
     endpoints instead of a password.
     
-## Updating user
+## Updating a user token
 - **Request**
 
-    `PUT /user-token/<token>`
+    `PUT /user-token/<user_name>/<token>`
 
 - **Input**
 
     ```json5
     {
-        "version": <version>,
-        "enabled": <enabled>, // optional
+        "version":    <version>,
+        "enabled":    <enabled>, // optional
+        "note":       <note>, // optional
+        "expiration": <expiration>, // optional
     }
     ```
 
@@ -1567,15 +1573,17 @@ data.
     except the [`version`](#versioning) are optional - update concerns only 
     provided fields.
 
-## Deleting token
+## Deleting a user token
 - **Request**
 
-    `DELETE /user-token/<token>`
+    `DELETE /user-token/<user_name>/<token>`
 
 - **Input**
 
     ```json5
-    {}
+    {
+        "version":    <version>,
+    }
     ```
 
 - **Output**
@@ -1836,7 +1844,9 @@ A single user token.
 {
     "user":         <user>,
     "token":        <token>,
+    "note":         <token>,
     "enabled":      <enabled>,
+    "expiration":   <expiration>,
     "version":      <version>,
     "creationTime": <creation-time>,
     "lastEditTime": <last-edit-time>,
@@ -1846,7 +1856,9 @@ A single user token.
 **Field meaning**
 - `<user>`: micro user. See [micro user](#micro-user).
 - `<token>`: the token that can be used to authenticate the user.
+- `<note>`: a note that describes the token.
 - `<enabled>`: whether the token is still valid for authentication.
+- `<expiration>`: time when the token expires.
 - `<version>`: resource version. See [versioning](#versioning).
 - `<creation-time>`: time the user token was created , formatted as per RFC 3339.
 - `<last-edit-time>`: time the user token was edited, formatted as per RFC 3339.

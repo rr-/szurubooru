@@ -26,11 +26,11 @@ def upgrade():
                     sa.Column('creation_time', sa.DateTime(), nullable=False),
                     sa.Column('last_edit_time', sa.DateTime(), nullable=True),
                     sa.Column('version', sa.Integer(), nullable=False),
-                    sa.ForeignKeyConstraint(['user_id'], ['user.id'],
-                                            ondelete='CASCADE'),
+                    sa.ForeignKeyConstraint(
+                        ['user_id'], ['user.id'], ondelete='CASCADE'),
                     sa.PrimaryKeyConstraint('id'))
-    op.create_index(op.f('ix_user_token_user_id'), 'user_token',
-                    ['user_id'], unique=False)
+    op.create_index(
+        op.f('ix_user_token_user_id'), 'user_token', ['user_id'], unique=False)
 
 
 def downgrade():

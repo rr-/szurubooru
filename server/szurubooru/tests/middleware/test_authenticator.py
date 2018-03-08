@@ -14,9 +14,10 @@ def test_process_request_no_header(context_factory):
 
 def test_process_request_basic_auth_valid(context_factory, user_factory):
     user = user_factory()
-    ctx = context_factory(headers={
-        'Authorization': "Basic dGVzdFVzZXI6dGVzdFBhc3N3b3Jk"
-    })
+    ctx = context_factory(
+        headers={
+            'Authorization': "Basic dGVzdFVzZXI6dGVzdFBhc3N3b3Jk"
+        })
     with patch('szurubooru.func.auth.is_valid_password'), \
             patch('szurubooru.func.users.get_user_by_name'):
         users.get_user_by_name.return_value = user
@@ -27,9 +28,10 @@ def test_process_request_basic_auth_valid(context_factory, user_factory):
 
 def test_process_request_token_auth_valid(context_factory, user_token_factory):
     user_token = user_token_factory()
-    ctx = context_factory(headers={
-        'Authorization': "Token dGVzdFVzZXI6dGVzdFRva2Vu"
-    })
+    ctx = context_factory(
+        headers={
+            'Authorization': "Token dGVzdFVzZXI6dGVzdFRva2Vu"
+        })
     with patch('szurubooru.func.auth.is_valid_token'), \
             patch('szurubooru.func.users.get_user_by_name'), \
             patch('szurubooru.func.user_tokens.get_by_user_and_token'):
@@ -41,8 +43,9 @@ def test_process_request_token_auth_valid(context_factory, user_token_factory):
 
 
 def test_process_request_bad_header(context_factory):
-    ctx = context_factory(headers={
-        'Authorization': "Secret SuperSecretValue"
-    })
+    ctx = context_factory(
+        headers={
+            'Authorization': "Secret SuperSecretValue"
+        })
     with pytest.raises(errors.HttpBadRequest):
         authenticator.process_request(ctx)
