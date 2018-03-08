@@ -11,10 +11,6 @@ from szurubooru.func import mime, util
 logger = logging.getLogger(__name__)
 
 
-_SCALE_FIT_FMT = (
-    r'scale=iw*max({width}/iw\,{height}/ih):ih*max({width}/iw\,{height}/ih)')
-
-
 class Image:
     def __init__(self, content: bytes) -> None:
         self.content = content
@@ -33,10 +29,14 @@ class Image:
         return self.info['streams'][0]['nb_read_frames']
 
     def resize_fill(self, width: int, height: int) -> None:
+        width_greater = self.width > self.height
+        width, height = (-1, height) if width_greater else (width, -1)
+
         cli = [
             '-i', '{path}',
             '-f', 'image2',
-            '-vf', _SCALE_FIT_FMT.format(width=width, height=height),
+            '-filter:v', "scale='{width}:{height}'".format(
+                width=width, height=height),
             '-map', '0:v:0',
             '-vframes', '1',
             '-vcodec', 'png',
@@ -50,7 +50,7 @@ class Image:
                     '-ss',
                     '%d' % math.floor(duration * 0.3),
                 ] + cli
-        content = self._execute(cli)
+        content = self._execute(cli, ignore_error_if_data=True)
         if not content:
             raise errors.ProcessingError('Error while resizing image.')
         self.content = content
@@ -141,7 +141,11 @@ class Image:
             with open(mp4_temp_path, 'rb') as mp4_temp:
                 return mp4_temp.read()
 
-    def _execute(self, cli: List[str], program: str = 'ffmpeg') -> bytes:
+    def _execute(
+            self,
+            cli: List[str],
+            program: str = 'ffmpeg',
+            ignore_error_if_data: bool = False) -> bytes:
         extension = mime.get_extension(mime.get_mime_type(self.content))
         assert extension
         with util.create_temp_file(suffix='.' + extension) as handle:
@@ -160,8 +164,11 @@ class Image:
                     'Failed to execute ffmpeg command (cli=%r, err=%r)',
                     ' '.join(shlex.quote(arg) for arg in cli),
                     err)
-                raise errors.ProcessingError(
-                    'Error while processing image.\n' + err.decode('utf-8'))
+                if ((len(out) > 0 and not ignore_error_if_data)
+                        or len(out) == 0):
+                    raise errors.ProcessingError(
+                        'Error while processing image.\n'
+                        + err.decode('utf-8'))
             return out
 
     def _reload_info(self) -> None:
