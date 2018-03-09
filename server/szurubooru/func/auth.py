@@ -28,7 +28,8 @@ def get_password_hash(salt: str, password: str) -> Tuple[str, int]:
     ).decode('utf8'), 3
 
 
-def get_sha256_legacy_password_hash(salt: str, password: str) -> Tuple[str, int]:
+def get_sha256_legacy_password_hash(
+        salt: str, password: str) -> Tuple[str, int]:
     ''' Retrieve old-style sha256 password hash. '''
     digest = hashlib.sha256()
     digest.update(config.config['secret'].encode('utf8'))
@@ -81,8 +82,10 @@ def is_valid_password(user: model.User, password: str) -> bool:
 
 
 def is_valid_token(user_token: model.UserToken) -> bool:
-    ''' Token must be enabled and if it has an expiration,
-        it must be greater than now. '''
+    '''
+    Token must be enabled and if it has an expiration, it must be
+    greater than now.
+    '''
     assert user_token
     if not user_token.enabled:
         return False

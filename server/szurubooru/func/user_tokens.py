@@ -74,10 +74,12 @@ def serialize_user_token(
 
 def get_by_user_and_token(
         user: model.User, token: str) -> model.UserToken:
-    return (db.session.query(model.UserToken)
-            .filter(model.UserToken.user_id == user.user_id,
-                    model.UserToken.token == token)
-            .one_or_none())
+    return (
+        db.session
+        .query(model.UserToken)
+        .filter(model.UserToken.user_id == user.user_id)
+        .filter(model.UserToken.token == token)
+        .one_or_none())
 
 
 def get_user_tokens(user: model.User) -> List[model.UserToken]:
@@ -111,23 +113,23 @@ def update_user_token_edit_time(user_token: model.UserToken) -> None:
 
 
 def update_user_token_expiration_time(
-        user_token: model.UserToken, expiration_time: str) -> None:
+        user_token: model.UserToken, expiration_time_str: str) -> None:
     assert user_token
-    if expiration_time is not None:
-        try:
-            expiration_time = dateutil_parser.parse(expiration_time)
-        except ValueError:
-            raise InvalidExpirationError(
-                'Expiration is in invalid format {}'.format(expiration_time))
+    try:
+        expiration_time = dateutil_parser.parse(expiration_time_str)
         if expiration_time.tzinfo is None:
             raise InvalidExpirationError(
                 'Expiration cannot be missing timezone')
         else:
             expiration_time = expiration_time.astimezone(pytz.UTC)
-        if expiration_time < datetime.utcnow().replace(tzinfo=pytz.UTC):
-            raise InvalidExpirationError(
-                'Expiration cannot happen in the past')
-    user_token.expiration_time = expiration_time
+            if expiration_time < datetime.utcnow().replace(tzinfo=pytz.UTC):
+                raise InvalidExpirationError(
+                    'Expiration cannot happen in the past')
+            user_token.expiration_time = expiration_time
+    except ValueError:
+        raise InvalidExpirationError(
+            'Expiration is in an invalid format {}'.format(
+                expiration_time_str))
 
 
 def update_user_token_note(user_token: model.UserToken, note: str) -> None:

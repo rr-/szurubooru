@@ -45,7 +45,7 @@ class UserToken extends events.EventTarget {
         let userTokenRequest = {
             enabled: true
         };
-        if (note){
+        if (note) {
             userTokenRequest.note = note;
         }
         if (expirationTime) {

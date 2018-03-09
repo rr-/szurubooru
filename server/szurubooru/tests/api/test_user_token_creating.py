@@ -1,7 +1,5 @@
 from unittest.mock import patch
-
 import pytest
-
 from szurubooru import api
 from szurubooru.func import user_tokens, users
 
@@ -22,7 +20,10 @@ def test_creating_user_token(
         user_tokens.serialize_user_token.return_value = 'serialized user token'
         user_tokens.create_user_token.return_value = user_token
         result = api.user_token_api.create_user_token(
-            context_factory(user=user_token.user),
-            {'user_name': user_token.user.name})
+            context_factory(
+                user=user_token.user),
+            {
+                'user_name': user_token.user.name
+            })
         assert result == 'serialized user token'
         user_tokens.create_user_token.assert_called_once_with(user_token.user)

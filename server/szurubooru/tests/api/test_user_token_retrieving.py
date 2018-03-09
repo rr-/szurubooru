@@ -1,7 +1,5 @@
 from unittest.mock import patch
-
 import pytest
-
 from szurubooru import api
 from szurubooru.func import user_tokens, users
 
@@ -25,7 +23,10 @@ def test_retrieving_user_tokens(
         user_tokens.get_user_tokens.return_value = [user_token1, user_token2,
                                                     user_token3]
         result = api.user_token_api.get_user_tokens(
-            context_factory(user=user_token1.user),
-            {'user_name': user_token1.user.name})
+            context_factory(
+                user=user_token1.user),
+            {
+                'user_name': user_token1.user.name
+            })
         assert result == {'results': ['serialized user token'] * 3}
         user_tokens.get_user_tokens.assert_called_once_with(user_token1.user)

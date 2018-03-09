@@ -1,7 +1,5 @@
 from unittest.mock import patch
-
 import pytest
-
 from szurubooru import api, db
 from szurubooru.func import user_tokens, users
 
@@ -25,12 +23,16 @@ def test_edit_user_token(user_token_factory, context_factory, fake_datetime):
         user_tokens.serialize_user_token.return_value = 'serialized user token'
         user_tokens.get_by_user_and_token.return_value = user_token
         result = api.user_token_api.update_user_token(
-            context_factory(params={'version': user_token.version,
-                                    'enabled': False,
-                                    },
-                            user=user_token.user),
-            {'user_name': user_token.user.name,
-             'user_token': user_token.token})
+            context_factory(
+                params={
+                    'version': user_token.version,
+                    'enabled': False,
+                },
+                user=user_token.user),
+            {
+                'user_name': user_token.user.name,
+                'user_token': user_token.token
+            })
         assert result == 'serialized user token'
         user_tokens.get_by_user_and_token.assert_called_once_with(
             user_token.user, user_token.token)

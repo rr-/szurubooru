@@ -337,8 +337,7 @@ class Api extends events.EventTarget {
                     req.auth = null;
                     req.set('Authorization', 'Token '
                         + new Buffer(this.userName + ":" + this.userToken).toString('base64'))
-                }
-                else if (this.userName && this.userPassword) {
+                } else if (this.userName && this.userPassword) {
                     req.auth(
                         this.userName,
                         encodeURIComponent(this.userPassword)

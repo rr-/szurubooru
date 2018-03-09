@@ -1,9 +1,8 @@
 from unittest.mock import patch
-
+import pytest
 from szurubooru.func import auth, users, user_tokens
 from szurubooru.middleware import authenticator
 from szurubooru.rest import errors
-import pytest
 
 
 def test_process_request_no_header(context_factory):

@@ -1,7 +1,5 @@
 from unittest.mock import patch
-
 import pytest
-
 from szurubooru import api, db
 from szurubooru.func import user_tokens, users
 
@@ -22,9 +20,12 @@ def test_deleting_user_token(
         users.get_user_by_name.return_value = user_token.user
         user_tokens.get_by_user_and_token.return_value = user_token
         result = api.user_token_api.delete_user_token(
-            context_factory(user=user_token.user),
-            {'user_name': user_token.user.name,
-             'user_token': user_token.token})
+            context_factory(
+                user=user_token.user),
+            {
+                'user_name': user_token.user.name,
+                'user_token': user_token.token
+            })
         assert result == {}
         user_tokens.get_by_user_and_token.assert_called_once_with(
             user_token.user, user_token.token)

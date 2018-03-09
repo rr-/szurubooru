@@ -170,10 +170,11 @@ def get_user_count() -> int:
 
 
 def try_get_user_by_name(name: str) -> Optional[model.User]:
-    return (db.session
-            .query(model.User)
-            .filter(sa.func.lower(model.User.name) == sa.func.lower(name))
-            .one_or_none())
+    return (
+        db.session
+        .query(model.User)
+        .filter(sa.func.lower(model.User.name) == sa.func.lower(name))
+        .one_or_none())
 
 
 def get_user_by_name(name: str) -> model.User:

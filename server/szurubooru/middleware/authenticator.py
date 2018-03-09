@@ -5,7 +5,7 @@ from szurubooru.func import auth, users, user_tokens
 from szurubooru.rest.errors import HttpBadRequest
 
 
-def _authenticate(username: str, password: str) -> model.User:
+def _authenticate_basic_auth(username: str, password: str) -> model.User:
     ''' Try to authenticate user. Throw AuthError for invalid users. '''
     user = users.get_user_by_name(username)
     if not auth.is_valid_password(user, password):
@@ -31,7 +31,7 @@ def _get_user(ctx: rest.Context) -> Optional[model.User]:
         if auth_type.lower() == 'basic':
             username, password = base64.decodebytes(
                 credentials.encode('ascii')).decode('utf8').split(':', 1)
-            return _authenticate(username, password)
+            return _authenticate_basic_auth(username, password)
         elif auth_type.lower() == 'token':
             username, token = base64.decodebytes(
                 credentials.encode('ascii')).decode('utf8').split(':', 1)

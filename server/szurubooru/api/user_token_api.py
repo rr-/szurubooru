@@ -1,5 +1,4 @@
 from typing import Dict
-
 from szurubooru import model, rest
 from szurubooru.func import auth, users, user_tokens, serialization, versions
 
@@ -37,8 +36,8 @@ def create_user_token(
         user_tokens.update_user_token_note(user_token, note)
     if ctx.has_param('expirationTime'):
         expiration_time = ctx.get_param_as_string('expirationTime')
-        user_tokens.update_user_token_expiration_time(user_token,
-                                                      expiration_time)
+        user_tokens.update_user_token_expiration_time(
+            user_token, expiration_time)
     ctx.session.add(user_token)
     ctx.session.commit()
     return _serialize(ctx, user_token)
@@ -55,8 +54,8 @@ def update_user_token(
     versions.bump_version(user_token)
     if ctx.has_param('enabled'):
         auth.verify_privilege(ctx.user, 'user_tokens:edit:%s' % infix)
-        user_tokens.update_user_token_enabled(user_token,
-                                              ctx.get_param_as_bool('enabled'))
+        user_tokens.update_user_token_enabled(
+            user_token, ctx.get_param_as_bool('enabled'))
     if ctx.has_param('note'):
         auth.verify_privilege(ctx.user, 'user_tokens:edit:%s' % infix)
         note = ctx.get_param_as_string('note')
@@ -64,8 +63,8 @@ def update_user_token(
     if ctx.has_param('expirationTime'):
         auth.verify_privilege(ctx.user, 'user_tokens:edit:%s' % infix)
         expiration_time = ctx.get_param_as_string('expirationTime')
-        user_tokens.update_user_token_expiration_time(user_token,
-                                                      expiration_time)
+        user_tokens.update_user_token_expiration_time(
+            user_token, expiration_time)
     user_tokens.update_user_token_edit_time(user_token)
     ctx.session.commit()
     return _serialize(ctx, user_token)
