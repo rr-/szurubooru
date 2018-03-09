@@ -84,9 +84,11 @@ def get_by_user_and_token(
 
 def get_user_tokens(user: model.User) -> List[model.UserToken]:
     assert user
-    return (db.session.query(model.UserToken)
-            .filter(model.UserToken.user_id == user.user_id)
-            .all())
+    return (
+        db.session
+        .query(model.UserToken)
+        .filter(model.UserToken.user_id == user.user_id)
+        .all())
 
 
 def create_user_token(user: model.User, enabled: bool) -> model.UserToken:
