@@ -297,7 +297,7 @@ class PostUploadView extends events.EventTarget {
             let lookalikeNode = rowNode.querySelector(
                 `.lookalikes li:nth-child(${i + 1})`);
             if (lookalikeNode.querySelector('[name=copy-tags]').checked) {
-                uploadable.tags = uploadable.tags.concat(lookalike.post.tags);
+                uploadable.tags = uploadable.tags.concat(lookalike.post.tagNames);
             }
             if (lookalikeNode.querySelector('[name=add-relation]').checked) {
                 uploadable.relations.push(lookalike.post.id);

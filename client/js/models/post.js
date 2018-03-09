@@ -39,6 +39,7 @@ class Post extends events.EventTarget {
 
     get flags()              { return this._flags; }
     get tags()               { return this._tags; }
+    get tagNames()           { return this._tags.map(tag => tag.names[0]); }
     get notes()              { return this._notes; }
     get comments()           { return this._comments; }
     get relations()          { return this._relations; }
