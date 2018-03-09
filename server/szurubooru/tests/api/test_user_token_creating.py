@@ -20,8 +20,7 @@ def test_creating_user_token(
         user_tokens.serialize_user_token.return_value = 'serialized user token'
         user_tokens.create_user_token.return_value = user_token
         result = api.user_token_api.create_user_token(
-            context_factory(
-                user=user_token.user),
+            context_factory(user=user_token.user),
             {
                 'user_name': user_token.user.name
             })
