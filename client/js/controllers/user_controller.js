@@ -216,14 +216,18 @@ class UserController {
     _evtDeleteToken(e) {
         this._view.clearMessages();
         this._view.disableForm();
-        e.detail.userToken.delete(e.detail.user.name)
-            .then(() => {
-                const ctx = router.show(uri.formatClientLink('user', e.detail.user.name, 'list-tokens'));
-                ctx.controller.showSuccess('Token ' + e.detail.userToken.token + ' deleted.');
-            }, error => {
-                this._view.showError(error.message);
-                this._view.enableForm();
-            });
+        if (e.detail.userToken.token === api.token) {
+            router.show(uri.formatClientLink('logout'));
+        } else {
+            e.detail.userToken.delete(e.detail.user.name)
+                .then(() => {
+                    const ctx = router.show(uri.formatClientLink('user', e.detail.user.name, 'list-tokens'));
+                    ctx.controller.showSuccess('Token ' + e.detail.userToken.token + ' deleted.');
+                }, error => {
+                    this._view.showError(error.message);
+                    this._view.enableForm();
+                });
+        }
     }
 }
 

@@ -86,7 +86,8 @@ def is_valid_token(user_token: model.UserToken) -> bool:
     Token must be enabled and if it has an expiration, it must be
     greater than now.
     '''
-    assert user_token
+    if user_token is None:
+        return False
     if not user_token.enabled:
         return False
     if (user_token.expiration_time is not None

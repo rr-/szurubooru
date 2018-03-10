@@ -22,6 +22,11 @@
                     <div>Expires:</div>
                     <div><%= new Date(token.expirationTime).toLocaleDateString() %></div>
                 </div>
+                <% } else { %>
+                    <div class="token-flex-row">
+                        <div>Expires:</div>
+                        <div>No Expiration</div>
+                    </div>
                 <% } %>
             </div>
             <div class="token-flex-column token-actions">

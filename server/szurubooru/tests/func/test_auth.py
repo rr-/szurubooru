@@ -1,5 +1,5 @@
-import pytest
 from datetime import datetime, timedelta
+import pytest
 from szurubooru.func import auth
 
 

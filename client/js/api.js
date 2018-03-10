@@ -16,7 +16,7 @@ class Api extends events.EventTarget {
         this.user = null;
         this.userName = null;
         this.userPassword = null;
-        this.userToken = null;
+        this.token = null;
         this.cache = {};
         this.allRanks = [
             'anonymous',
@@ -98,7 +98,7 @@ class Api extends events.EventTarget {
         this.cache = {};
         return new Promise((resolve, reject) => {
             this.userName = userName;
-            this.userToken = token;
+            this.token = token;
             this.get('/user/' + userName + '?bump-login=true')
                 .then(response => {
                     const options = {};
@@ -135,7 +135,7 @@ class Api extends events.EventTarget {
                         {'user': userName, 'token': response.token},
                         options);
                     this.userName = userName;
-                    this.userToken = response.token;
+                    this.token = response.token;
                     this.userPassword = null;
                 }, error => {
                     reject(error);
@@ -183,7 +183,7 @@ class Api extends events.EventTarget {
 
     logout() {
         let self = this;
-        this.deleteToken(this.userName, this.userToken)
+        this.deleteToken(this.userName, this.token)
             .then(response => {
                 self._logout();
             }, error => {
@@ -195,7 +195,7 @@ class Api extends events.EventTarget {
         this.user = null;
         this.userName = null;
         this.userPassword = null;
-        this.userToken = null;
+        this.token = null;
         this.dispatchEvent(new CustomEvent('logout'));
     }
 
@@ -333,10 +333,10 @@ class Api extends events.EventTarget {
             }
 
             try {
-                if (this.userName && this.userToken) {
+                if (this.userName && this.token) {
                     req.auth = null;
                     req.set('Authorization', 'Token '
-                        + new Buffer(this.userName + ":" + this.userToken).toString('base64'))
+                        + new Buffer(this.userName + ":" + this.token).toString('base64'))
                 } else if (this.userName && this.userPassword) {
                     req.auth(
                         this.userName,
