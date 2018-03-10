@@ -25,8 +25,22 @@ class UserController {
         this._successMessages = [];
         this._errorMessages = [];
 
+        let userTokenPromise = Promise.resolve([]);
+        if (section === 'list-tokens') {
+            userTokenPromise = UserToken.get(userName)
+                .then(userTokens => {
+                    return userTokens;
+                }, error => {
+                    return [];
+                });
+        }
+
         topNavigation.setTitle('User ' + userName);
-        User.get(userName).then(async user => {
+        Promise.all([
+            userTokenPromise,
+            User.get(userName)
+        ]).then(responses => {
+            const [userTokens, user]  = responses;
             const isLoggedIn = api.isLoggedIn(user);
             const infix = isLoggedIn ? 'self' : 'any';
 
@@ -51,16 +65,6 @@ class UserController {
                 topNavigation.activate('account');
             } else {
                 topNavigation.activate('users');
-            }
-
-            let userTokens = [];
-            if (section === 'list-tokens') {
-                userTokens = await UserToken.get(userName)
-                    .then(response => {
-                        return response;
-                    }, error => {
-                        return [];
-                    });
             }
 
             this._view = new UserView({
