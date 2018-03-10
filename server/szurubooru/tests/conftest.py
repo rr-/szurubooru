@@ -135,14 +135,20 @@ def user_factory():
 
 @pytest.fixture
 def user_token_factory(user_factory):
-    def factory(user=None, token=None, enabled=None, creation_time=None):
+    def factory(
+            user=None,
+            token=None,
+            expiration_time=None,
+            enabled=None,
+            creation_time=None):
         if user is None:
             user = user_factory()
             db.session.add(user)
         user_token = model.UserToken()
         user_token.user = user
         user_token.token = token or 'dummy'
-        user_token.enabled = enabled or True
+        user_token.expiration_time = expiration_time
+        user_token.enabled = enabled if enabled is not None else True
         user_token.creation_time = creation_time or datetime(1997, 1, 1)
         return user_token
     return factory

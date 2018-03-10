@@ -12,3 +12,5 @@ elasticsearch>=5.0.0
 elasticsearch-dsl>=5.0.0
 scikit-image>=0.12
 pynacl>=1.2.1
+pytz>=2018.3
+pyRFC3339>=1.0

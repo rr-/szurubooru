@@ -25,4 +25,5 @@ def test_creating_user_token(
                 'user_name': user_token.user.name
             })
         assert result == 'serialized user token'
-        user_tokens.create_user_token.assert_called_once_with(user_token.user)
+        user_tokens.create_user_token.assert_called_once_with(
+            user_token.user, True)

@@ -1,6 +1,6 @@
 import pytz
-from dateutil import parser as dateutil_parser
 from datetime import datetime
+from pyrfc3339 import parser as rfc3339_parser
 from typing import Any, Optional, List, Dict, Callable
 from szurubooru import db, model, rest, errors
 from szurubooru.func import auth, serialization, users, util
@@ -118,16 +118,12 @@ def update_user_token_expiration_time(
         user_token: model.UserToken, expiration_time_str: str) -> None:
     assert user_token
     try:
-        expiration_time = dateutil_parser.parse(expiration_time_str)
-        if expiration_time.tzinfo is None:
+        expiration_time = rfc3339_parser.parse(expiration_time_str, utc=True)
+        expiration_time = expiration_time.astimezone(pytz.UTC)
+        if expiration_time < datetime.utcnow().replace(tzinfo=pytz.UTC):
             raise InvalidExpirationError(
-                'Expiration cannot be missing timezone')
-        else:
-            expiration_time = expiration_time.astimezone(pytz.UTC)
-            if expiration_time < datetime.utcnow().replace(tzinfo=pytz.UTC):
-                raise InvalidExpirationError(
-                    'Expiration cannot happen in the past')
-            user_token.expiration_time = expiration_time
+                'Expiration cannot happen in the past')
+        user_token.expiration_time = expiration_time
     except ValueError:
         raise InvalidExpirationError(
             'Expiration is in an invalid format {}'.format(

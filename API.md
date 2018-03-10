@@ -1522,9 +1522,9 @@ data.
 
     ```json5
     {
-        "enabled":    <enabled>, // optional
-        "note":       <note>, // optional
-        "expiration": <expiration>, // optional
+        "enabled":        <enabled>, // optional
+        "note":           <note>, // optional
+        "expirationTime": <expiration-time>, // optional
     }
     ```
 
@@ -1550,10 +1550,10 @@ data.
 
     ```json5
     {
-        "version":    <version>,
-        "enabled":    <enabled>, // optional
-        "note":       <note>, // optional
-        "expiration": <expiration>, // optional
+        "version":        <version>,
+        "enabled":        <enabled>, // optional
+        "note":           <note>, // optional
+        "expirationTime": <expiration-time>, // optional
     }
     ```
 
@@ -1842,14 +1842,14 @@ A single user token.
 
 ```json5
 {
-    "user":         <user>,
-    "token":        <token>,
-    "note":         <token>,
-    "enabled":      <enabled>,
-    "expiration":   <expiration>,
-    "version":      <version>,
-    "creationTime": <creation-time>,
-    "lastEditTime": <last-edit-time>,
+    "user":             <user>,
+    "token":            <token>,
+    "note":             <token>,
+    "enabled":          <enabled>,
+    "expirationTime":   <expiration-time>,
+    "version":          <version>,
+    "creationTime":     <creation-time>,
+    "lastEditTime":     <last-edit-time>,
 }
 ```
 
@@ -1858,7 +1858,7 @@ A single user token.
 - `<token>`: the token that can be used to authenticate the user.
 - `<note>`: a note that describes the token.
 - `<enabled>`: whether the token is still valid for authentication.
-- `<expiration>`: time when the token expires.
+- `<expiration-time>`: time when the token expires. It must include the timezone as per RFC3339.
 - `<version>`: resource version. See [versioning](#versioning).
 - `<creation-time>`: time the user token was created , formatted as per RFC 3339.
 - `<last-edit-time>`: time the user token was edited, formatted as per RFC 3339.

@@ -1,5 +1,8 @@
-from szurubooru.func import auth
+from datetime import datetime, timedelta
 import pytest
+import pytz
+
+from szurubooru.func import auth
 
 
 @pytest.fixture(autouse=True)
@@ -46,6 +49,17 @@ def test_is_valid_password_auto_upgrades_user_password_hash(user_factory):
 def test_is_valid_token(user_token_factory):
     user_token = user_token_factory()
     assert auth.is_valid_token(user_token)
+
+
+def test_expired_token_is_invalid(user_token_factory):
+    past_expiration = (datetime.utcnow() - timedelta(minutes=30))
+    user_token = user_token_factory(expiration_time=past_expiration)
+    assert not auth.is_valid_token(user_token)
+
+
+def test_disabled_token_is_invalid(user_token_factory):
+    user_token = user_token_factory(enabled=False)
+    assert not auth.is_valid_token(user_token)
 
 
 def test_generate_authorization_token():
