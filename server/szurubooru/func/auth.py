@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, Optional
 import hashlib
 import random
 import uuid
@@ -81,7 +81,7 @@ def is_valid_password(user: model.User, password: str) -> bool:
     return False
 
 
-def is_valid_token(user_token: model.UserToken) -> bool:
+def is_valid_token(user_token: Optional[model.UserToken]) -> bool:
     '''
     Token must be enabled and if it has an expiration, it must be
     greater than now.
