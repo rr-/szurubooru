@@ -2,6 +2,7 @@
 
 const events = require('../events.js');
 const views = require('../util/views.js');
+const api = require('../api.js');
 
 const template = views.getTemplate('user-tokens');
 

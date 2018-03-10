@@ -122,7 +122,7 @@ class Api extends events.EventTarget {
     createToken(userName, options) {
         let userTokenRequest = {
             enabled: true,
-            note: 'Client Login Token'
+            note: 'Web Login Token'
         };
         if (typeof options.expires !== 'undefined') {
             userTokenRequest.expirationTime = new Date().addDays(options.expires).toISOString()
@@ -210,6 +210,10 @@ class Api extends events.EventTarget {
         } else {
             return this.userName !== null;
         }
+    }
+
+    isCurrentAuthToken(userToken) {
+        return userToken.token === this.token;
     }
 
     _getFullUrl(url) {

@@ -29,7 +29,10 @@ class UserController {
         if (section === 'list-tokens') {
             userTokenPromise = UserToken.get(userName)
                 .then(userTokens => {
-                    return userTokens;
+                    return userTokens.map(token => {
+                        token.isCurrentAuthToken = api.isCurrentAuthToken(token);
+                        return token;
+                    });
                 }, error => {
                     return [];
                 });
@@ -216,7 +219,7 @@ class UserController {
     _evtDeleteToken(e) {
         this._view.clearMessages();
         this._view.disableForm();
-        if (e.detail.userToken.token === api.token) {
+        if (api.isCurrentAuthToken(e.detail.userToken)) {
             router.show(uri.formatClientLink('logout'));
         } else {
             e.detail.userToken.delete(e.detail.user.name)

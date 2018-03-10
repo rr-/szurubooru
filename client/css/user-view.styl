@@ -1,6 +1,6 @@
 #user
     width: 100%
-    max-width: 45em
+    max-width: 35em
     nav.text-nav
         margin-bottom: 1.5em
 
@@ -51,22 +51,19 @@
             flex-direction column;
             padding-bottom: 0.5em;
 
-            .floor
-                border-bottom: black solid 1px;
-
-            .token-info
-                min-width: 75%;
-
-            .token-actions
-                max-width: 25%;
-                justify-content: end;
+            .full-width
+                width: 100%
 
             .token-flex-row
                 display: flex;
                 flex-direction: row;
                 justify-content: space-between;
-                padding-top: 0.25em;
-                padding-bottom: 0.25em;
+                padding: 0.2em;
+
+                .token-input
+                    min-height: 2em;
+                    line-height: 2em;
+                    text-align: center;
 
                 form
                     width: auto;
@@ -74,6 +71,12 @@
             .token-flex-column
                 display: flex;
                 flex-direction: column;
+
+            .token-flex-labels
+                padding-right: 0.5em
+
+            hr
+                border-top: 1px #aaa solid;
 
     #user-delete form
         width: 100%
