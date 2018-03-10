@@ -27,7 +27,8 @@
                     <form class='token' data-token-id='<%= index %>'>
                         <input type='hidden' name='token' value='<%= token.token %>'/>
                         <% if (token.isCurrentAuthToken) { %>
-                            <input type='submit' value='Delete and logout'/>
+                            <input type='submit' value='Delete and logout'
+                                title='This token is used to authenticate this client, deleting it will force a logout.'/>
                         <% } else { %>
                             <input type='submit' value='Delete'/>
                         <% } %>
