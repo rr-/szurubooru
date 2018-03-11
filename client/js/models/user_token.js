@@ -20,6 +20,8 @@ class UserToken extends events.EventTarget {
     get lastEditTime()   { return this._lastEditTime; }
     get lastUsageTime()  { return this._lastUsageTime; }
 
+    set note(value)      { this._note = value; }
+
     static fromResponse(response) {
         if (typeof response.results !== 'undefined') {
             let tokenList = [];
@@ -56,6 +58,27 @@ class UserToken extends events.EventTarget {
         return api.post(uri.formatApiLink('user-token', userName), userTokenRequest)
             .then(response => {
                 return Promise.resolve(UserToken.fromResponse(response))
+            });
+    }
+
+    save(userName) {
+        const detail = {version: this._version};
+
+        if (this._note !== this._orig._note) {
+            detail.note = this._note;
+        }
+
+        return api.put(
+            uri.formatApiLink('user-token', userName, this._orig._token),
+            detail)
+            .then(response => {
+                this._updateFromResponse(response);
+                this.dispatchEvent(new CustomEvent('change', {
+                    detail: {
+                        userToken: this,
+                    },
+                }));
+                return Promise.resolve(this);
             });
     }
 

@@ -2,7 +2,6 @@
 
 const events = require('../events.js');
 const views = require('../util/views.js');
-const api = require('../api.js');
 
 const template = views.getTemplate('user-tokens');
 
@@ -19,16 +18,23 @@ class UserTokenView extends events.EventTarget {
 
         this._formNode.addEventListener('submit', e => this._evtSubmit(e));
 
-        this._decorateTokenForms()
+        this._decorateTokenForms();
+        this._decorateTokenNoteChangeLinks();
     }
 
     _decorateTokenForms() {
         this._tokenFormNodes = [];
         for (let i = 0; i < this._tokens.length; i++) {
             let formNode = this._hostNode.querySelector('.token[data-token-id=\"' + i + '\"]');
-            views.decorateValidator(formNode);
             formNode.addEventListener('submit', e => this._evtDelete(e));
             this._tokenFormNodes.push(formNode);
+        }
+    }
+
+    _decorateTokenNoteChangeLinks() {
+        for (let i = 0; i < this._tokens.length; i++) {
+            let linkNode = this._hostNode.querySelector('.token-change-note[data-token-id=\"' + i + '\"]');
+            linkNode.addEventListener('click', e => this._evtChangeNoteClick(e));
         }
     }
 
@@ -87,6 +93,33 @@ class UserTokenView extends events.EventTarget {
 
             },
         }));
+    }
+
+    _evtChangeNoteClick(e) {
+        e.preventDefault();
+        const userToken = this._tokens[parseInt(e.target.getAttribute('data-token-id'))];
+        const text = window.prompt(
+            'Please enter the new name:', userToken.note !== null ? userToken.note : undefined);
+        if (!text) {
+            return;
+        }
+        this.dispatchEvent(new CustomEvent('update', {
+            detail: {
+                user: this._user,
+                userToken: userToken,
+                note: text ? text : undefined,
+            },
+        }));
+        // const notesObj = JSON.parse(text);
+        // this._post.notes.clear();
+        // for (let noteObj of notesObj) {
+        //     let note = new Note();
+        //     for (let pointObj of noteObj.polygon) {
+        //         note.polygon.add(new Point(pointObj[0], pointObj[1]));
+        //     }
+        //     note.text = noteObj.text;
+        //     this._post.notes.add(note);
+        // }
     }
 
     get _formNode() {

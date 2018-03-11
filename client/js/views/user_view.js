@@ -55,6 +55,7 @@ class UserView extends events.EventTarget {
                 this._view = new UserTokensView(ctx);
                 events.proxyEvent(this._view, this, 'delete', 'delete-token');
                 events.proxyEvent(this._view, this, 'submit', 'create-token');
+                events.proxyEvent(this._view, this, 'update', 'update-token');
             }
         } else if (ctx.section == 'delete') {
             if (!this._ctx.canDelete) {

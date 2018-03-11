@@ -93,6 +93,7 @@ class UserController {
             this._view.addEventListener('delete', e => this._evtDelete(e));
             this._view.addEventListener('create-token', e => this._evtCreateToken(e));
             this._view.addEventListener('delete-token', e => this._evtDeleteToken(e));
+            this._view.addEventListener('update-token', e => this._evtUpdateToken(e));
 
             for (let message of this._successMessages) {
                 this.showSuccess(message);
@@ -231,6 +232,23 @@ class UserController {
                     this._view.enableForm();
                 });
         }
+    }
+
+    _evtUpdateToken(e) {
+        this._view.clearMessages();
+        this._view.disableForm();
+
+        if (e.detail.note !== undefined) {
+            e.detail.userToken.note = e.detail.note;
+        }
+
+        e.detail.userToken.save(e.detail.user.name).then(response => {
+            const ctx = router.show(uri.formatClientLink('user', e.detail.user.name, 'list-tokens'));
+            ctx.controller.showSuccess('Token ' + response.token + ' updated.');
+        }, error => {
+            this._view.showError(error.message);
+            this._view.enableForm();
+        });
     }
 }
 

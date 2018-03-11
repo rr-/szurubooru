@@ -13,17 +13,22 @@
             </div>
             <div class='token-flex-column full-width'>
                 <div class='token-flex-row'><%= token.token %></div>
-                <% if (token.note !== null) { %>
-                    <div class='token-flex-row'><%= token.note %></div>
-                <% } else { %>
-                    <div class='token-flex-row'>&nbsp;</div>
-                <% } %>
+                <div class='token-flex-row'>
+                    <% if (token.note !== null) { %>
+                        <%= token.note %>
+                    <% } else { %>
+                        No note
+                    <% } %>
+                    <a class='token-change-note' data-token-id='<%= index %>' href='#'>(change)</a>
+                </div>
                 <div class='token-flex-row'><%= ctx.makeRelativeTime(token.creationTime) %></div>
-                <% if (token.expirationTime) { %>
-                <div class='token-flex-row'><%= ctx.makeRelativeTime(token.expirationTime) %></div>
-                <% } else { %>
-                    <div class='token-flex-row'>No expiration</div>
-                <% } %>
+                <div class='token-flex-row'>
+                    <% if (token.expirationTime) { %>
+                        <%= ctx.makeRelativeTime(token.expirationTime) %>
+                    <% } else { %>
+                        No expiration
+                    <% } %>
+                </div>
                 <div class='token-flex-row'><%= ctx.makeRelativeTime(token.lastUsageTime) %></div>
             </div>
         </div>
@@ -31,7 +36,6 @@
             <div class='token-flex-column full-width'>
                 <div class='token-flex-row'>
                     <form class='token' data-token-id='<%= index %>'>
-                        <input type='hidden' name='token' value='<%= token.token %>'/>
                         <% if (token.isCurrentAuthToken) { %>
                             <input type='submit' value='Delete and logout'
                                 title='This token is used to authenticate this client, deleting it will force a logout.'/>
