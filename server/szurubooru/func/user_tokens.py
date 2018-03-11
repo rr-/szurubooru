@@ -6,10 +6,6 @@ from szurubooru import db, model, rest, errors
 from szurubooru.func import auth, serialization, users, util
 
 
-class InvalidEnabledError(errors.ValidationError):
-    pass
-
-
 class InvalidExpirationError(errors.ValidationError):
     pass
 
@@ -109,8 +105,6 @@ def create_user_token(user: model.User, enabled: bool) -> model.UserToken:
 def update_user_token_enabled(
         user_token: model.UserToken, enabled: bool) -> None:
     assert user_token
-    if enabled is None:
-        raise InvalidEnabledError('Enabled cannot be empty.')
     user_token.enabled = enabled
     update_user_token_edit_time(user_token)
 
