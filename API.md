@@ -98,12 +98,12 @@
 ## Authentication
 
 Authentication is achieved by means of [basic HTTP
-auth](https://en.wikipedia.org/wiki/Basic_access_authentication) or through the 
-use of [user token authentication](#user-token-authentication). For this reason, 
-it is recommended to connect through HTTPS. There are no sessions, so every 
-privileged request must be authenticated. Available privileges depend on the 
-user's rank. The way how rank translates to privileges is defined in the server's 
-configuration.
+auth](https://en.wikipedia.org/wiki/Basic_access_authentication) or through the
+use of [user token authentication](#user-token-authentication). For this
+reason, it is recommended to connect through HTTPS. There are no sessions, so
+every privileged request must be authenticated. Available privileges depend on
+the user's rank. The way how rank translates to privileges is defined in the
+server's configuration.
 
 It is recommended to add `?bump-login` GET parameter to the first request in a
 client "session" (where the definition of a session is up to the client), so
@@ -111,11 +111,11 @@ that the user's last login time is kept up to date.
 
 ## User token authentication
 
-User token authentication works similarly to [basic HTTP 
+User token authentication works similarly to [basic HTTP
 auth](https://en.wikipedia.org/wiki/Basic_access_authentication). Because it
 operates similarly to ***basic HTTP auth*** it is still recommended to connect
-through HTTPS. The authorization header uses the type of Token and the username
-and token are encoded as Base64 and sent as the second parameter.
+through HTTPS. The authorization header uses the type of `Token` and the
+username and token are encoded as Base64 and sent as the second parameter.
 
 Example header for user1:token-is-more-secure
 ```
@@ -123,9 +123,9 @@ Authorization: Token dXNlcjE6dG9rZW4taXMtbW9yZS1zZWN1cmU=
 ```
 
 The benefit of token authentication is that beyond the initial login to acquire
-the first token, there is no need to transmit the user password in plaintext via
-basic auth. Additionally tokens can be revoked at anytime allowing a cleaner 
-interface for isolating clients from user credentials.
+the first token, there is no need to transmit the user password in plaintext
+via basic auth. Additionally tokens can be revoked at anytime allowing a
+cleaner interface for isolating clients from user credentials.
 
 ## Basic requests
 
@@ -1511,7 +1511,7 @@ data.
 
 - **Description**
 
-    Searches for users tokens for the currently logged in user.
+    Searches for user tokens for the given user.
 
 ## Creating a user token
 - **Request**
@@ -1538,9 +1538,9 @@ data.
 
 - **Description**
 
-    Creates a new user token that can be used for authentication of api
+    Creates a new user token that can be used for authentication of API
     endpoints instead of a password.
-    
+
 ## Updating a user token
 - **Request**
 
@@ -1569,8 +1569,8 @@ data.
 
 - **Description**
 
-    Updates an existing user token using specified parameters. All fields 
-    except the [`version`](#versioning) are optional - update concerns only 
+    Updates an existing user token using specified parameters. All fields
+    except the [`version`](#versioning) are optional - update concerns only
     provided fields.
 
 ## Deleting a user token
@@ -1861,7 +1861,7 @@ A single user token.
 - `<enabled>`: whether the token is still valid for authentication.
 - `<expiration-time>`: time when the token expires. It must include the timezone as per RFC3339.
 - `<version>`: resource version. See [versioning](#versioning).
-- `<creation-time>`: time the user token was created , formatted as per RFC 3339.
+- `<creation-time>`: time the user token was created, formatted as per RFC 3339.
 - `<last-edit-time>`: time the user token was edited, formatted as per RFC 3339.
 - `<last-usage-time>`: the last time this token was used during a login involving `?bump-login`, formatted as per RFC 3339.
 
