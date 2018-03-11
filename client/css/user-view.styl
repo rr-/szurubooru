@@ -42,12 +42,6 @@ $token-border-color = $active-tab-background-color
 
     #user-tokens
 
-        .flex-centered
-            width: 100%;
-            display: flex;
-            flex-direction: row;
-            justify-content: space-around;
-
         .token-flex-container
             width: 100%
             display: flex;
@@ -63,13 +57,13 @@ $token-border-color = $active-tab-background-color
                 justify-content: space-between;
                 padding: 0.2em;
 
+                .no-wrap
+                  white-space: nowrap;
+
                 .token-input
                     min-height: 2em;
                     line-height: 2em;
                     text-align: center;
-
-                form
-                    width: auto;
 
             .token-flex-column
                 display: flex;
@@ -81,7 +75,8 @@ $token-border-color = $active-tab-background-color
             hr
                 border-top: 3px solid $token-border-color
 
+        form
+            width: 100%;
+
     #user-delete form
         width: 100%
-
-

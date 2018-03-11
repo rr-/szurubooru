@@ -94,11 +94,11 @@ class UserTokenView extends events.EventTarget {
     }
 
     get _userTokenNoteInputNode() {
-        return this._formNode.querySelector('[name=note]');
+        return this._formNode.querySelector('.note input');
     }
 
     get _userTokenExpirationTimeInputNode() {
-        return this._formNode.querySelector('[name=expirationTime]');
+        return this._formNode.querySelector('.expirationTime input');
     }
 }
 
