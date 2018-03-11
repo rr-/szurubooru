@@ -104,6 +104,7 @@ class UserToken(Base):
     expiration_time = sa.Column('expiration_time', sa.DateTime, nullable=True)
     creation_time = sa.Column('creation_time', sa.DateTime, nullable=False)
     last_edit_time = sa.Column('last_edit_time', sa.DateTime)
+    last_usage_time = sa.Column('last_usage_time', sa.DateTime)
     version = sa.Column('version', sa.Integer, default=1, nullable=False)
 
     user = sa.orm.relationship('User')

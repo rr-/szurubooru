@@ -25,6 +25,7 @@ def upgrade():
                     sa.Column('expiration_time', sa.DateTime(), nullable=True),
                     sa.Column('creation_time', sa.DateTime(), nullable=False),
                     sa.Column('last_edit_time', sa.DateTime(), nullable=True),
+                    sa.Column('last_usage_time', sa.DateTime(), nullable=True),
                     sa.Column('version', sa.Integer(), nullable=False),
                     sa.ForeignKeyConstraint(
                         ['user_id'],

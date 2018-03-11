@@ -17,6 +17,8 @@ class UserToken extends events.EventTarget {
     get version()        { return this._version; }
     get expirationTime() { return this._expirationTime; }
     get creationTime()   { return this._creationTime; }
+    get lastEditTime()   { return this._lastEditTime; }
+    get lastUsageTime()  { return this._lastUsageTime; }
 
     static fromResponse(response) {
         if (typeof response.results !== 'undefined') {
@@ -73,12 +75,14 @@ class UserToken extends events.EventTarget {
 
     _updateFromResponse(response) {
         const map = {
-            _token:          response.token,
-            _note:           response.note,
-            _enabled:        response.enabled,
-            _expirationTime: response.expirationTime,
-            _version:        response.version,
-            _creationTime:   response.creationTime,
+            _token:           response.token,
+            _note:            response.note,
+            _enabled:         response.enabled,
+            _expirationTime:  response.expirationTime,
+            _version:         response.version,
+            _creationTime:    response.creationTime,
+            _lastEditTime:    response.lastEditTime,
+            _lastUsageTime:   response.lastUsageTime,
         };
 
         Object.assign(this, map);

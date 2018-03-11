@@ -1522,9 +1522,9 @@ data.
 
     ```json5
     {
-        "enabled":        <enabled>, // optional
-        "note":           <note>, // optional
-        "expirationTime": <expiration-time>, // optional
+        "enabled":           <enabled>, // optional
+        "note":              <note>, // optional
+        "expirationTime":    <expiration-time>, // optional
     }
     ```
 
@@ -1842,14 +1842,15 @@ A single user token.
 
 ```json5
 {
-    "user":             <user>,
-    "token":            <token>,
-    "note":             <token>,
-    "enabled":          <enabled>,
-    "expirationTime":   <expiration-time>,
-    "version":          <version>,
-    "creationTime":     <creation-time>,
-    "lastEditTime":     <last-edit-time>,
+    "user":              <user>,
+    "token":             <token>,
+    "note":              <token>,
+    "enabled":           <enabled>,
+    "expirationTime":    <expiration-time>,
+    "version":           <version>,
+    "creationTime":      <creation-time>,
+    "lastEditTime":      <last-edit-time>,
+    "lastUsageTime":     <last-usage-time>,
 }
 ```
 
@@ -1862,6 +1863,7 @@ A single user token.
 - `<version>`: resource version. See [versioning](#versioning).
 - `<creation-time>`: time the user token was created , formatted as per RFC 3339.
 - `<last-edit-time>`: time the user token was edited, formatted as per RFC 3339.
+- `<last-usage-time>`: the last time this token was used during a login involving `?bump-login`, formatted as per RFC 3339.
 
 ## Tag category
 **Description**

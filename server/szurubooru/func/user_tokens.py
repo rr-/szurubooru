@@ -35,6 +35,7 @@ class UserTokenSerializer(serialization.BaseSerializer):
             'expirationTime': self.serialize_expiration_time,
             'creationTime': self.serialize_creation_time,
             'lastEditTime': self.serialize_last_edit_time,
+            'lastUsageTime': self.serialize_last_usage_time,
             'version': self.serialize_version,
         }
 
@@ -46,6 +47,9 @@ class UserTokenSerializer(serialization.BaseSerializer):
 
     def serialize_last_edit_time(self) -> Any:
         return self.user_token.last_edit_time
+
+    def serialize_last_usage_time(self) -> Any:
+        return self.user_token.last_usage_time
 
     def serialize_token(self) -> Any:
         return self.user_token.token
@@ -98,6 +102,7 @@ def create_user_token(user: model.User, enabled: bool) -> model.UserToken:
     user_token.token = auth.generate_authorization_token()
     user_token.enabled = enabled
     user_token.creation_time = datetime.utcnow()
+    user_token.last_usage_time = datetime.utcnow()
     return user_token
 
 
@@ -107,6 +112,7 @@ def update_user_token_enabled(
     if enabled is None:
         raise InvalidEnabledError('Enabled cannot be empty.')
     user_token.enabled = enabled
+    update_user_token_edit_time(user_token)
 
 
 def update_user_token_edit_time(user_token: model.UserToken) -> None:
@@ -124,6 +130,7 @@ def update_user_token_expiration_time(
             raise InvalidExpirationError(
                 'Expiration cannot happen in the past')
         user_token.expiration_time = expiration_time
+        update_user_token_edit_time(user_token)
     except ValueError:
         raise InvalidExpirationError(
             'Expiration is in an invalid format {}'.format(
@@ -136,3 +143,9 @@ def update_user_token_note(user_token: model.UserToken, note: str) -> None:
     if util.value_exceeds_column_size(note, model.UserToken.note):
         raise InvalidNoteError('Note is too long.')
     user_token.note = note
+    update_user_token_edit_time(user_token)
+
+
+def bump_usage_time(user_token: model.UserToken) -> None:
+    assert user_token
+    user_token.last_usage_time = datetime.utcnow()

@@ -9,6 +9,7 @@
                 <div class="token-flex-row">Note:</div>
                 <div class="token-flex-row">Created:</div>
                 <div class="token-flex-row">Expires:</div>
+                <div class="token-flex-row">Used:</div>
             </div>
             <div class="token-flex-column full-width">
                 <div class="token-flex-row"><%= token.token %></div>
@@ -19,6 +20,7 @@
                 <% } else { %>
                     <div class="token-flex-row">No expiration</div>
                 <% } %>
+                <div class="token-flex-row"><%= ctx.makeRelativeTime(token.lastUsageTime) %></div>
             </div>
         </div>
         <div class="token-flex-row">
