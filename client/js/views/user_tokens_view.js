@@ -25,7 +25,8 @@ class UserTokenView extends events.EventTarget {
     _decorateTokenForms() {
         this._tokenFormNodes = [];
         for (let i = 0; i < this._tokens.length; i++) {
-            let formNode = this._hostNode.querySelector('.token[data-token-id=\"' + i + '\"]');
+            let formNode = this._hostNode.querySelector(
+                '.token[data-token-id=\"' + i + '\"]');
             formNode.addEventListener('submit', e => this._evtDelete(e));
             this._tokenFormNodes.push(formNode);
         }
@@ -33,8 +34,10 @@ class UserTokenView extends events.EventTarget {
 
     _decorateTokenNoteChangeLinks() {
         for (let i = 0; i < this._tokens.length; i++) {
-            let linkNode = this._hostNode.querySelector('.token-change-note[data-token-id=\"' + i + '\"]');
-            linkNode.addEventListener('click', e => this._evtChangeNoteClick(e));
+            let linkNode = this._hostNode.querySelector(
+                '.token-change-note[data-token-id=\"' + i + '\"]');
+            linkNode.addEventListener(
+                'click', e => this._evtChangeNoteClick(e));
         }
     }
 
@@ -66,7 +69,8 @@ class UserTokenView extends events.EventTarget {
 
     _evtDelete(e) {
         e.preventDefault();
-        const userToken = this._tokens[parseInt(e.target.getAttribute('data-token-id'))];
+        const userToken = this._tokens[parseInt(
+            e.target.getAttribute('data-token-id'))];
         this.dispatchEvent(new CustomEvent('delete', {
             detail: {
                 user: this._user,
@@ -87,19 +91,21 @@ class UserTokenView extends events.EventTarget {
 
                 expirationTime:
                     (this._userTokenExpirationTimeInputNode
-                        && this._userTokenExpirationTimeInputNode.value.length > 0) ?
-                    new Date(this._userTokenExpirationTimeInputNode.value).toISOString() :
+                        && this._userTokenExpirationTimeInputNode.value) ?
+                    new Date(this._userTokenExpirationTimeInputNode.value)
+                        .toISOString() :
                     undefined,
-
             },
         }));
     }
 
     _evtChangeNoteClick(e) {
         e.preventDefault();
-        const userToken = this._tokens[parseInt(e.target.getAttribute('data-token-id'))];
+        const userToken = this._tokens[
+            parseInt(e.target.getAttribute('data-token-id'))];
         const text = window.prompt(
-            'Please enter the new name:', userToken.note !== null ? userToken.note : undefined);
+            'Please enter the new name:',
+            userToken.note !== null ? userToken.note : undefined);
         if (!text) {
             return;
         }
