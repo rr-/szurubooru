@@ -24,7 +24,7 @@ def test_process_request_bump_login(context_factory, user_factory):
             'bump-login': 'true'
         })
     with patch('szurubooru.func.auth.is_valid_password'), \
-         patch('szurubooru.func.users.get_user_by_name'):
+            patch('szurubooru.func.users.get_user_by_name'):
         users.get_user_by_name.return_value = user
         auth.is_valid_password.return_value = True
         authenticator.process_request(ctx)
@@ -44,8 +44,8 @@ def test_process_request_bump_login_with_token(
             'bump-login': 'true'
         })
     with patch('szurubooru.func.auth.is_valid_token'), \
-         patch('szurubooru.func.users.get_user_by_name'), \
-         patch('szurubooru.func.user_tokens.get_by_user_and_token'):
+            patch('szurubooru.func.users.get_user_by_name'), \
+            patch('szurubooru.func.user_tokens.get_by_user_and_token'):
         users.get_user_by_name.return_value = user_token.user
         user_tokens.get_by_user_and_token.return_value = user_token
         auth.is_valid_token.return_value = True
