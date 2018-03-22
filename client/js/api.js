@@ -1,6 +1,5 @@
 'use strict';
 
-require('./util/date.js');
 const cookies = require('js-cookie');
 const request = require('superagent');
 const config = require('./config.js');
