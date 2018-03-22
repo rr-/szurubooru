@@ -147,8 +147,8 @@ the one in the `config.yaml`, so that client knows how to access the backend!
 
 In this example:
 
-- The booru is accessed from `http://great.dude/`
-- The API is accessed from `http://great.dude/api`
+- The booru is accessed from `http://example.com/`
+- The API is accessed from `http://example.com/api`
 - The API server listens locally on port 6666, and is proxied by nginx
 - The static files are served from `/srv/www/booru/client/public/data`
 
@@ -157,7 +157,7 @@ In this example:
 ```nginx
 server {
     listen 80;
-    server_name great.dude;
+    server_name example.com;
 
     location ~ ^/api$ {
         return 302 /api/;
@@ -177,9 +177,9 @@ server {
 **`config.yaml`**:
 
 ```yaml
-api_url: 'http://big.dude/api/'
-base_url: 'http://big.dude/'
-data_url: 'http://big.dude/data/'
+api_url: 'http://example.com/api/'
+base_url: 'http://example.com/'
+data_url: 'http://example.com/data/'
 data_dir: '/srv/www/booru/client/public/data'
 ```
 
