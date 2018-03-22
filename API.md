@@ -1522,9 +1522,9 @@ data.
 
     ```json5
     {
-        "enabled":        <enabled>,         // optional
-        "note":           <note>,            // optional
-        "expirationTime": <expiration-time>, // optional
+        "enabled":        <enabled>,        // optional
+        "note":           <note>,           // optional
+        "expirationTime": <expiration-time> // optional
     }
     ```
 
@@ -1551,9 +1551,9 @@ data.
     ```json5
     {
         "version":        <version>,
-        "enabled":        <enabled>,         // optional
-        "note":           <note>,            // optional
-        "expirationTime": <expiration-time>, // optional
+        "enabled":        <enabled>,        // optional
+        "note":           <note>,           // optional
+        "expirationTime": <expiration-time> // optional
     }
     ```
 
@@ -1582,7 +1582,7 @@ data.
 
     ```json5
     {
-        "version": <version>,
+        "version": <version>
     }
     ```
 
@@ -1850,7 +1850,7 @@ A single user token.
     "version":        <version>,
     "creationTime":   <creation-time>,
     "lastEditTime":   <last-edit-time>,
-    "lastUsageTime":  <last-usage-time>,
+    "lastUsageTime":  <last-usage-time>
 }
 ```
 
