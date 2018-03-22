@@ -58,10 +58,10 @@
         - [Getting user](#getting-user)
         - [Deleting user](#deleting-user)
     - User Tokens
-        - [Listing tokens](#listing-tokens)
-        - [Creating token](#creating-token)
-        - [Updating token](#updating-token)
-        - [Deleting token](#deleting-token)
+        - [Listing user tokens](#listing-user-tokens)
+        - [Creating user token](#creating-user-token)
+        - [Updating user token](#updating-user-token)
+        - [Deleting user token](#deleting-user-token)
     - Password reset
         - [Password reset - step 1: mail request](#password-reset---step-2-confirmation)
         - [Password reset - step 2: confirmation](#password-reset---step-2-confirmation)
@@ -1513,7 +1513,7 @@ data.
 
     Searches for user tokens for the given user.
 
-## Creating a user token
+## Creating user token
 - **Request**
 
     `POST /user-token/<user_name>`
@@ -1541,7 +1541,7 @@ data.
     Creates a new user token that can be used for authentication of API
     endpoints instead of a password.
 
-## Updating a user token
+## Updating user token
 - **Request**
 
     `PUT /user-token/<user_name>/<token>`
@@ -1573,7 +1573,7 @@ data.
     except the [`version`](#versioning) are optional - update concerns only
     provided fields.
 
-## Deleting a user token
+## Deleting user token
 - **Request**
 
     `DELETE /user-token/<user_name>/<token>`
