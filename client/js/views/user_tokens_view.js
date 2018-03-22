@@ -110,16 +110,6 @@ class UserTokenView extends events.EventTarget {
                 note: text ? text : undefined,
             },
         }));
-        // const notesObj = JSON.parse(text);
-        // this._post.notes.clear();
-        // for (let noteObj of notesObj) {
-        //     let note = new Note();
-        //     for (let pointObj of noteObj.polygon) {
-        //         note.polygon.add(new Point(pointObj[0], pointObj[1]));
-        //     }
-        //     note.text = noteObj.text;
-        //     this._post.notes.add(note);
-        // }
     }
 
     get _formNode() {
