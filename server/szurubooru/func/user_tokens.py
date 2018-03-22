@@ -1,7 +1,7 @@
-import pytz
 from datetime import datetime
-from pyrfc3339 import parser as rfc3339_parser
 from typing import Any, Optional, List, Dict, Callable
+from pyrfc3339 import parser as rfc3339_parser
+import pytz
 from szurubooru import db, model, rest, errors
 from szurubooru.func import auth, serialization, users, util
 

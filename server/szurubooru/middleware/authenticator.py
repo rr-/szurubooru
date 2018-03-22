@@ -1,6 +1,6 @@
 import base64
 from typing import Optional, Tuple
-from szurubooru import db, model, errors, rest
+from szurubooru import model, errors, rest
 from szurubooru.func import auth, users, user_tokens
 from szurubooru.rest.errors import HttpBadRequest
 
