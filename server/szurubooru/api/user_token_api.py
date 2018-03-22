@@ -19,7 +19,7 @@ def get_user_tokens(
     auth.verify_privilege(ctx.user, 'user_tokens:list:%s' % infix)
     user_token_list = user_tokens.get_user_tokens(user)
     return {
-        "results": [_serialize(ctx, token) for token in user_token_list]
+        'results': [_serialize(ctx, token) for token in user_token_list]
     }
 
 
