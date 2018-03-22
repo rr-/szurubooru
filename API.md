@@ -1859,7 +1859,7 @@ A single user token.
 - `<token>`: the token that can be used to authenticate the user.
 - `<note>`: a note that describes the token.
 - `<enabled>`: whether the token is still valid for authentication.
-- `<expiration-time>`: time when the token expires. It must include the timezone as per RFC3339.
+- `<expiration-time>`: time when the token expires. It must include the timezone as per RFC 3339.
 - `<version>`: resource version. See [versioning](#versioning).
 - `<creation-time>`: time the user token was created, formatted as per RFC 3339.
 - `<last-edit-time>`: time the user token was edited, formatted as per RFC 3339.
