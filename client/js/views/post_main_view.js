@@ -1,5 +1,6 @@
 'use strict';
 
+const iosCorrectedInnerHeight = require('ios-inner-height');
 const router = require('../router.js');
 const views = require('../util/views.js');
 const uri = require('../util/uri.js');
@@ -26,23 +27,20 @@ class PostMainView {
         views.replaceContent(this._hostNode, sourceNode);
         views.syncScrollPosition();
 
-        const postViewNode = document.body.querySelector('.content-wrapper');
         const topNavigationNode =
             document.body.querySelector('#top-navigation');
-
-        const margin = (
-            postViewNode.getBoundingClientRect().top -
-            topNavigationNode.getBoundingClientRect().height);
 
         this._postContentControl = new PostContentControl(
             postContainerNode,
             ctx.post,
             () => {
+                const margin = sidebarNode.getBoundingClientRect().left;
+
                 return [
                     window.innerWidth -
                         postContainerNode.getBoundingClientRect().left -
                         margin,
-                    window.innerHeight -
+                    iosCorrectedInnerHeight() -
                         topNavigationNode.getBoundingClientRect().height -
                         margin * 2,
                 ];
