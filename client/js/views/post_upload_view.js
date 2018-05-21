@@ -283,8 +283,10 @@ class PostUploadView extends events.EventTarget {
             uploadable.safety = safetyNode.value;
         }
 
-        uploadable.anonymous =
-            rowNode.querySelector('.anonymous input').checked;
+        const anonymousNode = rowNode.querySelector('.anonymous input:checked');
+        if (anonymousNode) {
+            uploadable.anonymous = true;
+        }
 
         uploadable.flags = [];
         if (rowNode.querySelector('.loop-video input:checked')) {
