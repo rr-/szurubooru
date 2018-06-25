@@ -1,21 +1,22 @@
 'use strict';
 
 const api = require('../api.js');
-const config = require('../config.js');
 const topNavigation = require('../models/top_navigation.js');
 const TopNavigationView = require('../views/top_navigation_view.js');
 
 class TopNavigationController {
     constructor() {
-        this._topNavigationView = new TopNavigationView();
+        api.fetchConfig().then(() => {
+            this._topNavigationView = new TopNavigationView();
 
-        topNavigation.addEventListener(
-            'activate', e => this._evtActivate(e));
+            topNavigation.addEventListener(
+                'activate', e => this._evtActivate(e));
 
-        api.addEventListener('login', e => this._evtAuthChange(e));
-        api.addEventListener('logout', e => this._evtAuthChange(e));
+            api.addEventListener('login', e => this._evtAuthChange(e));
+            api.addEventListener('logout', e => this._evtAuthChange(e));
 
-        this._render();
+            this._render();
+        });
     }
 
     _evtAuthChange(e) {
@@ -65,7 +66,7 @@ class TopNavigationController {
         this._updateNavigationFromPrivileges();
         this._topNavigationView.render({
             items: topNavigation.getAll(),
-            name: config.name
+            name: api.getName()
         });
         this._topNavigationView.activate(
             topNavigation.activeItem ? topNavigation.activeItem.key : '');

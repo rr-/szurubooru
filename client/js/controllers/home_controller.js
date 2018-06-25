@@ -12,7 +12,7 @@ class HomeController {
         topNavigation.setTitle('Home');
 
         this._homeView = new HomeView({
-            name: config.name,
+            name: api.getName(),
             version: config.meta.version,
             buildDate: config.meta.buildDate,
             canListSnapshots: api.hasPrivilege('snapshots:list'),

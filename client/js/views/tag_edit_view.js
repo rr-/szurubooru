@@ -1,7 +1,7 @@
 'use strict';
 
-const config = require('../config.js');
 const events = require('../events.js');
+const api = require('../api.js');
 const misc = require('../util/misc.js');
 const views = require('../util/views.js');
 const TagInputControl = require('../controls/tag_input_control.js');
@@ -64,7 +64,7 @@ class TagEditView extends events.EventTarget {
     }
 
     _evtNameInput(e) {
-        const regex = new RegExp(config.tagNameRegex);
+        const regex = new RegExp(api.getTagNameRegex());
         const list = misc.splitByWhitespace(this._namesFieldNode.value);
 
         if (!list.length) {

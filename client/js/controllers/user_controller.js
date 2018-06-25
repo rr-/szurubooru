@@ -4,7 +4,6 @@ const router = require('../router.js');
 const api = require('../api.js');
 const uri = require('../util/uri.js');
 const misc = require('../util/misc.js');
-const config = require('../config.js');
 const views = require('../util/views.js');
 const User = require('../models/user.js');
 const UserToken = require('../models/user_token.js');

@@ -1,7 +1,6 @@
 'use strict';
 
 const api = require('../api.js');
-const config = require('../config.js');
 const router = require('../router.js');
 const uri = require('../util/uri.js');
 const misc = require('../util/misc.js');
@@ -31,7 +30,7 @@ class PostUploadController {
         this._view = new PostUploadView({
             canUploadAnonymously: api.hasPrivilege('posts:create:anonymous'),
             canViewPosts: api.hasPrivilege('posts:view'),
-            enableSafety: config.enableSafety,
+            enableSafety: api.safetyEnabled(),
         });
         this._view.addEventListener('change', e => this._evtChange(e));
         this._view.addEventListener('submit', e => this._evtSubmit(e));

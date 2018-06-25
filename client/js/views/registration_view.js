@@ -1,7 +1,7 @@
 'use strict';
 
-const config = require('../config.js');
 const events = require('../events.js');
+const api = require('../api.js');
 const views = require('../util/views.js');
 
 const template = views.getTemplate('user-registration');
@@ -11,8 +11,8 @@ class RegistrationView extends events.EventTarget {
         super();
         this._hostNode = document.getElementById('content-holder');
         views.replaceContent(this._hostNode, template({
-            userNamePattern: config.userNameRegex,
-            passwordPattern: config.passwordRegex,
+            userNamePattern: api.getUserNameRegex(),
+            passwordPattern: api.getPasswordRegex(),
         }));
         views.syncScrollPosition();
         views.decorateValidator(this._formNode);

@@ -1,6 +1,6 @@
 'use strict';
 
-const config = require('../config.js');
+const api = require('../api.js');
 const views = require('../util/views.js');
 
 const template = views.getTemplate('help');
@@ -26,7 +26,7 @@ class HelpView {
 
         const sourceNode = template();
         const ctx = {
-            name: config.name,
+            name: api.getName(),
         };
 
         section = section || 'about';

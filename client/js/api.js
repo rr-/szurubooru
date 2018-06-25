@@ -8,6 +8,7 @@ const progress = require('./util/progress.js');
 const uri = require('./util/uri.js');
 
 let fileTokens = {};
+let remoteConfig = null;
 
 class Api extends events.EventTarget {
     constructor() {
@@ -65,14 +66,53 @@ class Api extends events.EventTarget {
         return this._wrappedRequest(url, request.delete, data, {}, options);
     }
 
+    fetchConfig() {
+        if (remoteConfig === null) {
+            return this.get(uri.formatApiLink('info'))
+                .then(response => {
+                    remoteConfig = response.config;
+                });
+        } else {
+            return Promise.resolve();
+        }
+    }
+
+    getName() {
+        return remoteConfig.name;
+    }
+
+    getTagNameRegex() {
+        return remoteConfig.tagNameRegex;
+    }
+
+    getPasswordRegex() {
+        return remoteConfig.passwordRegex;
+    }
+
+    getUserNameRegex() {
+        return remoteConfig.userNameRegex;
+    }
+
+    getContactEmail() {
+        return remoteConfig.contactEmail;
+    }
+
+    canSendMails() {
+        return !!remoteConfig.canSendMails;
+    }
+
+    safetyEnabled() {
+        return !!remoteConfig.enableSafety;
+    }
+
     hasPrivilege(lookup) {
         let minViableRank = null;
-        for (let privilege of Object.keys(config.privileges)) {
-            if (!privilege.startsWith(lookup)) {
+        for (let p of Object.keys(remoteConfig.privileges)) {
+            if (!p.startsWith(lookup)) {
                 continue;
             }
-            const rankName = config.privileges[privilege];
-            const rankIndex = this.allRanks.indexOf(rankName);
+            const rankIndex = this.allRanks.indexOf(
+                remoteConfig.privileges[p]);
             if (minViableRank === null || rankIndex < minViableRank) {
                 minViableRank = rankIndex;
             }

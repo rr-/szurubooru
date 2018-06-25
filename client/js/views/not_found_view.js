@@ -1,6 +1,5 @@
 'use strict';
 
-const config = require('../config.js');
 const views = require('../util/views.js');
 
 const template = views.getTemplate('not-found');
