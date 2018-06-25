@@ -1,7 +1,7 @@
 'use strict';
 
-const config = require('../config.js');
 const events = require('../events.js');
+const api = require('../api.js');
 
 class TopNavigationItem {
     constructor(accessKey, title, url, available, imageUrl) {
@@ -53,8 +53,10 @@ class TopNavigation extends events.EventTarget {
     }
 
     setTitle(title) {
-        document.oldTitle = null;
-        document.title = config.name + (title ? (' – ' + title) : '');
+        api.fetchConfig().then(() => {
+            document.oldTitle = null;
+            document.title = api.getName() + (title ? (' – ' + title) : '');
+        });
     }
 
     showAll() {

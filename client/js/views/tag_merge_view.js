@@ -1,7 +1,7 @@
 'use strict';
 
-const config = require('../config.js');
 const events = require('../events.js');
+const api = require('../api.js');
 const views = require('../util/views.js');
 const TagAutoCompleteControl =
     require('../controls/tag_auto_complete_control.js');
@@ -14,7 +14,7 @@ class TagMergeView extends events.EventTarget {
 
         this._tag = ctx.tag;
         this._hostNode = ctx.hostNode;
-        ctx.tagNamePattern = config.tagNameRegex;
+        ctx.tagNamePattern = api.getTagNameRegex();
         views.replaceContent(this._hostNode, template(ctx));
 
         views.decorateValidator(this._formNode);

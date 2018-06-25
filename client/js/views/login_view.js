@@ -1,7 +1,7 @@
 'use strict';
 
-const config = require('../config.js');
 const events = require('../events.js');
+const api = require('../api.js');
 const views = require('../util/views.js');
 
 const template = views.getTemplate('login');
@@ -12,15 +12,15 @@ class LoginView extends events.EventTarget {
         this._hostNode = document.getElementById('content-holder');
 
         views.replaceContent(this._hostNode, template({
-            userNamePattern: config.userNameRegex,
-            passwordPattern: config.passwordRegex,
-            canSendMails: config.canSendMails,
+            userNamePattern: api.getUserNameRegex(),
+            passwordPattern: api.getPasswordRegex(),
+            canSendMails: api.canSendMails(),
         }));
         views.syncScrollPosition();
 
         views.decorateValidator(this._formNode);
-        this._userNameInputNode.setAttribute('pattern', config.userNameRegex);
-        this._passwordInputNode.setAttribute('pattern', config.passwordRegex);
+        this._userNameInputNode.setAttribute('pattern', api.getUserNameRegex());
+        this._passwordInputNode.setAttribute('pattern', api.getPasswordRegex());
         this._formNode.addEventListener('submit', e => {
             e.preventDefault();
             this.dispatchEvent(new CustomEvent('submit', {

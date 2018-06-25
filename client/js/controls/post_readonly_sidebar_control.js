@@ -21,7 +21,7 @@ class PostReadonlySidebarControl extends events.EventTarget {
 
         views.replaceContent(this._hostNode, template({
             post: this._post,
-            enableSafety: config.enableSafety,
+            enableSafety: api.safetyEnabled(),
             canListPosts: api.hasPrivilege('posts:list'),
             canEditPosts: api.hasPrivilege('posts:edit'),
             canViewTags: api.hasPrivilege('tags:view'),

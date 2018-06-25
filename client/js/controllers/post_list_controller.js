@@ -1,6 +1,5 @@
 'use strict';
 
-const config = require('../config.js');
 const router = require('../router.js');
 const api = require('../api.js');
 const settings = require('../models/settings.js');
@@ -33,9 +32,9 @@ class PostListController {
         this._headerView = new PostsHeaderView({
             hostNode: this._pageController.view.pageHeaderHolderNode,
             parameters: ctx.parameters,
-            enableSafety: config.enableSafety,
-            canBulkEditTags: api.hasPrivilege('posts:bulkEdit:tags'),
-            canBulkEditSafety: api.hasPrivilege('posts:bulkEdit:safety'),
+            enableSafety: api.safetyEnabled(),
+            canBulkEditTags: api.hasPrivilege('posts:bulk-edit:tags'),
+            canBulkEditSafety: api.hasPrivilege('posts:bulk-edit:safety'),
             bulkEdit: {
                 tags: this._bulkEditTags
             },
@@ -97,9 +96,9 @@ class PostListController {
             pageRenderer: pageCtx => {
                 Object.assign(pageCtx, {
                     canViewPosts: api.hasPrivilege('posts:view'),
-                    canBulkEditTags: api.hasPrivilege('posts:bulkEdit:tags'),
+                    canBulkEditTags: api.hasPrivilege('posts:bulk-edit:tags'),
                     canBulkEditSafety:
-                        api.hasPrivilege('posts:bulkEdit:safety'),
+                        api.hasPrivilege('posts:bulk-edit:safety'),
                     bulkEdit: {
                         tags: this._bulkEditTags,
                     },

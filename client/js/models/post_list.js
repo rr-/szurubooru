@@ -37,7 +37,7 @@ class PostList extends AbstractList {
     static _decorateSearchQuery(text) {
         const browsingSettings = settings.get();
         const disabledSafety = [];
-        if (config.enableSafety) {
+        if (api.safetyEnabled()) {
             for (let key of Object.keys(browsingSettings.listPosts)) {
                 if (browsingSettings.listPosts[key] === false) {
                     disabledSafety.push(key);

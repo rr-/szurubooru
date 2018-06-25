@@ -35,11 +35,15 @@ def get_info(
         'diskUsage': _get_disk_usage(),
         'serverTime': datetime.utcnow(),
         'config': {
+            'name': config.config['name'],
             'userNameRegex': config.config['user_name_regex'],
             'passwordRegex': config.config['password_regex'],
             'tagNameRegex': config.config['tag_name_regex'],
             'tagCategoryNameRegex': config.config['tag_category_name_regex'],
             'defaultUserRank': config.config['default_rank'],
+            'enableSafety': config.config['enable_safety'],
+            'contactEmail': config.config['contactEmail'],
+            'canSendMails': bool(config.config['smtp']['host']),
             'privileges':
                 util.snake_case_to_lower_camel_case_keys(
                     config.config['privileges']),
