@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.com/nothink/szurubooru.svg?branch=travis)](https://travis-ci.com/nothink/szurubooru)
-
 # szurubooru
 
 Szurubooru is an image board engine inspired by services such as Danbooru,
