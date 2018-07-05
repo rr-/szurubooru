@@ -1,7 +1,6 @@
 'use strict';
 
 const settings = require('../models/settings.js');
-const config = require('../config.js');
 const api = require('../api.js');
 const uri = require('../util/uri.js');
 const AbstractList = require('./abstract_list.js');

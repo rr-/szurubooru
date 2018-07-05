@@ -21,8 +21,7 @@ def start_password_reset(
             'User %r hasn\'t supplied email. Cannot reset password.' % (
                 user_name))
     token = auth.generate_authentication_token(user)
-    url = '%s/password-reset/%s:%s' % (
-        config.config['base_url'].rstrip('/'), user.name, token)
+    url = '/password-reset/%s:%s' % (user.name, token)
     mailer.send_mail(
         'noreply@%s' % config.config['name'],
         user.email,
