@@ -1,7 +1,6 @@
 'use strict';
 
 const marked = require('marked');
-const config = require('../config.js');
 
 class BaseMarkdownWrapper {
     preprocess(text) {
@@ -64,15 +63,12 @@ class TagPermalinkFixWrapper extends BaseMarkdownWrapper {
 class EntityPermalinkWrapper extends BaseMarkdownWrapper {
     preprocess(text) {
         // URL-based permalinks
-        let baseUrl = config.baseUrl.replace(/\/+$/, '');
         text = text.replace(
-            new RegExp('\\b' + baseUrl + '/post/(\\d+)/?\\b', 'g'), '@$1');
+            new RegExp('\\b/post/(\\d+)/?\\b', 'g'), '@$1');
         text = text.replace(
-            new RegExp('\\b' + baseUrl + '/tag/([a-zA-Z0-9_-]+?)/?', 'g'),
-            '#$1');
+            new RegExp('\\b/tag/([a-zA-Z0-9_-]+?)/?', 'g'), '#$1');
         text = text.replace(
-            new RegExp('\\b' + baseUrl + '/user/([a-zA-Z0-9_-]+?)/?', 'g'),
-            '+$1');
+            new RegExp('\\b/user/([a-zA-Z0-9_-]+?)/?', 'g'), '+$1');
 
         text = text.replace(
             /(^|^\(|(?:[^\]])\(|[\s<>\[\]\)])([+#@][a-zA-Z0-9_-]+)/g,

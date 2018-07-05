@@ -1,7 +1,6 @@
 'use strict';
 
 const api = require('../api.js');
-const config = require('../config.js');
 const events = require('../events.js');
 const views = require('../util/views.js');
 

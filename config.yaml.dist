@@ -2,12 +2,9 @@
 # and override only what you need.
 
 name: szurubooru # shown in the website title and on the front page
-debug: 0 # generate source maps for JS debugging?
+debug: 0 # generate server logs?
 show_sql: 0 # show sql in server logs?
-transpile: 1 # generate bigger JS to support older browsers?
 secret: change # used to salt the users' password hashes
-api_url: # where frontend connects to, example: http://api.example.com/
-base_url: # used to form links to frontend, example: http://example.com/
 data_url: # used to form links to posts and avatars, example: http://example.com/data/
 data_dir: # absolute path for posts and avatars storage, example: /srv/www/booru/client/public/data/
 user_agent: # user agent name used to download files from the web on behalf of the api users

@@ -36,8 +36,8 @@
 
         <section class='search'>
             Search on
-            <a href='http://iqdb.org/?url=<%- encodeURIComponent(ctx.post.contentUrl) %>'>IQDB</a> &middot;
-            <a href='https://www.google.com/searchbyimage?&image_url=<%- encodeURIComponent(ctx.post.contentUrl) %>'>Google Images</a>
+            <a href='http://iqdb.org/?url=<%- encodeURIComponent(ctx.post.fullContentUrl) %>'>IQDB</a> &middot;
+            <a href='https://www.google.com/searchbyimage?&image_url=<%- encodeURIComponent(ctx.post.fullContentUrl) %>'>Google Images</a>
         </section>
 
         <section class='social'>

@@ -5,20 +5,6 @@ const glob = require('glob');
 const path = require('path');
 const util = require('util');
 const execSync = require('child_process').execSync;
-const camelcase = require('camelcase');
-
-function convertKeysToCamelCase(input) {
-    let result = {};
-    Object.keys(input).map((key, _) => {
-        const value = input[key];
-        if (value !== null && value.constructor == Object) {
-            result[camelcase(key)] = convertKeysToCamelCase(value);
-        } else {
-            result[camelcase(key)] = value;
-        }
-    });
-    return result;
-}
 
 function readTextFile(path) {
     return fs.readFileSync(path, 'utf-8');
@@ -29,37 +15,27 @@ function writeFile(path, content) {
 }
 
 function getVersion() {
-    return execSync('git describe --always --dirty --long --tags')
-        .toString()
-        .trim();
+    let build_info = process.env.BUILD_INFO;
+    if (build_info) {
+        return build_info.trim();
+    } else {
+        try {
+            build_info = execSync('git describe --always --dirty --long --tags')
+                .toString();
+        } catch (e) {
+            console.warn('Cannot find build version');
+            return 'unknown';
+        }
+        return build_info.trim();
+    }
 }
 
 function getConfig() {
-    const yaml = require('js-yaml');
-    const merge = require('merge');
-    const camelcaseKeys = require('camelcase-keys');
-
-    function parseConfigFile(path) {
-        let result = yaml.load(readTextFile(path, 'utf-8'));
-        return convertKeysToCamelCase(result);
-    }
-
-    let config = parseConfigFile('../config.yaml.dist');
-
-    try {
-        const localConfig = parseConfigFile('../config.yaml');
-        config = merge.recursive(config, localConfig);
-    } catch (e) {
-        console.warn('Local config does not exist, ignoring');
-    }
-
-    config.canSendMails = !!config.smtp.host;
-    delete config.secret;
-    delete config.smtp;
-    delete config.database;
-    config.meta = {
-        version: getVersion(),
-        buildDate: new Date().toUTCString(),
+    let config = {
+        meta: {
+          version: getVersion(),
+          buildDate: new Date().toUTCString()
+        }
     };
 
     return config;
@@ -85,15 +61,11 @@ function minifyHtml(html) {
     }).trim();
 }
 
-function bundleHtml(config) {
+function bundleHtml() {
     const underscore = require('underscore');
     const babelify = require('babelify');
     const baseHtml = readTextFile('./html/index.htm', 'utf-8');
-    const finalHtml = baseHtml
-        .replace(
-            /(<title>)(.*)(<\/title>)/,
-            util.format('$1%s$3', config.name));
-    writeFile('./public/index.htm', minifyHtml(finalHtml));
+    writeFile('./public/index.htm', minifyHtml(baseHtml));
 
     glob('./html/**/*.tpl', {}, (er, files) => {
         let compiledTemplateJs = '\'use strict\'\n';
@@ -143,7 +115,7 @@ function bundleCss() {
     });
 }
 
-function bundleJs(config) {
+function bundleJs() {
     const browserify = require('browserify');
     const external = [
         'underscore',
@@ -170,7 +142,7 @@ function bundleJs(config) {
             for (let lib of external) {
                 b.require(lib);
             }
-            if (config.transpile) {
+            if (!process.argv.includes('--no-transpile')) {
                 b.add(require.resolve('babel-polyfill'));
             }
             writeJsBundle(
@@ -179,15 +151,15 @@ function bundleJs(config) {
 
         if (!process.argv.includes('--no-app-js')) {
             let outputFile = fs.createWriteStream('./public/js/app.min.js');
-            let b = browserify({debug: config.debug});
-            if (config.transpile) {
+            let b = browserify({debug: process.argv.includes('--debug')});
+            if (!process.argv.includes('--no-transpile')) {
                 b = b.transform('babelify');
             }
             writeJsBundle(
                 b.external(external).add(files),
                 './public/js/app.min.js',
                 'Bundled app JS',
-                !config.debug);
+                !process.argv.includes('--debug'));
         }
     });
 }
@@ -217,11 +189,11 @@ const config = getConfig();
 bundleConfig(config);
 bundleBinaryAssets();
 if (!process.argv.includes('--no-html')) {
-    bundleHtml(config);
+    bundleHtml();
 }
 if (!process.argv.includes('--no-css')) {
     bundleCss();
 }
 if (!process.argv.includes('--no-js')) {
-    bundleJs(config);
+    bundleJs();
 }

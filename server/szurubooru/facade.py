@@ -79,7 +79,7 @@ def validate_config() -> None:
             'Default rank %r is not on the list of known ranks' % (
                 config.config['default_rank']))
 
-    for key in ['base_url', 'api_url', 'data_url', 'data_dir']:
+    for key in ['data_url', 'data_dir']:
         if not config.config[key]:
             raise errors.ConfigError(
                 'Service is not configured: %r is missing' % key)
