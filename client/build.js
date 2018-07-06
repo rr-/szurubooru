@@ -46,11 +46,11 @@ function copyFile(source, target) {
 }
 
 function minifyJs(path) {
-    return require('uglify-es').minify(fs.readFileSync(path, 'utf-8'), {compress: {unused: false}}).code;
+    return require('terser').minify(fs.readFileSync(path, 'utf-8'), {compress: {unused: false}}).code;
 }
 
 function minifyCss(css) {
-    return require('csso').minify(css);
+    return require('csso').minify(css).css;
 }
 
 function minifyHtml(html) {
