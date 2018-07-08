@@ -124,7 +124,7 @@ user@host:szuru/server$ source python_modules/bin/activate # enters the sandbox
 4. Run the tests:
 
     ```console
-    (python_modules) user@host:szuru/server$ ./test
+    (python_modules) user@host:szuru/server$ pytest
     ```
 
 It is recommended to rebuild the frontend after each change to configuration.
