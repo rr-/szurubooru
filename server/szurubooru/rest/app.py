@@ -63,7 +63,7 @@ def _create_context(env: Dict[str, Any]) -> context.Context:
                 'Could not decode the request body. The JSON '
                 'was incorrect or was not encoded as UTF-8.')
 
-    return context.Context(method, path, headers, params, files)
+    return context.Context(env, method, path, headers, params, files)
 
 
 def application(

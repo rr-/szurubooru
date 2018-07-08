@@ -11,11 +11,13 @@ Response = Optional[Dict[str, Any]]
 class Context:
     def __init__(
             self,
+            env: Dict[str, Any],
             method: str,
             url: str,
             headers: Dict[str, str] = None,
             params: Request = None,
             files: Dict[str, bytes] = None) -> None:
+        self.env = env
         self.method = method
         self.url = url
         self._headers = headers or {}

@@ -95,6 +95,7 @@ def session(query_logger):  # pylint: disable=unused-argument
 def context_factory(session):
     def factory(params=None, files=None, user=None, headers=None):
         ctx = rest.Context(
+            env={'HTTP_ORIGIN': 'http://example.com'},
             method=None,
             url=None,
             headers=headers or {},
