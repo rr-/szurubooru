@@ -1,0 +1,8 @@
+szurubooru/tests/*
+setup.cfg
+.pylintrc
+mypi.ini
+
+Dockerfile
+.dockerignore
+**/.gitignore
