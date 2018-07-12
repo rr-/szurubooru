@@ -2,3 +2,4 @@ config.yaml
 */*_modules/
 .coverage
 .cache
+docker-compose.yml
