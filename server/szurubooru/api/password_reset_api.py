@@ -13,7 +13,7 @@ MAIL_BODY = (
 
 @rest.routes.get('/password-reset/(?P<user_name>[^/]+)/?')
 def start_password_reset(
-        _ctx: rest.Context, params: Dict[str, str]) -> rest.Response:
+        ctx: rest.Context, params: Dict[str, str]) -> rest.Response:
     user_name = params['user_name']
     user = users.get_user_by_name_or_email(user_name)
     if not user.email:
@@ -21,13 +21,19 @@ def start_password_reset(
             'User %r hasn\'t supplied email. Cannot reset password.' % (
                 user_name))
     token = auth.generate_authentication_token(user)
-    url = '%s/password-reset/%s:%s' % (
-        config.config['base_url'].rstrip('/'), user.name, token)
+
+    if 'HTTP_ORIGIN' in ctx.env:
+        url = ctx.env['HTTP_ORIGIN'].rstrip('/')
+    else:
+        url = ''
+    url += '/password-reset/%s:%s' % (user.name, token)
+
     mailer.send_mail(
         'noreply@%s' % config.config['name'],
         user.email,
         MAIL_SUBJECT.format(name=config.config['name']),
         MAIL_BODY.format(name=config.config['name'], url=url))
+
     return {}
 
 

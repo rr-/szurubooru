@@ -84,28 +84,31 @@ user@host:szuru/server$ source python_modules/bin/activate # enters the sandbox
 
 ### Preparing `szurubooru` for first run
 
-1. Configure things:
+1. Compile the frontend:
 
     ```console
+    user@host:szuru$ cd client
+    user@host:szuru/client$ node build.js
+    ```
+
+    You can include the flags `--no-transpile` to disable the JavaScript
+    transpiler, which provides compatibility with older browsers, and
+    `--debug` to generate JS source mappings.
+
+2. Configure things:
+
+    ```console
+    user@host:szuru/client$ cd ..
     user@host:szuru$ cp config.yaml.dist config.yaml
     user@host:szuru$ vim config.yaml
     ```
 
     Pay extra attention to these fields:
 
-    - base URL,
-    - API URL,
     - data directory,
     - data URL,
     - database,
     - the `smtp` section.
-
-2. Compile the frontend:
-
-    ```console
-    user@host:szuru$ cd client
-    user@host:szuru/client$ npm run build
-    ```
 
 3. Upgrade the database:
 
@@ -121,7 +124,7 @@ user@host:szuru/server$ source python_modules/bin/activate # enters the sandbox
 4. Run the tests:
 
     ```console
-    (python_modules) user@host:szuru/server$ ./test
+    (python_modules) user@host:szuru/server$ pytest
     ```
 
 It is recommended to rebuild the frontend after each change to configuration.
@@ -139,6 +142,11 @@ meant to be exposed directly to the end users.
 
 The API should be exposed using WSGI server such as `waitress`, `gunicorn` or
 similar. Other configurations might be possible but I didn't pursue them.
+
+API calls are made to the relative URL `/api/`. Your HTTP server should be
+configured to proxy this URL format to the WSGI server. Some users may prefer
+to use a dedicated reverse proxy for this, to incorporate additional features
+such as load balancing and SSL.
 
 Note that the API URL in the virtual host configuration needs to be the same as
 the one in the `config.yaml`, so that client knows how to access the backend!
@@ -177,8 +185,6 @@ server {
 **`config.yaml`**:
 
 ```yaml
-api_url: 'http://example.com/api/'
-base_url: 'http://example.com/'
 data_url: 'http://example.com/data/'
 data_dir: '/srv/www/booru/client/public/data'
 ```

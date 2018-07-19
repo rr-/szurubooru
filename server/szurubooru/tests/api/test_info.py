@@ -10,6 +10,9 @@ def test_info_api(
     auth_user = user_factory(rank=model.User.RANK_REGULAR)
     anon_user = user_factory(rank=model.User.RANK_ANONYMOUS)
     config_injector({
+        'name': 'test installation',
+        'contact_email': 'test@example.com',
+        'enable_safety': True,
         'data_dir': str(directory),
         'user_name_regex': '1',
         'password_regex': '2',
@@ -21,11 +24,17 @@ def test_info_api(
             'test_key2': 'test_value2',
             'posts:view:featured': 'regular',
         },
+        'smtp': {
+            'host': 'example.com',
+        }
     })
     db.session.add_all([post_factory(), post_factory()])
     db.session.flush()
 
     expected_config_key = {
+        'name': 'test installation',
+        'contactEmail': 'test@example.com',
+        'enableSafety': True,
         'userNameRegex': '1',
         'passwordRegex': '2',
         'tagNameRegex': '3',
@@ -36,6 +45,7 @@ def test_info_api(
             'testKey2': 'test_value2',
             'posts:view:featured': 'regular',
         },
+        'canSendMails': True
     }
 
     with fake_datetime('2016-01-01 13:00'):

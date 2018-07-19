@@ -2,7 +2,6 @@
 
 const cookies = require('js-cookie');
 const request = require('superagent');
-const config = require('./config.js');
 const events = require('./events.js');
 const progress = require('./util/progress.js');
 const uri = require('./util/uri.js');
@@ -257,7 +256,7 @@ class Api extends events.EventTarget {
 
     _getFullUrl(url) {
         const fullUrl =
-            (config.apiUrl + '/' + url).replace(/([^:])\/+/g, '$1/');
+            ('/api/' + url).replace(/([^:])\/+/g, '$1/');
         const matches = fullUrl.match(/^([^?]*)\??(.*)$/);
         const baseUrl = matches[1];
         const request = matches[2];

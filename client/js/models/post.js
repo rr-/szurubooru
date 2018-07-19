@@ -30,6 +30,7 @@ class Post extends events.EventTarget {
     get user()               { return this._user; }
     get safety()             { return this._safety; }
     get contentUrl()         { return this._contentUrl; }
+    get fullContentUrl()     { return this._fullContentUrl; }
     get thumbnailUrl()       { return this._thumbnailUrl; }
     get canvasWidth()        { return this._canvasWidth || 800; }
     get canvasHeight()       { return this._canvasHeight || 450; }
@@ -275,6 +276,7 @@ class Post extends events.EventTarget {
             _user:          response.user,
             _safety:        response.safety,
             _contentUrl:    response.contentUrl,
+            _fullContentUrl: new URL(response.contentUrl, window.location.href).href,
             _thumbnailUrl:  response.thumbnailUrl,
             _canvasWidth:   response.canvasWidth,
             _canvasHeight:  response.canvasHeight,

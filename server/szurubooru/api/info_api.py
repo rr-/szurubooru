@@ -42,7 +42,7 @@ def get_info(
             'tagCategoryNameRegex': config.config['tag_category_name_regex'],
             'defaultUserRank': config.config['default_rank'],
             'enableSafety': config.config['enable_safety'],
-            'contactEmail': config.config['contactEmail'],
+            'contactEmail': config.config['contact_email'],
             'canSendMails': bool(config.config['smtp']['host']),
             'privileges':
                 util.snake_case_to_lower_camel_case_keys(
