@@ -5,7 +5,6 @@ from typing import Any, Optional, Tuple, Set, List, Callable
 import elasticsearch
 import elasticsearch_dsl
 import numpy as np
-from skimage.color import rgb2gray
 from PIL import Image
 from szurubooru import config, errors
 
@@ -41,8 +40,7 @@ def _get_session() -> elasticsearch.Elasticsearch:
 
 def _preprocess_image(content: bytes) -> NpMatrix:
     img = Image.open(BytesIO(content))
-    img = img.convert('RGB')
-    return rgb2gray(np.asarray(img, dtype=np.uint8))
+    return np.asarray(img.convert('L'), dtype=np.uint8)
 
 
 def _crop_image(
