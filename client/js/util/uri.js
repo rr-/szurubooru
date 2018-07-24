@@ -51,7 +51,7 @@ function formatClientLink(...values) {
             parts.push(escapeParam(value.toString()));
         }
     }
-    return '/' + parts.join('/');
+    return parts.join('/');
 }
 
 module.exports = {

@@ -256,7 +256,7 @@ class Api extends events.EventTarget {
 
     _getFullUrl(url) {
         const fullUrl =
-            ('/api/' + url).replace(/([^:])\/+/g, '$1/');
+            ('api/' + url).replace(/([^:])\/+/g, '$1/');
         const matches = fullUrl.match(/^([^?]*)\??(.*)$/);
         const baseUrl = matches[1];
         const request = matches[2];
@@ -327,7 +327,7 @@ class Api extends events.EventTarget {
         let abortFunction = () => {};
         let returnedPromise = new Promise((resolve, reject) => {
             let uploadPromise = this._rawRequest(
-                '/uploads', request.post, {}, {content: file}, options);
+                'uploads', request.post, {}, {content: file}, options);
             abortFunction = () => uploadPromise.abort();
             return uploadPromise.then(
                 response => {
