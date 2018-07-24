@@ -14,24 +14,29 @@ const clickEvent = document.ontouchstart ? 'touchstart' : 'click';
 const uri = require('./util/uri.js');
 let location = window.history.location || window.location;
 
-const base = '';
+function _getOrigin() {
+    return location.protocol + '//' + location.hostname
+        + (location.port ? (':' + location.port) : '');
+}
 
 function _isSameOrigin(href) {
-    let origin = location.protocol + '//' + location.hostname;
-    if (location.port) {
-        origin += ':' + location.port;
-    }
-    return href && href.indexOf(origin) === 0;
+    return href && href.indexOf(_getOrigin()) === 0;
+}
+
+function _getBaseHref() {
+    const bases = document.getElementsByTagName('base');
+    return bases.length > 0 ?
+        bases[0].href.replace(_getOrigin(), '').replace(/\/+$/, '') : '';
 }
 
 class Context {
     constructor(path, state) {
-        if (path[0] === '/' && path.indexOf(base) !== 0) {
-            path = base + path;
-        }
+        const base = _getBaseHref();
+        path = path.indexOf('/') !== 0 ? '/' + path : path;
+        path = path.indexOf(base) !== 0 ? base + path : path;
 
         this.canonicalPath = path;
-        this.path = path.replace(base, '') || '/';
+        this.path = !path.indexOf(base) ? path.slice(base.length) : path;
 
         this.title = document.title;
         this.state = state || {};
@@ -289,15 +294,14 @@ const _onClick = router => {
             return;
         }
 
-        let path = el.pathname + el.search + (el.hash || '');
+        const base = _getBaseHref();
+        const orig = el.pathname + el.search + (el.hash || '');
+        const path = !orig.indexOf(base) ? orig.slice(base.length) : orig;
 
-        const orig = path;
-        if (path.indexOf(base) === 0) {
-            path = path.substr(base.length);
-        }
         if (base && orig === path) {
             return;
         }
+
         e.preventDefault();
         router.show(orig);
     };
