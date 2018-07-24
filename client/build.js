@@ -65,7 +65,10 @@ function bundleHtml() {
     const underscore = require('underscore');
     const babelify = require('babelify');
     const baseHtml = readTextFile('./html/index.htm', 'utf-8');
-    writeFile('./public/index.htm', minifyHtml(baseHtml));
+    const baseUrl = process.env.BASE_URL ? process.env.BASE_URL : '/';
+    const finalHtml = baseHtml.replace(
+        '<!-- Base HTML Placeholder -->', `<base href="${baseUrl}"/>`);
+    writeFile('./public/index.htm', minifyHtml(finalHtml));
 
     glob('./html/**/*.tpl', {}, (er, files) => {
         let compiledTemplateJs = '\'use strict\'\n';

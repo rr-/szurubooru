@@ -63,3 +63,43 @@ and Docker Compose (version 1.6.0 or greater) already installed.
     # To stop
     user@host:szuru$ docker-compose down
     ```
+
+### Additional Features
+
+1. **Using a seperate domain to host static files (image content)**
+
+    If you want to host your website on, (`http://example.com/`) but want
+    to serve the images on a different domain, (`http://static.example.com/`)
+    then you can run the backend container with an additional environment
+    variable `DATA_URL=http://static.example.com/`. Make sure that this
+    additional host has access contents to the `/data` volume mounted in the
+    backend.
+
+2. **Setting a specific base URI for proxying**
+
+    Some users may wish to access the service at a different base URI, such
+    as `http://example.com/szuru/`, commonly when sharing multiple HTTP
+    services on one domain using a reverse proxy. In this case, simply set
+    `BASE_URL="/szuru/"` in the frontend container, and
+    `DATA_URL="/szuru/data/"` in the backend container (unless you are hosting
+    your data on a different domain).
+
+    You should set your reverse proxy to proxy `http(s)://example.com/szuru` to
+    `http://<internal IP or hostname of frontend container>/`. For an NGINX
+    reverse proxy, that will appear as:
+
+    ```nginx
+    location /szuru {
+        proxy_http_version 1.1;
+        proxy_pass http://<internal IP or hostname of frontend container>/;
+
+        proxy_set_header Host              $http_host;
+        proxy_set_header Upgrade           $http_upgrade;
+        proxy_set_header Connection        "upgrade";
+        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header X-Scheme          $scheme;
+        proxy_set_header X-Real-IP         $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Script-Name     /szuru;
+    }
+    ```
