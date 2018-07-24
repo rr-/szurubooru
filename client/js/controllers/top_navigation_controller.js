@@ -28,7 +28,7 @@ class TopNavigationController {
     }
 
     _updateNavigationFromPrivileges() {
-        topNavigation.get('account').url = '/user/' + api.userName;
+        topNavigation.get('account').url = 'user/' + api.userName;
         topNavigation.get('account').imageUrl =
             api.user ? api.user.avatarUrl : null;
 
