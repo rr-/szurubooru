@@ -17,6 +17,8 @@ def merge(left: Dict, right: Dict) -> Dict:
 
 
 def docker_config() -> Dict:
+    if os.getenv('CI') == 'true':
+        return {}
     for key in [
             'POSTGRES_USER',
             'POSTGRES_PASSWORD',
@@ -51,8 +53,8 @@ def read_config() -> Dict:
         if os.path.exists('../config.yaml'):
             with open('../config.yaml') as handle:
                 ret = merge(ret, yaml.load(handle.read()))
-#        if os.path.exists('/.dockerenv') and os.getenv('CI', '') != 'true':
-#            ret = merge(ret, docker_config())
+        if os.path.exists('/.dockerenv'):
+            ret = merge(ret, docker_config())
         return ret
 
 
