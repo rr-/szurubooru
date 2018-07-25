@@ -29,8 +29,6 @@ matrix:
         - sed -i -e 's/^#database:$/database:\ postgres:\/\/szuru:dog@localhost:5432\/szuru_test/' ../config.yaml
         - sed -i -e 's/^#elasticsearch:/elasticsearch:/' ../config.yaml
         - sed -i -e 's/^#    /    /' ../config.yaml
-        - printenv TRAVIS
-        - printenv CI
       install:
         - pip install -r requirements.txt
         - pip install -r dev-requirements.txt

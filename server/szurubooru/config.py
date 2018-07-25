@@ -51,7 +51,7 @@ def read_config() -> Dict:
         if os.path.exists('../config.yaml'):
             with open('../config.yaml') as handle:
                 ret = merge(ret, yaml.load(handle.read()))
-        if os.path.exists('/.dockerenv') and os.getenv('CI', '') == 'true':
+        if os.path.exists('/.dockerenv') and os.getenv('CI', '') != 'true':
             ret = merge(ret, docker_config())
         return ret
 
