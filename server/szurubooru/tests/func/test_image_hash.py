@@ -24,5 +24,5 @@ def test_hashing(read_asset, config_injector):
     assert results_exact[0].score == 63
     assert results_exact[0].distance == 0
     assert results_similar[0].path == 'test'
-    assert results_similar[0].score == 26
-    assert abs(results_similar[0].distance - 0.189390583) < 1e-8
+    assert results_similar[0].score == 17
+    assert abs(results_similar[0].distance - 0.20599895341812172) < 1e-8
