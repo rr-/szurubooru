@@ -56,4 +56,5 @@ def read_config() -> Dict:
         return ret
 
 
+print(os.getenv('CI'))
 config = read_config()  # pylint: disable=invalid-name
