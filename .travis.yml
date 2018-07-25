@@ -10,6 +10,7 @@ matrix:
     - language: python
       python:
         - "3.5"
+        - "3.6"
       before_install:
         - sudo apt-get -y install software-properties-common
         - sudo add-apt-repository -y ppa:mc3man/trusty-media
@@ -32,7 +33,9 @@ matrix:
         - pip install -r requirements.txt
         - pip install -r dev-requirements.txt
       script:
-#        - pycodestyle szurubooru/
+        - pycodestyle wait-for-es
+        - pycodestyle generate-thumb
+        - pycodestyle szurubooru/
         - ./wait-for-es
         - alembic upgrade head
         - py.test
