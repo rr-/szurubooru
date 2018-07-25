@@ -32,6 +32,7 @@ scrubbing](http://sjp.pwn.pl/sjp/;2527372). It is pronounced as *shoorubooru*.
 - FFmpeg
 - node.js
 
+It is recommended that you use Docker for deployment.
 [See installation instructions.](https://github.com/rr-/szurubooru/blob/master/INSTALL.md)
 
 ## Screenshots

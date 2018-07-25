@@ -1,27 +1,19 @@
 # rather than editing this file, it is strongly suggested to create config.yaml
 # and override only what you need.
 
-name: szurubooru # shown in the website title and on the front page
-debug: 0 # generate server logs?
-show_sql: 0 # show sql in server logs?
-secret: change # used to salt the users' password hashes
-data_url: # used to form links to posts and avatars, example: http://example.com/data/
-data_dir: # absolute path for posts and avatars storage, example: /srv/www/booru/client/public/data/
-user_agent: # user agent name used to download files from the web on behalf of the api users
-
-
-# usage: schema://user:password@host:port/database_name
-# example: postgres://szuru:dog@localhost:5432/szuru_test
-# example (useful for tests): sqlite:///:memory:
-database:
-test_database: 'sqlite:///:memory:' # required for running the test suite
-
+# shown in the website title and on the front page
+name: szurubooru
+# user agent name used to download files from the web on behalf of the api users
+user_agent:
+# used to salt the users' password hashes
+secret: change
+# required for running the test suite
+test_database: 'sqlite:///:memory:'
 
 # Delete thumbnails and source files on post delete
 # Original functionality is no, to mitigate the impacts of admins going
 # on unchecked post purges.
 delete_source_files: no
-
 
 thumbnails:
     avatar_width: 300
@@ -29,12 +21,10 @@ thumbnails:
     post_width: 300
     post_height: 300
 
-
 convert:
    gif:
      to_webm: false
      to_mp4: false
-
 
 # used to send password reset e-mails
 smtp:
@@ -42,24 +32,14 @@ smtp:
     port: # example: 25
     user: # example: bot
     pass: # example: groovy123
-    # host can be left empty, in which case it is recommended to fill contact_email.
-
+    # host can be left empty, in which case it is recommended to fill contactEmail.
 
 contact_email: # example: bob@example.com. Meant for manual password reset procedures
-
-
-# used for reverse image search
-elasticsearch:
-    host: localhost
-    port: 9200
-    index: szurubooru
-
 
 enable_safety: yes
 
 tag_name_regex: ^\S+$
 tag_category_name_regex: ^[^\s%+#/]+$
-
 
 # don't make these more restrictive unless you want to annoy people; if you do
 # customize them, make sure to update the instructions in the registration form
@@ -68,7 +48,6 @@ password_regex: '^.{5,}$'
 user_name_regex: '^[a-zA-Z0-9_-]{1,32}$'
 
 default_rank: regular
-
 
 privileges:
     'users:create:self':            anonymous # Registration permission
@@ -150,3 +129,16 @@ privileges:
     'snapshots:list':               power
 
     'uploads:create':               regular
+
+## ONLY SET THESE IF DEPLOYING OUTSIDE OF DOCKER
+#debug: 0 # generate server logs?
+#show_sql: 0 # show sql in server logs?
+#data_url: /data/
+#data_dir: /var/www/data
+## usage: schema://user:password@host:port/database_name
+## example: postgres://szuru:dog@localhost:5432/szuru_test
+#database:
+#elasticsearch: # used for reverse image search
+#    host: localhost
+#    port: 9200
+#    index: szurubooru
