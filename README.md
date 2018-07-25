@@ -1,6 +1,6 @@
 # szurubooru
 
-[![Build Status](https://travis-ci.com/nothink/szurubooru.svg?branch=travis)](https://travis-ci.com/nothink/szurubooru)
+[![Build Status](https://travis-ci.com/rr-/szurubooru.svg)](https://travis-ci.com/rr-/szurubooru)
 
 Szurubooru is an image board engine inspired by services such as Danbooru,
 Gelbooru and Moebooru dedicated for small and medium communities. Its name [has
