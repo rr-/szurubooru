@@ -23,7 +23,7 @@ def docker_config() -> Dict:
             'POSTGRES_HOST',
             'ESEARCH_HOST'
     ]:
-        if not os.getenv(key, False) and os.getenv('CI') != 'true':
+        if not os.getenv(key, False):
             raise errors.ConfigError(f'Environment variable "{key}" not set')
     return {
         'debug': True,
