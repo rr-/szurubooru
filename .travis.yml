@@ -33,7 +33,7 @@ matrix:
         - pip install -r requirements.txt
         - pip install -r dev-requirements.txt
       script:
-        - python -c "import os;print(os.getenv('CI'))"
+        - python -c "import os; print('CI') if os.getenv('CI')) == 'true' else 'unknown'"
         - pycodestyle wait-for-es
         - pycodestyle generate-thumb
         - pycodestyle szurubooru/
