@@ -15,14 +15,15 @@ matrix:
         - sudo add-apt-repository -y ppa:mc3man/trusty-media
         - sudo apt-get update
         - sudo apt-get -y --allow-unauthenticated install ffmpeg
-        - cp server/config.yaml.dist server/config.yaml
-        - sed -i -e 's/^#database:$/database:\ postgres:\/\/szuru:dog@localhost:5432\/szuru_test/' server/config.yaml
         - sudo -i -u postgres createuser szuru -D -R -S
         - sudo -i -u postgres createdb szuru_test
         - sudo -i -u postgres psql -c "ALTER USER szuru PASSWORD 'dog';"
-      install:
         - cd server
+        - cp config.yaml.dist ../
+        - sed -i -e 's/^#database:$/database:\ postgres:\/\/szuru:dog@localhost:5432\/szuru_test/' ../config.yaml.dist
+      install:
         - pip install -r requirements.txt
       script:
+        - ./wait-for-es
         - alembic upgrade head
         - py.test
