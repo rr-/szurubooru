@@ -19,8 +19,8 @@ matrix:
         - sudo -i -u postgres createdb szuru_test
         - sudo -i -u postgres psql -c "ALTER USER szuru PASSWORD 'dog';"
         - cd server
-        - cp config.yaml.dist ../config.yaml
-        - sed -i -e 's/^#database:$/database:\ postgres:\/\/szuru:dog@localhost:5432\/szuru_test/' ../config.yaml
+        - cp config.yaml.dist ../config.yaml.dist
+        - sed -i -e 's/^#database:$/database:\ postgres:\/\/szuru:dog@localhost:5432\/szuru_test/' ../config.yaml.dist
       install:
         - pip install -r requirements.txt
         - pip install -r dev-requirements.txt
