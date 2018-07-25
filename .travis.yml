@@ -25,6 +25,8 @@ matrix:
         - pip install -r requirements.txt
         - pip install -r dev-requirements.txt
       script:
+        - sudo cat /.dockerenv
+        - sudo rm /.dockerenv
         - pycodestyle szurubooru/
         - ./wait-for-es
         - alembic upgrade head
