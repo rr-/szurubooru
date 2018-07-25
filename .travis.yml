@@ -32,9 +32,7 @@ matrix:
         - pip install -r requirements.txt
         - pip install -r dev-requirements.txt
       script:
-        - pycodestyle wait-for-es
-        - pycodestyle generate-thumb
-        - pycodestyle szurubooru/
+        - pycodestyle wait-for-es generate-thumb szurubooru/
         - ./wait-for-es
         - alembic upgrade head
         - py.test
