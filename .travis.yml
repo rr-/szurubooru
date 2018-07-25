@@ -20,7 +20,14 @@ matrix:
         - sudo -i -u postgres psql -c "ALTER USER szuru PASSWORD 'dog';"
         - cd server
         - cp config.yaml.dist ../config.yaml.dist
-        - sed -i -e 's/^#database:$/database:\ postgres:\/\/szuru:dog@localhost:5432\/szuru_test/' ../config.yaml.dist
+        - cp config.yaml.dist ../config.yaml
+        - sed -i -e 's/^#debug:/debug:/' ../config.yaml
+        - sed -i -e 's/^#show_sql:/show_sql:/' ../config.yaml
+        - sed -i -e 's/^#data_url:/data_url:/' ../config.yaml
+        - sed -i -e 's/^#data_dir:/data_dir:/' ../config.yaml
+        - sed -i -e 's/^#database:$/database:\ postgres:\/\/szuru:dog@localhost:5432\/szuru_test/' ../config.yaml
+        - sed -i -e 's/^#elasticsearch:/elasticsearch:/' ../config.yaml
+        - sed -i -e 's/^#    /    /' ../config.yaml
       install:
         - pip install -r requirements.txt
         - pip install -r dev-requirements.txt
