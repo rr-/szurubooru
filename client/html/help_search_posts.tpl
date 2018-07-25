@@ -12,7 +12,7 @@
         </tr>
         <tr>
             <td><code>tag</code></td>
-            <td>having given tag</td>
+            <td>having given tag (accepts wildcards)</td>
         </tr>
         <tr>
             <td><code>score</code></td>
@@ -20,7 +20,7 @@
         </tr>
         <tr>
             <td><code>uploader</code></td>
-            <td>uploaded by given user</td>
+            <td>uploaded by given use (accepts wildcards)r</td>
         </tr>
         <tr>
             <td><code>upload</code></td>
@@ -32,11 +32,11 @@
         </tr>
         <tr>
             <td><code>comment</code></td>
-            <td>commented by given user</td>
+            <td>commented by given user (accepts wildcards)</td>
         </tr>
         <tr>
             <td><code>fav</code></td>
-            <td>favorited by given user</td>
+            <td>favorited by given user (accepts wildcards)</td>
         </tr>
         <tr>
             <td><code>tag-count</code></td>
@@ -53,6 +53,10 @@
         <tr>
             <td><code>note-count</code></td>
             <td>having given number of annotations</td>
+        </tr>
+        <tr>
+            <td><code>note-text</code></td>
+            <td>having given note text (accepts wildcards)</td>
         </tr>
         <tr>
             <td><code>relation-count</code></td>
@@ -87,6 +91,14 @@
             <td>having given number of pixels (image width * image height)</td>
         </tr>
         <tr>
+            <td><code>image-aspect-ratio</code></td>
+            <td>having given aspect ratio (image width / image height)</td>
+        </tr>
+        <tr>
+            <td><code>image-ar</code></td>
+            <td>alias of <code>image-aspect-ratio</code></td>
+        </tr>
+        <tr>
             <td><code>width</code></td>
             <td>alias of <code>image-width</code></td>
         </tr>
@@ -97,6 +109,14 @@
         <tr>
             <td><code>area</code></td>
             <td>alias of <code>image-area</code></td>
+        </tr>
+        <tr>
+            <td><code>aspect-ratio</code></td>
+            <td>alias of <code>image-aspect-ratio</code></td>
+        </tr>
+        <tr>
+            <td><code>ar</code></td>
+            <td>alias of <code>image-aspect-ratio</code></td>
         </tr>
         <tr>
             <td><code>creation-date</code></td>

@@ -6,15 +6,17 @@ const TopNavigationView = require('../views/top_navigation_view.js');
 
 class TopNavigationController {
     constructor() {
-        this._topNavigationView = new TopNavigationView();
+        api.fetchConfig().then(() => {
+            this._topNavigationView = new TopNavigationView();
 
-        topNavigation.addEventListener(
-            'activate', e => this._evtActivate(e));
+            topNavigation.addEventListener(
+                'activate', e => this._evtActivate(e));
 
-        api.addEventListener('login', e => this._evtAuthChange(e));
-        api.addEventListener('logout', e => this._evtAuthChange(e));
+            api.addEventListener('login', e => this._evtAuthChange(e));
+            api.addEventListener('logout', e => this._evtAuthChange(e));
 
-        this._render();
+            this._render();
+        });
     }
 
     _evtAuthChange(e) {
@@ -47,10 +49,12 @@ class TopNavigationController {
             topNavigation.hide('users');
         }
         if (api.isLoggedIn()) {
-            topNavigation.hide('register');
+            if (!api.hasPrivilege('users:create:any')) {
+                topNavigation.hide('register');
+            }
             topNavigation.hide('login');
         } else {
-            if (!api.hasPrivilege('users:create')) {
+            if (!api.hasPrivilege('users:create:self')) {
                 topNavigation.hide('register');
             }
             topNavigation.hide('account');
@@ -62,6 +66,7 @@ class TopNavigationController {
         this._updateNavigationFromPrivileges();
         this._topNavigationView.render({
             items: topNavigation.getAll(),
+            name: api.getName()
         });
         this._topNavigationView.activate(
             topNavigation.activeItem ? topNavigation.activeItem.key : '');

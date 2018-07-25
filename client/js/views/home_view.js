@@ -1,6 +1,7 @@
 'use strict';
 
 const router = require('../router.js');
+const uri = require('../util/uri.js');
 const misc = require('../util/misc.js');
 const views = require('../util/views.js');
 const PostContentControl = require('../controls/post_content_control.js');
@@ -23,12 +24,16 @@ class HomeView {
         views.syncScrollPosition();
 
         if (this._formNode) {
-            this._tagAutoCompleteControl = new TagAutoCompleteControl(
-                this._searchInputNode);
+            this._autoCompleteControl = new TagAutoCompleteControl(
+                this._searchInputNode,
+                {
+                    confirm: tag =>
+                        this._autoCompleteControl.replaceSelectedText(
+                            misc.escapeSearchTerm(tag.names[0]), true),
+                });
             this._formNode.addEventListener(
                 'submit', e => this._evtFormSubmit(e));
         }
-
     }
 
     showSuccess(text) {
@@ -57,11 +62,17 @@ class HomeView {
                         window.innerWidth * 0.8,
                         window.innerHeight * 0.7,
                     ];
-                });
+                },
+                'fit-both');
 
             this._postNotesOverlay = new PostNotesOverlayControl(
                 this._postContainerNode.querySelector('.post-overlay'),
                 postInfo.featuredPost);
+
+            if (postInfo.featuredPost.type === 'video'
+            || postInfo.featuredPost.type === 'flash') {
+                this._postContentControl.disableOverlay();
+            }
         }
     }
 
@@ -88,7 +99,7 @@ class HomeView {
     _evtFormSubmit(e) {
         e.preventDefault();
         this._searchInputNode.blur();
-        router.show('/posts/' + misc.formatUrlParameters({
+        router.show(uri.formatClientLink('posts', {
             query: this._searchInputNode.value}));
     }
 }

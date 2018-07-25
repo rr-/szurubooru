@@ -1,11 +1,19 @@
+from typing import Optional, Callable, Type, Dict
+
+
 error_handlers = {}  # pylint: disable=invalid-name
 
 
 class BaseHttpError(RuntimeError):
-    code = None
-    reason = None
+    code = -1
+    reason = ''
 
-    def __init__(self, name, description, title=None, extra_fields=None):
+    def __init__(
+            self,
+            name: str,
+            description: str,
+            title: Optional[str] = None,
+            extra_fields: Optional[Dict[str, str]] = None) -> None:
         super().__init__()
         # error name for programmers
         self.name = name
@@ -47,5 +55,12 @@ class HttpMethodNotAllowed(BaseHttpError):
     reason = 'Method Not Allowed'
 
 
-def handle(exception_type, handler):
+class HttpInternalServerError(BaseHttpError):
+    code = 500
+    reason = 'Internal Server Error'
+
+
+def handle(
+        exception_type: Type[Exception],
+        handler: Callable[[Exception], None]) -> None:
     error_handlers[exception_type] = handler

@@ -1,22 +1,21 @@
 from unittest.mock import patch
 import pytest
-from szurubooru import api, db, errors
+from szurubooru import api, model, errors
 from szurubooru.func import tags, snapshots
 
 
 @pytest.fixture(autouse=True)
 def inject_config(config_injector):
-    config_injector({'privileges': {'tags:create': db.User.RANK_REGULAR}})
+    config_injector({'privileges': {'tags:create': model.User.RANK_REGULAR}})
 
 
 def test_creating_simple_tags(tag_factory, user_factory, context_factory):
-    auth_user = user_factory(rank=db.User.RANK_REGULAR)
+    auth_user = user_factory(rank=model.User.RANK_REGULAR)
     tag = tag_factory()
     with patch('szurubooru.func.tags.create_tag'), \
             patch('szurubooru.func.tags.get_or_create_tags_by_names'), \
             patch('szurubooru.func.tags.serialize_tag'), \
-            patch('szurubooru.func.snapshots.create'), \
-            patch('szurubooru.func.tags.export_to_json'):
+            patch('szurubooru.func.snapshots.create'):
         tags.get_or_create_tags_by_names.return_value = ([], [])
         tags.create_tag.return_value = tag
         tags.serialize_tag.return_value = 'serialized tag'
@@ -34,7 +33,6 @@ def test_creating_simple_tags(tag_factory, user_factory, context_factory):
         tags.create_tag.assert_called_once_with(
             ['tag1', 'tag2'], 'meta', ['sug1', 'sug2'], ['imp1', 'imp2'])
         snapshots.create.assert_called_once_with(tag, auth_user)
-        tags.export_to_json.assert_called_once_with()
 
 
 @pytest.mark.parametrize('field', ['names', 'category'])
@@ -50,7 +48,7 @@ def test_trying_to_omit_mandatory_field(user_factory, context_factory, field):
         api.tag_api.create_tag(
             context_factory(
                 params=params,
-                user=user_factory(rank=db.User.RANK_REGULAR)))
+                user=user_factory(rank=model.User.RANK_REGULAR)))
 
 
 @pytest.mark.parametrize('field', ['implications', 'suggestions'])
@@ -64,13 +62,12 @@ def test_omitting_optional_field(
     }
     del params[field]
     with patch('szurubooru.func.tags.create_tag'), \
-            patch('szurubooru.func.tags.serialize_tag'), \
-            patch('szurubooru.func.tags.export_to_json'):
+            patch('szurubooru.func.tags.serialize_tag'):
         tags.create_tag.return_value = tag_factory()
         api.tag_api.create_tag(
             context_factory(
                 params=params,
-                user=user_factory(rank=db.User.RANK_REGULAR)))
+                user=user_factory(rank=model.User.RANK_REGULAR)))
 
 
 def test_trying_to_create_tag_without_privileges(
@@ -84,4 +81,4 @@ def test_trying_to_create_tag_without_privileges(
                     'suggestions': ['tag'],
                     'implications': [],
                 },
-                user=user_factory(rank=db.User.RANK_ANONYMOUS)))
+                user=user_factory(rank=model.User.RANK_ANONYMOUS)))

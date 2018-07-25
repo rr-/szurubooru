@@ -2,6 +2,7 @@
 
 const router = require('../router.js');
 const api = require('../api.js');
+const uri = require('../util/uri.js');
 const misc = require('../util/misc.js');
 const settings = require('../models/settings.js');
 const Comment = require('../models/comment.js');
@@ -19,8 +20,8 @@ class PostMainController extends BasePostController {
         Promise.all([
                 Post.get(ctx.parameters.id),
                 PostList.getAround(
-                    ctx.parameters.id, this._decorateSearchQuery(
-                        parameters ? parameters.query : '')),
+                    ctx.parameters.id,
+                    parameters ? parameters.query : null),
         ]).then(responses => {
             const [post, aroundResponse] = responses;
 
@@ -29,8 +30,8 @@ class PostMainController extends BasePostController {
             if (parameters.query) {
                 ctx.state.parameters = parameters;
                 const url = editMode ?
-                    '/post/' + ctx.parameters.id + '/edit' :
-                    '/post/' + ctx.parameters.id;
+                    uri.formatClientLink('post', ctx.parameters.id, 'edit') :
+                    uri.formatClientLink('post', ctx.parameters.id);
                 router.replace(url, ctx.state, false);
             }
 
@@ -90,20 +91,6 @@ class PostMainController extends BasePostController {
         });
     }
 
-    _decorateSearchQuery(text) {
-        const browsingSettings = settings.get();
-        let disabledSafety = [];
-        for (let key of Object.keys(browsingSettings.listPosts)) {
-            if (browsingSettings.listPosts[key] === false) {
-                disabledSafety.push(key);
-            }
-        }
-        if (disabledSafety.length) {
-            text = `-rating:${disabledSafety.join(',')} ${text}`;
-        }
-        return text.trim();
-    }
-
     _evtFitModeChange(e) {
         const browsingSettings = settings.get();
         browsingSettings.fitMode = e.detail.mode;
@@ -124,7 +111,7 @@ class PostMainController extends BasePostController {
     }
 
     _evtMergePost(e) {
-        router.show('/post/' + e.detail.post.id + '/merge');
+        router.show(uri.formatClientLink('post', e.detail.post.id, 'merge'));
     }
 
     _evtDeletePost(e) {
@@ -133,7 +120,7 @@ class PostMainController extends BasePostController {
         e.detail.post.delete()
             .then(() => {
                 misc.disableExitConfirmation();
-                const ctx = router.show('/posts');
+                const ctx = router.show(uri.formatClientLink('posts'));
                 ctx.controller.showSuccess('Post deleted.');
             }, error => {
                 this._view.sidebarControl.showError(error.message);
@@ -145,9 +132,6 @@ class PostMainController extends BasePostController {
         this._view.sidebarControl.disableForm();
         this._view.sidebarControl.clearMessages();
         const post = e.detail.post;
-        if (e.detail.tags !== undefined) {
-            post.tags = e.detail.tags;
-        }
         if (e.detail.safety !== undefined) {
             post.safety = e.detail.safety;
         }
@@ -244,8 +228,7 @@ class PostMainController extends BasePostController {
 }
 
 module.exports = router => {
-    router.enter('/post/:id/edit/:parameters(.*)?',
-        (ctx, next) => { misc.parseUrlParametersRoute(ctx, next); },
+    router.enter(['post', ':id', 'edit'],
         (ctx, next) => {
             // restore parameters from history state
             if (ctx.state.parameters) {
@@ -254,8 +237,7 @@ module.exports = router => {
             ctx.controller = new PostMainController(ctx, true);
         });
     router.enter(
-        '/post/:id/:parameters(.*)?',
-        (ctx, next) => { misc.parseUrlParametersRoute(ctx, next); },
+        ['post', ':id'],
         (ctx, next) => {
             // restore parameters from history state
             if (ctx.state.parameters) {

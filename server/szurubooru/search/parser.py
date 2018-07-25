@@ -1,26 +1,31 @@
 import re
 from szurubooru import errors
 from szurubooru.search import criteria, tokens
+from szurubooru.search.query import SearchQuery
+from szurubooru.search.configs import util
 
 
-def _create_criterion(original_value, value):
-    if ',' in value:
-        return criteria.ArrayCriterion(
-            original_value, value.split(','))
-    if '..' in value:
-        low, high = value.split('..', 1)
+def _create_criterion(
+        original_value: str, value: str) -> criteria.BaseCriterion:
+    if re.search(r'(?<!\\),', value):
+        values = re.split(r'(?<!\\),', value)
+        if any(not term.strip() for term in values):
+            raise errors.SearchError('Empty compound value')
+        return criteria.ArrayCriterion(original_value, values)
+    if re.search(r'(?<!\\)\.(?<!\\)\.', value):
+        low, high = re.split(r'(?<!\\)\.(?<!\\)\.', value, 1)
         if not low and not high:
             raise errors.SearchError('Empty ranged value')
         return criteria.RangedCriterion(original_value, low, high)
     return criteria.PlainCriterion(original_value, value)
 
 
-def _parse_anonymous(value, negated):
+def _parse_anonymous(value: str, negated: bool) -> tokens.AnonymousToken:
     criterion = _create_criterion(value, value)
     return tokens.AnonymousToken(criterion, negated)
 
 
-def _parse_named(key, value, negated):
+def _parse_named(key: str, value: str, negated: bool) -> tokens.NamedToken:
     original_value = value
     if key.endswith('-min'):
         key = key[:-4]
@@ -32,11 +37,11 @@ def _parse_named(key, value, negated):
     return tokens.NamedToken(key, criterion, negated)
 
 
-def _parse_special(value, negated):
+def _parse_special(value: str, negated: bool) -> tokens.SpecialToken:
     return tokens.SpecialToken(value, negated)
 
 
-def _parse_sort(value, negated):
+def _parse_sort(value: str, negated: bool) -> tokens.SortToken:
     if value.count(',') == 0:
         order_str = None
     elif value.count(',') == 1:
@@ -67,34 +72,22 @@ def _parse_sort(value, negated):
     return tokens.SortToken(value, order)
 
 
-class SearchQuery:
-    def __init__(self):
-        self.anonymous_tokens = []
-        self.named_tokens = []
-        self.special_tokens = []
-        self.sort_tokens = []
-
-    def __hash__(self):
-        return hash((
-            tuple(self.anonymous_tokens),
-            tuple(self.named_tokens),
-            tuple(self.special_tokens),
-            tuple(self.sort_tokens)))
-
-
 class Parser:
-    def parse(self, query_text):
+    def parse(self, query_text: str) -> SearchQuery:
         query = SearchQuery()
         for chunk in re.split(r'\s+', (query_text or '').lower()):
             if not chunk:
                 continue
             negated = False
-            while chunk[0] == '-':
+            if chunk[0] == '-':
                 chunk = chunk[1:]
-                negated = not negated
-            match = re.match('([a-z_-]+):(.*)', chunk)
+                negated = True
+            if not chunk:
+                raise errors.SearchError('Empty negated token.')
+            match = re.match(r'^(.*?)(?<!\\):(.*)$', chunk)
             if match:
                 key, value = list(match.groups())
+                key = util.unescape(key)
                 if key == 'sort':
                     query.sort_tokens.append(
                         _parse_sort(value, negated))

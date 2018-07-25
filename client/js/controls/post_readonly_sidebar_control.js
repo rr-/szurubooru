@@ -2,7 +2,6 @@
 
 const api = require('../api.js');
 const events = require('../events.js');
-const tags = require('../tags.js');
 const views = require('../util/views.js');
 
 const template = views.getTemplate('post-readonly-sidebar');
@@ -21,8 +20,7 @@ class PostReadonlySidebarControl extends events.EventTarget {
 
         views.replaceContent(this._hostNode, template({
             post: this._post,
-            getTagCategory: this._getTagCategory,
-            getTagUsages: this._getTagUsages,
+            enableSafety: api.safetyEnabled(),
             canListPosts: api.hasPrivilege('posts:list'),
             canEditPosts: api.hasPrivilege('posts:edit'),
             canViewTags: api.hasPrivilege('tags:view'),
@@ -157,16 +155,6 @@ class PostReadonlySidebarControl extends events.EventTarget {
             oldNode.classList.remove('active');
         }
         newNode.classList.add('active');
-    }
-
-    _getTagUsages(name) {
-        const tag = tags.getTagByName(name);
-        return tag ? tag.usages : 0;
-    }
-
-    _getTagCategory(name) {
-        const tag = tags.getTagByName(name);
-        return tag ? tag.category : 'unknown';
     }
 
     _evtAddToFavoritesClick(e) {

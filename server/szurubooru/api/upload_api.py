@@ -1,10 +1,12 @@
-from szurubooru.rest import routes
+from typing import Dict
+from szurubooru import rest
 from szurubooru.func import auth, file_uploads
 
 
-@routes.post('/uploads/?')
-def create_temporary_file(ctx, _params=None):
+@rest.routes.post('/uploads/?')
+def create_temporary_file(
+        ctx: rest.Context, _params: Dict[str, str] = {}) -> rest.Response:
     auth.verify_privilege(ctx.user, 'uploads:create')
-    content = ctx.get_file('content', required=True, allow_tokens=False)
+    content = ctx.get_file('content', allow_tokens=False)
     token = file_uploads.save(content)
     return {'token': token}

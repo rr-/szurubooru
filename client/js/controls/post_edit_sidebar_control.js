@@ -4,6 +4,8 @@ const api = require('../api.js');
 const events = require('../events.js');
 const misc = require('../util/misc.js');
 const views = require('../util/views.js');
+const Note = require('../models/note.js');
+const Point = require('../models/point.js');
 const TagInputControl = require('./tag_input_control.js');
 const ExpanderControl = require('../controls/expander_control.js');
 const FileDropperControl = require('../controls/file_dropper_control.js');
@@ -23,6 +25,8 @@ class PostEditSidebarControl extends events.EventTarget {
 
         views.replaceContent(this._hostNode, template({
             post: this._post,
+            enableSafety: api.safetyEnabled(),
+            hasClipboard: document.queryCommandSupported('copy'),
             canEditPostSafety: api.hasPrivilege('posts:edit:safety'),
             canEditPostSource: api.hasPrivilege('posts:edit:source'),
             canEditPostTags: api.hasPrivilege('posts:edit:tags'),
@@ -67,14 +71,21 @@ class PostEditSidebarControl extends events.EventTarget {
         }
 
         if (this._tagInputNode) {
-            this._tagControl = new TagInputControl(this._tagInputNode);
+            this._tagControl = new TagInputControl(
+                this._tagInputNode, post.tags);
         }
 
         if (this._contentInputNode) {
             this._contentFileDropper = new FileDropperControl(
-                this._contentInputNode, {lock: true});
+                this._contentInputNode, {
+                    allowUrls: true,
+                    lock: true,
+                    urlPlaceholder: '...or paste an URL here.'});
             this._contentFileDropper.addEventListener('fileadd', e => {
                 this._newPostContent = e.detail.files[0];
+            });
+            this._contentFileDropper.addEventListener('urladd', e => {
+                this._newPostContent = e.detail.urls[0];
             });
         }
 
@@ -97,6 +108,16 @@ class PostEditSidebarControl extends events.EventTarget {
         if (this._addNoteLinkNode) {
             this._addNoteLinkNode.addEventListener(
                 'click', e => this._evtAddNoteClick(e));
+        }
+
+        if (this._copyNotesLinkNode) {
+            this._copyNotesLinkNode.addEventListener(
+                'click', e => this._evtCopyNotesClick(e));
+        }
+
+        if (this._pasteNotesLinkNode) {
+            this._pasteNotesLinkNode.addEventListener(
+                'click', e => this._evtPasteNotesClick(e));
         }
 
         if (this._deleteNoteLinkNode) {
@@ -150,10 +171,11 @@ class PostEditSidebarControl extends events.EventTarget {
             });
         }
 
-        this._tagControl.addEventListener('change', e => {
-            this._post.tags = this._tagControl.tags;
-            this._syncExpanderTitles();
-        });
+        this._tagControl.addEventListener(
+            'change', e => {
+                this.dispatchEvent(new CustomEvent('change'));
+                this._syncExpanderTitles();
+            });
 
         if (this._noteTextareaNode) {
             this._noteTextareaNode.addEventListener(
@@ -244,6 +266,50 @@ class PostEditSidebarControl extends events.EventTarget {
         this._postNotesOverlayControl.switchToDrawing();
     }
 
+    _evtCopyNotesClick(e) {
+        e.preventDefault();
+        let textarea = document.createElement('textarea');
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        textarea.value = JSON.stringify([...this._post.notes].map(note => ({
+            polygon: [...note.polygon].map(
+                point => [point.x, point.y]),
+            text: note.text,
+        })));
+        document.body.appendChild(textarea);
+        textarea.select();
+
+        let success = false;
+        try {
+            success = document.execCommand('copy');
+        } catch (err) {
+        }
+        textarea.blur();
+        document.body.removeChild(textarea);
+        alert(success
+            ? 'Notes copied to clipboard.'
+            : 'Failed to copy the text to clipboard. Sorry.');
+    }
+
+    _evtPasteNotesClick(e) {
+        e.preventDefault();
+        const text = window.prompt(
+            'Please enter the exported notes snapshot:');
+        if (!text) {
+            return;
+        }
+        const notesObj = JSON.parse(text);
+        this._post.notes.clear();
+        for (let noteObj of notesObj) {
+            let note = new Note();
+            for (let pointObj of noteObj.polygon) {
+                note.polygon.add(new Point(pointObj[0], pointObj[1]));
+            }
+            note.text = noteObj.text;
+            this._post.notes.add(note);
+        }
+    }
+
     _evtDeleteNoteClick(e) {
         e.preventDefault();
         if (e.target.classList.contains('inactive')) {
@@ -274,7 +340,8 @@ class PostEditSidebarControl extends events.EventTarget {
                     undefined,
 
                 relations: this._relationsInputNode ?
-                    misc.splitByWhitespace(this._relationsInputNode.value) :
+                    misc.splitByWhitespace(this._relationsInputNode.value)
+                        .map(x => parseInt(x)) :
                     undefined,
 
                 content: this._newPostContent ?
@@ -339,6 +406,14 @@ class PostEditSidebarControl extends events.EventTarget {
 
     get _addNoteLinkNode() {
         return this._formNode.querySelector('.notes .add');
+    }
+
+    get _copyNotesLinkNode() {
+        return this._formNode.querySelector('.notes .copy');
+    }
+
+    get _pasteNotesLinkNode() {
+        return this._formNode.querySelector('.notes .paste');
     }
 
     get _deleteNoteLinkNode() {

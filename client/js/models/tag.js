@@ -1,13 +1,22 @@
 'use strict';
 
 const api = require('../api.js');
+const uri = require('../util/uri.js');
 const events = require('../events.js');
 const misc = require('../util/misc.js');
 
 class Tag extends events.EventTarget {
     constructor() {
+        const TagList = require('./tag_list.js');
+
         super();
         this._orig = {};
+
+        for (let obj of [this, this._orig]) {
+            obj._suggestions = new TagList();
+            obj._implications = new TagList();
+        }
+
         this._updateFromResponse({});
     }
 
@@ -23,8 +32,6 @@ class Tag extends events.EventTarget {
     set names(value)        { this._names = value; }
     set category(value)     { this._category = value; }
     set description(value)  { this._description = value; }
-    set implications(value) { this._implications = value; }
-    set suggestions(value)  { this._suggestions = value; }
 
     static fromResponse(response) {
         const ret = new Tag();
@@ -33,7 +40,7 @@ class Tag extends events.EventTarget {
     }
 
     static get(name) {
-        return api.get('/tag/' + encodeURIComponent(name))
+        return api.get(uri.formatApiLink('tag', name))
             .then(response => {
                 return Promise.resolve(Tag.fromResponse(response));
             });
@@ -53,15 +60,17 @@ class Tag extends events.EventTarget {
             detail.description = this._description;
         }
         if (misc.arraysDiffer(this._implications, this._orig._implications)) {
-            detail.implications = this._implications;
+            detail.implications = this._implications.map(
+                relation => relation.names[0]);
         }
         if (misc.arraysDiffer(this._suggestions, this._orig._suggestions)) {
-            detail.suggestions = this._suggestions;
+            detail.suggestions = this._suggestions.map(
+                relation => relation.names[0]);
         }
 
         let promise = this._origName ?
-            api.put('/tag/' + encodeURIComponent(this._origName), detail) :
-            api.post('/tags', detail);
+            api.put(uri.formatApiLink('tag', this._origName), detail) :
+            api.post(uri.formatApiLink('tags'), detail);
         return promise
             .then(response => {
                 this._updateFromResponse(response);
@@ -74,14 +83,22 @@ class Tag extends events.EventTarget {
             });
     }
 
-    merge(targetName) {
-        return api.get('/tag/' + encodeURIComponent(targetName))
+    merge(targetName, addAlias) {
+        return api.get(uri.formatApiLink('tag', targetName))
             .then(response => {
-                return api.post('/tag-merge/', {
+                return api.post(uri.formatApiLink('tag-merge'), {
                     removeVersion: this._version,
                     remove: this._origName,
                     mergeToVersion: response.version,
                     mergeTo: targetName,
+                });
+            }).then(response => {
+                if (!addAlias) {
+                    return Promise.resolve(response);
+                }
+                return api.put(uri.formatApiLink('tag', targetName), {
+                    version: response.version,
+                    names: response.names.concat(this._names),
                 });
             }).then(response => {
                 this._updateFromResponse(response);
@@ -96,7 +113,7 @@ class Tag extends events.EventTarget {
 
     delete() {
         return api.delete(
-                '/tag/' + encodeURIComponent(this._origName),
+                uri.formatApiLink('tag', this._origName),
                 {version: this._version})
             .then(response => {
                 this.dispatchEvent(new CustomEvent('delete', {
@@ -115,12 +132,15 @@ class Tag extends events.EventTarget {
             _names:        response.names,
             _category:     response.category,
             _description:  response.description,
-            _implications: response.implications,
-            _suggestions:  response.suggestions,
             _creationTime: response.creationTime,
             _lastEditTime: response.lastEditTime,
-            _postCount:    response.usages,
+            _postCount:    response.usages || 0,
         };
+
+        for (let obj of [this, this._orig]) {
+            obj._suggestions.sync(response.suggestions);
+            obj._implications.sync(response.implications);
+        }
 
         Object.assign(this, map);
         Object.assign(this._orig, map);

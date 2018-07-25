@@ -21,18 +21,27 @@ body
     margin: 0
     color: $text-color
     font-family: 'Open Sans', sans-serif
-    font-size: 12pt
-    line-height: 18pt
+    font-size: 1em
+    line-height: 1.4
     @media (max-width: 800px)
-        font-size: 10pt
-        line-height: 15pt
+        font-size: 0.875em
     @media (max-width: 1200px)
-        font-size: 11pt
-        line-height: 16.5pt
+        font-size: 0.95em
 
 h1, h2, h3
     font-weight: normal
     margin-bottom: 1em
+
+h1
+    font-size: 2em
+
+h2
+    font-size: 1.5em
+
+p,
+ol,
+ul
+    margin: 1em 0
 
 th
     font-weight: normal
@@ -61,8 +70,10 @@ form .fa-question-circle-o
     vertical-align: middle
 
 #content-holder
-    padding: 1.5vw
+    padding: 1.5em
     text-align: center
+    @media (max-width: 1000px)
+        padding: 1em
     >.content-wrapper
         box-sizing: border-box /* make max-width: 100% on this element include padding */
         text-align: left
@@ -70,9 +81,26 @@ form .fa-question-circle-o
         margin: 0 auto
         >*:first-child, form h1
             margin-top: 0
+        nav.buttons
+            ul
+                display: block
+                max-width: 100%
+                white-space: nowrap
+                overflow-x: auto
+                &::-webkit-scrollbar
+                    height: 6px
+                    background-color: $scrollbar-bg-color
+                &::-webkit-scrollbar-thumb
+                    background-color: $scrollbar-thumb-color
     >.content-wrapper:not(.transparent)
         background: $top-navigation-color
-        padding: 2vw
+        padding: 1.8em
+        @media (max-width: 1000px)
+            padding: 1.5em
+        .content,
+        .content .subcontent
+            >*:last-child
+                margin-bottom: 0
 
 hr
     border: 0
@@ -125,6 +153,39 @@ nav
             li
                 display: inline-block
                 float: left
+                a
+                    padding: 0 1.5em
+            #mobile-navigation-toggle
+                display: none
+                width: 100%
+                padding: 0 1em
+                line-height: 2.3em
+                font-family: inherit
+                border: none
+                background: none
+                color: $active-tab-text-color
+                .site-name
+                    display: block
+                    float: left
+                    max-width: 50vw
+                    overflow: hidden
+                    text-overflow: ellipsis
+                .toggle-icon
+                    display: block
+                    float: right
+            @media (max-width: 1000px)
+                text-align: left
+                li
+                    display: none
+                    float: none
+                    a
+                        display: block
+                        padding: 0 1em
+                #mobile-navigation-toggle
+                    display: block
+                &.opened
+                    li
+                        display: block
         ul li[data-name=account],
         ul li[data-name=register],
         ul li[data-name=login],
@@ -141,6 +202,8 @@ nav
             margin-right: 0.6em
             margin-left: calc(0.6em - 1.2em)
             float: left
+            @media (max-width: 1000px)
+                display: none
 
 a .access-key
     text-decoration: underline
@@ -193,6 +256,14 @@ a .access-key
     padding-bottom: 0 !important
     margin-top: 0 !important
     margin-bottom: 0 !important
+
+.table-wrap
+    overflow-x: auto
+    &::-webkit-scrollbar
+        height: 6px
+        background-color: $scrollbar-bg-color
+    &::-webkit-scrollbar-thumb
+        background-color: $scrollbar-thumb-color
 
 /* hack to prevent text from being copied */
 [data-pseudo-content]:before {

@@ -1,20 +1,20 @@
-import os
-from unittest.mock import patch
 from datetime import datetime
+from unittest.mock import patch
+import os
 import pytest
-from szurubooru import db
+from szurubooru import db, model
 from szurubooru.func import (
     posts, users, comments, tags, images, files, util, image_hash)
 
 
 @pytest.mark.parametrize('input_mime_type,expected_url', [
-    ('image/jpeg', 'http://example.com/posts/1.jpg'),
-    ('image/gif', 'http://example.com/posts/1.gif'),
-    ('totally/unknown', 'http://example.com/posts/1.dat'),
+    ('image/jpeg', 'http://example.com/posts/1_244c8840887984c4.jpg'),
+    ('image/gif', 'http://example.com/posts/1_244c8840887984c4.gif'),
+    ('totally/unknown', 'http://example.com/posts/1_244c8840887984c4.dat'),
 ])
 def test_get_post_url(input_mime_type, expected_url, config_injector):
-    config_injector({'data_url': 'http://example.com/'})
-    post = db.Post()
+    config_injector({'data_url': 'http://example.com/', 'secret': 'test'})
+    post = model.Post()
     post.post_id = 1
     post.mime_type = input_mime_type
     assert posts.get_post_content_url(post) == expected_url
@@ -22,21 +22,21 @@ def test_get_post_url(input_mime_type, expected_url, config_injector):
 
 @pytest.mark.parametrize('input_mime_type', ['image/jpeg', 'image/gif'])
 def test_get_post_thumbnail_url(input_mime_type, config_injector):
-    config_injector({'data_url': 'http://example.com/'})
-    post = db.Post()
+    config_injector({'data_url': 'http://example.com/', 'secret': 'test'})
+    post = model.Post()
     post.post_id = 1
     post.mime_type = input_mime_type
     assert posts.get_post_thumbnail_url(post) \
-        == 'http://example.com/generated-thumbnails/1.jpg'
+        == 'http://example.com/generated-thumbnails/1_244c8840887984c4.jpg'
 
 
 @pytest.mark.parametrize('input_mime_type,expected_path', [
-    ('image/jpeg', 'posts/1.jpg'),
-    ('image/gif', 'posts/1.gif'),
-    ('totally/unknown', 'posts/1.dat'),
+    ('image/jpeg', 'posts/1_244c8840887984c4.jpg'),
+    ('image/gif', 'posts/1_244c8840887984c4.gif'),
+    ('totally/unknown', 'posts/1_244c8840887984c4.dat'),
 ])
 def test_get_post_content_path(input_mime_type, expected_path):
-    post = db.Post()
+    post = model.Post()
     post.post_id = 1
     post.mime_type = input_mime_type
     assert posts.get_post_content_path(post) == expected_path
@@ -44,23 +44,24 @@ def test_get_post_content_path(input_mime_type, expected_path):
 
 @pytest.mark.parametrize('input_mime_type', ['image/jpeg', 'image/gif'])
 def test_get_post_thumbnail_path(input_mime_type):
-    post = db.Post()
+    post = model.Post()
     post.post_id = 1
     post.mime_type = input_mime_type
-    assert posts.get_post_thumbnail_path(post) == 'generated-thumbnails/1.jpg'
+    assert posts.get_post_thumbnail_path(post) \
+        == 'generated-thumbnails/1_244c8840887984c4.jpg'
 
 
 @pytest.mark.parametrize('input_mime_type', ['image/jpeg', 'image/gif'])
 def test_get_post_thumbnail_backup_path(input_mime_type):
-    post = db.Post()
+    post = model.Post()
     post.post_id = 1
     post.mime_type = input_mime_type
     assert posts.get_post_thumbnail_backup_path(post) \
-        == 'posts/custom-thumbnails/1.dat'
+        == 'posts/custom-thumbnails/1_244c8840887984c4.dat'
 
 
 def test_serialize_note():
-    note = db.PostNote()
+    note = model.PostNote()
     note.polygon = [[0, 1], [1, 1], [1, 0], [0, 0]]
     note.text = '...'
     assert posts.serialize_note(note) == {
@@ -74,8 +75,12 @@ def test_serialize_post_when_empty():
 
 
 def test_serialize_post(
-        user_factory, comment_factory, tag_factory, config_injector):
-    config_injector({'data_url': 'http://example.com/'})
+        user_factory,
+        comment_factory,
+        tag_factory,
+        tag_category_factory,
+        config_injector):
+    config_injector({'data_url': 'http://example.com/', 'secret': 'test'})
     with patch('szurubooru.func.comments.serialize_comment'), \
             patch('szurubooru.func.users.serialize_micro_user'), \
             patch('szurubooru.func.posts.files.has'):
@@ -86,17 +91,21 @@ def test_serialize_post(
             = lambda comment, auth_user: comment.user.name
 
         auth_user = user_factory(name='auth user')
-        post = db.Post()
+        post = model.Post()
         post.post_id = 1
         post.creation_time = datetime(1997, 1, 1)
         post.last_edit_time = datetime(1998, 1, 1)
         post.tags = [
-            tag_factory(names=['tag1', 'tag2']),
-            tag_factory(names=['tag3'])
+            tag_factory(
+                names=['tag1', 'tag2'],
+                category=tag_category_factory('test-cat1')),
+            tag_factory(
+                names=['tag3'],
+                category=tag_category_factory('test-cat2'))
         ]
-        post.safety = db.Post.SAFETY_SAFE
+        post.safety = model.Post.SAFETY_SAFE
         post.source = '4gag'
-        post.type = db.Post.TYPE_IMAGE
+        post.type = model.Post.TYPE_IMAGE
         post.checksum = 'deadbeef'
         post.mime_type = 'image/jpeg'
         post.file_size = 100
@@ -116,25 +125,25 @@ def test_serialize_post(
                 user=user_factory(name='commenter2'),
                 post=post,
                 time=datetime(1999, 1, 2)),
-            db.PostFavorite(
+            model.PostFavorite(
                 post=post,
                 user=user_factory(name='fav1'),
                 time=datetime(1800, 1, 1)),
-            db.PostFeature(
+            model.PostFeature(
                 post=post,
                 user=user_factory(),
                 time=datetime(1999, 1, 1)),
-            db.PostScore(
+            model.PostScore(
                 post=post,
                 user=auth_user,
                 score=-1,
                 time=datetime(1800, 1, 1)),
-            db.PostScore(
+            model.PostScore(
                 post=post,
                 user=user_factory(),
                 score=1,
                 time=datetime(1800, 1, 1)),
-            db.PostScore(
+            model.PostScore(
                 post=post,
                 user=user_factory(),
                 score=1,
@@ -142,7 +151,7 @@ def test_serialize_post(
         db.session.flush()
 
         result = posts.serialize_post(post, auth_user)
-        result['tags'].sort()
+        result['tags'].sort(key=lambda tag: tag['names'][0])
 
         assert result == {
             'id': 1,
@@ -156,10 +165,22 @@ def test_serialize_post(
             'fileSize': 100,
             'canvasWidth': 200,
             'canvasHeight': 300,
-            'contentUrl': 'http://example.com/posts/1.jpg',
-            'thumbnailUrl': 'http://example.com/generated-thumbnails/1.jpg',
+            'contentUrl': 'http://example.com/posts/1_244c8840887984c4.jpg',
+            'thumbnailUrl':
+                'http://example.com/'
+                'generated-thumbnails/1_244c8840887984c4.jpg',
             'flags': ['loop'],
-            'tags': ['tag1', 'tag3'],
+            'tags': [
+                {
+                    'names': ['tag1', 'tag2'],
+                    'category': 'test-cat1', 'usages': 1,
+                },
+                {
+                    'names': ['tag3'],
+                    'category': 'test-cat2',
+                    'usages': 1,
+                },
+            ],
             'relations': [],
             'notes': [],
             'user': 'post author',
@@ -209,8 +230,6 @@ def test_try_get_post_by_id(post_factory):
     db.session.flush()
     assert posts.try_get_post_by_id(post.post_id) == post
     assert posts.try_get_post_by_id(post.post_id + 1) is None
-    with pytest.raises(posts.InvalidPostIdError):
-        posts.get_post_by_id('-')
 
 
 def test_get_post_by_id(post_factory):
@@ -220,8 +239,6 @@ def test_get_post_by_id(post_factory):
     assert posts.get_post_by_id(post.post_id) == post
     with pytest.raises(posts.PostNotFoundError):
         posts.get_post_by_id(post.post_id + 1)
-    with pytest.raises(posts.InvalidPostIdError):
-        posts.get_post_by_id('-')
 
 
 def test_create_post(user_factory, fake_datetime):
@@ -237,30 +254,30 @@ def test_create_post(user_factory, fake_datetime):
 
 
 @pytest.mark.parametrize('input_safety,expected_safety', [
-    ('safe', db.Post.SAFETY_SAFE),
-    ('sketchy', db.Post.SAFETY_SKETCHY),
-    ('unsafe', db.Post.SAFETY_UNSAFE),
+    ('safe', model.Post.SAFETY_SAFE),
+    ('sketchy', model.Post.SAFETY_SKETCHY),
+    ('unsafe', model.Post.SAFETY_UNSAFE),
 ])
 def test_update_post_safety(input_safety, expected_safety):
-    post = db.Post()
+    post = model.Post()
     posts.update_post_safety(post, input_safety)
     assert post.safety == expected_safety
 
 
 def test_update_post_safety_with_invalid_string():
-    post = db.Post()
+    post = model.Post()
     with pytest.raises(posts.InvalidPostSafetyError):
         posts.update_post_safety(post, 'bad')
 
 
 def test_update_post_source():
-    post = db.Post()
+    post = model.Post()
     posts.update_post_source(post, 'x')
     assert post.source == 'x'
 
 
 def test_update_post_source_with_too_long_string():
-    post = db.Post()
+    post = model.Post()
     with pytest.raises(posts.InvalidPostSourceError):
         posts.update_post_source(post, 'x' * 1000)
 
@@ -268,37 +285,66 @@ def test_update_post_source_with_too_long_string():
 @pytest.mark.parametrize(
     'is_existing,input_file,expected_mime_type,expected_type,output_file_name',
     [
-        (True, 'png.png', 'image/png', db.Post.TYPE_IMAGE, '1.png'),
-        (False, 'png.png', 'image/png', db.Post.TYPE_IMAGE, '1.png'),
-        (False, 'jpeg.jpg', 'image/jpeg', db.Post.TYPE_IMAGE, '1.jpg'),
-        (False, 'gif.gif', 'image/gif', db.Post.TYPE_IMAGE, '1.gif'),
+        (
+            True,
+            'png.png',
+            'image/png',
+            model.Post.TYPE_IMAGE,
+            '1_244c8840887984c4.png',
+        ),
+        (
+            False,
+            'png.png',
+            'image/png',
+            model.Post.TYPE_IMAGE,
+            '1_244c8840887984c4.png',
+        ),
+        (
+            False,
+            'jpeg.jpg',
+            'image/jpeg',
+            model.Post.TYPE_IMAGE,
+            '1_244c8840887984c4.jpg',
+        ),
+        (
+            False,
+            'gif.gif',
+            'image/gif',
+            model.Post.TYPE_IMAGE,
+            '1_244c8840887984c4.gif',
+        ),
         (
             False,
             'gif-animated.gif',
             'image/gif',
-            db.Post.TYPE_ANIMATION,
-            '1.gif',
+            model.Post.TYPE_ANIMATION,
+            '1_244c8840887984c4.gif',
         ),
-        (False, 'webm.webm', 'video/webm', db.Post.TYPE_VIDEO, '1.webm'),
-        (False, 'mp4.mp4', 'video/mp4', db.Post.TYPE_VIDEO, '1.mp4'),
+        (
+            False,
+            'webm.webm',
+            'video/webm',
+            model.Post.TYPE_VIDEO,
+            '1_244c8840887984c4.webm',
+        ),
+        (
+            False,
+            'mp4.mp4',
+            'video/mp4',
+            model.Post.TYPE_VIDEO,
+            '1_244c8840887984c4.mp4',
+        ),
         (
             False,
             'flash.swf',
             'application/x-shockwave-flash',
-            db.Post.TYPE_FLASH,
-            '1.swf'
+            model.Post.TYPE_FLASH,
+            '1_244c8840887984c4.swf',
         ),
     ])
 def test_update_post_content_for_new_post(
-        tmpdir,
-        config_injector,
-        post_factory,
-        read_asset,
-        is_existing,
-        input_file,
-        expected_mime_type,
-        expected_type,
-        output_file_name):
+        tmpdir, config_injector, post_factory, read_asset, is_existing,
+        input_file, expected_mime_type, expected_type, output_file_name):
     with patch('szurubooru.func.util.get_sha1'):
         util.get_sha1.return_value = 'crc'
         config_injector({
@@ -307,15 +353,14 @@ def test_update_post_content_for_new_post(
                 'post_width': 300,
                 'post_height': 300,
             },
+            'secret': 'test',
         })
-        output_file_path = str(tmpdir) + '/data/posts/' + output_file_name
-        post = post_factory()
+        output_file_path = '{}/data/posts/{}'.format(tmpdir, output_file_name)
+        post = post_factory(id=1)
         db.session.add(post)
         if is_existing:
             db.session.flush()
-            assert post.post_id
-        else:
-            assert not post.post_id
+        assert post.post_id
         assert not os.path.exists(output_file_path)
         content = read_asset(input_file)
         posts.update_post_content(post, content)
@@ -325,7 +370,7 @@ def test_update_post_content_for_new_post(
         assert post.type == expected_type
         assert post.checksum == 'crc'
         assert os.path.exists(output_file_path)
-        if post.type in (db.Post.TYPE_IMAGE, db.Post.TYPE_ANIMATION):
+        if post.type in (model.Post.TYPE_IMAGE, model.Post.TYPE_ANIMATION):
             image_hash.delete_image.assert_called_once_with(post.post_id)
             image_hash.add_image.assert_called_once_with(post.post_id, content)
         else:
@@ -342,6 +387,7 @@ def test_update_post_content_to_existing_content(
             'post_width': 300,
             'post_height': 300,
         },
+        'secret': 'test',
     })
     post = post_factory()
     another_post = post_factory()
@@ -363,6 +409,7 @@ def test_update_post_content_with_broken_content(
             'post_width': 300,
             'post_height': 300,
         },
+        'secret': 'test',
     })
     post = post_factory()
     another_post = post_factory()
@@ -375,7 +422,7 @@ def test_update_post_content_with_broken_content(
 
 @pytest.mark.parametrize('input_content', [None, b'not a media file'])
 def test_update_post_content_with_invalid_content(input_content):
-    post = db.Post()
+    post = model.Post()
     with pytest.raises(posts.InvalidPostContentError):
         posts.update_post_content(post, input_content)
 
@@ -389,16 +436,19 @@ def test_update_post_thumbnail_to_new_one(
             'post_width': 300,
             'post_height': 300,
         },
+        'secret': 'test',
     })
-    post = post_factory()
+    post = post_factory(id=1)
     db.session.add(post)
     if is_existing:
         db.session.flush()
-        assert post.post_id
-    else:
-        assert not post.post_id
-    generated_path = str(tmpdir) + '/data/generated-thumbnails/1.jpg'
-    source_path = str(tmpdir) + '/data/posts/custom-thumbnails/1.dat'
+    assert post.post_id
+    generated_path = (
+        '{}/data/generated-thumbnails/1_244c8840887984c4.jpg'
+        .format(tmpdir))
+    source_path = (
+        '{}/data/posts/custom-thumbnails/1_244c8840887984c4.dat'
+        .format(tmpdir))
     assert not os.path.exists(generated_path)
     assert not os.path.exists(source_path)
     posts.update_post_content(post, read_asset('png.png'))
@@ -421,16 +471,19 @@ def test_update_post_thumbnail_to_default(
             'post_width': 300,
             'post_height': 300,
         },
+        'secret': 'test',
     })
-    post = post_factory()
+    post = post_factory(id=1)
     db.session.add(post)
     if is_existing:
         db.session.flush()
-        assert post.post_id
-    else:
-        assert not post.post_id
-    generated_path = str(tmpdir) + '/data/generated-thumbnails/1.jpg'
-    source_path = str(tmpdir) + '/data/posts/custom-thumbnails/1.dat'
+    assert post.post_id
+    generated_path = (
+        '{}/data/generated-thumbnails/1_244c8840887984c4.jpg'
+        .format(tmpdir))
+    source_path = (
+        '{}/data/posts/custom-thumbnails/1_244c8840887984c4.dat'
+        .format(tmpdir))
     assert not os.path.exists(generated_path)
     assert not os.path.exists(source_path)
     posts.update_post_content(post, read_asset('png.png'))
@@ -452,16 +505,19 @@ def test_update_post_thumbnail_with_broken_thumbnail(
             'post_width': 300,
             'post_height': 300,
         },
+        'secret': 'test',
     })
-    post = post_factory()
+    post = post_factory(id=1)
     db.session.add(post)
     if is_existing:
         db.session.flush()
-        assert post.post_id
-    else:
-        assert not post.post_id
-    generated_path = str(tmpdir) + '/data/generated-thumbnails/1.jpg'
-    source_path = str(tmpdir) + '/data/posts/custom-thumbnails/1.dat'
+    assert post.post_id
+    generated_path = (
+        '{}/data/generated-thumbnails/1_244c8840887984c4.jpg'
+        .format(tmpdir))
+    source_path = (
+        '{}/data/posts/custom-thumbnails/1_244c8840887984c4.dat'
+        .format(tmpdir))
     assert not os.path.exists(generated_path)
     assert not os.path.exists(source_path)
     posts.update_post_content(post, read_asset('png.png'))
@@ -487,6 +543,7 @@ def test_update_post_content_leaving_custom_thumbnail(
             'post_width': 300,
             'post_height': 300,
         },
+        'secret': 'test',
     })
     post = post_factory(id=1)
     db.session.add(post)
@@ -494,16 +551,21 @@ def test_update_post_content_leaving_custom_thumbnail(
     posts.update_post_thumbnail(post, read_asset('jpeg.jpg'))
     posts.update_post_content(post, read_asset('png.png'))
     db.session.flush()
-    assert os.path.exists(str(tmpdir) + '/data/posts/custom-thumbnails/1.dat')
-    assert os.path.exists(str(tmpdir) + '/data/generated-thumbnails/1.jpg')
+    generated_path = (
+        '{}/data/generated-thumbnails/1_244c8840887984c4.jpg'
+        .format(tmpdir))
+    source_path = (
+        '{}/data/posts/custom-thumbnails/1_244c8840887984c4.dat'
+        .format(tmpdir))
+    assert os.path.exists(source_path)
+    assert os.path.exists(generated_path)
 
 
 def test_update_post_tags(tag_factory):
-    post = db.Post()
+    post = model.Post()
     with patch('szurubooru.func.tags.get_or_create_tags_by_names'):
-        tags.get_or_create_tags_by_names.side_effect \
-            = lambda tag_names: \
-                ([tag_factory(names=[name]) for name in tag_names], [])
+        tags.get_or_create_tags_by_names.side_effect = lambda tag_names: \
+            ([tag_factory(names=[name]) for name in tag_names], [])
         posts.update_post_tags(post, ['tag1', 'tag2'])
     assert len(post.tags) == 2
     assert post.tags[0].names[0].name == 'tag1'
@@ -536,7 +598,7 @@ def test_update_post_relations_bidirectionality(post_factory):
 
 
 def test_update_post_relations_with_nonexisting_posts():
-    post = db.Post()
+    post = model.Post()
     with pytest.raises(posts.InvalidPostRelationError):
         posts.update_post_relations(post, [100])
 
@@ -550,7 +612,7 @@ def test_update_post_relations_with_itself(post_factory):
 
 
 def test_update_post_notes():
-    post = db.Post()
+    post = model.Post()
     posts.update_post_notes(
         post,
         [
@@ -584,19 +646,19 @@ def test_update_post_notes():
     [{'polygon': [[0, 0], [0, 0], [0, 1]]}],
 ])
 def test_update_post_notes_with_invalid_content(input):
-    post = db.Post()
+    post = model.Post()
     with pytest.raises(posts.InvalidPostNoteError):
         posts.update_post_notes(post, input)
 
 
 def test_update_post_flags():
-    post = db.Post()
+    post = model.Post()
     posts.update_post_flags(post, ['loop'])
     assert post.flags == ['loop']
 
 
 def test_update_post_flags_with_invalid_content():
-    post = db.Post()
+    post = model.Post()
     with pytest.raises(posts.InvalidPostFlagError):
         posts.update_post_flags(post, ['invalid'])
 
@@ -613,7 +675,8 @@ def test_feature_post(post_factory, user_factory):
     assert new_featured_post == post
 
 
-def test_delete(post_factory):
+def test_delete(post_factory, config_injector):
+    config_injector({'delete_source_files': False})
     post = post_factory()
     db.session.add(post)
     db.session.flush()
@@ -623,7 +686,8 @@ def test_delete(post_factory):
     assert posts.get_post_count() == 0
 
 
-def test_merge_posts_deletes_source_post(post_factory):
+def test_merge_posts_deletes_source_post(post_factory, config_injector):
+    config_injector({'delete_source_files': False})
     source_post = post_factory()
     target_post = post_factory()
     db.session.add_all([source_post, target_post])
@@ -635,7 +699,8 @@ def test_merge_posts_deletes_source_post(post_factory):
     assert post is not None
 
 
-def test_merge_posts_with_itself(post_factory):
+def test_merge_posts_with_itself(post_factory, config_injector):
+    config_injector({'delete_source_files': False})
     source_post = post_factory()
     db.session.add(source_post)
     db.session.flush()
@@ -643,7 +708,8 @@ def test_merge_posts_with_itself(post_factory):
         posts.merge_posts(source_post, source_post, False)
 
 
-def test_merge_posts_moves_tags(post_factory, tag_factory):
+def test_merge_posts_moves_tags(post_factory, tag_factory, config_injector):
+    config_injector({'delete_source_files': False})
     source_post = post_factory()
     target_post = post_factory()
     tag = tag_factory()
@@ -658,7 +724,9 @@ def test_merge_posts_moves_tags(post_factory, tag_factory):
     assert posts.get_post_by_id(target_post.post_id).tag_count == 1
 
 
-def test_merge_posts_doesnt_duplicate_tags(post_factory, tag_factory):
+def test_merge_posts_doesnt_duplicate_tags(
+        post_factory, tag_factory, config_injector):
+    config_injector({'delete_source_files': False})
     source_post = post_factory()
     target_post = post_factory()
     tag = tag_factory()
@@ -673,7 +741,9 @@ def test_merge_posts_doesnt_duplicate_tags(post_factory, tag_factory):
     assert posts.get_post_by_id(target_post.post_id).tag_count == 1
 
 
-def test_merge_posts_moves_comments(post_factory, comment_factory):
+def test_merge_posts_moves_comments(
+        post_factory, comment_factory, config_injector):
+    config_injector({'delete_source_files': False})
     source_post = post_factory()
     target_post = post_factory()
     comment = comment_factory(post=source_post)
@@ -687,7 +757,9 @@ def test_merge_posts_moves_comments(post_factory, comment_factory):
     assert posts.get_post_by_id(target_post.post_id).comment_count == 1
 
 
-def test_merge_posts_moves_scores(post_factory, post_score_factory):
+def test_merge_posts_moves_scores(
+        post_factory, post_score_factory, config_injector):
+    config_injector({'delete_source_files': False})
     source_post = post_factory()
     target_post = post_factory()
     score = post_score_factory(post=source_post, score=1)
@@ -702,7 +774,8 @@ def test_merge_posts_moves_scores(post_factory, post_score_factory):
 
 
 def test_merge_posts_doesnt_duplicate_scores(
-        post_factory, user_factory, post_score_factory):
+        post_factory, user_factory, post_score_factory, config_injector):
+    config_injector({'delete_source_files': False})
     source_post = post_factory()
     target_post = post_factory()
     user = user_factory()
@@ -718,7 +791,9 @@ def test_merge_posts_doesnt_duplicate_scores(
     assert posts.get_post_by_id(target_post.post_id).score == 1
 
 
-def test_merge_posts_moves_favorites(post_factory, post_favorite_factory):
+def test_merge_posts_moves_favorites(
+        post_factory, post_favorite_factory, config_injector):
+    config_injector({'delete_source_files': False})
     source_post = post_factory()
     target_post = post_factory()
     favorite = post_favorite_factory(post=source_post)
@@ -733,7 +808,8 @@ def test_merge_posts_moves_favorites(post_factory, post_favorite_factory):
 
 
 def test_merge_posts_doesnt_duplicate_favorites(
-        post_factory, user_factory, post_favorite_factory):
+        post_factory, user_factory, post_favorite_factory, config_injector):
+    config_injector({'delete_source_files': False})
     source_post = post_factory()
     target_post = post_factory()
     user = user_factory()
@@ -749,7 +825,8 @@ def test_merge_posts_doesnt_duplicate_favorites(
     assert posts.get_post_by_id(target_post.post_id).favorite_count == 1
 
 
-def test_merge_posts_moves_child_relations(post_factory):
+def test_merge_posts_moves_child_relations(post_factory, config_injector):
+    config_injector({'delete_source_files': False})
     source_post = post_factory()
     target_post = post_factory()
     related_post = post_factory()
@@ -764,7 +841,9 @@ def test_merge_posts_moves_child_relations(post_factory):
     assert posts.get_post_by_id(target_post.post_id).relation_count == 1
 
 
-def test_merge_posts_doesnt_duplicate_child_relations(post_factory):
+def test_merge_posts_doesnt_duplicate_child_relations(
+        post_factory, config_injector):
+    config_injector({'delete_source_files': False})
     source_post = post_factory()
     target_post = post_factory()
     related_post = post_factory()
@@ -780,7 +859,8 @@ def test_merge_posts_doesnt_duplicate_child_relations(post_factory):
     assert posts.get_post_by_id(target_post.post_id).relation_count == 1
 
 
-def test_merge_posts_moves_parent_relations(post_factory):
+def test_merge_posts_moves_parent_relations(post_factory, config_injector):
+    config_injector({'delete_source_files': False})
     source_post = post_factory()
     target_post = post_factory()
     related_post = post_factory()
@@ -797,7 +877,9 @@ def test_merge_posts_moves_parent_relations(post_factory):
     assert posts.get_post_by_id(related_post.post_id).relation_count == 1
 
 
-def test_merge_posts_doesnt_duplicate_parent_relations(post_factory):
+def test_merge_posts_doesnt_duplicate_parent_relations(
+        post_factory, config_injector):
+    config_injector({'delete_source_files': False})
     source_post = post_factory()
     target_post = post_factory()
     related_post = post_factory()
@@ -814,7 +896,9 @@ def test_merge_posts_doesnt_duplicate_parent_relations(post_factory):
     assert posts.get_post_by_id(related_post.post_id).relation_count == 1
 
 
-def test_merge_posts_doesnt_create_relation_loop_for_children(post_factory):
+def test_merge_posts_doesnt_create_relation_loop_for_children(
+        post_factory, config_injector):
+    config_injector({'delete_source_files': False})
     source_post = post_factory()
     target_post = post_factory()
     source_post.relations = [target_post]
@@ -828,7 +912,9 @@ def test_merge_posts_doesnt_create_relation_loop_for_children(post_factory):
     assert posts.get_post_by_id(target_post.post_id).relation_count == 0
 
 
-def test_merge_posts_doesnt_create_relation_loop_for_parents(post_factory):
+def test_merge_posts_doesnt_create_relation_loop_for_parents(
+        post_factory, config_injector):
+    config_injector({'delete_source_files': False})
     source_post = post_factory()
     target_post = post_factory()
     target_post.relations = [source_post]
@@ -847,25 +933,34 @@ def test_merge_posts_replaces_content(
     config_injector({
         'data_dir': str(tmpdir.mkdir('data')),
         'data_url': 'example.com',
+        'delete_source_files': False,
         'thumbnails': {
             'post_width': 300,
             'post_height': 300,
         },
+        'secret': 'test',
     })
-    source_post = post_factory()
-    target_post = post_factory()
+    source_post = post_factory(id=1)
+    target_post = post_factory(id=2)
     content = read_asset('png.png')
     db.session.add_all([source_post, target_post])
     db.session.commit()
     posts.update_post_content(source_post, content)
     db.session.flush()
-    assert os.path.exists(os.path.join(str(tmpdir), 'data/posts/1.png'))
-    assert not os.path.exists(os.path.join(str(tmpdir), 'data/posts/2.dat'))
-    assert not os.path.exists(os.path.join(str(tmpdir), 'data/posts/2.png'))
+    source_path = (
+        os.path.join('{}/data/posts/1_244c8840887984c4.png'.format(tmpdir)))
+    target_path1 = (
+        os.path.join('{}/data/posts/2_49caeb3ec1643406.png'.format(tmpdir)))
+    target_path2 = (
+        os.path.join('{}/data/posts/2_49caeb3ec1643406.dat'.format(tmpdir)))
+    assert os.path.exists(source_path)
+    assert not os.path.exists(target_path1)
+    assert not os.path.exists(target_path2)
     posts.merge_posts(source_post, target_post, True)
     db.session.flush()
     assert posts.try_get_post_by_id(source_post.post_id) is None
     post = posts.get_post_by_id(target_post.post_id)
     assert post is not None
-    assert os.path.exists(os.path.join(str(tmpdir), 'data/posts/1.png'))
-    assert os.path.exists(os.path.join(str(tmpdir), 'data/posts/2.png'))
+    assert os.path.exists(source_path)
+    assert os.path.exists(target_path1)
+    assert not os.path.exists(target_path2)

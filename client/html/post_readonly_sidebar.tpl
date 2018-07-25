@@ -20,10 +20,12 @@
             <%= ctx.makeRelativeTime(ctx.post.creationTime) %>
         </section>
 
-        <section class='safety'>
-            <i class='fa fa-circle safety-<%- ctx.post.safety %>'></i><!--
-            --><%- ctx.post.safety[0].toUpperCase() + ctx.post.safety.slice(1) %>
-        </section>
+        <% if (ctx.enableSafety) { %>
+            <section class='safety'>
+                <i class='fa fa-circle safety-<%- ctx.post.safety %>'></i><!--
+                --><%- ctx.post.safety[0].toUpperCase() + ctx.post.safety.slice(1) %>
+            </section>
+        <% } %>
 
         <section class='zoom'>
             <a href class='fit-original'>Original zoom</a> &middot;
@@ -34,8 +36,8 @@
 
         <section class='search'>
             Search on
-            <a href='http://iqdb.org/?url=<%- encodeURIComponent(ctx.post.contentUrl) %>'>IQDB</a> &middot;
-            <a href='https://www.google.com/searchbyimage?&image_url=<%- encodeURIComponent(ctx.post.contentUrl) %>'>Google Images</a>
+            <a href='http://iqdb.org/?url=<%- encodeURIComponent(ctx.post.fullContentUrl) %>'>IQDB</a> &middot;
+            <a href='https://www.google.com/searchbyimage?&image_url=<%- encodeURIComponent(ctx.post.fullContentUrl) %>'>Google Images</a>
         </section>
 
         <section class='social'>
@@ -67,20 +69,20 @@
                 --><% for (let tag of ctx.post.tags) { %><!--
                     --><li><!--
                         --><% if (ctx.canViewTags) { %><!--
-                        --><a href='/tag/<%- encodeURIComponent(tag) %>' class='<%= ctx.makeCssName(ctx.getTagCategory(tag), 'tag') %>'><!--
+                        --><a href='<%- ctx.formatClientLink('tag', tag.names[0]) %>' class='<%= ctx.makeCssName(tag.category, 'tag') %>'><!--
                             --><i class='fa fa-tag'></i><!--
                         --><% } %><!--
                         --><% if (ctx.canViewTags) { %><!--
                             --></a><!--
                         --><% } %><!--
                         --><% if (ctx.canListPosts) { %><!--
-                            --><a href='/posts/query=<%- encodeURIComponent(tag) %>' class='<%= ctx.makeCssName(ctx.getTagCategory(tag), 'tag') %>'><!--
+                            --><a href='<%- ctx.formatClientLink('posts', {query: tag.names[0]}) %>' class='<%= ctx.makeCssName(tag.category, 'tag') %>'><!--
                         --><% } %><!--
-                            --><%- tag %>&#32;<!--
+                            --><%- tag.names[0] %>&#32;<!--
                         --><% if (ctx.canListPosts) { %><!--
                             --></a><!--
                         --><% } %><!--
-                        --><span class='tag-usages' data-pseudo-content='<%- ctx.getTagUsages(tag) %>'></span><!--
+                        --><span class='tag-usages' data-pseudo-content='<%- tag.postCount %>'></span><!--
                     --></li><!--
                 --><% } %><!--
             --></ul>

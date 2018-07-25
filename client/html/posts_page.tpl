@@ -1,11 +1,11 @@
 <div class='post-list'>
-    <% if (ctx.results.length) { %>
+    <% if (ctx.response.results.length) { %>
         <ul>
-            <% for (let post of ctx.results) { %>
-                <li>
+            <% for (let post of ctx.response.results) { %>
+                <li data-post-id='<%= post.id %>'>
                     <a class='thumbnail-wrapper <%= post.tags.length > 0 ? "tags" : "no-tags" %>'
-                            title='@<%- post.id %> (<%- post.type %>)&#10;&#10;Tags: <%- post.tags.map(tag => '#' + tag).join(' ') || 'none' %>'
-                            href='<%= ctx.canViewPosts ? ctx.getPostUrl(post.id, ctx.parameters) : "" %>'>
+                            title='@<%- post.id %> (<%- post.type %>)&#10;&#10;Tags: <%- post.tags.map(tag => '#' + tag.names[0]).join(' ') || 'none' %>'
+                            href='<%= ctx.canViewPosts ? ctx.getPostUrl(post.id, ctx.parameters) : '' %>'>
                         <%= ctx.makeThumbnail(post.thumbnailUrl) %>
                         <span class='type' data-type='<%- post.type %>'>
                             <%- post.type %>
@@ -33,10 +33,20 @@
                             </span>
                         <% } %>
                     </a>
-                    <% if (ctx.canMassTag && ctx.parameters && ctx.parameters.tag) { %>
-                        <a href data-post-id='<%= post.id %>' class='masstag'>
-                        </a>
-                    <% } %>
+                    <span class='edit-overlay'>
+                        <% if (ctx.canBulkEditTags && ctx.parameters && ctx.parameters.tag) { %>
+                            <a href class='tag-flipper'>
+                            </a>
+                        <% } %>
+                        <% if (ctx.canBulkEditSafety && ctx.parameters && ctx.parameters.safety) { %>
+                            <span class='safety-flipper'>
+                                <% for (let safety of ['safe', 'sketchy', 'unsafe']) { %>
+                                    <a href data-safety='<%- safety %>' class='safety-<%- safety %><%- post.safety === safety ? ' active' : '' %>'>
+                                    </a>
+                                <% } %>
+                            </span>
+                        <% } %>
+                    </span>
                 </li>
             <% } %>
             <%= ctx.makeFlexboxAlign() %>

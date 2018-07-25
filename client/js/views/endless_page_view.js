@@ -6,6 +6,17 @@ const views = require('../util/views.js');
 const holderTemplate = views.getTemplate('endless-pager');
 const pageTemplate = views.getTemplate('endless-pager-page');
 
+function isScrolledIntoView(element) {
+    let top = 0;
+    do {
+        top += element.offsetTop || 0;
+        element = element.offsetParent;
+    } while(element);
+    return (
+        (top >= window.scrollY) &&
+        (top <= window.scrollY + window.innerHeight));
+}
+
 class EndlessPageView {
     constructor(ctx) {
         this._hostNode = document.getElementById('content-holder');
@@ -13,25 +24,35 @@ class EndlessPageView {
     }
 
     run(ctx) {
+        this._destroy();
+
         this._active = true;
-        this._working = 0;
-        this._init = false;
+        this._runningRequests = 0;
+        this._initialPageLoad = true;
 
         this.clearMessages();
         views.emptyContent(this._pagesHolderNode);
 
-        this.threshold = window.innerHeight / 3;
-        this.minPageShown = null;
-        this.maxPageShown = null;
-        this.totalPages = null;
-        this.currentPage = null;
+        this.minOffsetShown = null;
+        this.maxOffsetShown = null;
+        this.totalRecords = null;
+        this.currentOffset = 0;
+        this.defaultLimit = parseInt(ctx.parameters.limit || ctx.defaultLimit);
 
-        this._loadPage(ctx, ctx.parameters.page, true).then(pageNode => {
-            if (ctx.parameters.page !== 1) {
-                pageNode.scrollIntoView();
-            }
-        });
-        this._probePageLoad(ctx);
+        const initialOffset = parseInt(ctx.parameters.offset || 0);
+        this._loadPage(ctx, initialOffset, this.defaultLimit, true)
+            .then(pageNode => {
+                if (initialOffset !== 0) {
+                    pageNode.scrollIntoView();
+                }
+            });
+
+        this._timeout = window.setInterval(() => {
+            window.requestAnimationFrame(() => {
+                this._probePageLoad(ctx);
+                this._syncUrl(ctx);
+            });
+        }, 250);
 
         views.monitorNodeRemoval(this._pagesHolderNode, () => this._destroy());
     }
@@ -40,27 +61,24 @@ class EndlessPageView {
         return this._hostNode.querySelector('.page-header-holder');
     }
 
+    get topPageGuardNode() {
+        return this._hostNode.querySelector('.page-guard.top');
+    }
+
+    get bottomPageGuardNode() {
+        return this._hostNode.querySelector('.page-guard.bottom');
+    }
+
     get _pagesHolderNode() {
         return this._hostNode.querySelector('.pages-holder');
     }
 
     _destroy() {
+        window.clearInterval(this._timeout);
         this._active = false;
     }
 
-    _probePageLoad(ctx) {
-        if (this._active) {
-            window.setTimeout(() => {
-                window.requestAnimationFrame(() => {
-                    this._probePageLoad(ctx);
-                });
-            }, 250);
-        }
-
-        if (this._working) {
-            return;
-        }
-
+    _syncUrl(ctx) {
         let topPageNode = null;
         let element = document.elementFromPoint(
             window.innerWidth / 2,
@@ -75,80 +93,106 @@ class EndlessPageView {
         if (!topPageNode) {
             return;
         }
-        let topPageNumber = parseInt(topPageNode.getAttribute('data-page'));
-        if (topPageNumber !== this.currentPage) {
+        let topOffset = parseInt(topPageNode.getAttribute('data-offset'));
+        let topLimit = parseInt(topPageNode.getAttribute('data-limit'));
+        if (topOffset !== this.currentOffset) {
             router.replace(
-                ctx.getClientUrlForPage(topPageNumber),
+                ctx.getClientUrlForPage(
+                    topOffset,
+                    topLimit === ctx.defaultLimit ? null : topLimit),
                 ctx.state,
                 false);
-            this.currentPage = topPageNumber;
-        }
-
-        if (this.totalPages === null) {
-            return;
-        }
-        let scrollHeight =
-            document.documentElement.scrollHeight -
-            document.documentElement.clientHeight;
-
-        if (this.minPageShown > 1 && window.scrollY < this.threshold) {
-            this._loadPage(ctx, this.minPageShown - 1, false);
-        } else if (this.maxPageShown < this.totalPages &&
-                window.scrollY + this.threshold > scrollHeight) {
-            this._loadPage(ctx, this.maxPageShown + 1, true);
+            this.currentOffset = topOffset;
         }
     }
 
-    _loadPage(ctx, pageNumber, append) {
-        this._working++;
+    _probePageLoad(ctx) {
+        if (!this._active || this._runningRequests) {
+            return;
+        }
+
+        if (this.totalRecords === null) {
+            return;
+        }
+
+        if (this.minOffsetShown > 0 &&
+                isScrolledIntoView(this.topPageGuardNode)) {
+            this._loadPage(
+                ctx,
+                this.minOffsetShown - this.defaultLimit,
+                this.defaultLimit,
+                false);
+        }
+
+        if (this.maxOffsetShown < this.totalRecords &&
+                isScrolledIntoView(this.bottomPageGuardNode)) {
+            this._loadPage(
+                ctx,
+                this.maxOffsetShown,
+                this.defaultLimit,
+                true);
+        }
+    }
+
+    _loadPage(ctx, offset, limit, append) {
+        this._runningRequests++;
         return new Promise((resolve, reject) => {
-            ctx.requestPage(pageNumber).then(response => {
+            ctx.requestPage(offset, limit).then(response => {
                 if (!this._active) {
-                    this._working--;
+                    this._runningRequests--;
                     return Promise.reject();
                 }
-                this.totalPages = Math.ceil(response.total / response.pageSize);
                 window.requestAnimationFrame(() => {
-                    let pageNode = this._renderPage(
-                        ctx, pageNumber, append, response);
-                    this._working--;
+                    let pageNode = this._renderPage(ctx, append, response);
+                    this._runningRequests--;
                     resolve(pageNode);
                 });
             }, error => {
                 this.showError(error.message);
-                this._working--;
+                this._runningRequests--;
                 reject();
             });
         });
     }
 
-    _renderPage(ctx, pageNumber, append, response) {
+    _renderPage(ctx, append, response) {
         let pageNode = null;
 
         if (response.total) {
             pageNode = pageTemplate({
-                page: pageNumber,
-                totalPages: this.totalPages,
+                totalPages: Math.ceil(response.total / response.limit),
+                page: Math.ceil(
+                    (response.offset + response.limit) / response.limit),
             });
-            pageNode.setAttribute('data-page', pageNumber);
+            pageNode.setAttribute('data-offset', response.offset);
+            pageNode.setAttribute('data-limit', response.limit);
 
-            Object.assign(ctx.pageContext, response);
-            ctx.pageContext.hostNode = pageNode.querySelector(
-                '.page-content-holder');
-            ctx.pageRenderer(ctx.pageContext);
+            ctx.pageRenderer({
+                parameters: ctx.parameters,
+                response: response,
+                hostNode: pageNode.querySelector('.page-content-holder'),
+            });
 
-            if (pageNumber < this.minPageShown ||
-                    this.minPageShown === null) {
-                this.minPageShown = pageNumber;
+            this.totalRecords = response.total;
+
+            if (response.offset < this.minOffsetShown ||
+                    this.minOffsetShown === null) {
+                this.minOffsetShown = response.offset;
             }
-            if (pageNumber > this.maxPageShown ||
-                    this.maxPageShown === null) {
-                this.maxPageShown = pageNumber;
+            if (response.offset + response.results.length
+                    > this.maxOffsetShown ||
+                    this.maxOffsetShown === null) {
+                this.maxOffsetShown =
+                    response.offset + response.results.length;
             }
+            response.results.addEventListener('remove', e => {
+                this.maxOffsetShown--;
+                this.totalRecords--;
+            });
 
             if (append) {
                 this._pagesHolderNode.appendChild(pageNode);
-                if (!this._init && pageNumber !== 1) {
+                if (this._initialPageLoad && response.offset > 0) {
                     window.scroll(0, pageNode.getBoundingClientRect().top);
                 }
             } else {
@@ -158,11 +202,11 @@ class EndlessPageView {
                     window.scrollX,
                     window.scrollY + pageNode.offsetHeight);
             }
-        } else if (response.total <= (pageNumber - 1) * response.pageSize) {
+        } else if (!response.results.length) {
             this.showInfo('No data to show');
         }
 
-        this._init = true;
+        this._initialPageLoad = false;
         return pageNode;
     }
 

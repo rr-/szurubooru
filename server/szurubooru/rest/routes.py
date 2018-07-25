@@ -1,32 +1,36 @@
+from typing import Callable, Dict
 from collections import defaultdict
+from szurubooru.rest.context import Context, Response
 
 
-routes = defaultdict(dict)  # pylint: disable=invalid-name
+# pylint: disable=invalid-name
+RouteHandler = Callable[[Context, Dict[str, str]], Response]
+routes = defaultdict(dict)  # type: Dict[str, Dict[str, RouteHandler]]
 
 
-def get(url):
-    def wrapper(handler):
+def get(url: str) -> Callable[[RouteHandler], RouteHandler]:
+    def wrapper(handler: RouteHandler) -> RouteHandler:
         routes[url]['GET'] = handler
         return handler
     return wrapper
 
 
-def put(url):
-    def wrapper(handler):
+def put(url: str) -> Callable[[RouteHandler], RouteHandler]:
+    def wrapper(handler: RouteHandler) -> RouteHandler:
         routes[url]['PUT'] = handler
         return handler
     return wrapper
 
 
-def post(url):
-    def wrapper(handler):
+def post(url: str) -> Callable[[RouteHandler], RouteHandler]:
+    def wrapper(handler: RouteHandler) -> RouteHandler:
         routes[url]['POST'] = handler
         return handler
     return wrapper
 
 
-def delete(url):
-    def wrapper(handler):
+def delete(url: str) -> Callable[[RouteHandler], RouteHandler]:
+    def wrapper(handler: RouteHandler) -> RouteHandler:
         routes[url]['DELETE'] = handler
         return handler
     return wrapper

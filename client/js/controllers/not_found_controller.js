@@ -12,7 +12,7 @@ class NotFoundController {
 };
 
 module.exports = router => {
-    router.enter('*', (ctx, next) => {
+    router.enter(null, (ctx, next) => {
         ctx.controller = new NotFoundController(ctx.canonicalPath);
     });
 };

@@ -1,7 +1,10 @@
 from szurubooru.func import net
 
 
-def test_download():
+def test_download(config_injector):
+    config_injector({
+        'user_agent': None
+    })
     url = 'http://info.cern.ch/hypertext/WWW/TheProject.html'
 
     expected_content = (

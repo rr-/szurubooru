@@ -1,7 +1,7 @@
 from datetime import datetime
 from unittest.mock import patch
 import pytest
-from szurubooru import api, db, errors
+from szurubooru import api, db, model, errors
 from szurubooru.func import posts, tags, snapshots, net
 
 
@@ -9,22 +9,22 @@ from szurubooru.func import posts, tags, snapshots, net
 def inject_config(config_injector):
     config_injector({
         'privileges': {
-            'posts:edit:tags': db.User.RANK_REGULAR,
-            'posts:edit:content': db.User.RANK_REGULAR,
-            'posts:edit:safety': db.User.RANK_REGULAR,
-            'posts:edit:source': db.User.RANK_REGULAR,
-            'posts:edit:relations': db.User.RANK_REGULAR,
-            'posts:edit:notes': db.User.RANK_REGULAR,
-            'posts:edit:flags': db.User.RANK_REGULAR,
-            'posts:edit:thumbnail': db.User.RANK_REGULAR,
-            'tags:create': db.User.RANK_MODERATOR,
+            'posts:edit:tags': model.User.RANK_REGULAR,
+            'posts:edit:content': model.User.RANK_REGULAR,
+            'posts:edit:safety': model.User.RANK_REGULAR,
+            'posts:edit:source': model.User.RANK_REGULAR,
+            'posts:edit:relations': model.User.RANK_REGULAR,
+            'posts:edit:notes': model.User.RANK_REGULAR,
+            'posts:edit:flags': model.User.RANK_REGULAR,
+            'posts:edit:thumbnail': model.User.RANK_REGULAR,
+            'tags:create': model.User.RANK_MODERATOR,
         },
     })
 
 
 def test_post_updating(
         context_factory, post_factory, user_factory, fake_datetime):
-    auth_user = user_factory(rank=db.User.RANK_REGULAR)
+    auth_user = user_factory(rank=model.User.RANK_REGULAR)
     post = post_factory()
     db.session.add(post)
     db.session.flush()
@@ -39,7 +39,6 @@ def test_post_updating(
             patch('szurubooru.func.posts.update_post_notes'), \
             patch('szurubooru.func.posts.update_post_flags'), \
             patch('szurubooru.func.posts.serialize_post'), \
-            patch('szurubooru.func.tags.export_to_json'), \
             patch('szurubooru.func.snapshots.modify'), \
             fake_datetime('1997-01-01'):
         posts.serialize_post.return_value = 'serialized post'
@@ -76,9 +75,8 @@ def test_post_updating(
         posts.update_post_flags.assert_called_once_with(
             post, ['flag1', 'flag2'])
         posts.serialize_post.assert_called_once_with(
-            post, auth_user, options=None)
+            post, auth_user, options=[])
         snapshots.modify.assert_called_once_with(post, auth_user)
-        tags.export_to_json.assert_called_once_with()
         assert post.last_edit_time == datetime(1997, 1, 1)
 
 
@@ -88,7 +86,6 @@ def test_uploading_from_url_saves_source(
     db.session.add(post)
     db.session.flush()
     with patch('szurubooru.func.net.download'), \
-            patch('szurubooru.func.tags.export_to_json'), \
             patch('szurubooru.func.posts.serialize_post'), \
             patch('szurubooru.func.posts.update_post_content'), \
             patch('szurubooru.func.posts.update_post_source'), \
@@ -97,7 +94,7 @@ def test_uploading_from_url_saves_source(
         api.post_api.update_post(
             context_factory(
                 params={'contentUrl': 'example.com', 'version': 1},
-                user=user_factory(rank=db.User.RANK_REGULAR)),
+                user=user_factory(rank=model.User.RANK_REGULAR)),
             {'post_id': post.post_id})
         net.download.assert_called_once_with('example.com')
         posts.update_post_content.assert_called_once_with(post, b'content')
@@ -110,7 +107,6 @@ def test_uploading_from_url_with_source_specified(
     db.session.add(post)
     db.session.flush()
     with patch('szurubooru.func.net.download'), \
-            patch('szurubooru.func.tags.export_to_json'), \
             patch('szurubooru.func.posts.serialize_post'), \
             patch('szurubooru.func.posts.update_post_content'), \
             patch('szurubooru.func.posts.update_post_source'), \
@@ -122,7 +118,7 @@ def test_uploading_from_url_with_source_specified(
                     'contentUrl': 'example.com',
                     'source': 'example2.com',
                     'version': 1},
-                user=user_factory(rank=db.User.RANK_REGULAR)),
+                user=user_factory(rank=model.User.RANK_REGULAR)),
             {'post_id': post.post_id})
         net.download.assert_called_once_with('example.com')
         posts.update_post_content.assert_called_once_with(post, b'content')
@@ -134,7 +130,7 @@ def test_trying_to_update_non_existing(context_factory, user_factory):
         api.post_api.update_post(
             context_factory(
                 params='whatever',
-                user=user_factory(rank=db.User.RANK_REGULAR)),
+                user=user_factory(rank=model.User.RANK_REGULAR)),
             {'post_id': 1})
 
 
@@ -158,7 +154,7 @@ def test_trying_to_update_field_without_privileges(
             context_factory(
                 params={**params, **{'version': 1}},
                 files=files,
-                user=user_factory(rank=db.User.RANK_ANONYMOUS)),
+                user=user_factory(rank=model.User.RANK_ANONYMOUS)),
             {'post_id': post.post_id})
 
 
@@ -173,5 +169,5 @@ def test_trying_to_create_tags_without_privileges(
         api.post_api.update_post(
             context_factory(
                 params={'tags': ['tag1', 'tag2'], 'version': 1},
-                user=user_factory(rank=db.User.RANK_REGULAR)),
+                user=user_factory(rank=model.User.RANK_REGULAR)),
             {'post_id': post.post_id})

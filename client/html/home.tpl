@@ -8,7 +8,7 @@
             <%= ctx.makeTextInput({name: 'search-text', placeholder: 'enter some tags'}) %>
             <input type='submit' value='Search'/>
             <span class=sep>or</span>
-            <a href='/posts'>browse all posts</a>
+            <a href='<%- ctx.formatClientLink('posts') %>'>browse all posts</a>
         </form>
     <% } %>
     <div class='post-info-container'></div>

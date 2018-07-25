@@ -2,14 +2,14 @@ import os
 import sys
 
 import alembic
-import sqlalchemy
+import sqlalchemy as sa
 import logging.config
 
 # make szurubooru module importable
 dir_to_self = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(dir_to_self, *[os.pardir] * 2))
 
-import szurubooru.db.base
+import szurubooru.model.base
 import szurubooru.config
 
 alembic_config = alembic.context.config
@@ -18,7 +18,7 @@ logging.config.fileConfig(alembic_config.config_file_name)
 szuru_config = szurubooru.config.config
 alembic_config.set_main_option('sqlalchemy.url', szuru_config['database'])
 
-target_metadata = szurubooru.db.Base.metadata
+target_metadata = szurubooru.model.Base.metadata
 
 
 def run_migrations_offline():
@@ -35,7 +35,10 @@ def run_migrations_offline():
     '''
     url = alembic_config.get_main_option('sqlalchemy.url')
     alembic.context.configure(
-        url=url, target_metadata=target_metadata, literal_binds=True)
+        url=url,
+        target_metadata=target_metadata,
+        literal_binds=True,
+        compare_type=True)
 
     with alembic.context.begin_transaction():
         alembic.context.run_migrations()
@@ -48,15 +51,16 @@ def run_migrations_online():
     In this scenario we need to create an Engine
     and associate a connection with the context.
     '''
-    connectable = sqlalchemy.engine_from_config(
+    connectable = sa.engine_from_config(
         alembic_config.get_section(alembic_config.config_ini_section),
         prefix='sqlalchemy.',
-        poolclass=sqlalchemy.pool.NullPool)
+        poolclass=sa.pool.NullPool)
 
     with connectable.connect() as connection:
         alembic.context.configure(
             connection=connection,
-            target_metadata=target_metadata)
+            target_metadata=target_metadata,
+            compare_type=True)
 
         with alembic.context.begin_transaction():
             alembic.context.run_migrations()

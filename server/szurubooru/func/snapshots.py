@@ -1,9 +1,10 @@
+from typing import Any, Optional, Dict, Callable
 from datetime import datetime
-from szurubooru import db
+from szurubooru import db, model
 from szurubooru.func import diff, users
 
 
-def get_tag_category_snapshot(category):
+def get_tag_category_snapshot(category: model.TagCategory) -> Dict[str, Any]:
     assert category
     return {
         'name': category.name,
@@ -12,7 +13,7 @@ def get_tag_category_snapshot(category):
     }
 
 
-def get_tag_snapshot(tag):
+def get_tag_snapshot(tag: model.Tag) -> Dict[str, Any]:
     assert tag
     return {
         'names': [tag_name.name for tag_name in tag.names],
@@ -22,7 +23,7 @@ def get_tag_snapshot(tag):
     }
 
 
-def get_post_snapshot(post):
+def get_post_snapshot(post: model.Post) -> Dict[str, Any]:
     assert post
     return {
         'source': post.source,
@@ -45,10 +46,11 @@ _snapshot_factories = {
     'tag_category': lambda entity: get_tag_category_snapshot(entity),
     'tag': lambda entity: get_tag_snapshot(entity),
     'post': lambda entity: get_post_snapshot(entity),
-}
+}  # type: Dict[model.Base, Callable[[model.Base], Dict[str ,Any]]]
 
 
-def serialize_snapshot(snapshot, auth_user):
+def serialize_snapshot(
+        snapshot: model.Snapshot, auth_user: model.User) -> Dict[str, Any]:
     assert snapshot
     return {
         'operation': snapshot.operation,
@@ -60,11 +62,14 @@ def serialize_snapshot(snapshot, auth_user):
     }
 
 
-def _create(operation, entity, auth_user):
+def _create(
+        operation: str,
+        entity: model.Base,
+        auth_user: Optional[model.User]) -> model.Snapshot:
     resource_type, resource_pkey, resource_name = (
-        db.util.get_resource_info(entity))
+        model.util.get_resource_info(entity))
 
-    snapshot = db.Snapshot()
+    snapshot = model.Snapshot()
     snapshot.creation_time = datetime.utcnow()
     snapshot.operation = operation
     snapshot.resource_type = resource_type
@@ -74,30 +79,33 @@ def _create(operation, entity, auth_user):
     return snapshot
 
 
-def create(entity, auth_user):
+def create(entity: model.Base, auth_user: Optional[model.User]) -> None:
     assert entity
-    snapshot = _create(db.Snapshot.OPERATION_CREATED, entity, auth_user)
+    snapshot = _create(model.Snapshot.OPERATION_CREATED, entity, auth_user)
     snapshot_factory = _snapshot_factories[snapshot.resource_type]
     snapshot.data = snapshot_factory(entity)
     db.session.add(snapshot)
 
 
 # pylint: disable=protected-access
-def modify(entity, auth_user):
+def modify(entity: model.Base, auth_user: Optional[model.User]) -> None:
     assert entity
 
-    model = next((model
-        for model in db.Base._decl_class_registry.values()
-        if hasattr(model, '__table__')
-            and model.__table__.fullname == entity.__table__.fullname),
+    table = next(
+        (
+            cls
+            for cls in model.Base._decl_class_registry.values()
+            if hasattr(cls, '__table__')
+            and cls.__table__.fullname == entity.__table__.fullname
+        ),
         None)
-    assert model
+    assert table
 
-    snapshot = _create(db.Snapshot.OPERATION_MODIFIED, entity, auth_user)
+    snapshot = _create(model.Snapshot.OPERATION_MODIFIED, entity, auth_user)
     snapshot_factory = _snapshot_factories[snapshot.resource_type]
 
     detached_session = db.sessionmaker()
-    detached_entity = detached_session.query(model).get(snapshot.resource_pkey)
+    detached_entity = detached_session.query(table).get(snapshot.resource_pkey)
     assert detached_entity, 'Entity not found in DB, have you committed it?'
     detached_snapshot = snapshot_factory(detached_entity)
     detached_session.close()
@@ -110,19 +118,23 @@ def modify(entity, auth_user):
     db.session.add(snapshot)
 
 
-def delete(entity, auth_user):
+def delete(entity: model.Base, auth_user: Optional[model.User]) -> None:
     assert entity
-    snapshot = _create(db.Snapshot.OPERATION_DELETED, entity, auth_user)
+    snapshot = _create(model.Snapshot.OPERATION_DELETED, entity, auth_user)
     snapshot_factory = _snapshot_factories[snapshot.resource_type]
     snapshot.data = snapshot_factory(entity)
     db.session.add(snapshot)
 
 
-def merge(source_entity, target_entity, auth_user):
+def merge(
+        source_entity: model.Base,
+        target_entity: model.Base,
+        auth_user: Optional[model.User]) -> None:
     assert source_entity
     assert target_entity
-    snapshot = _create(db.Snapshot.OPERATION_MERGED, source_entity, auth_user)
+    snapshot = _create(
+        model.Snapshot.OPERATION_MERGED, source_entity, auth_user)
     resource_type, _resource_pkey, resource_name = (
-        db.util.get_resource_info(target_entity))
+        model.util.get_resource_info(target_entity))
     snapshot.data = [resource_type, resource_name]
     db.session.add(snapshot)

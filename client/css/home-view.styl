@@ -6,13 +6,16 @@
         margin-bottom: 1em
         h1
             line-height: initial
-            font-size: 30pt
+            font-size: 2.5em
             margin: 0
 
-    .message
-        margin-bottom: 2em
+    .messages
+        text-align: center
+        .message
+            margin: 0 auto 2em auto
 
     form
+        display: inline-block
         width: auto
         vertical-align: middle
         margin: 0 0 2em 0
@@ -31,6 +34,8 @@
         display: flex
         align-items: center
         justify-content: center
+        &:empty
+            margin-bottom: 0
 
     nav
         a
@@ -50,6 +55,8 @@
             li
                 display: inline
                 white-space: nowrap
+                @media (max-width: 800px)
+                    display: block
             .sep
                 word-spacing: 1.1em
                 background-repeat: no-repeat

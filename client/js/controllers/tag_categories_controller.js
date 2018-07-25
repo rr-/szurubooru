@@ -40,7 +40,7 @@ class TagCategoriesController {
         this._view.disableForm();
         this._tagCategories.save()
             .then(() => {
-                tags.refreshExport();
+                tags.refreshCategoryColorMap();
                 this._view.enableForm();
                 this._view.showSuccess('Changes saved.');
             }, error => {
@@ -51,7 +51,7 @@ class TagCategoriesController {
 }
 
 module.exports = router => {
-    router.enter('/tag-categories', (ctx, next) => {
+    router.enter(['tag-categories'], (ctx, next) => {
         ctx.controller = new TagCategoriesController(ctx, next);
     });
 };

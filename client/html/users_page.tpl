@@ -1,10 +1,10 @@
 <div class='user-list'>
     <ul><!--
-        --><% for (let user of ctx.results) { %><!--
+        --><% for (let user of ctx.response.results) { %><!--
             --><li>
                 <div class='wrapper'>
                     <% if (ctx.canViewUsers) { %>
-                        <a class='image' href='/user/<%- encodeURIComponent(user.name) %>'>
+                        <a class='image' href='<%- ctx.formatClientLink('user', user.name) %>'>
                     <% } %>
                         <%= ctx.makeThumbnail(user.avatarUrl) %>
                     <% if (ctx.canViewUsers) { %>
@@ -12,7 +12,7 @@
                     <% } %>
                     <div class='details'>
                         <% if (ctx.canViewUsers) { %>
-                            <a href='/user/<%- encodeURIComponent(user.name) %>'>
+                            <a href='<%- ctx.formatClientLink('user', user.name) %>'>
                         <% } %>
                             <%- user.name %>
                         <% if (ctx.canViewUsers) { %>

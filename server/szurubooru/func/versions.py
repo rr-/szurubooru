@@ -1,8 +1,11 @@
-from szurubooru import errors
+from szurubooru import errors, rest, model
 
 
-def verify_version(entity, context, field_name='version'):
-    actual_version = context.get_param_as_int(field_name, required=True)
+def verify_version(
+        entity: model.Base,
+        context: rest.Context,
+        field_name: str = 'version') -> None:
+    actual_version = context.get_param_as_int(field_name)
     expected_version = entity.version
     if actual_version != expected_version:
         raise errors.IntegrityError(
@@ -10,5 +13,5 @@ def verify_version(entity, context, field_name='version'):
             'Please try again.')
 
 
-def bump_version(entity):
+def bump_version(entity: model.Base) -> None:
     entity.version = entity.version + 1

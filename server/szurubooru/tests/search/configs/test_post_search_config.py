@@ -1,13 +1,13 @@
 # pylint: disable=redefined-outer-name
 from datetime import datetime
 import pytest
-from szurubooru import db, errors, search
+from szurubooru import db, model, errors, search
 
 
 @pytest.fixture
 def fav_factory(user_factory):
     def factory(post, user=None):
-        return db.PostFavorite(
+        return model.PostFavorite(
             post=post,
             user=user or user_factory(),
             time=datetime.utcnow())
@@ -17,7 +17,7 @@ def fav_factory(user_factory):
 @pytest.fixture
 def score_factory(user_factory):
     def factory(post, user=None, score=1):
-        return db.PostScore(
+        return model.PostScore(
             post=post,
             user=user or user_factory(),
             time=datetime.utcnow(),
@@ -27,8 +27,8 @@ def score_factory(user_factory):
 
 @pytest.fixture
 def note_factory():
-    def factory():
-        return db.PostNote(polygon='...', text='...')
+    def factory(text='...'):
+        return model.PostNote(polygon='...', text=text)
     return factory
 
 
@@ -36,11 +36,11 @@ def note_factory():
 def feature_factory(user_factory):
     def factory(post=None):
         if post:
-            return db.PostFeature(
+            return model.PostFeature(
                 time=datetime.utcnow(),
                 user=user_factory(),
                 post=post)
-        return db.PostFeature(
+        return model.PostFeature(
             time=datetime.utcnow(), user=user_factory())
     return factory
 
@@ -65,7 +65,7 @@ def auth_executor(executor, user_factory):
 def verify_unpaged(executor):
     def verify(input, expected_post_ids, test_order=False):
         actual_count, actual_posts = executor.execute(
-            input, page=1, page_size=100)
+            input, offset=0, limit=100)
         actual_post_ids = list([p.post_id for p in actual_posts])
         if not test_order:
             actual_post_ids = sorted(actual_post_ids)
@@ -123,7 +123,7 @@ def test_filter_by_score(
     post3 = post_factory(id=3)
     for post in [post1, post2, post3]:
         db.session.add(
-            db.PostScore(
+            model.PostScore(
                 score=post.post_id,
                 time=datetime.utcnow(),
                 post=post,
@@ -295,6 +295,25 @@ def test_filter_by_note_count(
 
 
 @pytest.mark.parametrize('input,expected_post_ids', [
+    ('note-text:*', [1, 2, 3]),
+    ('note-text:text2', [2]),
+    ('note-text:text3*', [3]),
+    ('note-text:text3a,text2', [2, 3]),
+])
+def test_filter_by_note_text(
+        verify_unpaged, post_factory, note_factory, input, expected_post_ids):
+    post1 = post_factory(id=1)
+    post2 = post_factory(id=2)
+    post3 = post_factory(id=3)
+    post1.notes = [note_factory(text='text1')]
+    post2.notes = [note_factory(text='text2'), note_factory(text='text2')]
+    post3.notes = [note_factory(text='text3a'), note_factory(text='text3b')]
+    db.session.add_all([post1, post2, post3])
+    db.session.flush()
+    verify_unpaged(input, expected_post_ids)
+
+
+@pytest.mark.parametrize('input,expected_post_ids', [
     ('feature-count:1', [1]),
     ('feature-count:3', [3]),
     ('feature-count:1,3', [1, 3]),
@@ -332,10 +351,10 @@ def test_filter_by_type(
     post2 = post_factory(id=2)
     post3 = post_factory(id=3)
     post4 = post_factory(id=4)
-    post1.type = db.Post.TYPE_IMAGE
-    post2.type = db.Post.TYPE_ANIMATION
-    post3.type = db.Post.TYPE_VIDEO
-    post4.type = db.Post.TYPE_FLASH
+    post1.type = model.Post.TYPE_IMAGE
+    post2.type = model.Post.TYPE_ANIMATION
+    post3.type = model.Post.TYPE_VIDEO
+    post4.type = model.Post.TYPE_FLASH
     db.session.add_all([post1, post2, post3, post4])
     db.session.flush()
     verify_unpaged(input, expected_post_ids)
@@ -352,9 +371,9 @@ def test_filter_by_safety(
     post1 = post_factory(id=1)
     post2 = post_factory(id=2)
     post3 = post_factory(id=3)
-    post1.safety = db.Post.SAFETY_SAFE
-    post2.safety = db.Post.SAFETY_SKETCHY
-    post3.safety = db.Post.SAFETY_UNSAFE
+    post1.safety = model.Post.SAFETY_SAFE
+    post2.safety = model.Post.SAFETY_SKETCHY
+    post3.safety = model.Post.SAFETY_UNSAFE
     db.session.add_all([post1, post2, post3])
     db.session.flush()
     verify_unpaged(input, expected_post_ids)
@@ -362,7 +381,7 @@ def test_filter_by_safety(
 
 def test_filter_by_invalid_type(executor):
     with pytest.raises(errors.SearchError):
-        executor.execute('type:invalid', page=1, page_size=100)
+        executor.execute('type:invalid', offset=0, limit=100)
 
 
 @pytest.mark.parametrize('input,expected_post_ids', [
@@ -403,29 +422,43 @@ def test_filter_by_file_size(
 
 @pytest.mark.parametrize('input,expected_post_ids', [
     ('image-width:100', [1]),
-    ('image-width:102', [3]),
-    ('image-width:100,102', [1, 3]),
+    ('image-width:200', [2]),
+    ('image-width:100,300', [1, 3]),
     ('image-height:200', [1]),
-    ('image-height:202', [3]),
-    ('image-height:200,202', [1, 3]),
-    ('image-area:20000', [1]),
-    ('image-area:20604', [3]),
-    ('image-area:20000,20604', [1, 3]),
+    ('image-height:100', [2]),
+    ('image-height:200,300', [1, 3]),
+    ('image-area:20000', [1, 2]),
+    ('image-area:90000', [3]),
+    ('image-area:20000,90000', [1, 2, 3]),
+    ('image-ar:1', [3]),
+    ('image-ar:..0.9', [1, 4]),
+    ('image-ar:1.1..', [2]),
+    ('image-ar:1/1..1/1', [3]),
+    ('image-ar:1:1..1:1', [3]),
+    ('image-ar:0.62..0.63', [4]),
 ])
 def test_filter_by_image_size(
         verify_unpaged, post_factory, input, expected_post_ids):
     post1 = post_factory(id=1)
     post2 = post_factory(id=2)
     post3 = post_factory(id=3)
+    post4 = post_factory(id=4)
     post1.canvas_width = 100
-    post2.canvas_width = 101
-    post3.canvas_width = 102
     post1.canvas_height = 200
-    post2.canvas_height = 201
-    post3.canvas_height = 202
-    db.session.add_all([post1, post2, post3])
+    post2.canvas_width = 200
+    post2.canvas_height = 100
+    post3.canvas_width = 300
+    post3.canvas_height = 300
+    post4.canvas_width = 480
+    post4.canvas_height = 767
+    db.session.add_all([post1, post2, post3, post4])
     db.session.flush()
     verify_unpaged(input, expected_post_ids)
+
+
+def test_filter_by_invalid_aspect_ratio(executor):
+    with pytest.raises(errors.SearchError):
+        executor.execute('image-ar:1:1:1', offset=0, limit=100)
 
 
 @pytest.mark.parametrize('input,expected_post_ids', [
@@ -673,7 +706,7 @@ def test_own_disliked(
 ])
 def test_someones_score(executor, input):
     with pytest.raises(errors.SearchError):
-        executor.execute(input, page=1, page_size=100)
+        executor.execute(input, offset=0, limit=100)
 
 
 def test_own_fav(

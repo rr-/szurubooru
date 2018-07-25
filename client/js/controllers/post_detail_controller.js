@@ -3,6 +3,7 @@
 const router = require('../router.js');
 const api = require('../api.js');
 const misc = require('../util/misc.js');
+const uri = require('../util/uri.js');
 const settings = require('../models/settings.js');
 const Post = require('../models/post.js');
 const PostList = require('../models/post_list.js');
@@ -55,7 +56,8 @@ class PostDetailController extends BasePostController {
         misc.disableExitConfirmation();
         if (this._id !== e.detail.post.id) {
             router.replace(
-                '/post/' + e.detail.post.id + '/' + section, null, false);
+                uri.formatClientLink('post', e.detail.post.id, section),
+                null, false);
         }
     }
 
@@ -67,7 +69,9 @@ class PostDetailController extends BasePostController {
                 this._installView(e.detail.post, 'merge');
                 this._view.showSuccess('Post merged.');
                 router.replace(
-                    '/post/' + e.detail.targetPost.id + '/merge', null, false);
+                    uri.formatClientLink(
+                        'post', e.detail.targetPost.id, 'merge'),
+                    null, false);
             }, error => {
                 this._view.showError(error.message);
                 this._view.enableForm();
@@ -77,7 +81,7 @@ class PostDetailController extends BasePostController {
 
 module.exports = router => {
     router.enter(
-        '/post/:id/merge',
+        ['post', ':id', 'merge'],
         (ctx, next) => {
             ctx.controller = new PostDetailController(ctx, 'merge');
         });

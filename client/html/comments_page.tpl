@@ -1,10 +1,10 @@
 <div class='global-comment-list'>
     <ul><!--
-        --><% for (let post of ctx.results) { %><!--
+        --><% for (let post of ctx.response.results) { %><!--
             --><li><!--
                 --><div class='post-thumbnail'><!--
                     --><% if (ctx.canViewPosts) { %><!--
-                        --><a href='/post/<%- encodeURIComponent(post.id) %>'><!--
+                        --><a href='<%- ctx.formatClientLink('post', post.id) %>'><!--
                     --><% } %><!--
                         --><%= ctx.makeThumbnail(post.thumbnailUrl) %><!--
                     --><% if (ctx.canViewPosts) { %><!--

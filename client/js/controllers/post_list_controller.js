@@ -1,8 +1,9 @@
 'use strict';
 
+const router = require('../router.js');
 const api = require('../api.js');
 const settings = require('../models/settings.js');
-const misc = require('../util/misc.js');
+const uri = require('../util/uri.js');
 const PostList = require('../models/post_list.js');
 const topNavigation = require('../models/top_navigation.js');
 const PageController = require('../controllers/page_controller.js');
@@ -11,7 +12,7 @@ const PostsPageView = require('../views/posts_page_view.js');
 const EmptyView = require('../views/empty_view.js');
 
 const fields = [
-    'id', 'thumbnailUrl', 'type',
+    'id', 'thumbnailUrl', 'type', 'safety',
     'score', 'favoriteCount', 'commentCount', 'tags', 'version'];
 
 class PostListController {
@@ -31,8 +32,12 @@ class PostListController {
         this._headerView = new PostsHeaderView({
             hostNode: this._pageController.view.pageHeaderHolderNode,
             parameters: ctx.parameters,
-            canMassTag: api.hasPrivilege('tags:masstag'),
-            massTagTags: this._massTagTags,
+            enableSafety: api.safetyEnabled(),
+            canBulkEditTags: api.hasPrivilege('posts:bulk-edit:tags'),
+            canBulkEditSafety: api.hasPrivilege('posts:bulk-edit:safety'),
+            bulkEdit: {
+                tags: this._bulkEditTags
+            },
         });
         this._headerView.addEventListener(
             'navigate', e => this._evtNavigate(e));
@@ -44,68 +49,65 @@ class PostListController {
         this._pageController.showSuccess(message);
     }
 
-    get _massTagTags() {
+    get _bulkEditTags() {
         return (this._ctx.parameters.tag || '').split(/\s+/).filter(s => s);
     }
 
     _evtNavigate(e) {
-        history.pushState(
-            null,
-            window.title,
-            '/posts/' + misc.formatUrlParameters(e.detail.parameters));
+        router.showNoDispatch(
+            uri.formatClientLink('posts', e.detail.parameters));
         Object.assign(this._ctx.parameters, e.detail.parameters);
         this._syncPageController();
     }
 
     _evtTag(e) {
-        for (let tag of this._massTagTags) {
-            e.detail.post.addTag(tag);
-        }
-        e.detail.post.save().catch(error => window.alert(error.message));
+        Promise.all(
+            this._bulkEditTags.map(tag =>
+                e.detail.post.tags.addByName(tag)))
+            .then(e.detail.post.save())
+            .catch(error => window.alert(error.message));
     }
 
     _evtUntag(e) {
-        for (let tag of this._massTagTags) {
-            e.detail.post.removeTag(tag);
+        for (let tag of this._bulkEditTags) {
+            e.detail.post.tags.removeByName(tag);
         }
         e.detail.post.save().catch(error => window.alert(error.message));
     }
 
-    _decorateSearchQuery(text) {
-        const browsingSettings = settings.get();
-        let disabledSafety = [];
-        for (let key of Object.keys(browsingSettings.listPosts)) {
-            if (browsingSettings.listPosts[key] === false) {
-                disabledSafety.push(key);
-            }
-        }
-        if (disabledSafety.length) {
-            text = `-rating:${disabledSafety.join(',')} ${text}`;
-        }
-        return text.trim();
+    _evtChangeSafety(e) {
+        e.detail.post.safety = e.detail.safety;
+        e.detail.post.save().catch(error => window.alert(error.message));
     }
 
     _syncPageController() {
         this._pageController.run({
             parameters: this._ctx.parameters,
-            getClientUrlForPage: page => {
-                return '/posts/' + misc.formatUrlParameters(
-                    Object.assign({}, this._ctx.parameters, {page: page}));
+            defaultLimit: parseInt(settings.get().postsPerPage),
+            getClientUrlForPage: (offset, limit) => {
+                const parameters = Object.assign(
+                    {}, this._ctx.parameters, {offset: offset, limit: limit});
+                return uri.formatClientLink('posts', parameters);
             },
-            requestPage: page => {
+            requestPage: (offset, limit) => {
                 return PostList.search(
-                    this._decorateSearchQuery(this._ctx.parameters.query),
-                    page, settings.get().postsPerPage, fields);
+                    this._ctx.parameters.query, offset, limit, fields);
             },
             pageRenderer: pageCtx => {
                 Object.assign(pageCtx, {
                     canViewPosts: api.hasPrivilege('posts:view'),
-                    canMassTag: api.hasPrivilege('tags:masstag'),
-                    massTagTags: this._massTagTags,
+                    canBulkEditTags: api.hasPrivilege('posts:bulk-edit:tags'),
+                    canBulkEditSafety:
+                        api.hasPrivilege('posts:bulk-edit:safety'),
+                    bulkEdit: {
+                        tags: this._bulkEditTags,
+                    },
                 });
                 const view = new PostsPageView(pageCtx);
                 view.addEventListener('tag', e => this._evtTag(e));
                 view.addEventListener('untag', e => this._evtUntag(e));
+                view.addEventListener(
+                    'changeSafety', e => this._evtChangeSafety(e));
                 return view;
             },
         });
@@ -114,7 +116,6 @@ class PostListController {
 
 module.exports = router => {
     router.enter(
-        '/posts/:parameters(.*)?',
-        (ctx, next) => { misc.parseUrlParametersRoute(ctx, next); },
+        ['posts'],
         (ctx, next) => { ctx.controller = new PostListController(ctx); });
 };

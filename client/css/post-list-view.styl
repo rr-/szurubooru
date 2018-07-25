@@ -54,33 +54,66 @@
                     .icon:not(:first-of-type)
                         margin-left: 1em
 
-            .masstag
+            .edit-overlay
                 position: absolute
                 top: 0.5em
                 left: 0.5em
-                display: inline-block
-                padding: 0.5em
-                box-sizing: border-box
-                border: 0
-                &:after
+
+                .tag-flipper
                     display: inline-block
-                    width: 1em
-                    height: 1em
+                    padding: 0.5em
+                    box-sizing: border-box
+                    border: 0
+                    &:after
+                        display: inline-block
+                        width: 1em
+                        height: 1em
+                        text-align: center
+                        line-height: 1em
+                        font-size: 1.6em
+                    &.tagged
+                        background: rgba(0, 230, 0, 0.7)
+                        &:after
+                            color: white
+                            content: '-'
+                    &:not(.tagged)
+                        background: rgba(255, 0, 0, 0.7)
+                        &:after
+                            color: white
+                            content: '+'
+                    &[data-disabled]
+                        background: rgba(200, 200, 200, 0.7)
+
+                .safety-flipper a
+                    display: inline-block
+                    margin: 0.1em
+                    box-sizing: border-box
+                    border: 0
+                    display: inline-block
+                    width: 1.2em
+                    height: 1.2em
                     text-align: center
                     line-height: 1em
-                    font-size: 20pt
-                &.tagged
-                    background: rgba(0, 230, 0, 0.7)
-                    &:after
-                        color: white
-                        content: '-'
-                &:not(.tagged)
-                    background: rgba(255, 0, 0, 0.7)
-                    &:after
-                        color: white
-                        content: '+'
-                &[data-disabled]
-                    background: rgba(200, 200, 200, 0.7)
+                    font-size: 1.6em
+                    border: 3px solid
+                    &.safety-safe
+                        background-color: darken($safety-safe, 5%)
+                        border-color: @background-color
+                        &:not(.active)
+                            background-color: alpha(@background-color, 0.3)
+                    &.safety-sketchy
+                        background-color: $safety-sketchy
+                        border-color: @background-color
+                        &:not(.active)
+                            background-color: alpha(@background-color, 0.3)
+                    &.safety-unsafe
+                        background-color: $safety-unsafe
+                        border-color: @background-color
+                        &:not(.active)
+                            background-color: alpha(@background-color, 0.3)
+                    &[data-disabled]
+                        background: rgba(200, 200, 200, 0.7)
+
 
             .thumbnail
                 background-position: 50% 30%
@@ -112,29 +145,59 @@
         margin-bottom: 0.75em
         *
             vertical-align: top
+        @media (max-width: 1000px)
+            display: block
     input
         margin-bottom: 0.25em
         margin-right: 0.25em
     input[name=search-text]
         width: 25em
-    input[name=masstag]
-        width: 12em
-    .masstag-hint, .open-masstag
-        margin-right: 1em
+        @media (max-width: 1000px)
+            display: block
+            width: 100%
+            margin-bottom: 0.5em
     .append
+        vertical-align: middle
         font-size: 0.95em
         color: $inactive-link-color
-    .masstag
-        &:not(.active)
+    .bulk-edit
+        &:not(.opened)
+            .close
+                display: none
+        &.opened
+            .open
+                display: none
+        &.hidden
+            display: none
+    .bulk-edit-tags
+        &.opened
+            .hint
+                @media (max-width: 1000px)
+                    display: block
+                    margin-bottom: 0.5em
+        &:not(.opened)
             [type=text],
-            .start-tagging,
-            .stop-tagging
+            .start
                 display: none
-            .masstag-hint
+            .hint
                 display: none
-        &.active
-            .open-masstag
-                display: none
+        input[name=tag]
+            width: 12em
+            @media (max-width: 1000px)
+                display: block
+                width: 100%
+                margin-bottom: 0.5em
+        .append
+            &.open,
+            &.hint
+                @media (max-width: 1000px)
+                    margin-left: 0
+        .hint
+            margin-right: 1em
+    .bulk-edit-safety
+        .append
+            @media (max-width: 1000px)
+                margin-left: 0
 
     .safety
         margin-right: 0.25em

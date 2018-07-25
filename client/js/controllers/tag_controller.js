@@ -3,8 +3,9 @@
 const router = require('../router.js');
 const api = require('../api.js');
 const misc = require('../util/misc.js');
-const tags = require('../tags.js');
+const uri = require('../util/uri.js');
 const Tag = require('../models/tag.js');
+const TagCategoryList = require('../models/tag_category_list.js');
 const topNavigation = require('../models/top_navigation.js');
 const TagView = require('../views/tag_view.js');
 const EmptyView = require('../views/empty_view.js');
@@ -17,7 +18,12 @@ class TagController {
             return;
         }
 
-        Tag.get(ctx.parameters.name).then(tag => {
+        Promise.all([
+            TagCategoryList.get(),
+            Tag.get(ctx.parameters.name),
+        ]).then(responses => {
+            const [tagCategoriesResponse, tag] = responses;
+
             topNavigation.activate('tags');
             topNavigation.setTitle('Tag #' + tag.names[0]);
 
@@ -25,7 +31,7 @@ class TagController {
             tag.addEventListener('change', e => this._evtSaved(e, section));
 
             const categories = {};
-            for (let category of tags.getAllCategories()) {
+            for (let category of tagCategoriesResponse.results) {
                 categories[category.name] = category.name;
             }
 
@@ -61,7 +67,8 @@ class TagController {
         misc.disableExitConfirmation();
         if (this._name !== e.detail.tag.names[0]) {
             router.replace(
-                '/tag/' + e.detail.tag.names[0] + '/' + section, null, false);
+                uri.formatClientLink('tag', e.detail.tag.names[0], section),
+                null, false);
         }
     }
 
@@ -73,12 +80,6 @@ class TagController {
         }
         if (e.detail.category !== undefined) {
             e.detail.tag.category = e.detail.category;
-        }
-        if (e.detail.implications !== undefined) {
-            e.detail.tag.implications = e.detail.implications;
-        }
-        if (e.detail.suggestions !== undefined) {
-            e.detail.tag.suggestions = e.detail.suggestions;
         }
         if (e.detail.description !== undefined) {
             e.detail.tag.description = e.detail.description;
@@ -95,15 +96,19 @@ class TagController {
     _evtMerge(e) {
         this._view.clearMessages();
         this._view.disableForm();
-        e.detail.tag.merge(e.detail.targetTagName).then(() => {
-            this._view.showSuccess('Tag merged.');
-            this._view.enableForm();
-            router.replace(
-                '/tag/' + e.detail.targetTagName + '/merge', null, false);
-        }, error => {
-            this._view.showError(error.message);
-            this._view.enableForm();
-        });
+        e.detail.tag
+            .merge(e.detail.targetTagName, e.detail.addAlias)
+            .then(() => {
+                this._view.showSuccess('Tag merged.');
+                this._view.enableForm();
+                router.replace(
+                    uri.formatClientLink(
+                        'tag', e.detail.targetTagName, 'merge'),
+                    null, false);
+            }, error => {
+                this._view.showError(error.message);
+                this._view.enableForm();
+            });
     }
 
     _evtDelete(e) {
@@ -111,7 +116,7 @@ class TagController {
         this._view.disableForm();
         e.detail.tag.delete()
             .then(() => {
-                const ctx = router.show('/tags/');
+                const ctx = router.show(uri.formatClientLink('tags'));
                 ctx.controller.showSuccess('Tag deleted.');
             }, error => {
                 this._view.showError(error.message);
@@ -121,16 +126,16 @@ class TagController {
 }
 
 module.exports = router => {
-    router.enter('/tag/:name(.+?)/edit', (ctx, next) => {
+    router.enter(['tag', ':name', 'edit'], (ctx, next) => {
         ctx.controller = new TagController(ctx, 'edit');
     });
-    router.enter('/tag/:name(.+?)/merge', (ctx, next) => {
+    router.enter(['tag', ':name', 'merge'], (ctx, next) => {
         ctx.controller = new TagController(ctx, 'merge');
     });
-    router.enter('/tag/:name(.+?)/delete', (ctx, next) => {
+    router.enter(['tag', ':name', 'delete'], (ctx, next) => {
         ctx.controller = new TagController(ctx, 'delete');
     });
-    router.enter('/tag/:name(.+)', (ctx, next) => {
+    router.enter(['tag', ':name'], (ctx, next) => {
         ctx.controller = new TagController(ctx, 'summary');
     });
 };

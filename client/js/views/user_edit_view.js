@@ -1,7 +1,7 @@
 'use strict';
 
-const config = require('../config.js');
 const events = require('../events.js');
+const api = require('../api.js');
 const views = require('../util/views.js');
 const FileDropperControl = require('../controls/file_dropper_control.js');
 
@@ -11,8 +11,8 @@ class UserEditView extends events.EventTarget {
     constructor(ctx) {
         super();
 
-        ctx.userNamePattern = config.userNameRegex + /|^$/.source;
-        ctx.passwordPattern = config.passwordRegex + /|^$/.source;
+        ctx.userNamePattern = api.getUserNameRegex() + /|^$/.source;
+        ctx.passwordPattern = api.getPasswordRegex() + /|^$/.source;
 
         this._user = ctx.user;
         this._hostNode = ctx.hostNode;

@@ -13,6 +13,7 @@ scrubbing](http://sjp.pwn.pl/sjp/;2527372). It is pronounced as *shoorubooru*.
 - Post comments
 - Post notes / annotations, including arbitrary polygons
 - Rich JSON REST API ([see documentation](https://github.com/rr-/szurubooru/blob/master/API.md))
+- Token based authentication for clients
 - Rich search system
 - Rich privilege system
 - Autocomplete in search and while editing tags
@@ -33,6 +34,7 @@ scrubbing](http://sjp.pwn.pl/sjp/;2527372). It is pronounced as *shoorubooru*.
 - FFmpeg
 - node.js
 
+It is recommended that you use Docker for deployment.
 [See installation instructions.](https://github.com/rr-/szurubooru/blob/master/INSTALL.md)
 
 ## Screenshots

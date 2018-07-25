@@ -13,7 +13,7 @@ def executor():
 def verify_unpaged(executor):
     def verify(input, expected_user_names):
         actual_count, actual_users = executor.execute(
-            input, page=1, page_size=100)
+            input, offset=0, limit=100)
         actual_user_names = [u.name for u in actual_users]
         assert actual_count == len(expected_user_names)
         assert actual_user_names == expected_user_names
@@ -86,12 +86,24 @@ def test_filter_by_name(
 
 @pytest.mark.parametrize('input,expected_user_names', [
     ('name:u1', ['u1']),
-    ('name:u2..', ['u2..']),
     ('name:u2*', ['u2..']),
-    ('name:*..*', ['u2..', 'u3..x']),
-    ('name:u3..x', ['u3..x']),
-    ('name:*..x', ['u3..x']),
     ('name:u1,u3..x', ['u1', 'u3..x']),
+    ('name:u2..', None),
+    ('name:*..*', None),
+    ('name:u3..x', None),
+    ('name:*..x', None),
+    ('name:u2\\..', ['u2..']),
+    ('name:*\\..*', ['u2..', 'u3..x']),
+    ('name:u3\\..x', ['u3..x']),
+    ('name:*\\..x', ['u3..x']),
+    ('name:u2.\\.', ['u2..']),
+    ('name:*.\\.*', ['u2..', 'u3..x']),
+    ('name:u3.\\.x', ['u3..x']),
+    ('name:*.\\.x', ['u3..x']),
+    ('name:u2\\.\\.', ['u2..']),
+    ('name:*\\.\\.*', ['u2..', 'u3..x']),
+    ('name:u3\\.\\.x', ['u3..x']),
+    ('name:*\\.\\.x', ['u3..x']),
 ])
 def test_filter_by_name_that_looks_like_range(
         verify_unpaged, input, expected_user_names, user_factory):
@@ -99,7 +111,11 @@ def test_filter_by_name_that_looks_like_range(
     db.session.add(user_factory(name='u2..'))
     db.session.add(user_factory(name='u3..x'))
     db.session.flush()
-    verify_unpaged(input, expected_user_names)
+    if not expected_user_names:
+        with pytest.raises(errors.SearchError):
+            verify_unpaged(input, expected_user_names)
+    else:
+        verify_unpaged(input, expected_user_names)
 
 
 @pytest.mark.parametrize('input,expected_user_names', [
@@ -135,21 +151,24 @@ def test_combining_tokens(
 
 
 @pytest.mark.parametrize(
-    'page,page_size,expected_total_count,expected_user_names', [
-        (1, 1, 2, ['u1']),
-        (2, 1, 2, ['u2']),
-        (3, 1, 2, []),
+    'offset,limit,expected_total_count,expected_user_names', [
         (0, 1, 2, ['u1']),
+        (1, 1, 2, ['u2']),
+        (2, 1, 2, []),
+        (-1, 1, 2, []),
+        (-1, 2, 2, ['u1']),
+        (0, 2, 2, ['u1', 'u2']),
+        (3, 1, 2, []),
         (0, 0, 2, []),
     ])
 def test_paging(
-        executor, user_factory, page, page_size,
+        executor, user_factory, offset, limit,
         expected_total_count, expected_user_names):
     db.session.add(user_factory(name='u1'))
     db.session.add(user_factory(name='u2'))
     db.session.flush()
     actual_count, actual_users = executor.execute(
-        '', page=page, page_size=page_size)
+        '', offset=offset, limit=limit)
     actual_user_names = [u.name for u in actual_users]
     assert actual_count == expected_total_count
     assert actual_user_names == expected_user_names
@@ -222,7 +241,7 @@ def test_random_sort(executor, user_factory):
     db.session.add_all([user3, user1, user2])
     db.session.flush()
     actual_count, actual_users = executor.execute(
-        'sort:random', page=1, page_size=100)
+        'sort:random', offset=0, limit=100)
     actual_user_names = [u.name for u in actual_users]
     assert actual_count == 3
     assert len(actual_user_names) == 3
@@ -251,4 +270,4 @@ def test_random_sort(executor, user_factory):
 ])
 def test_bad_tokens(executor, input, expected_error):
     with pytest.raises(expected_error):
-        executor.execute(input, page=1, page_size=100)
+        executor.execute(input, offset=0, limit=100)

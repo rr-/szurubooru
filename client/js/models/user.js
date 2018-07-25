@@ -1,6 +1,7 @@
 'use strict';
 
 const api = require('../api.js');
+const uri = require('../util/uri.js');
 const events = require('../events.js');
 
 class User extends events.EventTarget {
@@ -40,7 +41,7 @@ class User extends events.EventTarget {
     }
 
     static get(name) {
-        return api.get('/user/' + encodeURIComponent(name))
+        return api.get(uri.formatApiLink('user', name))
             .then(response => {
                 return Promise.resolve(User.fromResponse(response));
             });
@@ -73,10 +74,8 @@ class User extends events.EventTarget {
 
         let promise = this._orig._name ?
             api.put(
-                '/user/' + encodeURIComponent(this._orig._name),
-                detail,
-                files) :
-            api.post('/users', detail, files);
+                uri.formatApiLink('user', this._orig._name), detail, files) :
+            api.post(uri.formatApiLink('users'), detail, files);
 
         return promise
             .then(response => {
@@ -92,7 +91,7 @@ class User extends events.EventTarget {
 
     delete() {
         return api.delete(
-                '/user/' + encodeURIComponent(this._orig._name),
+                uri.formatApiLink('user', this._orig._name),
                 {version: this._version})
             .then(response => {
                 this.dispatchEvent(new CustomEvent('delete', {

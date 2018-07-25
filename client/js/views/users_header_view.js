@@ -1,7 +1,6 @@
 'use strict';
 
 const events = require('../events.js');
-const misc = require('../util/misc.js');
 const search = require('../util/search.js');
 const views = require('../util/views.js');
 

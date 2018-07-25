@@ -41,16 +41,18 @@
         </header>
 
         <div class='body'>
-            <div class='safety'>
-                <% for (let safety of ['safe', 'sketchy', 'unsafe']) { %>
-                    <%= ctx.makeRadio({
-                        name: 'safety-' + ctx.uploadable.key,
-                        value: safety,
-                        text: safety[0].toUpperCase() + safety.substr(1),
-                        selectedValue: ctx.uploadable.safety,
-                    }) %>
-                <% } %>
-            </div>
+            <% if (ctx.enableSafety) { %>
+                <div class='safety'>
+                    <% for (let safety of ['safe', 'sketchy', 'unsafe']) { %>
+                        <%= ctx.makeRadio({
+                            name: 'safety-' + ctx.uploadable.key,
+                            value: safety,
+                            text: safety[0].toUpperCase() + safety.substr(1),
+                            selectedValue: ctx.uploadable.safety,
+                        }) %>
+                    <% } %>
+                </div>
+            <% } %>
 
             <div class='options'>
                 <% if (ctx.canUploadAnonymously) { %>

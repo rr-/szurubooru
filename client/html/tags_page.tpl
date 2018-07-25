@@ -1,58 +1,58 @@
-<div class='tag-list'>
-    <% if (ctx.results.length) { %>
+<div class='tag-list table-wrap'>
+    <% if (ctx.response.results.length) { %>
         <table>
             <thead>
                 <th class='names'>
                     <% if (ctx.query == 'sort:name' || !ctx.query) { %>
-                        <a href='/tags/query=-sort:name'>Tag name(s)</a>
+                        <a href='<%- ctx.formatClientLink('tags', {query: '-sort:name'}) %>'>Tag name(s)</a>
                     <% } else { %>
-                        <a href='/tags/query=sort:name'>Tag name(s)</a>
+                        <a href='<%- ctx.formatClientLink('tags', {query: 'sort:name'}) %>'>Tag name(s)</a>
                     <% } %>
                 </th>
                 <th class='implications'>
                     <% if (ctx.query == 'sort:implication-count') { %>
-                        <a href='/tags/query=-sort:implication-count'>Implications</a>
+                        <a href='<%- ctx.formatClientLink('tags', {query: '-sort:implication-count'}) %>'>Implications</a>
                     <% } else { %>
-                        <a href='/tags/query=sort:implication-count'>Implications</a>
+                        <a href='<%- ctx.formatClientLink('tags', {query: 'sort:implication-count'}) %>'>Implications</a>
                     <% } %>
                 </th>
                 <th class='suggestions'>
                     <% if (ctx.query == 'sort:suggestion-count') { %>
-                        <a href='/tags/query=-sort:suggestion-count'>Suggestions</a>
+                        <a href='<%- ctx.formatClientLink('tags', {query: '-sort:suggestion-count'}) %>'>Suggestions</a>
                     <% } else { %>
-                        <a href='/tags/query=sort:suggestion-count'>Suggestions</a>
+                        <a href='<%- ctx.formatClientLink('tags', {query: 'sort:suggestion-count'}) %>'>Suggestions</a>
                     <% } %>
                 </th>
                 <th class='usages'>
                     <% if (ctx.query == 'sort:usages') { %>
-                        <a href='/tags/query=-sort:usages'>Usages</a>
+                        <a href='<%- ctx.formatClientLink('tags', {query: '-sort:usages'}) %>'>Usages</a>
                     <% } else { %>
-                        <a href='/tags/query=sort:usages'>Usages</a>
+                        <a href='<%- ctx.formatClientLink('tags', {query: 'sort:usages'}) %>'>Usages</a>
                     <% } %>
                 </th>
                 <th class='creation-time'>
                     <% if (ctx.query == 'sort:creation-time') { %>
-                        <a href='/tags/query=-sort:creation-time'>Created on</a>
+                        <a href='<%- ctx.formatClientLink('tags', {query: '-sort:creation-time'}) %>'>Created on</a>
                     <% } else { %>
-                        <a href='/tags/query=sort:creation-time'>Created on</a>
+                        <a href='<%- ctx.formatClientLink('tags', {query: 'sort:creation-time'}) %>'>Created on</a>
                     <% } %>
                 </th>
             </thead>
             <tbody>
-                <% for (let tag of ctx.results) { %>
+                <% for (let tag of ctx.response.results) { %>
                     <tr>
                         <td class='names'>
                             <ul>
                                 <% for (let name of tag.names) { %>
-                                    <li><%= ctx.makeTagLink(name) %></li>
+                                    <li><%= ctx.makeTagLink(name, false, false, tag) %></li>
                                 <% } %>
                             </ul>
                         </td>
                         <td class='implications'>
                             <% if (tag.implications.length) { %>
                                 <ul>
-                                    <% for (let name of tag.implications) { %>
-                                        <li><%= ctx.makeTagLink(name) %></li>
+                                    <% for (let relation of tag.implications) { %>
+                                        <li><%= ctx.makeTagLink(relation.names[0], false, false, relation) %></li>
                                     <% } %>
                                 </ul>
                             <% } else { %>
@@ -62,8 +62,8 @@
                         <td class='suggestions'>
                             <% if (tag.suggestions.length) { %>
                                 <ul>
-                                    <% for (let name of tag.suggestions) { %>
-                                        <li><%= ctx.makeTagLink(name) %></li>
+                                    <% for (let relation of tag.suggestions) { %>
+                                        <li><%= ctx.makeTagLink(relation.names[0], false, false, relation) %></li>
                                     <% } %>
                                 </ul>
                             <% } else { %>

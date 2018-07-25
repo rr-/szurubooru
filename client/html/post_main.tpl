@@ -4,12 +4,12 @@
             <article class='previous-post'>
                 <% if (ctx.prevPostId) { %>
                     <% if (ctx.editMode) { %>
-                        <a href='<%= ctx.getPostEditUrl(ctx.prevPostId, ctx.parameters) %>'>
+                        <a rel='prev' href='<%= ctx.getPostEditUrl(ctx.prevPostId, ctx.parameters) %>'>
                     <% } else { %>
-                        <a href='<%= ctx.getPostUrl(ctx.prevPostId, ctx.parameters) %>'>
+                        <a rel='prev' href='<%= ctx.getPostUrl(ctx.prevPostId, ctx.parameters) %>'>
                     <% } %>
                 <% } else { %>
-                    <a class='inactive'>
+                    <a rel='prev' class='inactive'>
                 <% } %>
                     <i class='fa fa-chevron-left'></i>
                     <span class='vim-nav-hint'>&lt; Previous post</span>
@@ -18,12 +18,12 @@
             <article class='next-post'>
                 <% if (ctx.nextPostId) { %>
                     <% if (ctx.editMode) { %>
-                        <a href='<%= ctx.getPostEditUrl(ctx.nextPostId, ctx.parameters) %>'>
+                        <a rel='next' href='<%= ctx.getPostEditUrl(ctx.nextPostId, ctx.parameters) %>'>
                     <% } else { %>
-                        <a href='<%= ctx.getPostUrl(ctx.nextPostId, ctx.parameters) %>'>
+                        <a rel='next' href='<%= ctx.getPostUrl(ctx.nextPostId, ctx.parameters) %>'>
                     <% } %>
                 <% } else { %>
-                    <a class='inactive'>
+                    <a rel='next' class='inactive'>
                 <% } %>
                     <i class='fa fa-chevron-right'></i>
                     <span class='vim-nav-hint'>Next post &gt;</span>

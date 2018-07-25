@@ -1,7 +1,7 @@
 <div class='snapshot-list'>
-    <% if (ctx.results.length) { %>
+    <% if (ctx.response.results.length) { %>
         <ul>
-            <% for (let item of ctx.results) { %>
+            <% for (let item of ctx.response.results) { %>
                 <li>
                     <div class='header operation-<%= item.operation %>'>
                         <span class='time'>

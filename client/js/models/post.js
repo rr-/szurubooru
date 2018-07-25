@@ -1,18 +1,13 @@
 'use strict';
 
 const api = require('../api.js');
+const uri = require('../util/uri.js');
 const tags = require('../tags.js');
 const events = require('../events.js');
+const TagList = require('./tag_list.js');
 const NoteList = require('./note_list.js');
 const CommentList = require('./comment_list.js');
 const misc = require('../util/misc.js');
-
-function _syncObservableCollection(target, plainList) {
-    target.clear();
-    for (let item of (plainList || [])) {
-        target.add(target.constructor._itemClass.fromResponse(item));
-    }
-}
 
 class Post extends events.EventTarget {
     constructor() {
@@ -20,6 +15,7 @@ class Post extends events.EventTarget {
         this._orig = {};
 
         for (let obj of [this, this._orig]) {
+            obj._tags = new TagList();
             obj._notes = new NoteList();
             obj._comments = new CommentList();
         }
@@ -34,6 +30,7 @@ class Post extends events.EventTarget {
     get user()               { return this._user; }
     get safety()             { return this._safety; }
     get contentUrl()         { return this._contentUrl; }
+    get fullContentUrl()     { return this._fullContentUrl; }
     get thumbnailUrl()       { return this._thumbnailUrl; }
     get canvasWidth()        { return this._canvasWidth || 800; }
     get canvasHeight()       { return this._canvasHeight || 450; }
@@ -43,6 +40,7 @@ class Post extends events.EventTarget {
 
     get flags()              { return this._flags; }
     get tags()               { return this._tags; }
+    get tagNames()           { return this._tags.map(tag => tag.names[0]); }
     get notes()              { return this._notes; }
     get comments()           { return this._comments; }
     get relations()          { return this._relations; }
@@ -55,7 +53,6 @@ class Post extends events.EventTarget {
     get hasCustomThumbnail() { return this._hasCustomThumbnail; }
 
     set flags(value)         { this._flags = value; }
-    set tags(value)          { this._tags = value; }
     set safety(value)        { this._safety = value; }
     set relations(value)     { this._relations = value; }
     set newContent(value)    { this._newContent = value; }
@@ -69,7 +66,9 @@ class Post extends events.EventTarget {
 
     static reverseSearch(content) {
         let apiPromise = api.post(
-            '/posts/reverse-search', {}, {content: content});
+            uri.formatApiLink('posts', 'reverse-search'),
+            {},
+            {content: content});
         let returnedPromise = apiPromise
             .then(response => {
                 if (response.exactPost) {
@@ -85,33 +84,10 @@ class Post extends events.EventTarget {
     }
 
     static get(id) {
-        return api.get('/post/' + id)
+        return api.get(uri.formatApiLink('post', id))
             .then(response => {
                 return Promise.resolve(Post.fromResponse(response));
             });
-    }
-
-    isTaggedWith(tagName) {
-        return this._tags
-            .map(s => s.toLowerCase())
-            .includes(tagName.toLowerCase());
-    }
-
-    addTag(tagName, addImplications) {
-        if (this.isTaggedWith(tagName)) {
-            return;
-        }
-        this._tags.push(tagName);
-        if (addImplications !== false) {
-            for (let otherTag of tags.getAllImplications(tagName)) {
-                this.addTag(otherTag, addImplications);
-            }
-        }
-    }
-
-    removeTag(tagName) {
-        this._tags = this._tags.filter(
-            s => s.toLowerCase() != tagName.toLowerCase());
     }
 
     save(anonymous) {
@@ -129,15 +105,14 @@ class Post extends events.EventTarget {
             detail.flags = this._flags;
         }
         if (misc.arraysDiffer(this._tags, this._orig._tags)) {
-            detail.tags = this._tags;
+            detail.tags = this._tags.map(tag => tag.names[0]);
         }
         if (misc.arraysDiffer(this._relations, this._orig._relations)) {
             detail.relations = this._relations;
         }
         if (misc.arraysDiffer(this._notes, this._orig._notes)) {
-            detail.notes = [...this._notes].map(note => ({
-                polygon: [...note.polygon].map(
-                    point => [point.x, point.y]),
+            detail.notes = this._notes.map(note => ({
+                polygon: note.polygon.map(point => [point.x, point.y]),
                 text: note.text,
             }));
         }
@@ -149,8 +124,8 @@ class Post extends events.EventTarget {
         }
 
         let apiPromise = this._id ?
-            api.put('/post/' + this._id, detail, files) :
-            api.post('/posts', detail, files);
+            api.put(uri.formatApiLink('post', this.id), detail, files) :
+            api.post(uri.formatApiLink('posts'), detail, files);
 
         return apiPromise.then(response => {
             this._updateFromResponse(response);
@@ -176,14 +151,18 @@ class Post extends events.EventTarget {
     }
 
     feature() {
-        return api.post('/featured-post', {id: this._id})
+        return api.post(
+                uri.formatApiLink('featured-post'),
+                {id: this._id})
             .then(response => {
                 return Promise.resolve();
             });
     }
 
     delete() {
-        return api.delete('/post/' + this._id, {version: this._version})
+        return api.delete(
+                uri.formatApiLink('post', this.id),
+                {version: this._version})
             .then(response => {
                 this.dispatchEvent(new CustomEvent('delete', {
                     detail: {
@@ -195,9 +174,9 @@ class Post extends events.EventTarget {
     }
 
     merge(targetId, useOldContent) {
-        return api.get('/post/' + encodeURIComponent(targetId))
+        return api.get(uri.formatApiLink('post', targetId))
             .then(response => {
-                return api.post('/post-merge/', {
+                return api.post(uri.formatApiLink('post-merge'), {
                     removeVersion: this._version,
                     remove: this._id,
                     mergeToVersion: response.version,
@@ -216,7 +195,9 @@ class Post extends events.EventTarget {
     }
 
     setScore(score) {
-        return api.put('/post/' + this._id + '/score', {score: score})
+        return api.put(
+                uri.formatApiLink('post', this.id, 'score'),
+                {score: score})
             .then(response => {
                 const prevFavorite = this._ownFavorite;
                 this._updateFromResponse(response);
@@ -237,7 +218,7 @@ class Post extends events.EventTarget {
     }
 
     addToFavorites() {
-        return api.post('/post/' + this.id + '/favorite')
+        return api.post(uri.formatApiLink('post', this.id, 'favorite'))
             .then(response => {
                 const prevScore = this._ownScore;
                 this._updateFromResponse(response);
@@ -258,7 +239,7 @@ class Post extends events.EventTarget {
     }
 
     removeFromFavorites() {
-        return api.delete('/post/' + this.id + '/favorite')
+        return api.delete(uri.formatApiLink('post', this.id, 'favorite'))
             .then(response => {
                 const prevScore = this._ownScore;
                 this._updateFromResponse(response);
@@ -295,13 +276,13 @@ class Post extends events.EventTarget {
             _user:          response.user,
             _safety:        response.safety,
             _contentUrl:    response.contentUrl,
+            _fullContentUrl: new URL(response.contentUrl, window.location.href).href,
             _thumbnailUrl:  response.thumbnailUrl,
             _canvasWidth:   response.canvasWidth,
             _canvasHeight:  response.canvasHeight,
             _fileSize:      response.fileSize,
 
             _flags:         [...response.flags || []],
-            _tags:          [...response.tags || []],
             _relations:     [...response.relations || []],
 
             _score:         response.score,
@@ -313,8 +294,9 @@ class Post extends events.EventTarget {
         });
 
         for (let obj of [this, this._orig]) {
-            _syncObservableCollection(obj._notes, response.notes);
-            _syncObservableCollection(obj._comments, response.comments);
+            obj._tags.sync(response.tags);
+            obj._notes.sync(response.notes);
+            obj._comments.sync(response.comments);
         }
 
         Object.assign(this, map());

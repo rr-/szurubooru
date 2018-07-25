@@ -1,6 +1,7 @@
 'use strict';
 
 const api = require('../api.js');
+const uri = require('../util/uri.js');
 const events = require('../events.js');
 
 class Comment extends events.EventTarget {
@@ -38,9 +39,9 @@ class Comment extends events.EventTarget {
             text: this._text,
         };
         let promise = this._id ?
-            api.put('/comment/' + this._id, detail) :
-            api.post(
-                '/comments', Object.assign({postId: this._postId}, detail));
+            api.put(uri.formatApiLink('comment', this.id), detail) :
+            api.post(uri.formatApiLink('comments'),
+                Object.assign({postId: this._postId}, detail));
 
         return promise.then(response => {
             this._updateFromResponse(response);
@@ -55,7 +56,7 @@ class Comment extends events.EventTarget {
 
     delete() {
         return api.delete(
-                '/comment/' + this._id,
+                uri.formatApiLink('comment', this.id),
                 {version: this._version})
             .then(response => {
                 this.dispatchEvent(new CustomEvent('delete', {
@@ -68,7 +69,9 @@ class Comment extends events.EventTarget {
     }
 
     setScore(score) {
-        return api.put('/comment/' + this._id + '/score', {score: score})
+        return api.put(
+                uri.formatApiLink('comment', this.id, 'score'),
+                {score: score})
             .then(response => {
                 this._updateFromResponse(response);
                 this.dispatchEvent(new CustomEvent('changeScore', {

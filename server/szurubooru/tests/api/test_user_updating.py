@@ -1,6 +1,6 @@
 from unittest.mock import patch
 import pytest
-from szurubooru import api, db, errors
+from szurubooru import api, db, model, errors
 from szurubooru.func import users
 
 
@@ -8,23 +8,23 @@ from szurubooru.func import users
 def inject_config(config_injector):
     config_injector({
         'privileges': {
-            'users:edit:self:name': db.User.RANK_REGULAR,
-            'users:edit:self:pass': db.User.RANK_REGULAR,
-            'users:edit:self:email': db.User.RANK_REGULAR,
-            'users:edit:self:rank': db.User.RANK_MODERATOR,
-            'users:edit:self:avatar': db.User.RANK_MODERATOR,
-            'users:edit:any:name': db.User.RANK_MODERATOR,
-            'users:edit:any:pass': db.User.RANK_MODERATOR,
-            'users:edit:any:email': db.User.RANK_MODERATOR,
-            'users:edit:any:rank': db.User.RANK_ADMINISTRATOR,
-            'users:edit:any:avatar': db.User.RANK_ADMINISTRATOR,
+            'users:edit:self:name': model.User.RANK_REGULAR,
+            'users:edit:self:pass': model.User.RANK_REGULAR,
+            'users:edit:self:email': model.User.RANK_REGULAR,
+            'users:edit:self:rank': model.User.RANK_MODERATOR,
+            'users:edit:self:avatar': model.User.RANK_MODERATOR,
+            'users:edit:any:name': model.User.RANK_MODERATOR,
+            'users:edit:any:pass': model.User.RANK_MODERATOR,
+            'users:edit:any:email': model.User.RANK_MODERATOR,
+            'users:edit:any:rank': model.User.RANK_ADMINISTRATOR,
+            'users:edit:any:avatar': model.User.RANK_ADMINISTRATOR,
         },
     })
 
 
 def test_updating_user(context_factory, user_factory):
-    user = user_factory(name='u1', rank=db.User.RANK_ADMINISTRATOR)
-    auth_user = user_factory(rank=db.User.RANK_ADMINISTRATOR)
+    user = user_factory(name='u1', rank=model.User.RANK_ADMINISTRATOR)
+    auth_user = user_factory(rank=model.User.RANK_ADMINISTRATOR)
     db.session.add(user)
     db.session.flush()
 
@@ -63,13 +63,13 @@ def test_updating_user(context_factory, user_factory):
         users.update_user_avatar.assert_called_once_with(
             user, 'manual', b'...')
         users.serialize_user.assert_called_once_with(
-            user, auth_user, options=None)
+            user, auth_user, options=[])
 
 
 @pytest.mark.parametrize(
     'field', ['name', 'email', 'password', 'rank', 'avatarStyle'])
 def test_omitting_optional_field(user_factory, context_factory, field):
-    user = user_factory(name='u1', rank=db.User.RANK_ADMINISTRATOR)
+    user = user_factory(name='u1', rank=model.User.RANK_ADMINISTRATOR)
     db.session.add(user)
     db.session.flush()
     params = {
@@ -96,7 +96,7 @@ def test_omitting_optional_field(user_factory, context_factory, field):
 
 
 def test_trying_to_update_non_existing(user_factory, context_factory):
-    user = user_factory(name='u1', rank=db.User.RANK_ADMINISTRATOR)
+    user = user_factory(name='u1', rank=model.User.RANK_ADMINISTRATOR)
     db.session.add(user)
     db.session.flush()
     with pytest.raises(users.UserNotFoundError):
@@ -113,8 +113,8 @@ def test_trying_to_update_non_existing(user_factory, context_factory):
 ])
 def test_trying_to_update_field_without_privileges(
         user_factory, context_factory, params):
-    user1 = user_factory(name='u1', rank=db.User.RANK_REGULAR)
-    user2 = user_factory(name='u2', rank=db.User.RANK_REGULAR)
+    user1 = user_factory(name='u1', rank=model.User.RANK_REGULAR)
+    user2 = user_factory(name='u2', rank=model.User.RANK_REGULAR)
     db.session.add_all([user1, user2])
     db.session.flush()
     with pytest.raises(errors.AuthError):

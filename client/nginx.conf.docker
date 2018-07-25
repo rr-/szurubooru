@@ -1,0 +1,56 @@
+worker_processes 1;
+
+error_log /dev/stderr warn;
+pid /var/run/nginx.pid;
+
+events {
+    worker_connections 1024;
+}
+
+http {
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    log_format main '$remote_addr -> $request [$status] - '
+                    'referer: $http_referer $http_x_forwarded_for';
+    access_log /dev/stdout main;
+
+    sendfile on;
+    keepalive_timeout 65;
+    client_max_body_size 100M;
+
+    upstream backend {
+        server __BACKEND__:6666;
+    }
+
+    server {
+        listen 80 default_server;
+
+        location ~ ^/api$ {
+            return 302 /api/;
+        }
+
+        location ~ ^/api/(.*)$ {
+            if ($request_uri ~* "/api/(.*)") {
+                proxy_pass http://backend/$1;
+            }
+            gzip on;
+            gzip_comp_level 3;
+            gzip_min_length 20;
+            gzip_proxied expired no-cache no-store private auth;
+            gzip_types text/plain application/json;
+        }
+
+        location /data/ {
+            rewrite ^/data/(.*) /$1 break;
+            root /data;
+        }
+
+        location / {
+            root /var/www;
+            try_files $uri /index.htm;
+            gzip_static on;
+            gzip_proxied expired no-cache no-store private auth;
+        }
+    }
+}

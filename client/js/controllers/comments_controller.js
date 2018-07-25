@@ -1,7 +1,7 @@
 'use strict';
 
 const api = require('../api.js');
-const misc = require('../util/misc.js');
+const uri = require('../util/uri.js');
 const PostList = require('../models/post_list.js');
 const topNavigation = require('../models/top_navigation.js');
 const PageController = require('../controllers/page_controller.js');
@@ -25,14 +25,16 @@ class CommentsController {
         this._pageController = new PageController();
         this._pageController.run({
             parameters: ctx.parameters,
-            getClientUrlForPage: page => {
+            defaultLimit: 10,
+            getClientUrlForPage: (offset, limit) => {
                 const parameters = Object.assign(
-                    {}, ctx.parameters, {page: page});
-                return '/comments/' + misc.formatUrlParameters(parameters);
+                    {}, ctx.parameters, {offset: offset, limit: limit});
+                return uri.formatClientLink('comments', parameters);
             },
-            requestPage: page => {
+            requestPage: (offset, limit) => {
                 return PostList.search(
-                    'sort:comment-date comment-count-min:1', page, 10, fields);
+                    'sort:comment-date comment-count-min:1',
+                    offset, limit, fields);
             },
             pageRenderer: pageCtx => {
                 Object.assign(pageCtx, {
@@ -69,7 +71,6 @@ class CommentsController {
 };
 
 module.exports = router => {
-    router.enter('/comments/:parameters?',
-        (ctx, next) => { misc.parseUrlParametersRoute(ctx, next); },
+    router.enter(['comments'],
         (ctx, next) => { new CommentsController(ctx); });
 };

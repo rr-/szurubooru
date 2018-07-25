@@ -1,6 +1,7 @@
 'use strict';
 
 const api = require('../api.js');
+const uri = require('../util/uri.js');
 const AbstractList = require('./abstract_list.js');
 const TagCategory = require('./tag_category.js');
 
@@ -26,12 +27,13 @@ class TagCategoryList extends AbstractList {
     }
 
     static get() {
-        return api.get('/tag-categories/').then(response => {
-            return Promise.resolve(Object.assign(
-                {},
-                response,
-                {results: TagCategoryList.fromResponse(response.results)}));
-        });
+        return api.get(uri.formatApiLink('tag-categories'))
+            .then(response => {
+                return Promise.resolve(Object.assign(
+                    {},
+                    response,
+                    {results: TagCategoryList.fromResponse(response.results)}));
+            });
     }
 
     get defaultCategory() {
@@ -54,7 +56,10 @@ class TagCategoryList extends AbstractList {
         if (this._defaultCategory !== this._origDefaultCategory) {
             promises.push(
                 api.put(
-                    `/tag-category/${this._defaultCategory.name}/default`));
+                    uri.formatApiLink(
+                        'tag-category',
+                        this._defaultCategory.name,
+                        'default')));
         }
 
         return Promise.all(promises)

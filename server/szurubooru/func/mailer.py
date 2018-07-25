@@ -3,7 +3,7 @@ import email.mime.text
 from szurubooru import config
 
 
-def send_mail(sender, recipient, subject, body):
+def send_mail(sender: str, recipient: str, subject: str, body: str) -> None:
     msg = email.mime.text.MIMEText(body)
     msg['Subject'] = subject
     msg['From'] = sender

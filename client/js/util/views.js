@@ -3,9 +3,9 @@
 require('../util/polyfill.js');
 const api = require('../api.js');
 const templates = require('../templates.js');
-const tags = require('../tags.js');
 const domParser = new DOMParser();
 const misc = require('./misc.js');
+const uri = require('./uri.js');
 
 function _imbueId(options) {
     if (!options.id) {
@@ -138,12 +138,29 @@ function makeColorInput(options) {
             type: 'text',
             value: options.value || '',
             required: options.required,
-            style: 'color: ' + options.value,
-            disabled: true,
+            class: 'color',
         });
-    const colorInput = makeElement(
-        'input', {type: 'color', value: options.value || ''});
-    return makeElement('label', {class: 'color'}, colorInput, textInput);
+    const backgroundPreviewNode = makeElement(
+        'div',
+        {
+            class: 'preview background-preview',
+            style:
+                `border-color: ${options.value};
+                background-color: ${options.value}`,
+        });
+    const textPreviewNode = makeElement(
+        'div',
+        {
+            class: 'preview text-preview',
+            style:
+                `border-color: ${options.value};
+                color: ${options.value}`,
+        });
+    return makeElement(
+        'label', {class: 'color'},
+        textInput,
+        backgroundPreviewNode,
+        textPreviewNode);
 }
 
 function makeNumericInput(options) {
@@ -151,20 +168,21 @@ function makeNumericInput(options) {
     return makeInput(options);
 }
 
+function makeDateInput(options) {
+    options.type = 'date';
+    return makeInput(options)
+}
+
 function getPostUrl(id, parameters) {
-    let url = '/post/' + encodeURIComponent(id);
-    if (parameters && parameters.query) {
-        url += '/query=' + encodeURIComponent(parameters.query);
-    }
-    return url;
+    return uri.formatClientLink(
+        'post', id,
+        parameters ? {query: parameters.query} : {});
 }
 
 function getPostEditUrl(id, parameters) {
-    let url = '/post/' + encodeURIComponent(id) + '/edit';
-    if (parameters && parameters.query) {
-        url += '/query=' + encodeURIComponent(parameters.query);
-    }
-    return url;
+    return uri.formatClientLink(
+        'post', id, 'edit',
+        parameters ? {query: parameters.query} : {});
 }
 
 function makePostLink(id, includeHash) {
@@ -175,29 +193,31 @@ function makePostLink(id, includeHash) {
     return api.hasPrivilege('posts:view') ?
         makeElement(
             'a',
-            {'href': '/post/' + encodeURIComponent(id)},
+            {href: uri.formatClientLink('post', id)},
             misc.escapeHtml(text)) :
         misc.escapeHtml(text);
 }
 
-function makeTagLink(name, includeHash) {
-    const tag = tags.getTagByName(name);
+function makeTagLink(name, includeHash, includeCount, tag) {
     const category = tag ? tag.category : 'unknown';
     let text = name;
     if (includeHash === true) {
         text = '#' + text;
     }
+    if (includeCount === true) {
+        text += ' (' + (tag ? tag.postCount : 0) + ')';
+    }
     return api.hasPrivilege('tags:view') ?
         makeElement(
             'a',
             {
-                'href': '/tag/' + encodeURIComponent(name),
-                'class': misc.makeCssName(category, 'tag'),
+                href: uri.formatClientLink('tag', name),
+                class: misc.makeCssName(category, 'tag'),
             },
             misc.escapeHtml(text)) :
         makeElement(
             'span',
-            {'class': misc.makeCssName(category, 'tag')},
+            {class: misc.makeCssName(category, 'tag')},
             misc.escapeHtml(text));
 }
 
@@ -206,7 +226,7 @@ function makeUserLink(user) {
     text += user && user.name ? misc.escapeHtml(user.name) : 'Anonymous';
     const link = user && api.hasPrivilege('users:view') ?
         makeElement(
-            'a', {'href': '/user/' + encodeURIComponent(user.name)}, text) :
+            'a', {href: uri.formatClientLink('user', user.name)}, text) :
         text;
     return makeElement('span', {class: 'user'}, link);
 }
@@ -377,6 +397,7 @@ function getTemplate(templatePath) {
             makePasswordInput: makePasswordInput,
             makeEmailInput:    makeEmailInput,
             makeColorInput:    makeColorInput,
+            makeDateInput:     makeDateInput,
             makePostLink:      makePostLink,
             makeTagLink:       makeTagLink,
             makeUserLink:      makeUserLink,
@@ -385,6 +406,7 @@ function getTemplate(templatePath) {
             makeElement:       makeElement,
             makeCssName:       misc.makeCssName,
             makeNumericInput:  makeNumericInput,
+            formatClientLink:  uri.formatClientLink
         });
         return htmlToDom(templateFactory(ctx));
     };
@@ -480,11 +502,13 @@ function monitorNodeRemoval(monitoredNode, callback) {
 }
 
 document.addEventListener('input', e => {
-    const type = e.target.getAttribute('type');
-    if (type && type.toLowerCase() === 'color') {
-        const textInput = e.target.parentNode.querySelector('input[type=text]');
-        textInput.style.color = e.target.value;
-        textInput.value = e.target.value;
+    if (e.target.classList.contains('color')) {
+        let bkNode = e.target.parentNode.querySelector('.background-preview');
+        let textNode = e.target.parentNode.querySelector('.text-preview');
+        bkNode.style.backgroundColor = e.target.value;
+        bkNode.style.borderColor = e.target.value;
+        textNode.style.color = e.target.value;
+        textNode.style.borderColor = e.target.value;
     }
 });
 

@@ -2,7 +2,7 @@
 
 .content-wrapper.tag-categories
     width: 100%
-    max-width: 40em
+    max-width: 45em
     table
         border-spacing: 0
         width: 100%
@@ -11,11 +11,18 @@
         td, th
             padding: .4em
             &.color
-                text-align: center
+                input[type=text]
+                    width: 8em
             &.usages
                 text-align: center
             &.remove, &.set-default
                 white-space: pre
+        th
+            white-space: nowrap
+            &:first-child
+                padding-left: 0
+            &:last-child
+                padding-right: 0
         tfoot
             display: none
     form

@@ -19,8 +19,8 @@ def upgrade():
         'tag_category', sa.Column('default', sa.Boolean(), nullable=True))
     op.execute(
         sa.table('tag_category', sa.column('default'))
-            .update()
-            .values(default=False))
+        .update()
+        .values(default=False))
     op.alter_column('tag_category', 'default', nullable=False)
 
 

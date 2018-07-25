@@ -156,6 +156,8 @@ class PostUploadView extends events.EventTarget {
         this._contentFileDropper = new FileDropperControl(
             this._contentInputNode,
             {
+                extraText:
+                    'Allowed extensions: .jpg, .png, .gif, .webm, .mp4, .swf',
                 allowUrls: true,
                 allowMultiple: true,
                 lock: false,
@@ -275,21 +277,29 @@ class PostUploadView extends events.EventTarget {
 
     _updateUploadableFromDom(uploadable) {
         const rowNode = uploadable.rowNode;
-        uploadable.safety =
-            rowNode.querySelector('.safety input:checked').value;
-        uploadable.anonymous =
-            rowNode.querySelector('.anonymous input').checked;
+
+        const safetyNode = rowNode.querySelector('.safety input:checked');
+        if (safetyNode) {
+            uploadable.safety = safetyNode.value;
+        }
+
+        const anonymousNode = rowNode.querySelector('.anonymous input:checked');
+        if (anonymousNode) {
+            uploadable.anonymous = true;
+        }
+
         uploadable.flags = [];
         if (rowNode.querySelector('.loop-video input:checked')) {
             uploadable.flags.push('loop');
         }
+
         uploadable.tags = [];
         uploadable.relations = [];
         for (let [i, lookalike] of uploadable.lookalikes.entries()) {
             let lookalikeNode = rowNode.querySelector(
                 `.lookalikes li:nth-child(${i + 1})`);
             if (lookalikeNode.querySelector('[name=copy-tags]').checked) {
-                uploadable.tags = uploadable.tags.concat(lookalike.post.tags);
+                uploadable.tags = uploadable.tags.concat(lookalike.post.tagNames);
             }
             if (lookalikeNode.querySelector('[name=add-relation]').checked) {
                 uploadable.relations.push(lookalike.post.id);

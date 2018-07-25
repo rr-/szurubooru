@@ -7,6 +7,7 @@ Created at: 2016-08-28 19:03:59.831527
 
 import sqlalchemy as sa
 from alembic import op
+import sqlalchemy.ext.declarative
 
 
 revision = '9837fc981ec7'

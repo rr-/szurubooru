@@ -1,19 +1,20 @@
 from datetime import datetime
 from unittest.mock import patch
 import pytest
-from szurubooru import api, db, errors
+from szurubooru import api, db, model, errors
 from szurubooru.func import comments, posts
 
 
 @pytest.fixture(autouse=True)
 def inject_config(config_injector):
-    config_injector({'privileges': {'comments:create': db.User.RANK_REGULAR}})
+    config_injector(
+        {'privileges': {'comments:create': model.User.RANK_REGULAR}})
 
 
 def test_creating_comment(
         user_factory, post_factory, context_factory, fake_datetime):
     post = post_factory()
-    user = user_factory(rank=db.User.RANK_REGULAR)
+    user = user_factory(rank=model.User.RANK_REGULAR)
     db.session.add_all([post, user])
     db.session.flush()
     with patch('szurubooru.func.comments.serialize_comment'), \
@@ -24,7 +25,7 @@ def test_creating_comment(
                 params={'text': 'input', 'postId': post.post_id},
                 user=user))
         assert result == 'serialized comment'
-        comment = db.session.query(db.Comment).one()
+        comment = db.session.query(model.Comment).one()
         assert comment.text == 'input'
         assert comment.creation_time == datetime(1997, 1, 1)
         assert comment.last_edit_time is None
@@ -41,7 +42,7 @@ def test_creating_comment(
 def test_trying_to_pass_invalid_params(
         user_factory, post_factory, context_factory, params):
     post = post_factory()
-    user = user_factory(rank=db.User.RANK_REGULAR)
+    user = user_factory(rank=model.User.RANK_REGULAR)
     db.session.add_all([post, user])
     db.session.flush()
     real_params = {'text': 'input', 'postId': post.post_id}
@@ -63,11 +64,11 @@ def test_trying_to_omit_mandatory_field(user_factory, context_factory, field):
         api.comment_api.create_comment(
             context_factory(
                 params={},
-                user=user_factory(rank=db.User.RANK_REGULAR)))
+                user=user_factory(rank=model.User.RANK_REGULAR)))
 
 
 def test_trying_to_comment_non_existing(user_factory, context_factory):
-    user = user_factory(rank=db.User.RANK_REGULAR)
+    user = user_factory(rank=model.User.RANK_REGULAR)
     db.session.add_all([user])
     db.session.flush()
     with pytest.raises(posts.PostNotFoundError):
@@ -81,4 +82,4 @@ def test_trying_to_create_without_privileges(user_factory, context_factory):
         api.comment_api.create_comment(
             context_factory(
                 params={},
-                user=user_factory(rank=db.User.RANK_ANONYMOUS)))
+                user=user_factory(rank=model.User.RANK_ANONYMOUS)))

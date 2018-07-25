@@ -2,7 +2,6 @@
 
 const router = require('../router.js');
 const keyboard = require('../util/keyboard.js');
-const misc = require('../util/misc.js');
 const views = require('../util/views.js');
 
 const holderTemplate = views.getTemplate('manual-pager');
@@ -36,19 +35,23 @@ function _getVisiblePageNumbers(currentPage, totalPages) {
     return pagesVisible;
 }
 
-function _getPages(currentPage, pageNumbers, ctx) {
-    const pages = [];
-    let lastPage = 0;
+function _getPages(
+        currentPage, pageNumbers, limit, defaultLimit, removedItems) {
+    const pages = new Map();
+    let prevPage = 0;
     for (let page of pageNumbers) {
-        if (page !== lastPage + 1) {
-            pages.push({ellipsis: true});
+        if (page !== prevPage + 1) {
+            pages.set(page - 1, {ellipsis: true});
         }
-        pages.push({
+        pages.set(page, {
             number: page,
-            link: ctx.getClientUrlForPage(page),
+            offset:
+                (page - 1) * limit -
+                (page > currentPage ? removedItems : 0),
+            limit: limit === defaultLimit ? null : limit,
             active: currentPage === page,
         });
-        lastPage = page;
+        prevPage = page;
     }
     return pages;
 }
@@ -60,49 +63,44 @@ class ManualPageView {
     }
 
     run(ctx) {
-        const currentPage = ctx.parameters.page;
+        const offset = parseInt(ctx.parameters.offset || 0);
+        const limit = parseInt(ctx.parameters.limit || ctx.defaultLimit);
         this.clearMessages();
         views.emptyContent(this._pageNavNode);
 
-        ctx.requestPage(currentPage).then(response => {
-            Object.assign(ctx.pageContext, response);
-            ctx.pageContext.hostNode = this._pageContentHolderNode;
-            ctx.pageRenderer(ctx.pageContext);
-
-            const totalPages = Math.ceil(response.total / response.pageSize);
-            const pageNumbers = _getVisiblePageNumbers(currentPage, totalPages);
-            const pages = _getPages(currentPage, pageNumbers, ctx);
+        ctx.requestPage(offset, limit).then(response => {
+            ctx.pageRenderer({
+                parameters: ctx.parameters,
+                response: response,
+                hostNode: this._pageContentHolderNode,
+            });
 
             keyboard.bind(['a', 'left'], () => {
-                if (currentPage > 1) {
-                    router.show(ctx.getClientUrlForPage(currentPage - 1));
-                }
+                this._navigateToPrevNextPage('prev');
             });
             keyboard.bind(['d', 'right'], () => {
-                if (currentPage < totalPages) {
-                    router.show(ctx.getClientUrlForPage(currentPage + 1));
-                }
+                this._navigateToPrevNextPage('next');
             });
 
+            let removedItems = 0;
             if (response.total) {
-                views.replaceContent(
-                    this._pageNavNode,
-                    navTemplate({
-                        prevLink: ctx.getClientUrlForPage(currentPage - 1),
-                        nextLink: ctx.getClientUrlForPage(currentPage + 1),
-                        prevLinkActive: currentPage > 1,
-                        nextLinkActive: currentPage < totalPages,
-                        pages: pages,
-                    }));
+                this._refreshNav(
+                    offset, limit, response.total, removedItems, ctx);
             }
 
-            if (response.total <= (currentPage - 1) * response.pageSize) {
+            if (!response.results.length) {
                 this.showInfo('No data to show');
             }
 
+            response.results.addEventListener('remove', e => {
+                removedItems++;
+                this._refreshNav(
+                    offset, limit, response.total, removedItems, ctx);
+            });
+
             views.syncScrollPosition();
         }, response => {
-            this.showError(response.description);
+            this.showError(response.message);
         });
     }
 
@@ -132,6 +130,33 @@ class ManualPageView {
 
     showInfo(message) {
         views.showInfo(this._hostNode, message);
+    }
+
+    _navigateToPrevNextPage(className) {
+        const linkNode = this._hostNode.querySelector('a.' + className);
+        if (linkNode.classList.contains('disabled')) {
+            return;
+        }
+        router.show(linkNode.getAttribute('href'));
+    }
+
+    _refreshNav(offset, limit, total, removedItems, ctx) {
+        const currentPage = Math.floor((offset + limit - 1) / limit) + 1;
+        const totalPages = Math.ceil((total - removedItems) / limit);
+        const pageNumbers = _getVisiblePageNumbers(currentPage, totalPages);
+        const pages = _getPages(
+            currentPage, pageNumbers, limit, ctx.defaultLimit, removedItems);
+
+        views.replaceContent(
+            this._pageNavNode,
+            navTemplate({
+                getClientUrlForPage: ctx.getClientUrlForPage,
+                prevPage: Math.min(totalPages, Math.max(1, currentPage - 1)),
+                nextPage: Math.min(totalPages, Math.max(1, currentPage + 1)),
+                currentPage: currentPage,
+                totalPages: totalPages,
+                pages: pages,
+            }));
     }
 }
 

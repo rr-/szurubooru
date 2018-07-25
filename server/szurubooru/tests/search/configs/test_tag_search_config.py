@@ -13,7 +13,7 @@ def executor():
 def verify_unpaged(executor):
     def verify(input, expected_tag_names):
         actual_count, actual_tags = executor.execute(
-            input, page=1, page_size=100)
+            input, offset=0, limit=100)
         actual_tag_names = [u.names[0].name for u in actual_tags]
         assert actual_count == len(expected_tag_names)
         assert actual_tag_names == expected_tag_names
@@ -35,10 +35,77 @@ def test_filter_anonymous(
     verify_unpaged(input, expected_tag_names)
 
 
+@pytest.mark.parametrize('db_driver,input,expected_tag_names', [
+    (None, ',', None),
+    (None, 't1,', None),
+    (None, 't1,t2', ['t1', 't2']),
+    (None, 't1\\,', []),
+    (None, 'asd..asd', None),
+    (None, 'asd\\..asd', []),
+    (None, 'asd.\\.asd', []),
+    (None, 'asd\\.\\.asd', []),
+    (None, '-', None),
+    (None, '\\-', ['-']),
+    (None, '--', [
+        't1', 't2', '*', '*asd*', ':', 'asd:asd', '\\', '\\asd', '-asd',
+    ]),
+    (None, '\\--', []),
+    (None, '-\\-', [
+        't1', 't2', '*', '*asd*', ':', 'asd:asd', '\\', '\\asd', '-asd',
+    ]),
+    (None, '-*', []),
+    (None, '\\-*', ['-', '-asd']),
+    (None, ':', None),
+    (None, '\\:', [':']),
+    (None, '\\:asd', []),
+    (None, '*\\:*', [':', 'asd:asd']),
+    (None, 'asd:asd', None),
+    (None, 'asd\\:asd', ['asd:asd']),
+    (None, '*', [
+        't1', 't2', '*', '*asd*', ':', 'asd:asd', '\\', '\\asd', '-', '-asd'
+    ]),
+    (None, '\\*', ['*']),
+    (None, '\\', None),
+    (None, '\\asd', None),
+    ('psycopg2', '\\\\', ['\\']),
+    ('psycopg2', '\\\\asd', ['\\asd']),
+])
+def test_escaping(
+        executor, tag_factory, input, expected_tag_names, db_driver):
+    db.session.add_all([
+        tag_factory(names=['t1']),
+        tag_factory(names=['t2']),
+        tag_factory(names=['*']),
+        tag_factory(names=['*asd*']),
+        tag_factory(names=[':']),
+        tag_factory(names=['asd:asd']),
+        tag_factory(names=['\\']),
+        tag_factory(names=['\\asd']),
+        tag_factory(names=['-']),
+        tag_factory(names=['-asd'])
+    ])
+    db.session.flush()
+
+    if db_driver:
+        if db.sessionmaker.kw['bind'].driver != db_driver:
+            pytest.xfail()
+    if expected_tag_names is None:
+        with pytest.raises(errors.SearchError):
+            executor.execute(input, offset=0, limit=100)
+    else:
+        actual_count, actual_tags = executor.execute(
+            input, offset=0, limit=100)
+        actual_tag_names = [u.names[0].name for u in actual_tags]
+        assert actual_count == len(expected_tag_names)
+        assert sorted(actual_tag_names) == sorted(expected_tag_names)
+
+
 def test_filter_anonymous_starting_with_colon(verify_unpaged, tag_factory):
     db.session.add(tag_factory(names=[':t']))
     db.session.flush()
-    verify_unpaged(':t', [':t'])
+    with pytest.raises(errors.SearchError):
+        verify_unpaged(':t', [':t'])
+    verify_unpaged('\\:t', [':t'])
 
 
 @pytest.mark.parametrize('input,expected_tag_names', [
@@ -183,7 +250,7 @@ def test_filter_by_post_count(
 ])
 def test_filter_by_invalid_input(executor, input):
     with pytest.raises(errors.SearchError):
-        executor.execute(input, page=1, page_size=100)
+        executor.execute(input, offset=0, limit=100)
 
 
 @pytest.mark.parametrize('input,expected_tag_names', [

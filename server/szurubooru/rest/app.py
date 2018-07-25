@@ -2,13 +2,14 @@ import urllib.parse
 import cgi
 import json
 import re
+from typing import Dict, Any, Callable, Tuple
 from datetime import datetime
 from szurubooru import db
 from szurubooru.func import util
 from szurubooru.rest import errors, middleware, routes, context
 
 
-def _json_serializer(obj):
+def _json_serializer(obj: Any) -> str:
     ''' JSON serializer for objects not serializable by default JSON code '''
     if isinstance(obj, datetime):
         serial = obj.isoformat('T') + 'Z'
@@ -16,12 +17,12 @@ def _json_serializer(obj):
     raise TypeError('Type not serializable')
 
 
-def _dump_json(obj):
+def _dump_json(obj: Any) -> str:
     return json.dumps(obj, default=_json_serializer, indent=2)
 
 
-def _get_headers(env):
-    headers = {}
+def _get_headers(env: Dict[str, Any]) -> Dict[str, str]:
+    headers = {}  # type: Dict[str, str]
     for key, value in env.items():
         if key.startswith('HTTP_'):
             key = util.snake_case_to_upper_train_case(key[5:])
@@ -29,9 +30,10 @@ def _get_headers(env):
     return headers
 
 
-def _create_context(env):
+def _create_context(env: Dict[str, Any]) -> context.Context:
     method = env['REQUEST_METHOD']
-    path = urllib.parse.unquote('/' + env['PATH_INFO'].lstrip('/'))
+    path = '/' + env['PATH_INFO'].lstrip('/')
+    path = path.encode('latin-1').decode('utf-8')  # PEP-3333
     headers = _get_headers(env)
 
     files = {}
@@ -61,10 +63,12 @@ def _create_context(env):
                 'Could not decode the request body. The JSON '
                 'was incorrect or was not encoded as UTF-8.')
 
-    return context.Context(method, path, headers, params, files)
+    return context.Context(env, method, path, headers, params, files)
 
 
-def application(env, start_response):
+def application(
+        env: Dict[str, Any],
+        start_response: Callable[[str, Any], Any]) -> Tuple[bytes]:
     try:
         ctx = _create_context(env)
         if 'application/json' not in ctx.get_header('Accept'):
@@ -93,6 +97,9 @@ def application(env, start_response):
                     hook(ctx)
                 try:
                     response = handler(ctx, match.groupdict())
+                except Exception:
+                    ctx.session.rollback()
+                    raise
                 finally:
                     for hook in middleware.post_hooks:
                         hook(ctx)
@@ -103,9 +110,9 @@ def application(env, start_response):
             return (_dump_json(response).encode('utf-8'),)
 
         except Exception as ex:
-            for exception_type, handler in errors.error_handlers.items():
+            for exception_type, ex_handler in errors.error_handlers.items():
                 if isinstance(ex, exception_type):
-                    handler(ex)
+                    ex_handler(ex)
             raise
 
     except errors.BaseHttpError as ex:

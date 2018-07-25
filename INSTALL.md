@@ -1,187 +1,64 @@
-This guide assumes Arch Linux. Although exact instructions for other
-distributions are different, the steps stay roughly the same.
+This assumes that you have Docker and Docker Compose already installed.
 
-### Installing hard dependencies
+### Prepare things
 
-```console
-user@host:~$ sudo pacman -S postgresql
-user@host:~$ sudo pacman -S python
-user@host:~$ sudo pacman -S python-pip
-user@host:~$ sudo pacman -S ffmpeg
-user@host:~$ sudo pacman -S npm
-user@host:~$ sudo pacman -S elasticsearch
-user@host:~$ sudo pip install virtualenv
-user@host:~$ python --version
-Python 3.5.1
-```
-
-The reason `ffmpeg` is used over, say, `ImageMagick` or even `PIL` is because of
-Flash and video posts.
-
-
-
-### Setting up a database
-
-First, basic `postgres` configuration:
-
-```console
-user@host:~$ sudo -i -u postgres initdb --locale en_US.UTF-8 -E UTF8 -D /var/lib/postgres/data
-user@host:~$ sudo systemctl start postgresql
-user@host:~$ sudo systemctl enable postgresql
-```
-
-Then creating a database:
-
-```console
-user@host:~$ sudo -i -u postgres createuser --interactive
-Enter name of role to add: szuru
-Shall the new role be a superuser? (y/n) n
-Shall the new role be allowed to create databases? (y/n) n
-Shall the new role be allowed to create more new roles? (y/n) n
-user@host:~$ sudo -i -u postgres createdb szuru
-user@host:~$ sudo -i -u postgres psql -c "ALTER USER szuru PASSWORD 'dog';"
-```
-
-
-
-### Setting up elasticsearch
-
-```console
-user@host:~$ sudo systemctl start elasticsearch
-user@host:~$ sudo systemctl enable elasticsearch
-```
-
-### Preparing environment
-
-Getting `szurubooru`:
-
-```console
-user@host:~$ git clone https://github.com/rr-/szurubooru.git szuru
-user@host:~$ cd szuru
-```
-
-Installing frontend dependencies:
-
-```console
-user@host:szuru$ cd client
-user@host:szuru/client$ npm install
-```
-
-`npm` sandboxes dependencies by default, i.e. installs them to
-`./node_modules`. This is good, because it avoids polluting the system with the
-project's dependencies. To make Python work the same way, we'll use
-`virtualenv`. Installing backend dependencies with `virtualenv` looks like
-this:
-
-```console
-user@host:szuru/client$ cd ../server
-user@host:szuru/server$ virtualenv python_modules # consistent with node_modules
-user@host:szuru/server$ source python_modules/bin/activate # enters the sandbox
-(python_modules) user@host:szuru/server$ pip install -r requirements.txt # installs the dependencies
-```
-
-
-
-### Preparing `szurubooru` for first run
-
-1. Configure things:
+1. Getting `szurubooru`:
 
     ```console
-    user@host:szuru$ cp config.yaml.dist config.yaml
-    user@host:szuru$ vim config.yaml
+    user@host:~$ git clone https://github.com/rr-/szurubooru.git szuru
+    user@host:~$ cd szuru
+    ```
+2. Configure the application:
+
+    ```console
+    user@host:szuru$ cp server/config.yaml.dist config.yaml
+    user@host:szuru$ edit config.yaml
     ```
 
     Pay extra attention to these fields:
 
-    - base URL,
-    - API URL,
-    - data directory,
-    - data URL,
-    - database,
+    - secret
     - the `smtp` section.
 
-2. Compile the frontend:
+    You can omit lines when you want to use the defaults of that field.
+
+3. Configure Docker Compose:
 
     ```console
-    user@host:szuru$ cd client
-    user@host:szuru/client$ npm run build
+    user@host:szuru$ cp docker-compose.yml.example docker-compose.yml
+    user@host:szuru$ edit docker-compose.yml
     ```
 
-3. Upgrade the database:
+    Read the comments to guide you. For production use, it is *important*
+    that you configure the volumes appropriately to avoid data loss.
+
+### Running the Application
+
+1. Configurations for ElasticSearch:
+
+    You may need to raise the `vm.max_map_count`
+    parameter to at least `262144` in order for the
+    ElasticSearch container to function. Instructions
+    on how to do so are provided
+    [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#docker-cli-run-prod-mode).
+
+2. Build or update the containers:
 
     ```console
-    user@host:szuru/client$ cd ../server
-    user@host:szuru/server$ source python_modules/bin/activate
-    (python_modules) user@host:szuru/server$ alembic upgrade head
+    user@host:szuru$ docker-compose pull
+    user@host:szuru$ docker-compose build --pull
     ```
 
-    `alembic` should have been installed during installation of `szurubooru`'s
-    dependencies.
+    This will build both the frontend and backend containers, and may take
+    some time.
 
-4. Run the tests:
+3. Start and stop the the application
 
     ```console
-    (python_modules) user@host:szuru/server$ ./test
+    # To start:
+    user@host:szuru$ docker-compose up -d
+    # To monitor (CTRL+C to exit):
+    user@host:szuru$ docker-compose logs -f
+    # To stop
+    user@host:szuru$ docker-compose down
     ```
-
-It is recommended to rebuild the frontend after each change to configuration.
-
-
-
-### Wiring `szurubooru` to the web server
-
-`szurubooru` is divided into two parts: public static files, and the API. It
-tries not to impose any networking configurations on the user, so it is the
-user's responsibility to wire these to their web server.
-
-Below are described the methods to integrate the API into a web server:
-
-1. Run API locally with `waitress`, and bind it with a reverse proxy. In this
-   approach, the user needs to (from within `virtualenv`) install `waitress`
-   with `pip install waitress` and then start `szurubooru` with `./host-waitress`
-   from within the `server/` directory (see `--help` for details). Then the
-   user needs to add a virtual host that delegates the API requests to the
-   local API server, and the browser requests to the `client/public/`
-   directory.
-2. Alternatively, Apache users can use `mod_wsgi`.
-3. Alternatively, users can use other WSGI frontends such as `gunicorn` or
-   `uwsgi`, but they'll need to write wrapper scripts themselves.
-
-Note that the API URL in the virtual host configuration needs to be the same as
-the one in the `config.yaml`, so that client knows how to access the backend!
-
-#### Example
-
-**nginx configuration** - wiring API `http://great.dude/api/` to
-`localhost:6666` to avoid fiddling with CORS:
-
-```nginx
-server {
-    listen 80;
-    server_name great.dude;
-    merge_slashes off;  # to support post tags such as ///
-
-    location ~ ^/api$ {
-        return 302 /api/;
-    }
-    location ~ ^/api/(.*)$ {
-        proxy_pass http://127.0.0.1:6666/$1$is_args$args;
-    }
-    location / {
-        root /home/rr-/src/maintained/szurubooru/client/public;
-        try_files $uri /index.htm;
-    }
-}
-```
-
-**`config.yaml`**:
-
-```yaml
-api_url: 'http://big.dude/api/'
-base_url: 'http://big.dude/'
-data_url: 'http://big.dude/data/'
-data_dir: '/home/rr-/src/maintained/szurubooru/client/public/data'
-```
-
-Then the backend is started with `host-waitress` from within `virtualenv` and
-`./server/` directory.

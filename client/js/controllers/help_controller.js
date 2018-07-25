@@ -12,13 +12,13 @@ class HelpController {
 }
 
 module.exports = router => {
-    router.enter('/help', (ctx, next) => {
+    router.enter(['help'], (ctx, next) => {
         new HelpController();
     });
-    router.enter('/help/:section', (ctx, next) => {
+    router.enter(['help', ':section'], (ctx, next) => {
         new HelpController(ctx.parameters.section);
     });
-    router.enter('/help/:section/:subsection', (ctx, next) => {
+    router.enter(['help', ':section', ':subsection'], (ctx, next) => {
         new HelpController(ctx.parameters.section, ctx.parameters.subsection);
     });
 };

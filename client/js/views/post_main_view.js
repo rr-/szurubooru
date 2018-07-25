@@ -1,7 +1,9 @@
 'use strict';
 
+const iosCorrectedInnerHeight = require('ios-inner-height');
 const router = require('../router.js');
 const views = require('../util/views.js');
+const uri = require('../util/uri.js');
 const keyboard = require('../util/keyboard.js');
 const PostContentControl = require('../controls/post_content_control.js');
 const PostNotesOverlayControl =
@@ -25,23 +27,20 @@ class PostMainView {
         views.replaceContent(this._hostNode, sourceNode);
         views.syncScrollPosition();
 
-        const postViewNode = document.body.querySelector('.content-wrapper');
         const topNavigationNode =
             document.body.querySelector('#top-navigation');
-
-        const margin = (
-            postViewNode.getBoundingClientRect().top -
-            topNavigationNode.getBoundingClientRect().height);
 
         this._postContentControl = new PostContentControl(
             postContainerNode,
             ctx.post,
             () => {
+                const margin = sidebarNode.getBoundingClientRect().left;
+
                 return [
                     window.innerWidth -
                         postContainerNode.getBoundingClientRect().left -
                         margin,
-                    window.innerHeight -
+                    iosCorrectedInnerHeight() -
                         topNavigationNode.getBoundingClientRect().height -
                         margin * 2,
                 ];
@@ -61,19 +60,24 @@ class PostMainView {
 
         keyboard.bind('e', () => {
             if (ctx.editMode) {
-                router.show('/post/' + ctx.post.id);
+                router.show(uri.formatClientLink('post', ctx.post.id));
             } else {
-                router.show('/post/' + ctx.post.id + '/edit');
+                router.show(uri.formatClientLink('post', ctx.post.id, 'edit'));
             }
         });
         keyboard.bind(['a', 'left'], () => {
             if (ctx.prevPostId) {
-                router.show('/post/' + ctx.prevPostId);
+                router.show(ctx.getPostUrl(ctx.prevPostId, ctx.parameters));
             }
         });
         keyboard.bind(['d', 'right'], () => {
             if (ctx.nextPostId) {
-                router.show('/post/' + ctx.nextPostId);
+                router.show(ctx.getPostUrl(ctx.nextPostId, ctx.parameters));
+            }
+        });
+        keyboard.bind('del', (e) => {
+            if (ctx.editMode) {
+                this.sidebarControl._evtDeleteClick(e);
             }
         });
     }

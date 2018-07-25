@@ -13,42 +13,56 @@ class PostsPageView extends events.EventTarget {
         views.replaceContent(this._hostNode, template(ctx));
 
         this._postIdToPost = {};
-        for (let post of ctx.results) {
+        for (let post of ctx.response.results) {
             this._postIdToPost[post.id] = post;
             post.addEventListener('change', e => this._evtPostChange(e));
         }
 
-        this._postIdToLinkNode = {};
-        for (let linkNode of this._hostNode.querySelectorAll('.masstag')) {
-            const postId = linkNode.getAttribute('data-post-id');
+        this._postIdToListItemNode = {};
+        for (let listItemNode of this._listItemNodes) {
+            const postId = listItemNode.getAttribute('data-post-id');
             const post = this._postIdToPost[postId];
-            this._postIdToLinkNode[postId] = linkNode;
-            linkNode.addEventListener(
-                'click', e => this._evtMassTagClick(e, post));
+            this._postIdToListItemNode[postId] = listItemNode;
+
+            const tagFlipperNode = this._getTagFlipperNode(listItemNode);
+            if (tagFlipperNode) {
+                tagFlipperNode.addEventListener(
+                    'click', e => this._evtBulkEditTagsClick(e, post));
+            }
+
+            const safetyFlipperNode = this._getSafetyFlipperNode(listItemNode);
+            if (safetyFlipperNode) {
+                for (let linkNode of safetyFlipperNode.querySelectorAll('a')) {
+                    linkNode.addEventListener(
+                        'click', e => this._evtBulkEditSafetyClick(e, post));
+                }
+            }
         }
 
-        this._syncMassTagHighlights();
+        this._syncBulkEditorsHighlights();
+    }
+
+    get _listItemNodes() {
+        return this._hostNode.querySelectorAll('li');
+    }
+
+    _getTagFlipperNode(listItemNode) {
+        return listItemNode.querySelector('.tag-flipper');
+    }
+
+    _getSafetyFlipperNode(listItemNode) {
+        return listItemNode.querySelector('.safety-flipper');
     }
 
     _evtPostChange(e) {
-        const linkNode = this._postIdToLinkNode[e.detail.post.id];
-        linkNode.removeAttribute('data-disabled');
-        this._syncMassTagHighlights();
-    }
-
-    _syncMassTagHighlights() {
-        for (let linkNode of this._hostNode.querySelectorAll('.masstag')) {
-            const postId = linkNode.getAttribute('data-post-id');
-            const post = this._postIdToPost[postId];
-            let tagged = true;
-            for (let tag of this._ctx.massTagTags) {
-                tagged = tagged & post.isTaggedWith(tag);
-            }
-            linkNode.classList.toggle('tagged', tagged);
+        const listItemNode = this._postIdToListItemNode[e.detail.post.id];
+        for (let node of listItemNode.querySelectorAll('[data-disabled]')) {
+            node.removeAttribute('data-disabled');
         }
+        this._syncBulkEditorsHighlights();
     }
 
-    _evtMassTagClick(e, post) {
+    _evtBulkEditTagsClick(e, post) {
         e.preventDefault();
         const linkNode = e.target;
         if (linkNode.getAttribute('data-disabled')) {
@@ -59,6 +73,46 @@ class PostsPageView extends events.EventTarget {
             new CustomEvent(
                 linkNode.classList.contains('tagged') ? 'untag' : 'tag',
                 {detail: {post: post}}));
+    }
+
+    _evtBulkEditSafetyClick(e, post) {
+        e.preventDefault();
+        const linkNode = e.target;
+        if (linkNode.getAttribute('data-disabled')) {
+            return;
+        }
+        const newSafety = linkNode.getAttribute('data-safety');
+        if (post.safety === newSafety) {
+            return;
+        }
+        linkNode.setAttribute('data-disabled', true);
+        this.dispatchEvent(
+            new CustomEvent(
+                'changeSafety', {detail: {post: post, safety: newSafety}}));
+    }
+
+    _syncBulkEditorsHighlights() {
+        for (let listItemNode of this._listItemNodes) {
+            const postId = listItemNode.getAttribute('data-post-id');
+            const post = this._postIdToPost[postId];
+
+            const tagFlipperNode = this._getTagFlipperNode(listItemNode);
+            if (tagFlipperNode) {
+                let tagged = true;
+                for (let tag of this._ctx.bulkEdit.tags) {
+                    tagged = tagged & post.tags.isTaggedWith(tag);
+                }
+                tagFlipperNode.classList.toggle('tagged', tagged);
+            }
+
+            const safetyFlipperNode = this._getSafetyFlipperNode(listItemNode);
+            if (safetyFlipperNode) {
+                for (let linkNode of safetyFlipperNode.querySelectorAll('a')) {
+                    const safety = linkNode.getAttribute('data-safety');
+                    linkNode.classList.toggle('active', post.safety == safety);
+                }
+            }
+        }
     }
 }
 

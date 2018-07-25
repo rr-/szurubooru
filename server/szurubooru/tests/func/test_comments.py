@@ -38,8 +38,6 @@ def test_try_get_comment(comment_factory):
     db.session.flush()
     assert comments.try_get_comment_by_id(comment.comment_id + 1) is None
     assert comments.try_get_comment_by_id(comment.comment_id) is comment
-    with pytest.raises(comments.InvalidCommentIdError):
-        comments.try_get_comment_by_id('-')
 
 
 def test_get_comment(comment_factory):
@@ -49,8 +47,6 @@ def test_get_comment(comment_factory):
     with pytest.raises(comments.CommentNotFoundError):
         comments.get_comment_by_id(comment.comment_id + 1)
     assert comments.get_comment_by_id(comment.comment_id) is comment
-    with pytest.raises(comments.InvalidCommentIdError):
-        comments.get_comment_by_id('-')
 
 
 def test_create_comment(user_factory, post_factory, fake_datetime):

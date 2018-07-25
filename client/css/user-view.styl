@@ -1,3 +1,6 @@
+@import colors
+$token-border-color = $active-tab-background-color
+
 #user
     width: 100%
     max-width: 35em
@@ -37,7 +40,43 @@
                 height: 1px
                 clear: both
 
+    #user-tokens
+
+        .token-flex-container
+            width: 100%
+            display: flex;
+            flex-direction column;
+            padding-bottom: 0.5em;
+
+            .full-width
+                width: 100%
+
+            .token-flex-row
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                padding: 0.2em;
+
+                .no-wrap
+                  white-space: nowrap;
+
+                .token-input
+                    min-height: 2em;
+                    line-height: 2em;
+                    text-align: center;
+
+            .token-flex-column
+                display: flex;
+                flex-direction: column;
+
+            .token-flex-labels
+                padding-right: 0.5em
+
+            hr
+                border-top: 3px solid $token-border-color
+
+        form
+            width: 100%;
+
     #user-delete form
         width: 100%
-
-

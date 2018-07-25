@@ -1,7 +1,7 @@
 'use strict';
 
 const api = require('../api.js');
-const misc = require('../util/misc.js');
+const uri = require('../util/uri.js');
 const SnapshotList = require('../models/snapshot_list.js');
 const PageController = require('../controllers/page_controller.js');
 const topNavigation = require('../models/top_navigation.js');
@@ -22,13 +22,14 @@ class SnapshotsController {
         this._pageController = new PageController();
         this._pageController.run({
             parameters: ctx.parameters,
-            getClientUrlForPage: page => {
+            defaultLimit: 25,
+            getClientUrlForPage: (offset, limit) => {
                 const parameters = Object.assign(
-                    {}, ctx.parameters, {page: page});
-                return '/history/' + misc.formatUrlParameters(parameters);
+                    {}, ctx.parameters, {offset: offset, limit: limit});
+                return uri.formatClientLink('history', parameters);
             },
-            requestPage: page => {
-                return SnapshotList.search('', page, 25);
+            requestPage: (offset, limit) => {
+                return SnapshotList.search('', offset, limit);
             },
             pageRenderer: pageCtx => {
                 Object.assign(pageCtx, {
@@ -43,7 +44,6 @@ class SnapshotsController {
 }
 
 module.exports = router => {
-    router.enter('/history/:parameters?',
-        (ctx, next) => { misc.parseUrlParametersRoute(ctx, next); },
+    router.enter(['history'],
         (ctx, next) => { ctx.controller = new SnapshotsController(ctx); });
 };

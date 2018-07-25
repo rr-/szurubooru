@@ -30,9 +30,7 @@
 
         <div class='buttons'>
             <input type='submit' value='Log in'/>
-            <% if (ctx.canSendMails) { %>
-                <a class='append' href='/password-reset'>Forgot the password?</a>
-            <% } %>
+            <a class='append' href='<%- ctx.formatClientLink('password-reset') %>'>Forgot the password?</a>
         </div>
     </form>
 </div>

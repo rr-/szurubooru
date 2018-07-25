@@ -13,7 +13,7 @@ def executor():
 def verify_unpaged(executor):
     def verify(input, expected_comment_text):
         actual_count, actual_comments = executor.execute(
-            input, page=1, page_size=100)
+            input, offset=0, limit=100)
         actual_comment_text = [c.text for c in actual_comments]
         assert actual_count == len(expected_comment_text)
         assert actual_comment_text == expected_comment_text

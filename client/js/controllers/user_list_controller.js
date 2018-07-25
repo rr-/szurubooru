@@ -1,7 +1,8 @@
 'use strict';
 
 const api = require('../api.js');
-const misc = require('../util/misc.js');
+const router = require('../router.js');
+const uri = require('../util/uri.js');
 const UserList = require('../models/user_list.js');
 const topNavigation = require('../models/top_navigation.js');
 const PageController = require('../controllers/page_controller.js');
@@ -38,10 +39,8 @@ class UserListController {
     }
 
     _evtNavigate(e) {
-        history.pushState(
-            null,
-            window.title,
-            '/users/' + misc.formatUrlParameters(e.detail.parameters));
+        router.showNoDispatch(
+            uri.formatClientLink('users', e.detail.parameters));
         Object.assign(this._ctx.parameters, e.detail.parameters);
         this._syncPageController();
     }
@@ -49,13 +48,15 @@ class UserListController {
     _syncPageController() {
         this._pageController.run({
             parameters: this._ctx.parameters,
-            getClientUrlForPage: page => {
+            defaultLimit: 30,
+            getClientUrlForPage: (offset, limit) => {
                 const parameters = Object.assign(
-                    {}, this._ctx.parameters, {page: page});
-                return '/users/' + misc.formatUrlParameters(parameters);
+                    {}, this._ctx.parameters, {offset, offset, limit: limit});
+                return uri.formatClientLink('users', parameters);
             },
-            requestPage: page => {
-                return UserList.search(this._ctx.parameters.query, page);
+            requestPage: (offset, limit) => {
+                return UserList.search(
+                    this._ctx.parameters.query, offset, limit);
             },
             pageRenderer: pageCtx => {
                 Object.assign(pageCtx, {
@@ -69,7 +70,6 @@ class UserListController {
 
 module.exports = router => {
     router.enter(
-        '/users/:parameters(.*)?',
-        (ctx, next) => { misc.parseUrlParametersRoute(ctx, next); },
+        ['users'],
         (ctx, next) => { ctx.controller = new UserListController(ctx); });
 };

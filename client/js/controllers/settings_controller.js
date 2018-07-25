@@ -22,7 +22,7 @@ class SettingsController {
 };
 
 module.exports = router => {
-    router.enter('/settings', (ctx, next) => {
+    router.enter(['settings'], (ctx, next) => {
         ctx.controller = new SettingsController();
     });
 };

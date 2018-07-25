@@ -2,10 +2,12 @@
 
 const api = require('../api.js');
 const router = require('../router.js');
+const uri = require('../util/uri.js');
 const misc = require('../util/misc.js');
 const progress = require('../util/progress.js');
 const topNavigation = require('../models/top_navigation.js');
 const Post = require('../models/post.js');
+const Tag = require('../models/tag.js');
 const PostUploadView = require('../views/post_upload_view.js');
 const EmptyView = require('../views/empty_view.js');
 
@@ -28,6 +30,7 @@ class PostUploadController {
         this._view = new PostUploadView({
             canUploadAnonymously: api.hasPrivilege('posts:create:anonymous'),
             canViewPosts: api.hasPrivilege('posts:view'),
+            enableSafety: api.safetyEnabled(),
         });
         this._view.addEventListener('change', e => this._evtChange(e));
         this._view.addEventListener('submit', e => this._evtSubmit(e));
@@ -61,7 +64,7 @@ class PostUploadController {
                 .then(() => {
                     this._view.clearMessages();
                     misc.disableExitConfirmation();
-                    const ctx = router.show('/posts');
+                    const ctx = router.show(uri.formatClientLink('posts'));
                     ctx.controller.showSuccess('Posts uploaded.');
                 }, error => {
                     if (error.uploadable) {
@@ -95,16 +98,20 @@ class PostUploadController {
         return reverseSearchPromise.then(searchResult => {
             if (searchResult) {
                 // notify about exact duplicate
-                if (searchResult.exactPost && !skipDuplicates) {
-                    let error = new Error('Post already uploaded ' +
-                        `(@${searchResult.exactPost.id})`);
-                    error.uploadable = uploadable;
-                    return Promise.reject(error);
+                if (searchResult.exactPost) {
+                    if (skipDuplicates) {
+                        this._view.removeUploadable(uploadable);
+                        return Promise.resolve();
+                    } else {
+                        let error = new Error('Post already uploaded ' +
+                            `(@${searchResult.exactPost.id})`);
+                        error.uploadable = uploadable;
+                        return Promise.reject(error);
+                    }
                 }
 
                 // notify about similar posts
-                if (!searchResult.exactPost &&
-                        searchResult.similarPosts.length) {
+                if (searchResult.similarPosts.length) {
                     let error = new Error(
                         `Found ${searchResult.similarPosts.length} similar ` +
                         'posts.\nYou can resume or discard this upload.');
@@ -137,7 +144,11 @@ class PostUploadController {
         let post = new Post();
         post.safety = uploadable.safety;
         post.flags = uploadable.flags;
-        post.tags = uploadable.tags;
+        for (let tagName of uploadable.tags) {
+            const tag = new Tag();
+            tag.names = [tagName];
+            post.tags.add(tag);
+        }
         post.relations = uploadable.relations;
         post.newContent = uploadable.url || uploadable.file;
         return post;
@@ -145,7 +156,7 @@ class PostUploadController {
 }
 
 module.exports = router => {
-    router.enter('/upload', (ctx, next) => {
+    router.enter(['upload'], (ctx, next) => {
         ctx.controller = new PostUploadController();
     });
 };

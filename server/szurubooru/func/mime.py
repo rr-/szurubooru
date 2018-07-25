@@ -1,7 +1,8 @@
 import re
+from typing import Optional
 
 
-def get_mime_type(content):
+def get_mime_type(content: bytes) -> str:
     if not content:
         return 'application/octet-stream'
 
@@ -26,7 +27,7 @@ def get_mime_type(content):
     return 'application/octet-stream'
 
 
-def get_extension(mime_type):
+def get_extension(mime_type: str) -> Optional[str]:
     extension_map = {
         'application/x-shockwave-flash': 'swf',
         'image/gif': 'gif',
@@ -39,19 +40,19 @@ def get_extension(mime_type):
     return extension_map.get((mime_type or '').strip().lower(), None)
 
 
-def is_flash(mime_type):
+def is_flash(mime_type: str) -> bool:
     return mime_type.lower() == 'application/x-shockwave-flash'
 
 
-def is_video(mime_type):
+def is_video(mime_type: str) -> bool:
     return mime_type.lower() in ('application/ogg', 'video/mp4', 'video/webm')
 
 
-def is_image(mime_type):
+def is_image(mime_type: str) -> bool:
     return mime_type.lower() in ('image/jpeg', 'image/png', 'image/gif')
 
 
-def is_animated_gif(content):
+def is_animated_gif(content: bytes) -> bool:
     pattern = b'\x21\xF9\x04[\x00-\xFF]{4}\x00[\x2C\x21]'
     return get_mime_type(content) == 'image/gif' \
         and len(re.findall(pattern, content)) > 1

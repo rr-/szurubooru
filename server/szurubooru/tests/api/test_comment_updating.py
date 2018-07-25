@@ -1,7 +1,7 @@
 from datetime import datetime
 from unittest.mock import patch
 import pytest
-from szurubooru import api, db, errors
+from szurubooru import api, db, model, errors
 from szurubooru.func import comments
 
 
@@ -9,15 +9,15 @@ from szurubooru.func import comments
 def inject_config(config_injector):
     config_injector({
         'privileges': {
-            'comments:edit:own': db.User.RANK_REGULAR,
-            'comments:edit:any': db.User.RANK_MODERATOR,
+            'comments:edit:own': model.User.RANK_REGULAR,
+            'comments:edit:any': model.User.RANK_MODERATOR,
         },
     })
 
 
 def test_simple_updating(
         user_factory, comment_factory, context_factory, fake_datetime):
-    user = user_factory(rank=db.User.RANK_REGULAR)
+    user = user_factory(rank=model.User.RANK_REGULAR)
     comment = comment_factory(user=user)
     db.session.add(comment)
     db.session.commit()
@@ -73,14 +73,14 @@ def test_trying_to_update_non_existing(user_factory, context_factory):
         api.comment_api.update_comment(
             context_factory(
                 params={'text': 'new text'},
-                user=user_factory(rank=db.User.RANK_REGULAR)),
+                user=user_factory(rank=model.User.RANK_REGULAR)),
             {'comment_id': 5})
 
 
 def test_trying_to_update_someones_comment_without_privileges(
         user_factory, comment_factory, context_factory):
-    user = user_factory(rank=db.User.RANK_REGULAR)
-    user2 = user_factory(rank=db.User.RANK_REGULAR)
+    user = user_factory(rank=model.User.RANK_REGULAR)
+    user2 = user_factory(rank=model.User.RANK_REGULAR)
     comment = comment_factory(user=user)
     db.session.add(comment)
     db.session.commit()
@@ -93,8 +93,8 @@ def test_trying_to_update_someones_comment_without_privileges(
 
 def test_updating_someones_comment_with_privileges(
         user_factory, comment_factory, context_factory):
-    user = user_factory(rank=db.User.RANK_REGULAR)
-    user2 = user_factory(rank=db.User.RANK_MODERATOR)
+    user = user_factory(rank=model.User.RANK_REGULAR)
+    user2 = user_factory(rank=model.User.RANK_MODERATOR)
     comment = comment_factory(user=user)
     db.session.add(comment)
     db.session.commit()

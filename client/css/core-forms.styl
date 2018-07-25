@@ -17,6 +17,8 @@ form
     .input li:first-child
         padding-top: 0
         margin-top: 0
+
+form:not(.horizontal)
     .hint
         margin-top: 0.2em
         margin-bottom: 0
@@ -29,13 +31,22 @@ form.horizontal
     margin-bottom: 1em
     .input, .buttons, ul
         display: inline-block
-        vertical-align: middle
+        vertical-align: top
         margin: 0
         padding: 0
         input
-            vertical-align: middle
+            vertical-align: top
     .buttons
         margin-right: 0.5em
+    @media (max-width: 1000px)
+        display: block
+        .input, .buttons, ul
+            display: block
+            margin-top: 0.5em
+            &:first-child
+                margin-top: 0
+        .buttons
+            margin-right: 0
 
 
 
@@ -127,6 +138,38 @@ input[type=checkbox]:focus + .checkbox:before
 
 
 /*
+ * Date and time inputs
+ */
+
+input[type=date],
+input[type=time]
+    vertical-align: top
+    font-family: 'Droid Sans', sans-serif
+    font-size: 100%
+    padding: 0.2em 0.3em
+    box-sizing: border-box
+    border: 2px solid $input-enabled-border-color
+    background: $input-enabled-background-color
+    color: $input-enabled-text-color
+    box-shadow: none /* :-moz-submit-invalid on FF */
+    transition: border-color 0.1s linear, background-color 0.1s linear
+
+    &:disabled
+        border: 2px solid $input-disabled-border-color
+        background: $input-disabled-background-color
+        color: $input-disabled-text-color
+
+    &:focus
+        border-color: $main-color
+
+    &[readonly]
+        border: 2px solid $input-disabled-border-color
+        background: $input-disabled-background-color
+        color: $input-disabled-text-color
+
+
+
+/*
  * Regular inputs
  */
 select,
@@ -170,13 +213,25 @@ input:disabled
     cursor: not-allowed
 
 label.color
+    white-space: nowrap
     position: relative
+    display: flex
     input[type=text]
+        margin-right: 0.25em
+        width: auto
+    .preview
+        display: inline-block
         text-align: center
-        pointer-events: none
-    input[type=color]
-        position: absolute
-        opacity: 0
+        padding: 0 0.5em
+        border: 2px solid black
+        &:after
+            content: 'A'
+    .background-preview
+        border-right: 0
+        color: transparent
+    .text-preview
+        border-left: 0
+
 
 form.show-validation .input
     input:invalid
@@ -199,10 +254,13 @@ input[type=submit]
     cursor: pointer
     font-size: 100%
     padding: 0.2em 0.7em
+    border-radius: 0
     border: 2px solid $button-enabled-background-color
     background: $button-enabled-background-color
     color: $button-enabled-text-color
     outline: 0 /* something on Chrome */
+    -moz-appearance: none
+    -webkit-appearance: none
 
     &:disabled
         cursor: default
@@ -231,25 +289,26 @@ input::-moz-focus-inner
  * File dropper
  */
 .file-dropper-holder
-    display: flex
-    flex-wrap: wrap
     .file-dropper
         display: block
-        width: 100%
         background: $window-color
         border: 3px dashed #eee
         padding: 0.3em 0.5em
         line-height: 140%
         text-align: center
         cursor: pointer
+        overflow: hidden
         word-wrap: break-word
-    input
+    .url-holder
+        display: flex
         margin-top: 0.5em
-        width: auto
-        flex: 1
-    button
-        margin-top: 0.5em
-        width: 8em
+        input, button
+            min-width: 0 /* firefox being sassy */
+            width: auto !important /* don't inherit anything weird */
+        input
+            flex: 1
+        button
+            margin-left: 0.5em
 
 input[type=file]:disabled+.file-dropper
     cursor: default

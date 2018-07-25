@@ -1,32 +1,33 @@
+from typing import Any, Optional, List
 import os
 from szurubooru import config
 
 
-def _get_full_path(path):
+def _get_full_path(path: str) -> str:
     return os.path.join(config.config['data_dir'], path)
 
 
-def delete(path):
+def delete(path: str) -> None:
     full_path = _get_full_path(path)
     if os.path.exists(full_path):
         os.unlink(full_path)
 
 
-def has(path):
+def has(path: str) -> bool:
     return os.path.exists(_get_full_path(path))
 
 
-def scan(path):
+def scan(path: str) -> List[Any]:
     if has(path):
-        return os.scandir(_get_full_path(path))
+        return list(os.scandir(_get_full_path(path)))
     return []
 
 
-def move(source_path, target_path):
-    return os.rename(_get_full_path(source_path), _get_full_path(target_path))
+def move(source_path: str, target_path: str) -> None:
+    os.rename(_get_full_path(source_path), _get_full_path(target_path))
 
 
-def get(path):
+def get(path: str) -> Optional[bytes]:
     full_path = _get_full_path(path)
     if not os.path.exists(full_path):
         return None
@@ -34,7 +35,7 @@ def get(path):
         return handle.read()
 
 
-def save(path, content):
+def save(path: str, content: bytes) -> None:
     full_path = _get_full_path(path)
     os.makedirs(os.path.dirname(full_path), exist_ok=True)
     with open(full_path, 'wb') as handle:
