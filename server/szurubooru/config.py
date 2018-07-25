@@ -23,7 +23,7 @@ def docker_config() -> Dict:
             'POSTGRES_HOST',
             'ESEARCH_HOST'
     ]:
-        if not os.getenv(key, False) and if os.getenv('CI') != 'true':
+        if not os.getenv(key, False) and os.getenv('CI') != 'true':
             raise errors.ConfigError(f'Environment variable "{key}" not set')
     return {
         'debug': True,
@@ -51,7 +51,7 @@ def read_config() -> Dict:
         if os.path.exists('../config.yaml'):
             with open('../config.yaml') as handle:
                 ret = merge(ret, yaml.load(handle.read()))
-        elif os.path.exists('/.dockerenv') and if os.getenv('CI') != 'true':
+        elif os.path.exists('/.dockerenv') and os.getenv('CI') != 'true':
             ret = merge(ret, docker_config())
 
         return ret
