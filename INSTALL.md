@@ -1,4 +1,5 @@
-This assumes that you have Docker and Docker Compose already installed.
+This assumes that you have Docker (version 17.05 or greater)
+and Docker Compose (version 1.6.0 or greater) already installed.
 
 ### Prepare things
 

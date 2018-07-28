@@ -3,7 +3,7 @@
 ## Use this as a template to set up docker-compose, or as guide to set up other
 ## orchestration services
 
-version: '3.1'
+version: '2'
 services:
 
   ## Python3 container for backend API
