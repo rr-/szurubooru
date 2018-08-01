@@ -74,8 +74,8 @@ matrix:
 
     - language: node_js
       node_js:
-      name: "Frontend test ugins npm / nodejs 6"
         - "6"
+      name: "Frontend test ugins npm / nodejs 6"
       install:
         - cd client/
         - npm install
@@ -84,8 +84,8 @@ matrix:
 
     - language: node_js
       node_js:
-      name: "Frontend test ugins npm / nodejs 7"
         - "7"
+      name: "Frontend test ugins npm / nodejs 7"
       install:
         - cd client/
         - npm install
@@ -94,8 +94,8 @@ matrix:
 
     - language: node_js
       node_js:
-      name: "Frontend test ugins npm / nodejs 8"
         - "8"
+      name: "Frontend test ugins npm / nodejs 8"
       install:
         - cd client/
         - npm install
@@ -104,8 +104,8 @@ matrix:
 
     - language: node_js
       node_js:
-      name: "Frontend test ugins npm / nodejs 9"
         - "9"
+      name: "Frontend test ugins npm / nodejs 9"
       install:
         - cd client/
         - npm install
