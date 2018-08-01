@@ -23,7 +23,6 @@ matrix:
         - sudo -i -u postgres createdb szuru_test
         - sudo -i -u postgres psql -c "ALTER USER szuru PASSWORD 'dog';"
         - cd server
-        - cp config.yaml.dist ../config.yaml.dist
         - cp config.yaml.dist ../config.yaml
         - sed -i -e 's/^#debug:/debug:/' ../config.yaml
         - sed -i -e 's/^#show_sql:/show_sql:/' ../config.yaml
@@ -55,7 +54,6 @@ matrix:
         - sudo -i -u postgres createdb szuru_test
         - sudo -i -u postgres psql -c "ALTER USER szuru PASSWORD 'dog';"
         - cd server
-        - cp config.yaml.dist ../config.yaml.dist
         - cp config.yaml.dist ../config.yaml
         - sed -i -e 's/^#debug:/debug:/' ../config.yaml
         - sed -i -e 's/^#show_sql:/show_sql:/' ../config.yaml
