@@ -12,8 +12,6 @@ matrix:
     - language: python
       python:
         - "3.6"
-      allow_failures:
-        - python: "3.6"
       name: "Backend test for on-premise / python 3.6"
       before_install:
         - sudo apt-get -y install software-properties-common
@@ -45,8 +43,6 @@ matrix:
     - language: python
       python:
         - "3.7-dev"
-      allow_failures:
-        - python: "3.7-dev"
       name: "Backend test for on-premise / python 3.7-dev"
       before_install:
         - sudo apt-get -y install software-properties-common
@@ -84,10 +80,9 @@ matrix:
         - docker-compose pull
         - docker-compose build --pull
         - docker-compose up -d
+        - docker exec -it backend /bin/sh
+        - cd /opt/app
       script:
-        - cd server/
-        - ./wait-for-es
-        - alembic upgrade head
         - py.test
 
     # ---- Frontend test ugins npm / nodejs 6 ----
