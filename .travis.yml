@@ -4,10 +4,11 @@ dist: trusty
 services:
   - postgresql
   - elasticsearch
+  - docker
 
 matrix:
   include:
-    - language: python
+    - language: python          # Backend test for on-premise
       python:
         - "3.6"
       before_install:
@@ -36,3 +37,14 @@ matrix:
         - ./wait-for-es
         - alembic upgrade head
         - py.test
+
+    - language: node_js          # Frontend test
+      node_js:
+        - "8"
+      before_install:
+        - npm install -g yarn
+      install:
+        - cd client/
+        - npm install
+      script:
+        - node build.js
