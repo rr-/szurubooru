@@ -73,15 +73,22 @@ matrix:
     # ---- Backend test for docker ----
     - language: python
       name: "Backend test for docker"
+      env:
+        - DOCKER_COMPOSE_VERSION=1.22.0
       before_install:
+        - sudo rm /usr/local/bin/docker-compose
+        - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+        - chmod +x docker-compose
+        - sudo mv docker-compose /usr/local/bin
         - cp server/config.yaml.dist config.yaml
         - cp docker-compose.yml.example docker-compose.yml
       install:
         - docker-compose pull
         - docker-compose build --pull
         - docker-compose up -d
+        - docker ps
       script:
-        - docker-compose exec szurubooru_backend_1 py.test
+        - docker-compose exec backend py.test
 
     # ---- Frontend test ugins npm / nodejs 6 ----
     - language: node_js
