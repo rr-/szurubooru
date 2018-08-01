@@ -86,9 +86,14 @@ matrix:
         - docker-compose pull
         - docker-compose build --pull
         - docker-compose up -d
-        - docker ps
+        - docker-compose exec backend sh -c "echo '[tool:pytest]' > setup.cfg"
+        - docker-compose exec backend sh -c "echo 'testpaths=szurubooru' >> setup.cfg"
+        - docker-compose exec backend sh -c "echo 'addopts=--cov-report=term-missing --cov=szurubooru --tb=short' >> setup.cfg"
+        - docker-compose exec backend sh -c "pip install --user pytest pytest-cov freezegun pycodestyle"
       script:
-        - docker-compose exec backend py.test
+        - docker-compose exec backend sh -c "./wait-for-es"
+        - docker-compose exec backend sh -c "alembic upgrade head"
+        - docker-compose exec backend sh -c "/opt/app/.local/bin/py.test"
 
     # ---- Frontend test ugins npm / nodejs 6 ----
     - language: node_js
