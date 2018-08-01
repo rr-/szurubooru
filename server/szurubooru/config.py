@@ -53,7 +53,6 @@ def read_config() -> Dict:
                 ret = merge(ret, yaml.load(handle.read()))
         if os.path.exists('/.dockerenv'):
             ret = merge(ret, docker_config())
-
         return ret
 
 

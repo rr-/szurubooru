@@ -9,7 +9,6 @@ services:
 matrix:
   include:
     - language: python
-      # Backend test for on-premise / python 3.6
       python:
         - "3.6"
       allow_failures:
@@ -42,7 +41,6 @@ matrix:
         - py.test
 
     - language: python
-      # Backend test for on-premise / python 3.7-dev
       python:
         - "3.7-dev"
       allow_failures:
@@ -75,7 +73,6 @@ matrix:
         - py.test
 
     - language: node_js
-      # Frontend test ugins npm / nodejs 6
       node_js:
       name: "Frontend test ugins npm / nodejs 6"
         - "6"
@@ -86,7 +83,6 @@ matrix:
         - node build.js
 
     - language: node_js
-      # Frontend test ugins npm / nodejs 7
       node_js:
       name: "Frontend test ugins npm / nodejs 7"
         - "7"
@@ -97,7 +93,6 @@ matrix:
         - node build.js
 
     - language: node_js
-      # Frontend test ugins npm / nodejs 8
       node_js:
       name: "Frontend test ugins npm / nodejs 8"
         - "8"
@@ -108,7 +103,6 @@ matrix:
         - node build.js
 
     - language: node_js
-      # Frontend test ugins npm / nodejs 9
       node_js:
       name: "Frontend test ugins npm / nodejs 9"
         - "9"
@@ -119,7 +113,6 @@ matrix:
         - node build.js
 
     - language: node_js
-      # Frontend test ugins yarn / nodejs 9
       node_js:
         - "9"
       name: "Frontend test ugins yarn / nodejs 9"
