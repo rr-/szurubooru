@@ -4,7 +4,6 @@ dist: trusty
 services:
   - postgresql
   - elasticsearch
-  - docker
 
 matrix:
   include:
@@ -13,6 +12,7 @@ matrix:
         - "3.6"
       allow_failures:
         - python: "3.6"
+      name: ""
       before_install:
         - sudo apt-get -y install software-properties-common
         - sudo add-apt-repository -y ppa:mc3man/trusty-media
@@ -72,16 +72,28 @@ matrix:
         - alembic upgrade head
         - py.test
 
-    - language: node_js          # Frontend test
+    - language: python
+      python:
+        - "3.6"
+      script:
+        - sudo cat /.dockerenv
+
+    - language: node_js          # Frontend test using npm
       node_js:
-        - "6"
-        - "7"
-        - "8"
         - "9"
-#      before_install:
-#        - npm install -g yarn
       install:
         - cd client/
         - npm install
+      script:
+        - node build.js
+
+    - language: node_js          # Frontend test using yarn
+      node_js:
+        - "9"
+      before_install:
+        - npm install -g yarn
+      install:
+        - cd client/
+        - yarn install
       script:
         - node build.js
