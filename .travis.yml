@@ -8,6 +8,7 @@ services:
 
 matrix:
   include:
+    # ---- Backend test for on-premise / python 3.6 ----
     - language: python
       python:
         - "3.6"
@@ -23,6 +24,7 @@ matrix:
         - sudo -i -u postgres createdb szuru_test
         - sudo -i -u postgres psql -c "ALTER USER szuru PASSWORD 'dog';"
         - cd server
+        - cp config.yaml.dist ../config.yaml.dist
         - cp config.yaml.dist ../config.yaml
         - sed -i -e 's/^#debug:/debug:/' ../config.yaml
         - sed -i -e 's/^#show_sql:/show_sql:/' ../config.yaml
@@ -39,6 +41,7 @@ matrix:
         - alembic upgrade head
         - py.test
 
+    # ---- Backend test for on-premise / python 3.7-dev ----
     - language: python
       python:
         - "3.7-dev"
@@ -54,6 +57,7 @@ matrix:
         - sudo -i -u postgres createdb szuru_test
         - sudo -i -u postgres psql -c "ALTER USER szuru PASSWORD 'dog';"
         - cd server
+        - cp config.yaml.dist ../config.yaml.dist
         - cp config.yaml.dist ../config.yaml
         - sed -i -e 's/^#debug:/debug:/' ../config.yaml
         - sed -i -e 's/^#show_sql:/show_sql:/' ../config.yaml
@@ -70,6 +74,23 @@ matrix:
         - alembic upgrade head
         - py.test
 
+    # ---- Backend test for docker ----
+    - language: python
+      name: "Backend test for docker"
+      before_install:
+        - cp server/config.yaml.dist config.yaml
+        - cp docker-compose.yml.example docker-compose.yml
+      install:
+        - docker-compose pull
+        - docker-compose build --pull
+        - docker-compose up -d
+      script:
+        - cd server/
+        - ./wait-for-es
+        - alembic upgrade head
+        - py.test
+
+    # ---- Frontend test ugins npm / nodejs 6 ----
     - language: node_js
       node_js:
         - "6"
@@ -80,6 +101,7 @@ matrix:
       script:
         - node build.js
 
+    # ---- Frontend test ugins npm / nodejs 7 ----
     - language: node_js
       node_js:
         - "7"
@@ -90,6 +112,7 @@ matrix:
       script:
         - node build.js
 
+    # ---- Frontend test ugins npm / nodejs 8 ----
     - language: node_js
       node_js:
         - "8"
@@ -100,6 +123,7 @@ matrix:
       script:
         - node build.js
 
+    # ---- Frontend test ugins npm / nodejs 9 ----
     - language: node_js
       node_js:
         - "9"
@@ -110,6 +134,7 @@ matrix:
       script:
         - node build.js
 
+    # ---- Frontend test ugins yarn / nodejs 9 ----
     - language: node_js
       node_js:
         - "9"
