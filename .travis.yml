@@ -4,15 +4,17 @@ dist: trusty
 services:
   - postgresql
   - elasticsearch
+  - docker
 
 matrix:
   include:
     - language: python
+      # Backend test for on-premise / python 3.6
       python:
         - "3.6"
       allow_failures:
         - python: "3.6"
-      name: "Backend test for on-premise / 3.6"
+      name: "Backend test for on-premise / python 3.6"
       before_install:
         - sudo apt-get -y install software-properties-common
         - sudo add-apt-repository -y ppa:mc3man/trusty-media
@@ -39,11 +41,13 @@ matrix:
         - alembic upgrade head
         - py.test
 
-    - language: python          # Backend test for on-premise
+    - language: python
+      # Backend test for on-premise / python 3.7-dev
       python:
         - "3.7-dev"
       allow_failures:
         - python: "3.7-dev"
+      name: "Backend test for on-premise / python 3.7-dev"
       before_install:
         - sudo apt-get -y install software-properties-common
         - sudo add-apt-repository -y ppa:mc3man/trusty-media
@@ -70,8 +74,43 @@ matrix:
         - alembic upgrade head
         - py.test
 
-    - language: node_js          # Frontend test using npm
+    - language: node_js
+      # Frontend test ugins npm / nodejs 6
       node_js:
+      name: "Frontend test ugins npm / nodejs 6"
+        - "6"
+      install:
+        - cd client/
+        - npm install
+      script:
+        - node build.js
+
+    - language: node_js
+      # Frontend test ugins npm / nodejs 7
+      node_js:
+      name: "Frontend test ugins npm / nodejs 7"
+        - "7"
+      install:
+        - cd client/
+        - npm install
+      script:
+        - node build.js
+
+    - language: node_js
+      # Frontend test ugins npm / nodejs 8
+      node_js:
+      name: "Frontend test ugins npm / nodejs 8"
+        - "8"
+      install:
+        - cd client/
+        - npm install
+      script:
+        - node build.js
+
+    - language: node_js
+      # Frontend test ugins npm / nodejs 9
+      node_js:
+      name: "Frontend test ugins npm / nodejs 9"
         - "9"
       install:
         - cd client/
@@ -79,9 +118,11 @@ matrix:
       script:
         - node build.js
 
-    - language: node_js          # Frontend test using yarn
+    - language: node_js
+      # Frontend test ugins yarn / nodejs 9
       node_js:
         - "9"
+      name: "Frontend test ugins yarn / nodejs 9"
       before_install:
         - npm install -g yarn
       install:
