@@ -80,12 +80,9 @@ matrix:
         - docker-compose pull
         - docker-compose build --pull
         - docker-compose up -d
-#        - docker exec -it backend /bin/sh
-#        - cd /opt/app
+        - docker exec -it szurubooru_backend_1 /bin/sh
+        - cd /opt/app
       script:
-#        - py.test
-        - docker ps
-        - pwd
         - py.test
 
     # ---- Frontend test ugins npm / nodejs 6 ----
