@@ -80,10 +80,8 @@ matrix:
         - docker-compose pull
         - docker-compose build --pull
         - docker-compose up -d
-        - docker exec -it szurubooru_backend_1 /bin/sh
-        - cd /opt/app
       script:
-        - py.test
+        - docker-compose exec szurubooru_backend_1 py.test
 
     # ---- Frontend test ugins npm / nodejs 6 ----
     - language: node_js
