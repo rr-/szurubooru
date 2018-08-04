@@ -3,7 +3,7 @@ WORKDIR /opt/app
 
 COPY alembic.ini wait-for-es generate-thumb ./
 COPY szurubooru/ ./szurubooru/
-COPY config.yaml.dist ../
+COPY config.yaml.dist ./
 
 
 FROM python:3.6-slim

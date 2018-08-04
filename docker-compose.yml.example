@@ -38,7 +38,7 @@ services:
       ## If more customizations that are not covered in `config.yaml.dist` are needed
       ## Comment this line if you are not going
       ## to supply a YAML file
-      - ./config.yaml:/opt/config.yaml
+      - ./server/config.yaml:/opt/app/config.yaml
 
   ## HTTP container for frontend
   frontend:
