@@ -185,9 +185,14 @@ function bundleBinaryAssets() {
     });
 }
 
+function bundleWebAppFiles() {
+    copyFile('./app/manifest.json', './public/manifest.json');
+}
+
 const config = getConfig();
 bundleConfig(config);
 bundleBinaryAssets();
+bundleWebAppFiles();
 if (!process.argv.includes('--no-html')) {
     bundleHtml();
 }
