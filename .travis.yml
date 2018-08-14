@@ -19,7 +19,7 @@ matrix:
         - sudo apt-get update
         - sudo apt-get -y --allow-unauthenticated install ffmpeg
         - sudo -i -u postgres createuser szuru -D -R -S
-        - sudo -i -u post  gres createdb szuru_test
+        - sudo -i -u postgres createdb szuru_test
         - sudo -i -u postgres psql -c "ALTER USER szuru PASSWORD 'dog';"
         - cd server
         - cp config.yaml.dist config.yaml
