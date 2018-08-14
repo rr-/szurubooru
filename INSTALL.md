@@ -12,7 +12,7 @@ and Docker Compose (version 1.6.0 or greater) already installed.
 2. Configure the application:
 
     ```console
-    user@host:szuru$ cp server/config.yaml.dist config.yaml
+    user@host:szuru$ cp server/config.yaml.dist server/config.yaml
     user@host:szuru$ edit config.yaml
     ```
 
