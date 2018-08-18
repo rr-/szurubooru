@@ -80,9 +80,8 @@ and Docker Compose (version 1.6.0 or greater) already installed.
     Some users may wish to access the service at a different base URI, such
     as `http://example.com/szuru/`, commonly when sharing multiple HTTP
     services on one domain using a reverse proxy. In this case, simply set
-    `BASE_URL="/szuru/"` in the frontend container, and
-    `DATA_URL="/szuru/data/"` in the backend container (unless you are hosting
-    your data on a different domain).
+    `BASE_URL="/szuru/"` in the frontend container (unless you are hosting your
+    data on a different domain).
 
     You should set your reverse proxy to proxy `http(s)://example.com/szuru` to
     `http://<internal IP or hostname of frontend container>/`. For an NGINX
