@@ -178,11 +178,48 @@ function bundleConfig(config) {
 }
 
 function bundleBinaryAssets() {
-    glob('./img/*.png', {}, (er, files) => {
-        for (let file of files) {
-            copyFile(file, path.join('./public/img/', path.basename(file)));
-        }
-    });
+    copyFile('./img/favicon.png', './public/img/favicon.png');
+    copyFile('./img/transparency_grid.png', './public/img/transparency_grid.png');
+
+    const Jimp = require('jimp');
+
+    for (let icon of [
+        {name: 'android-chrome-192x192.png', size: 192},
+        {name: 'android-chrome-512x512.png', size: 512},
+        {name: 'apple-touch-icon.png', size: 180},
+        {name: 'mstile-150x150.png', size: 150}
+    ]) {
+        Jimp.read('./img/app.png', (err, infile) => {
+            infile
+                .resize(icon.size, Jimp.AUTO, Jimp.RESIZE_BEZIER)
+                .write(path.join('./public/img/', icon.name));
+        });
+    }
+    console.info('Generated webapp icons');
+
+    for (let dim of [
+        {w:  640, h: 1136, center: 320},
+        {w:  750, h: 1294, center: 375},
+        {w: 1125, h: 2436, center: 565},
+        {w: 1242, h: 2148, center: 625},
+        {w: 1536, h: 2048, center: 770},
+        {w: 1668, h: 2224, center: 820},
+        {w: 2048, h: 2732, center: 1024}
+    ]) {
+        Jimp.read('./img/splash.png', (err, infile) => {
+            infile
+                .resize(dim.center, Jimp.AUTO, Jimp.RESIZE_BEZIER)
+                .background(0xFFFFFFFF)
+                .contain(dim.w, dim.center,
+                    Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_MIDDLE)
+                .contain(dim.w, dim.h,
+                    Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_MIDDLE)
+                .write(path.join('./public/img/',
+                    'apple-touch-startup-image-'
+                    + dim.w + '-' + dim.h + '.png'));
+        });
+    }
+    console.info('Generated splash screens');
 }
 
 function bundleWebAppFiles() {
