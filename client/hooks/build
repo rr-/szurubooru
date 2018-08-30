@@ -1,0 +1,4 @@
+#!/bin/bash
+BUILD_INFO=docker-$(echo $SOURCE_COMMIT | cut -c1-7)-auto
+echo "Using BUILD_INFO=$BUILD_INFO"
+docker build --build-arg BUILD_INFO=$BUILD_INFO -f $DOCKERFILE_PATH -t $IMAGE_NAME .
