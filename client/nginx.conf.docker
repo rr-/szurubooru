@@ -1,4 +1,5 @@
 worker_processes 1;
+user nginx;
 
 error_log /dev/stderr warn;
 pid /var/run/nginx.pid;
@@ -54,3 +55,4 @@ http {
         }
     }
 }
+daemon off;

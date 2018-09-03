@@ -8,10 +8,7 @@ COPY . ./
 
 ARG BUILD_INFO="docker-latest"
 ARG CLIENT_BUILD_ARGS=""
-RUN BASE_URL="__BASEURL__" node build.js ${CLIENT_BUILD_ARGS}
-
-RUN find public/ -name public/index.html -prune -o -type f -size +5k \
-        -print0 | xargs -0 -- gzip -6 -k
+RUN BASE_URL="__BASEURL__" node build.js --gzip ${CLIENT_BUILD_ARGS}
 
 
 FROM nginx:alpine
@@ -23,7 +20,7 @@ RUN \
     echo 'sed -i "s|__BACKEND__|${BACKEND_HOST}|" /etc/nginx/nginx.conf' \
         >> /init && \
     echo 'sed -i "s|__BASEURL__|${BASE_URL:-/}|" /var/www/index.htm' >> /init && \
-    echo 'exec nginx -g "daemon off;"' >> /init && \
+    echo 'exec nginx' >> /init && \
     chmod a+x /init
 
 CMD ["/init"]
