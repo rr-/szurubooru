@@ -1,4 +1,34 @@
+#!/usr/bin/env node
 'use strict';
+
+// -------------------------------------------------
+
+const webapp_icons = [
+    {name: 'android-chrome-192x192.png', size: 192},
+    {name: 'android-chrome-512x512.png', size: 512},
+    {name: 'apple-touch-icon.png', size: 180},
+    {name: 'mstile-150x150.png', size: 150}
+];
+
+const webapp_splash_screens = [
+    {w:  640, h: 1136, center: 320},
+    {w:  750, h: 1294, center: 375},
+    {w: 1125, h: 2436, center: 565},
+    {w: 1242, h: 2148, center: 625},
+    {w: 1536, h: 2048, center: 770},
+    {w: 1668, h: 2224, center: 820},
+    {w: 2048, h: 2732, center: 1024}
+];
+
+const external_js = [
+    'underscore',
+    'superagent',
+    'mousetrap',
+    'js-cookie',
+    'nprogress',
+];
+
+// -------------------------------------------------
 
 const fs = require('fs');
 const glob = require('glob');
@@ -10,227 +40,224 @@ function readTextFile(path) {
     return fs.readFileSync(path, 'utf-8');
 }
 
-function writeFile(path, content) {
-    return fs.writeFileSync(path, content);
+function gzipFile(file) {
+    file = path.normalize(file);
+    execSync('gzip -6 -k ' + file);
 }
 
-function getVersion() {
-    let build_info = process.env.BUILD_INFO;
-    if (build_info) {
-        return build_info.trim();
-    } else {
-        try {
-            build_info = execSync('git describe --always --dirty --long --tags')
-                .toString();
-        } catch (e) {
-            console.warn('Cannot find build version');
-            return 'unknown';
+// -------------------------------------------------
+
+function bundleHtml() {
+    const underscore = require('underscore');
+    const babelify = require('babelify');
+
+    const baseUrl = process.env.BASE_URL ? process.env.BASE_URL : '/';
+
+    function minifyHtml(html) {
+        return require('html-minifier').minify(html, {
+            removeComments: true,
+            collapseWhitespace: true,
+            conservativeCollapse: true,
+        }).trim();
+    }
+
+    const baseHtml = readTextFile('./html/index.htm')
+        .replace('<!-- Base HTML Placeholder -->', `<base href="${baseUrl}"/>`);
+    fs.writeFileSync('./public/index.htm', minifyHtml(baseHtml));
+
+    let compiledTemplateJs = [
+        `'use strict';`,
+        `let _ = require('underscore');`,
+        `let templates = {};`
+    ];
+
+    for (const file of glob.sync('./html/**/*.tpl')) {
+        const name = path.basename(file, '.tpl').replace(/_/g, '-');
+        const placeholders = [];
+        let templateText = readTextFile(file);
+        templateText = templateText.replace(
+            /<%.*?%>/ig,
+            (match) => {
+                const ret = '%%%TEMPLATE' + placeholders.length;
+                placeholders.push(match);
+                return ret;
+            });
+        templateText = minifyHtml(templateText);
+        templateText = templateText.replace(
+            /%%%TEMPLATE(\d+)/g,
+            (match, number) => { return placeholders[number]; });
+
+        const functionText = underscore.template(
+            templateText, {variable: 'ctx'}).source;
+
+        compiledTemplateJs.push(`templates['${name}'] = ${functionText};`);
+    }
+    compiledTemplateJs.push('module.exports = templates;');
+
+    fs.writeFileSync('./js/.templates.autogen.js', compiledTemplateJs.join('\n'));
+    console.info('Bundled HTML');
+}
+
+function bundleCss() {
+    const stylus = require('stylus');
+
+    function minifyCss(css) {
+        return require('csso').minify(css).css;
+    }
+
+    let css = '';
+    for (const file of glob.sync('./css/**/*.styl')) {
+        css += stylus.render(readTextFile(file), {filename: file});
+    }
+    fs.writeFileSync('./public/css/app.min.css', minifyCss(css));
+    if (process.argv.includes('--gzip')) {
+        gzipFile('./public/css/app.min.css');
+    }
+
+    fs.copyFileSync(
+        './node_modules/font-awesome/css/font-awesome.min.css',
+        './public/css/vendor.min.css');
+    if (process.argv.includes('--gzip')) {
+        gzipFile('./public/css/vendor.min.css');
+    }
+
+    console.info('Bundled CSS');
+}
+
+function bundleJs() {
+    const browserify = require('browserify');
+
+    function minifyJs(path) {
+        return require('terser').minify(
+            fs.readFileSync(path, 'utf-8'), {compress: {unused: false}}).code;
+    }
+
+    function writeJsBundle(b, path, compress, callback) {
+        let outputFile = fs.createWriteStream(path);
+        b.bundle().pipe(outputFile);
+        outputFile.on('finish', () => {
+            if (compress) {
+                fs.writeFileSync(path, minifyJs(path));
+            }
+            callback();
+        });
+    }
+
+    if (!process.argv.includes('--no-vendor-js')) {
+        let b = browserify();
+        for (let lib of external_js) {
+            b.require(lib);
         }
-        return build_info.trim();
+        if (!process.argv.includes('--no-transpile')) {
+            b.add(require.resolve('babel-polyfill'));
+        }
+        const file = './public/js/vendor.min.js';
+        writeJsBundle(b, file, true, () => {
+            if (process.argv.includes('--gzip')) {
+                gzipFile(file);
+            }
+            console.info('Bundled vendor JS');
+        });
+    }
+
+    if (!process.argv.includes('--no-app-js')) {
+        let b = browserify({debug: process.argv.includes('--debug')});
+        if (!process.argv.includes('--no-transpile')) {
+            b = b.transform('babelify');
+        }
+        b = b.external(external_js).add(glob.sync('./js/**/*.js'));
+        const compress = !process.argv.includes('--debug');
+        const file = './public/js/app.min.js';
+        writeJsBundle(b, file, compress, () => {
+            if (process.argv.includes('--gzip')) {
+                gzipFile(file);
+            }
+            console.info('Bundled app JS');
+        });
     }
 }
 
-function getConfig() {
-    let config = {
+function bundleConfig() {
+    function getVersion() {
+        let build_info = process.env.BUILD_INFO;
+        if (!build_info) {
+            try {
+                build_info = execSync('git describe --always --dirty --long --tags').toString();
+            } catch (e) {
+                console.warn('Cannot find build version');
+                build_info = 'unknown';
+            }
+        }
+        return build_info.trim();
+    }
+    const config = {
         meta: {
           version: getVersion(),
           buildDate: new Date().toUTCString()
         }
     };
 
-    return config;
-}
-
-function copyFile(source, target) {
-    fs.createReadStream(source).pipe(fs.createWriteStream(target));
-}
-
-function minifyJs(path) {
-    return require('terser').minify(fs.readFileSync(path, 'utf-8'), {compress: {unused: false}}).code;
-}
-
-function minifyCss(css) {
-    return require('csso').minify(css).css;
-}
-
-function minifyHtml(html) {
-    return require('html-minifier').minify(html, {
-        removeComments: true,
-        collapseWhitespace: true,
-        conservativeCollapse: true,
-    }).trim();
-}
-
-function bundleHtml() {
-    const underscore = require('underscore');
-    const babelify = require('babelify');
-    const baseHtml = readTextFile('./html/index.htm', 'utf-8');
-    const baseUrl = process.env.BASE_URL ? process.env.BASE_URL : '/';
-    const finalHtml = baseHtml.replace(
-        '<!-- Base HTML Placeholder -->', `<base href="${baseUrl}"/>`);
-    writeFile('./public/index.htm', minifyHtml(finalHtml));
-
-    glob('./html/**/*.tpl', {}, (er, files) => {
-        let compiledTemplateJs = '\'use strict\'\n';
-        compiledTemplateJs += 'let _ = require(\'underscore\');';
-        compiledTemplateJs += 'let templates = {};';
-        for (const file of files) {
-            const name = path.basename(file, '.tpl').replace(/_/g, '-');
-            const placeholders = [];
-            let templateText = readTextFile(file, 'utf-8');
-            templateText = templateText.replace(
-                /<%.*?%>/ig,
-                (match) => {
-                    const ret = '%%%TEMPLATE' + placeholders.length;
-                    placeholders.push(match);
-                    return ret;
-                });
-            templateText = minifyHtml(templateText);
-            templateText = templateText.replace(
-                /%%%TEMPLATE(\d+)/g,
-                (match, number) => { return placeholders[number]; });
-
-            const functionText = underscore.template(
-                templateText, {variable: 'ctx'}).source;
-            compiledTemplateJs += `templates['${name}'] = ${functionText};`;
-        }
-        compiledTemplateJs += 'module.exports = templates;';
-        writeFile('./js/.templates.autogen.js', compiledTemplateJs);
-        console.info('Bundled HTML');
-    });
-}
-
-function bundleCss() {
-    const stylus = require('stylus');
-    glob('./css/**/*.styl', {}, (er, files) => {
-        let css = '';
-        for (const file of files) {
-            css += stylus.render(
-                readTextFile(file), {filename: file});
-        }
-        writeFile('./public/css/app.min.css', minifyCss(css));
-
-        copyFile(
-            './node_modules/font-awesome/css/font-awesome.min.css',
-            './public/css/vendor.min.css');
-
-        console.info('Bundled CSS');
-    });
-}
-
-function bundleJs() {
-    const browserify = require('browserify');
-    const external = [
-        'underscore',
-        'superagent',
-        'mousetrap',
-        'js-cookie',
-        'nprogress',
-    ];
-
-    function writeJsBundle(b, path, message, compress) {
-        let outputFile = fs.createWriteStream(path);
-        b.bundle().pipe(outputFile);
-        outputFile.on('finish', function() {
-            if (compress) {
-                writeFile(path, minifyJs(path));
-            }
-            console.info(message);
-        });
-    }
-
-    glob('./js/**/*.js', {}, (er, files) => {
-        if (!process.argv.includes('--no-vendor-js')) {
-            let b = browserify();
-            for (let lib of external) {
-                b.require(lib);
-            }
-            if (!process.argv.includes('--no-transpile')) {
-                b.add(require.resolve('babel-polyfill'));
-            }
-            writeJsBundle(
-                b, './public/js/vendor.min.js', 'Bundled vendor JS', true);
-        }
-
-        if (!process.argv.includes('--no-app-js')) {
-            let outputFile = fs.createWriteStream('./public/js/app.min.js');
-            let b = browserify({debug: process.argv.includes('--debug')});
-            if (!process.argv.includes('--no-transpile')) {
-                b = b.transform('babelify');
-            }
-            writeJsBundle(
-                b.external(external).add(files),
-                './public/js/app.min.js',
-                'Bundled app JS',
-                !process.argv.includes('--debug'));
-        }
-    });
-}
-
-function bundleConfig(config) {
-    writeFile(
-        './js/.config.autogen.json', JSON.stringify(config));
-    glob('./node_modules/font-awesome/fonts/*.*', {}, (er, files) => {
-        for (let file of files) {
-            if (fs.lstatSync(file).isDirectory()) {
-                continue;
-            }
-            copyFile(file, path.join('./public/fonts/', path.basename(file)));
-        }
-    });
+    fs.writeFileSync('./js/.config.autogen.json', JSON.stringify(config));
 }
 
 function bundleBinaryAssets() {
-    copyFile('./img/favicon.png', './public/img/favicon.png');
-    copyFile('./img/transparency_grid.png', './public/img/transparency_grid.png');
+    fs.copyFileSync('./img/favicon.png', './public/img/favicon.png');
+    fs.copyFileSync('./img/transparency_grid.png', './public/img/transparency_grid.png');
 
+    for (let file of glob.sync('./node_modules/font-awesome/fonts/*.*')) {
+        if (fs.lstatSync(file).isDirectory()) {
+            continue;
+        }
+        fs.copyFileSync(file, path.join('./public/fonts/', path.basename(file)));
+    }
+    if (process.argv.includes('--gzip')) {
+        for (let file of glob.sync('./public/fonts/*.*')) {
+            if (file.endsWith('woff2')) {
+                continue;
+            }
+            gzipFile(file);
+        }
+    }
+    console.info('Copied Fonts')
+}
+
+function bundleWebAppFiles() {
     const Jimp = require('jimp');
 
-    for (let icon of [
-        {name: 'android-chrome-192x192.png', size: 192},
-        {name: 'android-chrome-512x512.png', size: 512},
-        {name: 'apple-touch-icon.png', size: 180},
-        {name: 'mstile-150x150.png', size: 150}
-    ]) {
-        Jimp.read('./img/app.png', (err, infile) => {
-            infile
-                .resize(icon.size, Jimp.AUTO, Jimp.RESIZE_BEZIER)
+    fs.copyFileSync('./app/manifest.json', './public/manifest.json');
+
+    Promise.all(webapp_icons.map(icon => {
+        return Jimp.read('./img/app.png')
+        .then(file => {
+            file.resize(icon.size, Jimp.AUTO, Jimp.RESIZE_BEZIER)
                 .write(path.join('./public/img/', icon.name));
         });
-    }
-    console.info('Generated webapp icons');
+    }))
+    .then(() => {
+        console.info('Generated webapp icons');
+    });
 
-    for (let dim of [
-        {w:  640, h: 1136, center: 320},
-        {w:  750, h: 1294, center: 375},
-        {w: 1125, h: 2436, center: 565},
-        {w: 1242, h: 2148, center: 625},
-        {w: 1536, h: 2048, center: 770},
-        {w: 1668, h: 2224, center: 820},
-        {w: 2048, h: 2732, center: 1024}
-    ]) {
-        Jimp.read('./img/splash.png', (err, infile) => {
-            infile
-                .resize(dim.center, Jimp.AUTO, Jimp.RESIZE_BEZIER)
+    Promise.all(webapp_splash_screens.map(dim => {
+        return Jimp.read('./img/splash.png')
+        .then(file => {
+            file.resize(dim.center, Jimp.AUTO, Jimp.RESIZE_BEZIER)
                 .background(0xFFFFFFFF)
                 .contain(dim.w, dim.center,
                     Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_MIDDLE)
                 .contain(dim.w, dim.h,
                     Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_MIDDLE)
                 .write(path.join('./public/img/',
-                    'apple-touch-startup-image-'
-                    + dim.w + '-' + dim.h + '.png'));
+                    'apple-touch-startup-image-' + dim.w + 'x' + dim.h + '.png'));
         });
-    }
-    console.info('Generated splash screens');
+    }))
+    .then(() => {
+        console.info('Generated splash screens');
+    });
 }
 
-function bundleWebAppFiles() {
-    copyFile('./app/manifest.json', './public/manifest.json');
-}
+// -------------------------------------------------
 
-const config = getConfig();
-bundleConfig(config);
+bundleConfig();
 bundleBinaryAssets();
 bundleWebAppFiles();
 if (!process.argv.includes('--no-html')) {
