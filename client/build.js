@@ -203,7 +203,9 @@ function bundleConfig() {
 function bundleBinaryAssets() {
     fs.copyFileSync('./img/favicon.png', './public/img/favicon.png');
     fs.copyFileSync('./img/transparency_grid.png', './public/img/transparency_grid.png');
+    console.info('Copied Images');
 
+    fs.copyFileSync('./fonts/open_sans.woff2', './public/fonts/open_sans.woff2')
     for (let file of glob.sync('./node_modules/font-awesome/fonts/*.*')) {
         if (fs.lstatSync(file).isDirectory()) {
             continue;
@@ -255,8 +257,24 @@ function bundleWebAppFiles() {
     });
 }
 
+function makeOutputDirs() {
+    const dirs = [
+        './public',
+        './public/css',
+        './public/fonts',
+        './public/img',
+        './public/js'
+    ];
+    for (let dir of dirs) {
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, 0o755);
+        }
+    }
+}
+
 // -------------------------------------------------
 
+makeOutputDirs();
 bundleConfig();
 bundleBinaryAssets();
 bundleWebAppFiles();
