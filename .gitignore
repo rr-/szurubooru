@@ -1,5 +1,6 @@
 config.yaml
+docker-compose.yml
 */*_modules/
 .coverage
 .cache
-docker-compose.yml
+client/public
