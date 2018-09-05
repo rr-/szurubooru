@@ -28,6 +28,26 @@ const external_js = [
     'nprogress',
 ];
 
+const app_manifest = {
+    name: 'szurubooru',
+    icons: [
+        {
+            src: baseUrl() + 'img/android-chrome-192x192.png',
+            type: 'image/png',
+            sizes: '192x192'
+        }, 
+        {
+            src: baseUrl() + 'img/android-chrome-512x512.png',
+            type: 'image/png',
+            sizes: '512x512'
+        }
+    ],
+    start_url: baseUrl(),
+    theme_color: '#24aadd',
+    background_color: '#ffffff',
+    display: 'standalone'
+}
+
 // -------------------------------------------------
 
 const fs = require('fs');
@@ -45,13 +65,15 @@ function gzipFile(file) {
     execSync('gzip -6 -k ' + file);
 }
 
+function baseUrl() {
+    return process.env.BASE_URL ? process.env.BASE_URL : '/';
+}
+
 // -------------------------------------------------
 
 function bundleHtml() {
     const underscore = require('underscore');
     const babelify = require('babelify');
-
-    const baseUrl = process.env.BASE_URL ? process.env.BASE_URL : '/';
 
     function minifyHtml(html) {
         return require('html-minifier').minify(html, {
@@ -62,7 +84,7 @@ function bundleHtml() {
     }
 
     const baseHtml = readTextFile('./html/index.htm')
-        .replace('<!-- Base HTML Placeholder -->', `<base href="${baseUrl}"/>`);
+        .replace('<!-- Base HTML Placeholder -->', `<base href="${baseUrl()}"/>`);
     fs.writeFileSync('./public/index.htm', minifyHtml(baseHtml));
 
     let compiledTemplateJs = [
@@ -198,12 +220,13 @@ function bundleConfig() {
     };
 
     fs.writeFileSync('./js/.config.autogen.json', JSON.stringify(config));
+    console.info('Generated config file');
 }
 
 function bundleBinaryAssets() {
     fs.copyFileSync('./img/favicon.png', './public/img/favicon.png');
     fs.copyFileSync('./img/transparency_grid.png', './public/img/transparency_grid.png');
-    console.info('Copied Images');
+    console.info('Copied images');
 
     fs.copyFileSync('./fonts/open_sans.woff2', './public/fonts/open_sans.woff2')
     for (let file of glob.sync('./node_modules/font-awesome/fonts/*.*')) {
@@ -220,13 +243,14 @@ function bundleBinaryAssets() {
             gzipFile(file);
         }
     }
-    console.info('Copied Fonts')
+    console.info('Copied fonts')
 }
 
 function bundleWebAppFiles() {
     const Jimp = require('jimp');
 
-    fs.copyFileSync('./app/manifest.json', './public/manifest.json');
+    fs.writeFileSync('./public/manifest.json', JSON.stringify(app_manifest));
+    console.info('Generated app manifest');
 
     Promise.all(webapp_icons.map(icon => {
         return Jimp.read('./img/app.png')
@@ -268,6 +292,7 @@ function makeOutputDirs() {
     for (let dir of dirs) {
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir, 0o755);
+            console.info('Created directory: ' + dir);
         }
     }
 }

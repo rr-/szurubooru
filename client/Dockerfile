@@ -17,9 +17,8 @@ WORKDIR /var/www
 RUN \
     # Create init file
     echo "#!/bin/sh" >> /init && \
-    echo 'sed -i "s|__BACKEND__|${BACKEND_HOST}|" /etc/nginx/nginx.conf' \
-        >> /init && \
-    echo 'sed -i "s|__BASEURL__|${BASE_URL:-/}|" /var/www/index.htm' >> /init && \
+    echo 'sed -i "s|__BACKEND__|${BACKEND_HOST}|" /etc/nginx/nginx.conf' >> /init && \
+    echo 'sed -i "s|__BASEURL__|${BASE_URL:-/}|g" /var/www/index.htm /var/www/manifest.json' >> /init && \
     echo 'exec nginx' >> /init && \
     chmod a+x /init
 
