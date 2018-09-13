@@ -14,6 +14,9 @@
                 }[ctx.post.mimeType] %>
             </a>
             (<%- ctx.post.canvasWidth %>x<%- ctx.post.canvasHeight %>)
+            <% if (ctx.post.flags.includes('sound')) { %>
+                <i class='fa fa-volume-up'></i>
+            <% } %>
         </section>
 
         <section class='upload-info'>

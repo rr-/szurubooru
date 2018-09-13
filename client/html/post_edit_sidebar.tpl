@@ -50,6 +50,11 @@
                     name: 'loop',
                     checked: ctx.post.flags.includes('loop'),
                 }) %>
+                <%= ctx.makeCheckbox({
+                    text: 'Sound',
+                    name: 'sound',
+                    checked: ctx.post.flags.includes('sound'),
+                }) %>
             </section>
         <% } %>
 

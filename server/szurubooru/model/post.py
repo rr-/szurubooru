@@ -154,6 +154,7 @@ class Post(Base):
     TYPE_FLASH = 'flash'
 
     FLAG_LOOP = 'loop'
+    FLAG_SOUND = 'sound'
 
     # basic meta
     post_id = sa.Column('id', sa.Integer, primary_key=True)

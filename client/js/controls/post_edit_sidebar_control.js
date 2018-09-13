@@ -331,9 +331,7 @@ class PostEditSidebarControl extends events.EventTarget {
                         .value.toLowerCase() :
                     undefined,
 
-                flags: this._loopVideoInputNode ?
-                    (this._loopVideoInputNode.checked ? ['loop'] : []) :
-                    undefined,
+                flags: this._videoFlags,
 
                 tags: this._tagInputNode ?
                     misc.splitByWhitespace(this._tagInputNode.value) :
@@ -373,6 +371,18 @@ class PostEditSidebarControl extends events.EventTarget {
 
     get _loopVideoInputNode() {
         return this._formNode.querySelector('.flags input[name=loop]');
+    }
+
+    get _soundVideoInputNode() {
+        return this._formNode.querySelector('.flags input[name=sound]');
+    }
+
+    get _videoFlags() {
+        if (!this._loopVideoInputNode) return undefined;
+        let ret = [];
+        if (this._loopVideoInputNode.checked) ret.push('loop');
+        if (this._soundVideoInputNode.checked) ret.push('sound');
+        return ret;
     }
 
     get _relationsInputNode() {

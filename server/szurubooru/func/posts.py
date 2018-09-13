@@ -81,6 +81,7 @@ TYPE_MAP = {
 
 FLAG_MAP = {
     model.Post.FLAG_LOOP: 'loop',
+    model.Post.FLAG_SOUND: 'sound',
 }
 
 
