@@ -222,7 +222,7 @@ class PostSerializer(serialization.BaseSerializer):
         return get_post_thumbnail_url(self.post)
 
     def serialize_flags(self) -> Any:
-        return self.post.flags
+        return [x for x in self.post.flags.split(',') if x]
 
     def serialize_tags(self) -> Any:
         return [
@@ -356,7 +356,7 @@ def create_post(
     post.safety = model.Post.SAFETY_SAFE
     post.user = user
     post.creation_time = datetime.utcnow()
-    post.flags = []
+    post.flags = ''
 
     post.type = ''
     post.checksum = ''
@@ -628,7 +628,7 @@ def update_post_flags(post: model.Post, flags: List[str]) -> None:
             raise InvalidPostFlagError(
                 'Flag must be one of %r.' % list(FLAG_MAP.values()))
         target_flags.append(flag)
-    post.flags = target_flags
+    post.flags = ','.join(target_flags)
 
 
 def feature_post(post: model.Post, user: Optional[model.User]) -> None:

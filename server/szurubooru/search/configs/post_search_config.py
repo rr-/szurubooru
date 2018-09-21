@@ -35,6 +35,14 @@ def _safety_transformer(value: str) -> str:
     return search_util.enum_transformer(available_values, value)
 
 
+def _flag_transformer(value: str) -> str:
+    available_values = {
+        'loop': model.Post.FLAG_LOOP,
+        'sound': model.Post.FLAG_SOUND,
+    }
+    return '%' + search_util.enum_transformer(available_values, value) + '%'
+
+
 def _create_score_filter(score: int) -> Filter:
     def wrapper(
             query: SaQuery,
@@ -325,6 +333,12 @@ class PostSearchConfig(BaseSearchConfig):
             (
                 ['note-text'],
                 _note_filter
+            ),
+
+            (
+                ['flag'],
+                search_util.create_str_filter(
+                    model.Post.flags, _flag_transformer)
             ),
         ])
 
