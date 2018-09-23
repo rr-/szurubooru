@@ -474,6 +474,17 @@ def generate_alternate_formats(post: model.Post, content: bytes) \
     return new_posts
 
 
+def test_sound(post: model.Post, content: bytes) -> None:
+    assert post
+    assert content
+    if mime.is_video(mime.get_mime_type(content)):
+        if images.Image(content).check_for_sound():
+            flags = [x for x in post.flags.split(',') if x]
+            if model.Post.FLAG_SOUND not in flags:
+                flags.append(model.Post.FLAG_SOUND)
+            update_post_flags(post, flags)
+
+
 def update_post_content(post: model.Post, content: Optional[bytes]) -> None:
     assert post
     if not content:

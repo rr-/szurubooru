@@ -65,6 +65,7 @@ def create_post(
     posts.update_post_relations(post, relations)
     posts.update_post_notes(post, notes)
     posts.update_post_flags(post, flags)
+    posts.test_sound(post, content)
     if ctx.has_file('thumbnail'):
         posts.update_post_thumbnail(post, ctx.get_file('thumbnail'))
     ctx.session.add(post)
