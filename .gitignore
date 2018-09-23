@@ -1,5 +1,5 @@
 config.yaml
-docker-compose.yml
+.env
 */*_modules/
 .coverage
 .cache

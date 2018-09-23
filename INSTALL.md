@@ -26,12 +26,12 @@ and Docker Compose (version 1.6.0 or greater) already installed.
 3. Configure Docker Compose:
 
     ```console
-    user@host:szuru$ cp docker-compose.yml.example docker-compose.yml
-    user@host:szuru$ edit docker-compose.yml
+    user@host:szuru$ cp example.env .env
+    user@host:szuru$ edit .env
     ```
 
-    Read the comments to guide you. For production use, it is *important*
-    that you configure the volumes appropriately to avoid data loss.
+    Change the values of the variables in `.env` as needed.
+    Read the comments to guide you.
 
 ### Running the Application
 
