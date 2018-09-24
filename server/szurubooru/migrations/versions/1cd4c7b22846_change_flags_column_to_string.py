@@ -27,7 +27,7 @@ def upgrade():
         sa.Column('oldflags', sa.PickleType(), nullable=True),
     )
     for row in conn.execute(posts.select()):
-        newflag = ','.join(row.oldflags)
+        newflag = ','.join(row.oldflags) if row.oldflags else ''
         conn.execute(
             # pylint: disable=no-value-for-parameter
             posts.update().where(
