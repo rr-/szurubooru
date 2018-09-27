@@ -158,7 +158,7 @@ class Image:
             '-af', 'volumedetect',
             '-f', 'null',
             '-y', '/dev/null',
-        ], get_logs=True).decode('utf-8')
+        ], get_logs=True).decode('utf-8', errors='replace')
         log_match = re.search(r'.*volumedetect.*mean_volume: (.*) dB', log)
         assert log_match
         assert log_match.groups()
