@@ -736,6 +736,11 @@ def merge_posts(
             .values(child_id=target_post_id))
         db.session.execute(update_stmt)
 
+    def transfer_flags(source_post_id: int, target_post_id: int) -> None:
+        target = get_post_by_id(target_post_id)
+        source = get_post_by_id(source_post_id)
+        target.flags = source.flags
+
     merge_tags(source_post.post_id, target_post.post_id)
     merge_comments(source_post.post_id, target_post.post_id)
     merge_scores(source_post.post_id, target_post.post_id)
@@ -745,6 +750,7 @@ def merge_posts(
     content = None
     if replace_content:
         content = files.get(get_post_content_path(source_post))
+        transfer_flags(source_post.post_id, target_post.post_id)
 
     delete(source_post)
     db.session.flush()
