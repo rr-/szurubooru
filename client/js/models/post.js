@@ -276,7 +276,7 @@ class Post extends events.EventTarget {
             _user:          response.user,
             _safety:        response.safety,
             _contentUrl:    response.contentUrl,
-            _fullContentUrl: new URL(response.contentUrl, window.location.href).href,
+            _fullContentUrl: new URL(response.contentUrl, document.getElementsByTagName('base')[0].href).href,
             _thumbnailUrl:  response.thumbnailUrl,
             _canvasWidth:   response.canvasWidth,
             _canvasHeight:  response.canvasHeight,
