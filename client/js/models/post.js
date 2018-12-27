@@ -32,6 +32,7 @@ class Post extends events.EventTarget {
     get contentUrl()         { return this._contentUrl; }
     get fullContentUrl()     { return this._fullContentUrl; }
     get thumbnailUrl()       { return this._thumbnailUrl; }
+    get source()             { return this._source; }
     get canvasWidth()        { return this._canvasWidth || 800; }
     get canvasHeight()       { return this._canvasHeight || 450; }
     get fileSize()           { return this._fileSize || 0; }
@@ -57,6 +58,7 @@ class Post extends events.EventTarget {
     set relations(value)     { this._relations = value; }
     set newContent(value)    { this._newContent = value; }
     set newThumbnail(value)  { this._newThumbnail = value; }
+    set source(value)        { this._source = value; }
 
     static fromResponse(response) {
         const ret = new Post();
@@ -121,6 +123,9 @@ class Post extends events.EventTarget {
         }
         if (this._newThumbnail !== undefined) {
             files.thumbnail = this._newThumbnail;
+        }
+        if (this._source !== this._orig._source) {
+            detail.source = this._source;
         }
 
         let apiPromise = this._id ?
@@ -266,6 +271,10 @@ class Post extends events.EventTarget {
             Math.round(Math.random() * 1000);
     }
 
+    prettyPrintSource() {
+        return uri.extractRootDomain(this._source);
+    }
+
     _updateFromResponse(response) {
         const map = () => ({
             _version:       response.version,
@@ -278,6 +287,7 @@ class Post extends events.EventTarget {
             _contentUrl:    response.contentUrl,
             _fullContentUrl: new URL(response.contentUrl, document.getElementsByTagName('base')[0].href).href,
             _thumbnailUrl:  response.thumbnailUrl,
+            _source:        response.source,
             _canvasWidth:   response.canvasWidth,
             _canvasHeight:  response.canvasHeight,
             _fileSize:      response.fileSize,
