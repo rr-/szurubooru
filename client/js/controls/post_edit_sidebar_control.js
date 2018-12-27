@@ -37,6 +37,7 @@ class PostEditSidebarControl extends events.EventTarget {
             canEditPostFlags: api.hasPrivilege('posts:edit:flags'),
             canEditPostContent: api.hasPrivilege('posts:edit:content'),
             canEditPostThumbnail: api.hasPrivilege('posts:edit:thumbnail'),
+            canEditPostSource : api.hasPrivilege('posts:edit:source'),
             canCreateAnonymousPosts: api.hasPrivilege('posts:create:anonymous'),
             canDeletePosts: api.hasPrivilege('posts:delete'),
             canFeaturePosts: api.hasPrivilege('posts:feature'),
@@ -58,7 +59,7 @@ class PostEditSidebarControl extends events.EventTarget {
         new ExpanderControl(
             'post-content',
             'Content',
-            this._hostNode.querySelectorAll('.post-content, .post-thumbnail'));
+            this._hostNode.querySelectorAll('.post-content, .post-thumbnail, .post-source'));
         new ExpanderControl(
             'post-management',
             'Management',
@@ -349,6 +350,10 @@ class PostEditSidebarControl extends events.EventTarget {
                 thumbnail: this._newPostThumbnail !== undefined ?
                     this._newPostThumbnail :
                     undefined,
+
+                source: this._sourceInputNode ?
+                    this._sourceInputNode.value :
+                    undefined,
             },
         }));
     }
@@ -400,6 +405,10 @@ class PostEditSidebarControl extends events.EventTarget {
 
     get _thumbnailRemovalLinkNode() {
         return this._formNode.querySelector('.post-thumbnail a');
+    }
+
+    get _sourceInputNode() {
+        return this._formNode.querySelector('.post-source input');
     }
 
     get _featureLinkNode() {

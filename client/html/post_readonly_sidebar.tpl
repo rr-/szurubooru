@@ -44,6 +44,21 @@
             <a href='https://www.google.com/searchbyimage?&image_url=<%- encodeURIComponent(ctx.post.fullContentUrl) %>'>Google Images</a>
         </section>
 
+        <section class='source'>
+            Source:
+            <% if (ctx.post.source) { %>
+                <a href='<%- ctx.post.source %>'>
+                    <% if (ctx.post.source.length > 30) { %>
+                        <%- ctx.post.source.substr(0,27) + '...' %>
+                    <% } else { %>
+                        <%- ctx.post.source %>
+                    <% } %>
+                </a>
+            <% } else { %>
+                None!
+            <% } %>
+        </section>
+
         <section class='social'>
             <div class='score-container'></div>
 

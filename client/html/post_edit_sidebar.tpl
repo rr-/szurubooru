@@ -93,6 +93,15 @@
             </section>
         <% } %>
 
+        <% if (ctx.canEditPostSource) { %>
+            <section class='post-source'>
+                <%= ctx.makeTextInput({
+                    text: 'Source',
+                    name: 'source',
+                }) %>
+            </section>
+        <% } %>
+
         <% if (ctx.canFeaturePosts || ctx.canDeletePosts || ctx.canMergePosts) { %>
             <section class='management'>
                 <ul>
