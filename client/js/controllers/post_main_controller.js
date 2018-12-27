@@ -147,6 +147,9 @@ class PostMainController extends BasePostController {
         if (e.detail.thumbnail !== undefined) {
             post.newThumbnail = e.detail.thumbnail;
         }
+        if (e.detail.source !== undefined) {
+            post.source = e.detail.source;
+        }
         post.save()
             .then(() => {
                 this._view.sidebarControl.showSuccess('Post saved.');

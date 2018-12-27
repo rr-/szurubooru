@@ -98,6 +98,7 @@
                 <%= ctx.makeTextInput({
                     text: 'Source',
                     name: 'source',
+                    value: ctx.post.source
                 }) %>
             </section>
         <% } %>
