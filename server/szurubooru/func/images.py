@@ -156,6 +156,7 @@ class Image:
         log = self._execute([
             '-i', '{path}',
             '-af', 'volumedetect',
+            '-max_muxing_queue_size', '99999',
             '-f', 'null',
             '-y', '/dev/null',
         ], get_logs=True).decode('utf-8', errors='replace')
