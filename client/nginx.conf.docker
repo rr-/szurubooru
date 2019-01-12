@@ -18,7 +18,7 @@ http {
     server_tokens off;
     sendfile on;
     keepalive_timeout 65;
-    client_max_body_size 100M;
+    client_max_body_size 0;
 
     upstream backend {
         server __BACKEND__:6666;
