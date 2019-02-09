@@ -54,9 +54,37 @@ function formatClientLink(...values) {
     return parts.join('/');
 }
 
+function extractHostname(url) {
+    // https://stackoverflow.com/a/23945027
+    return url
+        .split('/')[url.indexOf("//") > -1 ? 2 : 0]
+        .split(':')[0]
+        .split('?')[0];
+}
+
+function extractRootDomain(url) {
+    // https://stackoverflow.com/a/23945027
+    let domain = extractHostname(url);
+    let splitArr = domain.split('.');
+    let arrLen = splitArr.length;
+
+    //if there is a subdomain 
+    if (arrLen > 2) {
+        domain = splitArr[arrLen - 2] + '.' + splitArr[arrLen - 1];
+        //check to see if it's using a Country Code Top Level Domain (ccTLD) (i.e. ".me.uk")
+        if (splitArr[arrLen - 2].length == 2 && splitArr[arrLen - 1].length == 2) {
+            //this is using a ccTLD
+            domain = splitArr[arrLen - 3] + '.' + domain;
+        }
+    }
+    return domain;
+}
+
 module.exports = {
-    formatClientLink: formatClientLink,
-    formatApiLink:    formatApiLink,
-    escapeParam:      escapeParam,
-    unescapeParam:    unescapeParam,
+    formatClientLink:  formatClientLink,
+    formatApiLink:     formatApiLink,
+    escapeParam:       escapeParam,
+    unescapeParam:     unescapeParam,
+    extractHostname:   extractHostname,
+    extractRootDomain: extractRootDomain,
 };

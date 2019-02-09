@@ -38,6 +38,14 @@
             <a href class='fit-both'>both</a>
         </section>
 
+        <% if (ctx.post.source) { %>
+            <section class='source'>
+                Source: <a href='<%- ctx.post.source %>' title='<%- ctx.post.source %>'>
+                    <%- ctx.post.prettyPrintSource() %>
+                </a>
+            </section>
+        <% } %>
+
         <section class='search'>
             Search on
             <a href='http://iqdb.org/?url=<%- encodeURIComponent(ctx.post.fullContentUrl) %>'>IQDB</a> &middot;
