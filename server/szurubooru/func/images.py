@@ -154,9 +154,12 @@ class Image:
             return False
 
         log = self._execute([
+            '-hide_banner',
+            '-progress', '-',
             '-i', '{path}',
             '-af', 'volumedetect',
             '-max_muxing_queue_size', '99999',
+            '-vn', '-sn',
             '-f', 'null',
             '-y', '/dev/null',
         ], get_logs=True).decode('utf-8', errors='replace')
