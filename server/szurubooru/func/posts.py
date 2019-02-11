@@ -439,9 +439,7 @@ def generate_alternate_formats(post: model.Post, content: bytes) \
     assert content
     new_posts = []
     if mime.is_animated_gif(content):
-        tag_names = [
-            tag_name.name
-            for tag_name in [tag.names for tag in post.tags]]
+        tag_names = [tag.first_name for tag in post.tags]
 
         if config.config['convert']['gif']['to_mp4']:
             mp4_post, new_tags = create_post(
