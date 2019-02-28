@@ -23,7 +23,7 @@ class FileDropperControl extends events.EventTarget {
         });
 
         this._dropperNode = source.querySelector('.file-dropper');
-        this._urlInputNode = source.querySelector('input[type=text]');
+        this._urlInputNode = source.querySelector('textarea[name=url]');
         this._urlConfirmButtonNode = source.querySelector('button');
         this._fileInputNode = source.querySelector('input[type=file]');
         this._fileInputNode.style.display = 'none';
