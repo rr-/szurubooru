@@ -15,7 +15,7 @@
     </label>
     <% if (ctx.allowUrls) { %>
         <div class='url-holder'>
-            <input type='text' name='url' placeholder='<%- ctx.urlPlaceholder %>'/>
+            <textarea name="url" placeholder="<%- ctx.urlPlaceholder %>" rows="5"></textarea>
             <% if (ctx.lock) { %>
                 <button>Confirm</button>
             <% } else { %>
