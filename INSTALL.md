@@ -87,7 +87,8 @@ and Docker Compose (version 1.6.0 or greater) already installed.
     `http://<internal IP or hostname of frontend container>/`. For an NGINX
     reverse proxy, that will appear as:
 
-    ```nginx
+    ```
+    nginx
     location /szuru {
         proxy_http_version 1.1;
         proxy_pass http://<internal IP or hostname of frontend container>/;
@@ -104,11 +105,11 @@ and Docker Compose (version 1.6.0 or greater) already installed.
     ```
     
 3. **Preparing for production**
-    
-        If you plan on using szurubooru in a production setting, you may opt to
-        use a reverse proxy for added security and caching capabilities. Start
-        by having the client docker listen only on localhost by changing `PORT`
-        in your `.env` file to `127.0.0.1:8080` instead of simply `:8080`. Then
-        configure NGINX (or your caching/reverse proxy server of your choice)
-        to proxy_pass `http://127.0.0.1:8080`. We've included an example config
-        located in the `nginx-vhost.production.example` file.
+
+If you plan on using szurubooru in a production setting, you may opt to
+use a reverse proxy for added security and caching capabilities. Start
+by having the client docker listen only on localhost by changing `PORT`
+in your `.env` file to `127.0.0.1:8080` instead of simply `:8080`. Then
+configure NGINX (or your caching/reverse proxy server of your choice)
+to proxy_pass `http://127.0.0.1:8080`. We've included an example config
+located in the `nginx-vhost.production.example` file.
