@@ -87,7 +87,7 @@ and Docker Compose (version 1.6.0 or greater) already installed.
     `http://<internal IP or hostname of frontend container>/`. For an NGINX
     reverse proxy, that will appear as:
 
-    ```
+   ```nginx
     location /szuru {
         proxy_http_version 1.1;
         proxy_pass http://<internal IP or hostname of frontend container>/;
