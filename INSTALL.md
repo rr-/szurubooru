@@ -112,4 +112,4 @@ and Docker Compose (version 1.6.0 or greater) already installed.
     in your `.env` file to `127.0.0.1:8080` instead of simply `:8080`. Then
     configure NGINX (or your caching/reverse proxy server of your choice)
     to proxy_pass `http://127.0.0.1:8080`. We've included an example config
-    located in the `nginx-vhost.production.example` file.
+    located in the `nginx-vhost.production` file.
