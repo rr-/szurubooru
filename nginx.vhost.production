@@ -35,16 +35,14 @@ server {
     error_page 500 501 502 504 505 506 507 508 509 510 511 @err;
     error_page 503 @throttle;
   }
-
   location @err {
     return 500 "server error. please try again later.";
     default_type text/plain;
   }
-    location @throttle {
+  location @throttle {
     return 503 "we've detected abuse on your ip. please wait and try again later.";
     default_type text/plain;
   }
-  
   listen 80;
   listen [::]:80;
 }
