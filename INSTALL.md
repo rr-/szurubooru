@@ -103,7 +103,7 @@ and Docker Compose (version 1.6.0 or greater) already installed.
     }
     ```
     
-    3. **Preparing for production**
+3. **Preparing for production**
     
         If you plan on using szurubooru in a production setting, you may opt to
         use a reverse proxy for added security and caching capabilities. Start
