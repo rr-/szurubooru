@@ -40,11 +40,10 @@ server {
     return 500 "server error. please try again later.";
     default_type text/plain;
   }
-    location @throttle {
+  location @throttle {
     return 503 "we've detected abuse on your ip. please wait and try again later.";
     default_type text/plain;
   }
-  
   listen 80;
   listen [::]:80;
 }
