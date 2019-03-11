@@ -581,8 +581,18 @@ def update_post_relations(post: model.Post, new_post_ids: List[int]) -> None:
     if post.post_id in new_post_ids:
         raise InvalidPostRelationError('Post cannot relate to itself.')
 
+    # Finds for child relations of new relations
+    second_posts = []
+    for p in new_posts:
+        if p.post_id not in old_post_ids:
+            for r in p.relations:
+                if r.post_id not in old_post_ids:
+                    if r.post_id not in new_post_ids:
+                        second_posts.append(r)
+
     relations_to_del = [p for p in old_posts if p.post_id not in new_post_ids]
     relations_to_add = [p for p in new_posts if p.post_id not in old_post_ids]
+    relations_to_add.extend([p for p in second_posts])
     for relation in relations_to_del:
         post.relations.remove(relation)
         relation.relations.remove(post)
