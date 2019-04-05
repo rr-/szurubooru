@@ -13,7 +13,7 @@ and Docker Compose (version 1.6.0 or greater) already installed.
 
     ```console
     user@host:szuru$ cp server/config.yaml.dist server/config.yaml
-    user@host:szuru$ edit config.yaml
+    user@host:szuru$ edit server/config.yaml
     ```
 
     Pay extra attention to these fields:
