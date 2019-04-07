@@ -145,6 +145,7 @@ class PostsHeaderView extends events.EventTarget {
                 'click', e => this._evtSafetyButtonClick(e));
         }
         this._formNode.addEventListener('submit', e => this._evtFormSubmit(e));
+        this._randomButtonNode.addEventListener('click', e => this._evtRandomButtonClick(e));
 
         this._bulkEditors = [];
         if (this._bulkEditTagsNode) {
@@ -189,6 +190,10 @@ class PostsHeaderView extends events.EventTarget {
 
     get _queryInputNode() {
         return this._hostNode.querySelector('form [name=search-text]');
+    }
+
+    get _randomButtonNode() {
+        return this._hostNode.querySelector('#random-button');
     }
 
     get _bulkEditTagsNode() {
@@ -240,6 +245,14 @@ class PostsHeaderView extends events.EventTarget {
 
     _evtFormSubmit(e) {
         e.preventDefault();
+        this._navigate();
+    }
+    _evtRandomButtonClick(e) {
+        if (!this._queryInputNode.value.includes('sort:random')) {
+            this._queryInputNode.value += ' sort:random';
+        } else {
+            location.reload();
+        }
         this._navigate();
     }
 
