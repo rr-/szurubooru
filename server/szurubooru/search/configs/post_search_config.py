@@ -43,6 +43,10 @@ def _flag_transformer(value: str) -> str:
     return '%' + search_util.enum_transformer(available_values, value) + '%'
 
 
+def _source_transformer(value: str) -> str:
+    return search_util.wildcard_transformer('*' + value + '*')
+
+
 def _create_score_filter(score: int) -> Filter:
     def wrapper(
             query: SaQuery,
@@ -232,7 +236,8 @@ class PostSearchConfig(BaseSearchConfig):
 
             (
                 ['source'],
-                search_util.create_str_filter(model.Post.source)
+                search_util.create_str_filter(
+                    model.Post.source, _source_transformer)
             ),
 
             (
