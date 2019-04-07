@@ -8,6 +8,10 @@ const FileDropperControl = require("../controls/file_dropper_control.js");
 const template = views.getTemplate("post-upload");
 const rowTemplate = views.getTemplate("post-upload-row");
 
+const misc = require('../util/misc.js');
+const TagAutoCompleteControl =
+    require('../controls/tag_auto_complete_control.js');
+
 function _mimeTypeToPostType(mimeType) {
     return (
         {
@@ -183,6 +187,16 @@ class PostUploadView extends events.EventTarget {
             this._evtFormSubmit(e)
         );
         this._formNode.classList.add("inactive");
+
+        if (this._commonTagsInputNode) {
+            this._autoCompleteControl = new TagAutoCompleteControl(
+                this._commonTagsInputNode,
+                {
+                    confirm: tag =>
+                        this._autoCompleteControl.replaceSelectedText(
+                            misc.escapeSearchTerm(tag.names[0]), true),
+                });
+        }    
     }
 
     enableForm() {
@@ -305,6 +319,12 @@ class PostUploadView extends events.EventTarget {
         }
 
         uploadable.tags = [];
+        if (this._commonTagsInputNode) {
+            var tags = this._commonTagsInputNode.value.split(' ');
+            tags = tags.filter(t => t != "");
+            uploadable.tags = uploadable.tags.concat(tags);
+        }
+        
         uploadable.relations = [];
         for (let [i, lookalike] of uploadable.lookalikes.entries()) {
             let lookalikeNode = rowNode.querySelector(
@@ -449,6 +469,10 @@ class PostUploadView extends events.EventTarget {
 
     get _contentInputNode() {
         return this._formNode.querySelector(".dropper-container");
+    }
+
+    get _commonTagsInputNode() {
+        return this._formNode.querySelector('form [name=common-tags');
     }
 }
 
