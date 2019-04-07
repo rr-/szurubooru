@@ -39,6 +39,10 @@
             <td>favorited by given user (accepts wildcards)</td>
         </tr>
         <tr>
+            <td><code>source</code></td>
+            <td>having given source URL (accepts wildcards)</td>
+        </tr>
+        <tr>
             <td><code>tag-count</code></td>
             <td>having given number of tags</td>
         </tr>
