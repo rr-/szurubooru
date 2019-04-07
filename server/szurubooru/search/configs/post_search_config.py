@@ -231,6 +231,11 @@ class PostSearchConfig(BaseSearchConfig):
             ),
 
             (
+                ['source'],
+                search_util.create_str_filter(model.Post.source)
+            ),
+
+            (
                 ['tag-count'],
                 search_util.create_num_filter(model.Post.tag_count)
             ),
