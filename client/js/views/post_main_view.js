@@ -5,6 +5,7 @@ const router = require('../router.js');
 const views = require('../util/views.js');
 const uri = require('../util/uri.js');
 const keyboard = require('../util/keyboard.js');
+const Touch = require('../util/touch.js');
 const PostContentControl = require('../controls/post_content_control.js');
 const PostNotesOverlayControl =
     require('../controls/post_notes_overlay_control.js');
@@ -58,6 +59,18 @@ class PostMainView {
         this._installCommentForm();
         this._installComments(ctx.post.comments);
 
+        const showPreviousImage = () => {
+            if (ctx.prevPostId) {
+                router.show(ctx.getPostUrl(ctx.prevPostId, ctx.parameters));
+            }
+        };
+
+        const showNextImage = () => {
+            if (ctx.nextPostId) {
+                router.show(ctx.getPostUrl(ctx.nextPostId, ctx.parameters));
+            }
+        };
+
         keyboard.bind('e', () => {
             if (ctx.editMode) {
                 router.show(uri.formatClientLink('post', ctx.post.id));
@@ -65,21 +78,19 @@ class PostMainView {
                 router.show(uri.formatClientLink('post', ctx.post.id, 'edit'));
             }
         });
-        keyboard.bind(['a', 'left'], () => {
-            if (ctx.prevPostId) {
-                router.show(ctx.getPostUrl(ctx.prevPostId, ctx.parameters));
-            }
-        });
-        keyboard.bind(['d', 'right'], () => {
-            if (ctx.nextPostId) {
-                router.show(ctx.getPostUrl(ctx.nextPostId, ctx.parameters));
-            }
-        });
+        keyboard.bind(['a', 'left'], showPreviousImage);
+        keyboard.bind(['d', 'right'], showNextImage);
         keyboard.bind('del', (e) => {
             if (ctx.editMode) {
                 this.sidebarControl._evtDeleteClick(e);
             }
         });
+
+        new Touch(
+            postContainerNode,
+            showPreviousImage,
+            showNextImage
+        )
     }
 
     _installSidebar(ctx) {
