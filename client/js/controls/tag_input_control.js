@@ -270,7 +270,8 @@ class TagInputControl extends events.EventTarget {
             searchLinkNode.classList.add(className);
         }
         searchLinkNode.setAttribute(
-            'href', uri.formatClientLink('posts', {query: tag.names[0]}));
+            'href', uri.formatClientLink(
+                'posts', {query: uri.escapeColons(tag.names[0])}));
         searchLinkNode.textContent = tag.names[0] + ' ';
         searchLinkNode.addEventListener('click', e => {
             e.preventDefault();

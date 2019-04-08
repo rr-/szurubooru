@@ -47,6 +47,7 @@ class TagController {
                 canMerge: api.hasPrivilege('tags:merge'),
                 canDelete: api.hasPrivilege('tags:delete'),
                 categories: categories,
+                escapeColons: uri.escapeColons,
             });
 
             this._view.addEventListener('change', e => this._evtChange(e));

@@ -1,6 +1,6 @@
 <div class='tag-delete'>
     <form>
-        <p>This tag has <a href='<%- ctx.formatClientLink('posts', {query: ctx.tag.names[0]}) %>'><%- ctx.tag.postCount %> usage(s)</a>.</p>
+        <p>This tag has <a href='<%- ctx.formatClientLink('posts', {query: ctx.escapeColons(ctx.tag.names[0])}) %>'><%- ctx.tag.postCount %> usage(s)</a>.</p>
 
         <ul class='input'>
             <li>
