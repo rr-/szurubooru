@@ -248,10 +248,9 @@ class PostsHeaderView extends events.EventTarget {
         this._navigate();
     }
     _evtRandomButtonClick(e) {
+        e.preventDefault();
         if (!this._queryInputNode.value.includes('sort:random')) {
             this._queryInputNode.value += ' sort:random';
-        } else {
-            location.reload();
         }
         this._navigate();
     }

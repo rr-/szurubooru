@@ -17,6 +17,10 @@ class PostList extends AbstractList {
     }
 
     static search(text, offset, limit, fields) {
+        //For queries with random sorting, bypass cache by appending random number
+        let cache = text.includes('sort:random')
+            ? Math.round(Math.random() * 1000)
+            : 0;
         return api.get(
                 uri.formatApiLink(
                     'posts', {
@@ -24,6 +28,7 @@ class PostList extends AbstractList {
                         offset: offset,
                         limit: limit,
                         fields: fields.join(','),
+                        cache: cache,
                     }))
             .then(response => {
                 return Promise.resolve(Object.assign(
