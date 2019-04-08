@@ -4,8 +4,9 @@
         %><wbr/><%
         %><input class='mousetrap' type='submit' value='Search'/><%
         %><wbr/><%
-        %><button id="random-button" style="padding:0.2em; margin-right:0.25em; margin-bottom:0.25em;"><i class="fa fa-random"></button><%
-        %><wbr/><%
+        %><button id="random-button" style="padding:0.2em; margin-right:0.25em; margin-bottom:0.25em;"><%
+            %><i class="fa fa-random" style="vertical-align: middle"><%
+                %></button><%
         %><% if (ctx.enableSafety) { %><%
             %><input data-safety=safe type='button' class='mousetrap safety safety-safe <%- ctx.settings.listPosts.safe ? '' : 'disabled' %>'/><%
             %><input data-safety=sketchy type='button' class='mousetrap safety safety-sketchy <%- ctx.settings.listPosts.sketchy ? '' : 'disabled' %>'/><%
