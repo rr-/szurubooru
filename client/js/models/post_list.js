@@ -18,7 +18,7 @@ class PostList extends AbstractList {
 
     static search(text, offset, limit, fields) {
         //For queries with random sorting, bypass cache by appending random number
-        let cache = text.includes('sort:random')
+        let cache = text != null && text.includes('sort:random')
             ? Math.round(Math.random() * 1000)
             : 0;
         return api.get(
