@@ -135,6 +135,7 @@ class TagCategoriesView extends events.EventTarget {
     }
 
     _evtColorChange(e, rowNode) {
+        e.target.value = e.target.value.toLowerCase();
         rowNode._tagCategory.color = e.target.value;
     }
 
