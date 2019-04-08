@@ -88,8 +88,16 @@ class PostMainView {
 
         new Touch(
             postContainerNode,
-            showPreviousImage,
-            showNextImage
+            () => {
+                if (!ctx.editMode) {
+                    showPreviousImage()
+                }
+            },
+            () => {
+                if (!ctx.editMode) {
+                    showNextImage()
+                }
+            }
         )
     }
 
