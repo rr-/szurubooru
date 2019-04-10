@@ -35,17 +35,20 @@ class TagList extends AbstractList {
     }
 
     addByName(tagName, addImplications) {
-        if (this.isTaggedWith(tagName)) {
-            return Promise.resolve();
-        }
-
         const tag = new Tag();
         tag.names = [tagName];
+        return this.addByTag(tag, addImplications);
+    }
+
+    addByTag(tag, addImplications) {
+        if (this.isTaggedWith(tag.names[0])) {
+            return Promise.resolve();
+        }
 
         this.add(tag);
 
         if (addImplications !== false) {
-            return Tag.get(tagName).then(actualTag => {
+            return Tag.get(tag.names[0]).then(actualTag => {
                 return Promise.all(
                     actualTag.implications.map(
                         relation => this.addByName(relation.names[0], true)));

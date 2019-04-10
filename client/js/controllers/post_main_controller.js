@@ -6,6 +6,7 @@ const uri = require('../util/uri.js');
 const misc = require('../util/misc.js');
 const settings = require('../models/settings.js');
 const Comment = require('../models/comment.js');
+const Tag = require('../models/tag.js');
 const Post = require('../models/post.js');
 const PostList = require('../models/post_list.js');
 const PostMainView = require('../views/post_main_view.js');
@@ -153,6 +154,25 @@ class PostMainController extends BasePostController {
         post.save()
             .then(() => {
                 this._view.sidebarControl.showSuccess('Post saved.');
+                // now save the new tags with categories
+                let tagPromises = [];
+                for (let newTag of e.detail.newTags) {
+                    // load the tag that was created during updating the post
+                    tagPromises.push(
+                        Tag.get(newTag.names[0]).then(tag => {
+                                tag.category = newTag.category;
+                                return tag.save();
+                            }
+                        ).then(() => {
+                            e.detail.newTags.removeByName(newTag.names[0]);
+                        }, error => {
+                            this._view.sidebarControl.showError(error.message);
+                        })
+                    );
+                }
+                return Promise.all(tagPromises);
+            })
+            .then(() => {
                 this._view.sidebarControl.enableForm();
                 misc.disableExitConfirmation();
             }, error => {
