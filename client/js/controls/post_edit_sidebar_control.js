@@ -4,6 +4,7 @@ const api = require("../api.js");
 const events = require("../events.js");
 const misc = require("../util/misc.js");
 const views = require("../util/views.js");
+const keyboard = require("../util/keyboard.js");
 const Note = require("../models/note.js");
 const Point = require("../models/point.js");
 const TagInputControl = require("./tag_input_control.js");
@@ -241,6 +242,16 @@ class PostEditSidebarControl extends events.EventTarget {
             this._poolControl.addEventListener("change", (e) => {
                 this.dispatchEvent(new CustomEvent("change"));
                 this._syncExpanderTitles();
+            });
+        }
+
+        keyboard.bind(["command+s", "ctrl+s"], (e) => this._evtSubmit(e));
+        if (this._tagInputNode) {
+            const realTagInput = this._formNode.querySelector(".tag-input input");
+            keyboard.bindElement(realTagInput, ["command+s", "ctrl+s"], (e) => this._evtSubmit(e));
+            keyboard.bind("t", (e) => {
+                e.preventDefault();
+                realTagInput.focus();
             });
         }
     }
