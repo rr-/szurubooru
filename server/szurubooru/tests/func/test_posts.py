@@ -112,7 +112,7 @@ def test_serialize_post(
         post.user = user_factory(name='post author')
         post.canvas_width = 200
         post.canvas_height = 300
-        post.flags = ['loop']
+        post.flags = 'loop'
         db.session.add(post)
 
         db.session.flush()
@@ -654,7 +654,7 @@ def test_update_post_notes_with_invalid_content(input):
 def test_update_post_flags():
     post = model.Post()
     posts.update_post_flags(post, ['loop'])
-    assert post.flags == ['loop']
+    assert post.flags == 'loop'
 
 
 def test_update_post_flags_with_invalid_content():

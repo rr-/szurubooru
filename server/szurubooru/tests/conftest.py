@@ -202,7 +202,7 @@ def post_factory(skip_post_hashing):
         post.safety = safety
         post.type = type
         post.checksum = checksum
-        post.flags = []
+        post.flags = ''
         post.mime_type = 'application/octet-stream'
         post.creation_time = datetime(1996, 1, 1)
         return post
