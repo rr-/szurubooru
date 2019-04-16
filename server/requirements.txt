@@ -3,8 +3,8 @@ pyyaml>=3.11
 psycopg2-binary>=2.6.1
 SQLAlchemy>=1.0.12
 coloredlogs==5.0
-elasticsearch>=5.0.0
-elasticsearch-dsl>=5.0.0
+elasticsearch>=5.0.0,<7.0.0
+elasticsearch-dsl>=5.0.0,<7.0.0
 numpy>=1.8.2
 pillow>=4.3.0
 pynacl==1.2.1
