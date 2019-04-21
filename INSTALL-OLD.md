@@ -8,6 +8,12 @@ distributions are different, the steps stay roughly the same.
 
 ### Installing hard dependencies
 
+Szurubooru requires the following dependencies:
+- Python (3.5 or later)
+- Postgres
+- FFmpeg
+- node.js
+
 ```console
 user@host:~$ sudo pacman -S postgresql
 user@host:~$ sudo pacman -S python

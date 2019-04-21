@@ -25,15 +25,12 @@ scrubbing](http://sjp.pwn.pl/sjp/;2527372). It is pronounced as *shoorubooru*.
 - Browser configurable endless paging
 - Browser configurable backdrop grid for transparent images
 
-## Requirements
-
-- Python 3.5
-- Postgres
-- FFmpeg
-- node.js
+## Installation
 
 It is recommended that you use Docker for deployment.
 [See installation instructions.](https://github.com/rr-/szurubooru/blob/master/INSTALL.md)
+
+Users who wish to avoid using Docker may find the [old installation instructions](https://github.com/rr-/szurubooru/blob/master/INSTALL-OLD.md) helpful.
 
 ## Screenshots
 
