@@ -111,7 +111,7 @@ function makeSelect(options) {
 }
 
 function makeInput(options) {
-    options.value = options.value || "";
+    options.value = options.value === 0 ? 0 : options.value || "";
     return _makeLabel(options) + makeElement("input", options);
 }
 
@@ -300,6 +300,8 @@ function _serializeElement(name, attributes) {
                     attributes[key] === undefined
                 ) {
                     return "";
+                } else if (attributes[key] === 0) {
+                    return `${key}="0"`;
                 }
                 const attribute = misc.escapeHtml(attributes[key] || "");
                 return `${key}="${attribute}"`;
