@@ -1,6 +1,8 @@
+from typing import List
 import sqlalchemy as sa
 from szurubooru.model.base import Base
 from szurubooru.model.comment import Comment
+from sqlalchemy.ext.hybrid import hybrid_property
 
 
 class PostFeature(Base):
@@ -169,7 +171,7 @@ class Post(Base):
     last_edit_time = sa.Column('last_edit_time', sa.DateTime)
     safety = sa.Column('safety', sa.Unicode(32), nullable=False)
     source = sa.Column('source', sa.Unicode(200))
-    flags = sa.Column('flags', sa.Unicode(200), default='')
+    flags_string = sa.Column('flags', sa.Unicode(200), default='')
 
     # content description
     type = sa.Column('type', sa.Unicode(32), nullable=False)
@@ -218,6 +220,14 @@ class Post(Base):
             .order_by(PostFeature.time.desc())
             .first())
         return featured_post and featured_post.post_id == self.post_id
+
+    @hybrid_property
+    def flags(self) -> List[str]:
+        return sorted([x for x in self.flags_string.split(',') if x])
+
+    @flags.setter
+    def flags(self, data: List[str]) -> None:
+        self.flags_string = ','.join([x for x in data if x])
 
     score = sa.orm.column_property(
         sa.sql.expression.select(

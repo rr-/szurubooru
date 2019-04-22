@@ -222,7 +222,7 @@ class PostSerializer(serialization.BaseSerializer):
         return get_post_thumbnail_url(self.post)
 
     def serialize_flags(self) -> Any:
-        return [x for x in self.post.flags.split(',') if x]
+        return self.post.flags
 
     def serialize_tags(self) -> Any:
         return [
@@ -356,7 +356,7 @@ def create_post(
     post.safety = model.Post.SAFETY_SAFE
     post.user = user
     post.creation_time = datetime.utcnow()
-    post.flags = ''
+    post.flags = []
 
     post.type = ''
     post.checksum = ''
@@ -477,7 +477,7 @@ def test_sound(post: model.Post, content: bytes) -> None:
     assert content
     if mime.is_video(mime.get_mime_type(content)):
         if images.Image(content).check_for_sound():
-            flags = [x for x in post.flags.split(',') if x]
+            flags = post.flags
             if model.Post.FLAG_SOUND not in flags:
                 flags.append(model.Post.FLAG_SOUND)
             update_post_flags(post, flags)
@@ -637,7 +637,7 @@ def update_post_flags(post: model.Post, flags: List[str]) -> None:
             raise InvalidPostFlagError(
                 'Flag must be one of %r.' % list(FLAG_MAP.values()))
         target_flags.append(flag)
-    post.flags = ','.join(target_flags)
+    post.flags = target_flags
 
 
 def feature_post(post: model.Post, user: Optional[model.User]) -> None:
