@@ -4,11 +4,11 @@ import yaml
 from szurubooru import errors
 
 
-def merge(left: Dict, right: Dict) -> Dict:
+def _merge(left: Dict, right: Dict) -> Dict:
     for key in right:
         if key in left:
             if isinstance(left[key], dict) and isinstance(right[key], dict):
-                merge(left[key], right[key])
+                _merge(left[key], right[key])
             elif left[key] != right[key]:
                 left[key] = right[key]
         else:
@@ -16,7 +16,7 @@ def merge(left: Dict, right: Dict) -> Dict:
     return left
 
 
-def docker_config() -> Dict:
+def _docker_config() -> Dict:
     for key in [
             'POSTGRES_USER',
             'POSTGRES_PASSWORD',
@@ -45,15 +45,18 @@ def docker_config() -> Dict:
     }
 
 
-def read_config() -> Dict:
-    with open('config.yaml.dist') as handle:
-        ret = yaml.load(handle.read())
-        if os.path.exists('config.yaml'):
-            with open('config.yaml') as handle:
-                ret = merge(ret, yaml.load(handle.read()))
-        if os.path.exists('/.dockerenv'):
-            ret = merge(ret, docker_config())
-        return ret
+def _file_config(filename: str) -> Dict:
+    with open(filename) as handle:
+        return yaml.load(handle.read(), Loader=yaml.SafeLoader)
 
 
-config = read_config()  # pylint: disable=invalid-name
+def _read_config() -> Dict:
+    ret = _file_config('config.yaml.dist')
+    if os.path.exists('config.yaml'):
+        ret = _merge(ret, _file_config('config.yaml'))
+    if os.path.exists('/.dockerenv'):
+        ret = _merge(ret, _docker_config())
+    return ret
+
+
+config = _read_config()  # pylint: disable=invalid-name
