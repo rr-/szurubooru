@@ -42,7 +42,7 @@ services:
     ports:
       - "${PORT}:80"
   sql:
-    image: postgres:alpine
+    image: postgres:11-alpine
     restart: unless-stopped
     environment:
       POSTGRES_USER:
