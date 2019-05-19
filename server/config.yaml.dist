@@ -3,6 +3,8 @@
 
 # shown in the website title and on the front page
 name: szurubooru
+# full url to the homepage of this szurubooru site, with no trailing slash
+domain: # example: http://example.com
 # user agent name used to download files from the web on behalf of the api users
 user_agent:
 # used to salt the users' password hashes
@@ -32,7 +34,9 @@ smtp:
     port: # example: 25
     user: # example: bot
     pass: # example: groovy123
-    # host can be left empty, in which case it is recommended to fill contactEmail.
+    from: # example: noreply@example.com
+    # if host is left empty the password reset feature will be disabled, in which case it is
+    # recommended to fill contactEmail so that users know who to contact when they want to reset their password
 
 contact_email: # example: bob@example.com. Meant for manual password reset procedures
 
