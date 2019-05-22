@@ -63,6 +63,15 @@
                     checked: ctx.browsingSettings.autoplayVideos,
                 }) %>
             </li>
+
+            <li>
+                <%= ctx.makeCheckbox({
+                    text: 'Display underscores as spaces in tags',
+                    name: 'tag-underscores-as-spaces',
+                    checked: ctx.browsingSettings.tagUnderscoresAsSpaces,
+                }) %>
+                <p class='hint'>Display all underscores as if they were spaces. This is only a visual change, which means that you'll still have to use underscores when searching or editing tags.</p>
+            </li>
         </ul>
 
         <div class='messages'></div>

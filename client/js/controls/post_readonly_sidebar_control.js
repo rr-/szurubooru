@@ -4,6 +4,7 @@ const api = require('../api.js');
 const events = require('../events.js');
 const views = require('../util/views.js');
 const uri = require('../util/uri.js');
+const misc = require('../util/misc.js');
 
 const template = views.getTemplate('post-readonly-sidebar');
 const scoreTemplate = views.getTemplate('score');
@@ -26,6 +27,7 @@ class PostReadonlySidebarControl extends events.EventTarget {
             canEditPosts: api.hasPrivilege('posts:edit'),
             canViewTags: api.hasPrivilege('tags:view'),
             escapeColons: uri.escapeColons,
+            getPrettyTagName: misc.getPrettyTagName,
         }));
 
         this._installFav();

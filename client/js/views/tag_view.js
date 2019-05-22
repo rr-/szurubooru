@@ -2,6 +2,7 @@
 
 const events = require('../events.js');
 const views = require('../util/views.js');
+const misc = require('../util/misc.js');
 const TagSummaryView = require('./tag_summary_view.js');
 const TagEditView = require('./tag_edit_view.js');
 const TagMergeView = require('./tag_merge_view.js');
@@ -17,6 +18,7 @@ class TagView extends events.EventTarget {
         this._ctx = ctx;
         ctx.tag.addEventListener('change', e => this._evtChange(e));
         ctx.section = ctx.section || 'summary';
+        ctx.getPrettyTagName = misc.getPrettyTagName;
 
         this._hostNode = document.getElementById('content-holder');
         this._install();

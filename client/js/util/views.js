@@ -200,7 +200,7 @@ function makePostLink(id, includeHash) {
 
 function makeTagLink(name, includeHash, includeCount, tag) {
     const category = tag ? tag.category : 'unknown';
-    let text = name;
+    let text = misc.getPrettyTagName(name);
     if (includeHash === true) {
         text = '#' + text;
     }

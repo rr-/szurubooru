@@ -16,6 +16,7 @@ const defaultSettings = {
     tagSuggestions: true,
     autoplayVideos: false,
     postsPerPage: 42,
+    tagUnderscoresAsSpaces: false,
 };
 
 class Settings extends events.EventTarget {
