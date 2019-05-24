@@ -4,8 +4,6 @@ const markdown = require('./markdown.js');
 const uri = require('./uri.js');
 const settings = require('../models/settings.js');
 
-const tagUnderscoresAsSpaces = settings.get().tagUnderscoresAsSpaces;
-
 function decamelize(str, sep) {
     sep = sep === undefined ? '-' : sep;
     return str
@@ -201,7 +199,7 @@ function dataURItoBlob(dataURI) {
 }
 
 function getPrettyTagName(tag) {
-    if (tagUnderscoresAsSpaces) {
+    if (settings.get().tagUnderscoresAsSpaces) {
         return tag.replace(/_/g, " ");
     }
     return tag;
