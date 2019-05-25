@@ -211,6 +211,7 @@ server {
 
     DocumentRoot "/srv/www/booru/client/public"
     FallbackResource /index.htm
+    AllowEncodedSlashes On
 </VirtualHost>
 ```
 
