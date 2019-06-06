@@ -4,7 +4,7 @@
 # shown in the website title and on the front page
 name: szurubooru
 # full url to the homepage of this szurubooru site, with no trailing slash
-domain: http://example.com
+domain: # example: http://example.com
 # user agent name used to download files from the web on behalf of the api users
 user_agent:
 # used to salt the users' password hashes
