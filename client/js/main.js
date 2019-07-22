@@ -28,7 +28,6 @@ router.enter(
 
 const tags = require('./tags.js');
 const api = require('./api.js');
-tags.refreshCategoryColorMap(); // we don't care about errors
 
 api.fetchConfig().then(() => {
     // register controller routes
@@ -61,6 +60,7 @@ api.fetchConfig().then(() => {
     window.alert('Could not fetch basic configuration from server');
 }).then(() => {
     api.loginFromCookies().then(() => {
+            tags.refreshCategoryColorMap();
             router.start();
         }, error => {
             if (window.location.href.indexOf('login') !== -1) {
