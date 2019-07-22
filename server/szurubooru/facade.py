@@ -91,6 +91,20 @@ def validate_config() -> None:
     if not config.config['database']:
         raise errors.ConfigError('Database is not configured')
 
+    if config.config['smtp']['host']:
+        if not config.config['smtp']['port']:
+            raise errors.ConfigError(
+                'SMTP host is set but port is not set')
+        if not config.config['smtp']['user']:
+            raise errors.ConfigError(
+                'SMTP host is set but username is not set')
+        if not config.config['smtp']['pass']:
+            raise errors.ConfigError(
+                'SMTP host is set but password is not set')
+        if not config.config['smtp']['from']:
+            raise errors.ConfigError(
+                'From address must be set to use mail-based password reset')
+
 
 def purge_old_uploads() -> None:
     while True:
