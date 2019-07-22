@@ -151,6 +151,9 @@ class PostUploadController {
         }
         post.relations = uploadable.relations;
         post.newContent = uploadable.url || uploadable.file;
+        // if uploadable.source is ever going to be a valid field (e.g when setting source directly in the upload window)
+        // you'll need to change the line below to `post.source = uploadable.source || uploadable.url;`
+        if (uploadable.url) post.source = uploadable.url;
         return post;
     }
 }
