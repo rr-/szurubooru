@@ -2,6 +2,7 @@
 
 const router = require('../router.js');
 const api = require('../api.js');
+const tags = require('../tags.js');
 const uri = require('../util/uri.js');
 const topNavigation = require('../models/top_navigation.js');
 const LoginView = require('../views/login_view.js');
@@ -24,6 +25,8 @@ class LoginController {
             .then(() => {
                 const ctx = router.show(uri.formatClientLink());
                 ctx.controller.showSuccess('Logged in');
+                // reload tag category color map, this is required when `tag_categories:list` has a permission other than anonymous
+                tags.refreshCategoryColorMap();
             }, error => {
                 this._loginView.showError(error.message);
                 this._loginView.enableForm();
