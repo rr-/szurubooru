@@ -1,8 +1,7 @@
-szurubooru/tests/*
-setup.cfg
-.pylintrc
-mypi.ini
-
-Dockerfile
-.dockerignore
 **/.gitignore
+.dockerignore
+.pylintrc
+Dockerfile
+config.yaml
+mypy.ini
+setup.cfg

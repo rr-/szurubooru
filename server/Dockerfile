@@ -1,9 +1,12 @@
-FROM scratch as approot
-WORKDIR /opt/app
+FROM busybox as approot
 
-COPY alembic.ini wait-for-es generate-thumb ./
-COPY szurubooru/ ./szurubooru/
-COPY config.yaml.dist ./
+COPY . /opt/app/
+RUN \
+    # Remove unit tests from production release
+    rm -rf /opt/app/szurubooru/tests && \
+    # Remove requirements files, will be added later
+    rm -f /opt/app/requirements.txt && \
+    rm -f /opt/app/dev-requirements.txt
 
 
 FROM python:3.6-slim
@@ -38,7 +41,7 @@ COPY --chown=app:app requirements.txt ./requirements.txt
 RUN pip3 install --no-cache-dir -r ./requirements.txt
 
 # done to minimize number of layers in final image
-COPY --chown=app:app --from=approot / /
+COPY --chown=app:app --from=approot /opt/app /opt/app/
 
 VOLUME ["/data/"]
 EXPOSE ${PORT}
