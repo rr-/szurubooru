@@ -170,8 +170,8 @@ class Post(Base):
     creation_time = sa.Column('creation_time', sa.DateTime, nullable=False)
     last_edit_time = sa.Column('last_edit_time', sa.DateTime)
     safety = sa.Column('safety', sa.Unicode(32), nullable=False)
-    source = sa.Column('source', sa.Unicode(200))
-    flags_string = sa.Column('flags', sa.Unicode(200), default='')
+    source = sa.Column('source', sa.Unicode(2048))
+    flags_string = sa.Column('flags', sa.Unicode(32), default='')
 
     # content description
     type = sa.Column('type', sa.Unicode(32), nullable=False)
