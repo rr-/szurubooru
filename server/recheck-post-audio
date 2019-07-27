@@ -1,0 +1,35 @@
+#!/usr/bin/env python3
+
+'''
+Checks post audio and list disrepancies between the content and flags.
+'''
+
+from szurubooru import db, model, errors
+from szurubooru.func import files, images
+from szurubooru.func import posts as postfuncs
+
+def main():
+    post_list = (db.session
+        .query(model.Post)
+        .filter(model.Post.type == model.Post.TYPE_VIDEO)
+        .order_by(model.Post.post_id)
+        .all())
+
+    for post in post_list:
+        print('Checking post %d ...' % post.post_id, end='\r')
+        content = files.get(postfuncs.get_post_content_path(post))
+
+        has_existing_flag = model.Post.FLAG_SOUND in post.flags
+        try:
+            has_sound_data = images.Image(content).check_for_sound()
+        except errors.ProcessingError:
+            print('Post %d caused an error when checking for sound' % post.post_id)
+
+        if has_sound_data and not has_existing_flag:
+            print('Post %d has sound data but is not flagged' % post.post_id)
+        if not has_sound_data and has_existing_flag:
+            print('Post %d has no sound data but is flagged' % post.post_id)
+
+
+if __name__ == '__main__':
+    main()

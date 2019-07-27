@@ -164,8 +164,9 @@ class Image:
             '-y', '/dev/null',
         ], get_logs=True).decode('utf-8', errors='replace')
         log_match = re.search(r'.*volumedetect.*mean_volume: (.*) dB', log)
-        assert log_match
-        assert log_match.groups()
+        if not log_match or not log_match.groups():
+            raise errors.ProcessingError(
+                'A problem occured when trying to check for audio')
         meanvol = float(log_match.groups()[0])
 
         # -91.0 dB is the minimum for 16-bit audio, assume sound if > -80.0 dB
