@@ -8,6 +8,7 @@ from szurubooru import db, model, errors
 from szurubooru.func import files, images
 from szurubooru.func import posts as postfuncs
 
+
 def main():
     post_list = (db.session
         .query(model.Post)
