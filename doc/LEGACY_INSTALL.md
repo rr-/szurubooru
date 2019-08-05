@@ -1,7 +1,5 @@
-**This installation guide is deprecated and might be out
-of date! It is recommended that you deploy using
-[Docker](https://github.com/rr-/szurubooru/blob/master/INSTALL.md)
-instead.**
+**This installation guide is deprecated and might be out of date!
+It is recommended that you deploy using [Docker](INSTALL.md) instead.**
 
 This guide assumes Arch Linux. Although exact instructions for other
 distributions are different, the steps stay roughly the same.

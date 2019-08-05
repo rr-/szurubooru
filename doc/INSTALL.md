@@ -26,12 +26,13 @@ and Docker Compose (version 1.6.0 or greater) already installed.
 3. Configure Docker Compose:
 
     ```console
-    user@host:szuru$ cp example.env .env
+    user@host:szuru$ cp doc/example.env .env
     user@host:szuru$ edit .env
     ```
 
     Change the values of the variables in `.env` as needed.
-    Read the comments to guide you.
+    Read the comments to guide you. Note that `.env` should be in the root
+    directory of this repository.
 
 ### Running the Application
 
@@ -110,5 +111,5 @@ and Docker Compose (version 1.6.0 or greater) already installed.
     by having the client docker listen only on localhost by changing `PORT`
     in your `.env` file to `127.0.0.1:8080` instead of simply `:8080`. Then
     configure NGINX (or your caching/reverse proxy server of your choice)
-    to proxy_pass `http://127.0.0.1:8080`. We've included an example config
-    located in the `nginx-vhost.production` file.
+    to proxy_pass `http://127.0.0.1:8080`. We've also
+    [included an example config](./nginx.vhost.production).

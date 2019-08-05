@@ -10,7 +10,7 @@ scrubbing](http://sjp.pwn.pl/sjp/;2527372). It is pronounced as *shoorubooru*.
 - Post content: images (JPG, PNG, GIF, animated GIF), videos (MP4, WEBM), Flash animations
 - Post comments
 - Post notes / annotations, including arbitrary polygons
-- Rich JSON REST API ([see documentation](https://github.com/rr-/szurubooru/blob/master/API.md))
+- Rich JSON REST API ([see documentation](doc/API.md))
 - Token based authentication for clients
 - Rich search system
 - Rich privilege system
@@ -28,9 +28,9 @@ scrubbing](http://sjp.pwn.pl/sjp/;2527372). It is pronounced as *shoorubooru*.
 ## Installation
 
 It is recommended that you use Docker for deployment.
-[See installation instructions.](https://github.com/rr-/szurubooru/blob/master/INSTALL.md)
+[See installation instructions.](doc/INSTALL.md)
 
-Users who wish to avoid using Docker may find the [old installation instructions](https://github.com/rr-/szurubooru/blob/master/INSTALL-OLD.md) helpful.
+Users who wish to avoid using Docker may find the [old installation instructions](doc/LEGACY_INSTALL.md) helpful.
 
 ## Screenshots
 
@@ -44,4 +44,4 @@ Post view:
 
 ## License
 
-[GPLv3](https://github.com/rr-/szurubooru/blob/master/LICENSE.md).
+[GPLv3](LICENSE.md).
