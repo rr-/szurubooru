@@ -67,7 +67,19 @@ and Docker Compose (version 1.6.0 or greater) already installed.
 
 ### Additional Features
 
-1. **Using a seperate domain to host static files (image content)**
+1. **CLI-level administrative tools**
+
+    You can use the included `szuru-admin` script to perform various
+    administrative tasks such as changing or resetting a user password. To
+    run from docker:
+
+    ```console
+    user@host:szuru$ docker-compose run api ./szuru-admin --help
+    ```
+
+    will give you a breakdown on all available commands.
+
+2. **Using a seperate domain to host static files (image content)**
 
     If you want to host your website on, (`http://example.com/`) but want
     to serve the images on a different domain, (`http://static.example.com/`)
@@ -76,7 +88,7 @@ and Docker Compose (version 1.6.0 or greater) already installed.
     additional host has access contents to the `/data` volume mounted in the
     backend.
 
-2. **Setting a specific base URI for proxying**
+3. **Setting a specific base URI for proxying**
 
     Some users may wish to access the service at a different base URI, such
     as `http://example.com/szuru/`, commonly when sharing multiple HTTP
@@ -104,7 +116,7 @@ and Docker Compose (version 1.6.0 or greater) already installed.
     }
     ```
 
-3. **Preparing for production**
+4. **Preparing for production**
 
     If you plan on using szurubooru in a production setting, you may opt to
     use a reverse proxy for added security and caching capabilities. Start
