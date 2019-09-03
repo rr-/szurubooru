@@ -5,13 +5,16 @@ Collection of CLI commands for an administrator to use
 '''
 
 import logging
+import os
+import re
 import time
 from argparse import ArgumentParser
 from getpass import getpass
 from sys import stderr
 
-from szurubooru import db, errors, model
-from szurubooru.func import files, images, posts as postfuncs, users as userfuncs
+from szurubooru import config, db, errors, model
+from szurubooru.func import files, images, \
+    posts as postfuncs, users as userfuncs
 
 
 def reset_password(username: str) -> None:
@@ -30,10 +33,10 @@ def reset_password(username: str) -> None:
 
 def check_audio() -> None:
     post_list = (db.session
-        .query(model.Post)
-        .filter(model.Post.type == model.Post.TYPE_VIDEO)
-        .order_by(model.Post.post_id)
-        .all())
+                 .query(model.Post)
+                 .filter(model.Post.type == model.Post.TYPE_VIDEO)
+                 .order_by(model.Post.post_id)
+                 .all())
 
     for post in post_list:
         print('Checking post %d ...' % post.post_id, end='\r')
@@ -43,12 +46,42 @@ def check_audio() -> None:
         try:
             has_sound_data = images.Image(content).check_for_sound()
         except errors.ProcessingError:
-            print('Post %d caused an error when checking for sound' % post.post_id)
+            print('Post %d caused an error when checking for sound' %
+                  post.post_id)
 
         if has_sound_data and not has_existing_flag:
             print('Post %d has sound data but is not flagged' % post.post_id)
         if not has_sound_data and has_existing_flag:
             print('Post %d has no sound data but is flagged' % post.post_id)
+
+
+def reset_filenames() -> None:
+    regex = re.compile(r'(\d+)_[0-9a-f]{16}\.(\S+)')
+
+    def convert_to_new_filename(old_name: str) -> str:
+        matches = regex.match(old_name)
+        if not matches:
+            raise ValueError('Not a valid filename')
+        post_id = int(matches.group(1))
+        post_ext = matches.group(2)
+        return '%d_%s.%s' % \
+            (post_id, postfuncs.get_post_security_hash(post_id), post_ext)
+
+    def rename_in_dir(dir: str) -> None:
+        for file in os.listdir(config.config['data_dir'] + dir):
+            try:
+                old_path = file
+                new_path = convert_to_new_filename(file)
+            except ValueError:
+                continue
+            if old_path != new_path:
+                print('%s -> %s' % (dir + old_path, dir + new_path))
+                os.rename(config.config['data_dir'] + dir + old_path,
+                          config.config['data_dir'] + dir + new_path)
+
+    rename_in_dir('posts/')
+    rename_in_dir('generated-thumbnails/')
+    rename_in_dir('posts/custom-thumbnails/')
 
 
 def main() -> None:
@@ -57,9 +90,13 @@ def main() -> None:
         epilog='Look at README.md for more info')
     parser = parser_top.add_mutually_exclusive_group(required=True)
     parser.add_argument('--change-password', metavar='<username>',
-        help='change the password of specified user')
+                        help='change the password of specified user')
     parser.add_argument('--check-all-audio', action='store_true',
-        help='check the audio flags of all posts, noting discrepancies, without modifying posts')
+                        help='check the audio flags of all posts, '
+                        'noting discrepancies, without modifying posts')
+    parser.add_argument('--reset-filenames', action='store_true',
+                        help='reset the content and thumbnail filenames'
+                        'caused by a lost/changed secret key')
     command = parser_top.parse_args()
 
     try:
@@ -67,6 +104,8 @@ def main() -> None:
             reset_password(command.change_password)
         elif command.check_all_audio:
             check_audio()
+        elif command.reset_filenames:
+            reset_filenames()
     except errors.BaseError as e:
         print(e, file=stderr)
 
