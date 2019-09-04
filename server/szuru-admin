@@ -61,18 +61,16 @@ def reset_filenames() -> None:
     def convert_to_new_filename(old_name: str) -> str:
         matches = regex.match(old_name)
         if not matches:
-            raise ValueError('Not a valid filename')
+            return None
         post_id = int(matches.group(1))
         post_ext = matches.group(2)
         return '%d_%s.%s' % \
             (post_id, postfuncs.get_post_security_hash(post_id), post_ext)
 
     def rename_in_dir(dir: str) -> None:
-        for file in os.listdir(config.config['data_dir'] + dir):
-            try:
-                old_path = file
-                new_path = convert_to_new_filename(file)
-            except ValueError:
+        for old_path in os.listdir(config.config['data_dir'] + dir):
+            new_path = convert_to_new_filename(old_path)
+            if not new_path:
                 continue
             if old_path != new_path:
                 print('%s -> %s' % (dir + old_path, dir + new_path))
@@ -95,8 +93,8 @@ def main() -> None:
                         help='check the audio flags of all posts, '
                         'noting discrepancies, without modifying posts')
     parser.add_argument('--reset-filenames', action='store_true',
-                        help='reset the content and thumbnail filenames'
-                        'caused by a lost/changed secret key')
+                        help='reset and rename the content and thumbnail '
+                        'filenames in case of a lost/changed secret key')
     command = parser_top.parse_args()
 
     try:
