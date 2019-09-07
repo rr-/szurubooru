@@ -20,7 +20,10 @@ def _get_disk_usage() -> int:
     for dir_path, _, file_names in os.walk(config.config['data_dir']):
         for file_name in file_names:
             file_path = os.path.join(dir_path, file_name)
-            total_size += os.path.getsize(file_path)
+            try:
+                total_size += os.path.getsize(file_path)
+            except FileNotFoundError:
+                pass
     _cache_time = now
     _cache_result = total_size
     return total_size
