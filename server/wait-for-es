@@ -6,17 +6,14 @@ Docker helper script. Blocks until the ElasticSearch service is ready.
 
 import logging
 import time
-import elasticsearch
-from szurubooru import config, errors
+from szurubooru import errors
+from szurubooru.func.image_hash import get_session
 
 
 def main():
     print('Looking for ElasticSearch connection...')
     logging.basicConfig(level=logging.ERROR)
-    es = elasticsearch.Elasticsearch([{
-        'host': config.config['elasticsearch']['host'],
-        'port': config.config['elasticsearch']['port'],
-    }])
+    es = get_session()
 
     TIMEOUT = 30
     DELAY = 0.1

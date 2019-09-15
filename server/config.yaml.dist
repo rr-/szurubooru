@@ -146,3 +146,5 @@ privileges:
 #    host: localhost
 #    port: 9200
 #    index: szurubooru
+#    user: szurubooru
+#    pass:

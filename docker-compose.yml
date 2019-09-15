@@ -24,6 +24,10 @@ services:
       #POSTGRES_PORT: 5432
       #ESEARCH_PORT: 9200
       #ESEARCH_INDEX: szurubooru
+      #ESEARCH_PASSWORD: (empty by default, set if you are using an external
+      #                  source for elasticsearch and want to use HTTP basic
+      #                  authentication for security)
+      #ESEARCH_USER: szurubooru (only used if password is set)
       #LOG_SQL: 0 (1 for verbose SQL logs)
     volumes:
       - "${MOUNT_DATA}:/data"

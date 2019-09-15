@@ -31,11 +31,18 @@ Window = Tuple[Tuple[float, float], Tuple[float, float]]
 NpMatrix = Any
 
 
-def _get_session() -> elasticsearch.Elasticsearch:
+def get_session() -> elasticsearch.Elasticsearch:
+    extra_args = {}
+    if config.config['elasticsearch']['pass']:
+        extra_args['http_auth'] = (
+            config.config['elasticsearch']['user'],
+            config.config['elasticsearch']['pass'])
+        extra_args['scheme'] = 'https'
+        extra_args['port'] = 443
     return elasticsearch.Elasticsearch([{
         'host': config.config['elasticsearch']['host'],
         'port': config.config['elasticsearch']['port'],
-    }])
+    }], **extra_args)
 
 
 def _preprocess_image(content: bytes) -> NpMatrix:
@@ -271,7 +278,7 @@ def add_image(path: str, image_content: bytes) -> None:
     for i in range(MAX_WORDS):
         record['simple_word_' + str(i)] = words[i].tolist()
 
-    _get_session().index(
+    get_session().index(
         index=config.config['elasticsearch']['index'],
         doc_type=ES_DOC_TYPE,
         body=record,
@@ -281,7 +288,7 @@ def add_image(path: str, image_content: bytes) -> None:
 @_safety_blanket(lambda: None)
 def delete_image(path: str) -> None:
     assert path
-    _get_session().delete_by_query(
+    get_session().delete_by_query(
         index=config.config['elasticsearch']['index'],
         doc_type=ES_DOC_TYPE,
         body={'query': {'term': {'path': path}}})
@@ -292,7 +299,7 @@ def search_by_image(image_content: bytes) -> List[Lookalike]:
     signature = _generate_signature(image_content)
     words = _get_words(signature, k=SAMPLE_WORDS, n=MAX_WORDS)
 
-    res = _get_session().search(
+    res = get_session().search(
         index=config.config['elasticsearch']['index'],
         doc_type=ES_DOC_TYPE,
         body={
@@ -333,7 +340,7 @@ def search_by_image(image_content: bytes) -> List[Lookalike]:
 
 @_safety_blanket(lambda: None)
 def purge() -> None:
-    _get_session().delete_by_query(
+    get_session().delete_by_query(
         index=config.config['elasticsearch']['index'],
         doc_type=ES_DOC_TYPE,
         body={'query': {'match_all': {}}},
@@ -344,7 +351,7 @@ def purge() -> None:
 def get_all_paths() -> Set[str]:
     search = (
         elasticsearch_dsl.Search(
-            using=_get_session(),
+            using=get_session(),
             index=config.config['elasticsearch']['index'],
             doc_type=ES_DOC_TYPE)
         .source(['path']))

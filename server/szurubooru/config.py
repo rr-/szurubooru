@@ -40,7 +40,9 @@ def _docker_config() -> Dict:
         'elasticsearch': {
             'host': os.getenv('ESEARCH_HOST'),
             'port': int(os.getenv('ESEARCH_PORT', 9200)),
-            'index': os.getenv('ESEARCH_INDEX', 'szurubooru')
+            'index': os.getenv('ESEARCH_INDEX', 'szurubooru'),
+            'user': os.getenv('ESEARCH_USER', os.getenv('ESEARCH_INDEX', 'szurubooru')),
+            'pass': os.getenv('ESEARCH_PASSWORD', False)
         }
     }
 
