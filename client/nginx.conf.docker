@@ -15,10 +15,9 @@ http {
     log_format main '$remote_addr -> $request [$status] - '
                     'referer: $http_referer $http_x_forwarded_for';
     access_log /dev/stdout main;
+
     server_tokens off;
-    sendfile on;
     keepalive_timeout 65;
-    client_max_body_size 0;
 
     upstream backend {
         server __BACKEND__:6666;
@@ -32,6 +31,8 @@ http {
         }
 
         location ~ ^/api/(.*)$ {
+            tcp_nodelay on;
+
             add_header 'Access-Control-Allow-Origin' '*';
             if ($request_method = 'OPTIONS') {
                 add_header 'Access-Control-Allow-Methods'
@@ -41,28 +42,58 @@ http {
                 return 200;
             }
 
-            if ($request_uri ~* "/api/(.*)") {
-                proxy_pass http://backend/$1;
-            }
+            client_max_body_size 0;
 
             gzip on;
             gzip_comp_level 3;
             gzip_min_length 20;
             gzip_proxied expired no-cache no-store private auth;
             gzip_types text/plain application/json;
+
+            if ($request_uri ~* "/api/(.*)") {
+                proxy_pass http://backend/$1;
+            }
+
+            error_page 500 502 503 504 @badproxy;
         }
 
         location /data/ {
             rewrite ^/data/(.*) /$1 break;
             root /data;
+
+            sendfile on;
+            tcp_nopush on;
+            tcp_nodelay on;
+
+            error_page 403 @unauthorized;
+            error_page 404 @notfound;
         }
 
         location / {
             root /var/www;
             try_files $uri /index.htm;
 
+            sendfile on;
+            tcp_nopush on;
+            tcp_nodelay on;
+
             gzip_static on;
             gzip_proxied expired no-cache no-store private auth;
+        }
+
+        location @unauthorized {
+            return 403 "Unauthorized";
+            default_type text/plain;
+        }
+
+        location @notfound {
+            return 404 "Not Found";
+            default_type text/plain;
+        }
+
+        location @badproxy {
+            return 502 "Failed to connect to szurubooru REST API";
+            default_type text/plain;
         }
     }
 }
