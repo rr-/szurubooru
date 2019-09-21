@@ -8,7 +8,7 @@ import coloredlogs
 import sqlalchemy as sa
 import sqlalchemy.orm.exc
 from szurubooru import config, db, errors, rest
-from szurubooru.func import posts, file_uploads
+from szurubooru.func import posts, file_uploads, image_hash
 # pylint: disable=unused-import
 from szurubooru import api, middleware
 
@@ -130,6 +130,8 @@ def create_app() -> Callable[[Any, Any], Any]:
     purge_thread.start()
 
     try:
+        image_hash.get_session().cluster.health(
+            wait_for_status='yellow', request_timeout=30)
         posts.populate_reverse_search()
         db.session.commit()
     except errors.ThirdPartyError:

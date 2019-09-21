@@ -25,7 +25,6 @@ RUN \
     echo "#!/bin/sh" >> /init && \
     echo "set -e" >> /init && \
     echo "cd /opt/app" >> /init && \
-    echo "./wait-for-es" >> /init && \
     echo "alembic upgrade head" >> /init && \
     echo "exec waitress-serve --port ${PORT} szurubooru.facade:app" \
         >> /init && \
