@@ -9,18 +9,6 @@ const uri = require('./util/uri.js');
 let fileTokens = {};
 let remoteConfig = null;
 
-function getCookieName() {
-    const bases = document.getElementsByTagName('base');
-    if (bases.length) {
-        let baseHref = bases[0].href;
-        baseHref = baseHref.replace('/', '');
-        return 'szuru-' + baseHref;
-    } else {
-        return 'szuru';
-    }
-}
-const cookieName = getCookieName();
-
 class Api extends events.EventTarget {
     constructor() {
         super();
@@ -138,7 +126,7 @@ class Api extends events.EventTarget {
     }
 
     loginFromCookies() {
-        const auth = cookies.getJSON(cookieName);
+        const auth = cookies.getJSON('auth');
         return auth && auth.user && auth.token ?
             this.loginWithToken(auth.user, auth.token, true) :
             Promise.resolve();
@@ -181,7 +169,7 @@ class Api extends events.EventTarget {
             this.post('/user-token/' + userName, userTokenRequest)
                 .then(response => {
                     cookies.set(
-                        cookieName,
+                        'auth',
                         {'user': userName, 'token': response.token},
                         options);
                     this.userName = userName;
