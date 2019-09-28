@@ -1,48 +1,30 @@
-FROM busybox as approot
-
-COPY . /opt/app/
-RUN \
-    # Remove unit tests from production release
-    rm -rf /opt/app/szurubooru/tests && \
-    # Remove requirements files, will be added later
-    rm -f /opt/app/requirements.txt && \
-    rm -f /opt/app/dev-requirements.txt
-
-
 FROM python:3.6-slim
 WORKDIR /opt/app
 
-ARG PUID=1000
-ARG PGID=1000
-ARG PORT=6666
+COPY requirements.txt ./requirements.txt
 RUN \
-    # Set users
-    mkdir -p /opt/app /data && \
-    groupadd -g ${PGID} app && \
-    useradd -d /opt/app -M -c '' -g app -r -u ${PUID} app && \
-    chown -R app:app /opt/app /data && \
-    # Create init file
-    echo "#!/bin/sh" >> /init && \
-    echo "set -e" >> /init && \
-    echo "cd /opt/app" >> /init && \
-    echo "alembic upgrade head" >> /init && \
-    echo "exec waitress-serve --port ${PORT} szurubooru.facade:app" \
-        >> /init && \
-    chmod a+x /init && \
     # Install ffmpeg
     apt-get -yqq update && \
     apt-get -yq install --no-install-recommends ffmpeg && \
     rm -rf /var/lib/apt/lists/* && \
     # Install waitress
-    pip3 install --no-cache-dir waitress
+    pip3 install --no-cache-dir waitress && \
+    # Install app requirements
+    pip3 install --no-cache-dir -r ./requirements.txt
 
-COPY --chown=app:app requirements.txt ./requirements.txt
-RUN pip3 install --no-cache-dir -r ./requirements.txt
+COPY ./ /opt/app/
 
-# done to minimize number of layers in final image
-COPY --chown=app:app --from=approot /opt/app /opt/app/
-
-VOLUME ["/data/"]
-EXPOSE ${PORT}
+ARG PUID=1000
+ARG PGID=1000
+RUN \
+    # Set users
+    mkdir -p /opt/app /data && \
+    groupadd -g ${PGID} app && \
+    useradd -d /opt/app -M -c '' -g app -r -u ${PUID} app && \
+    chown -R app:app /opt/app /data
 USER app
-CMD ["/init"]
+
+ENV PORT=6666
+EXPOSE ${PORT}
+VOLUME ["/data/"]
+CMD ["/opt/app/docker-start.sh"]
