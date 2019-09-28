@@ -8,8 +8,11 @@ from szurubooru.func import auth, mailer
 def inject_config(config_injector):
     config_injector({
         'secret': 'x',
-        'base_url': 'http://example.com/',
+        'domain': 'http://example.com',
         'name': 'Test instance',
+        'smtp': {
+            'from': 'noreply@example.com',
+        },
     })
 
 
@@ -22,7 +25,7 @@ def test_reset_sending_email(context_factory, user_factory):
             assert api.password_reset_api.start_password_reset(
                 context_factory(), {'user_name': initiating_user}) == {}
             mailer.send_mail.assert_called_once_with(
-                'noreply@Test instance',
+                'noreply@example.com',
                 'user@example.com',
                 'Password reset for Test instance',
                 'You (or someone else) requested to reset your password ' +

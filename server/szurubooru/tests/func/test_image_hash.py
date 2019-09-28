@@ -1,3 +1,4 @@
+import pytest
 from szurubooru.func import image_hash
 
 
@@ -7,8 +8,16 @@ def test_hashing(read_asset, config_injector):
             'host': 'localhost',
             'port': 9200,
             'index': 'szurubooru_test',
+            'user': 'szurubooru',
+            'pass': None,
         },
     })
+
+    if not image_hash.get_session().ping():
+        pytest.xfail(
+            'Unable to connect to ElasticSearch, '
+            'perhaps it is not available for this test?')
+
     image_hash.purge()
     image_hash.add_image('test', read_asset('jpeg.jpg'))
 

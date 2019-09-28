@@ -279,7 +279,7 @@ def test_update_post_source():
 def test_update_post_source_with_too_long_string():
     post = model.Post()
     with pytest.raises(posts.InvalidPostSourceError):
-        posts.update_post_source(post, 'x' * 1000)
+        posts.update_post_source(post, 'x' * 3000)
 
 
 @pytest.mark.parametrize(
