@@ -32,11 +32,8 @@ class QueryCounter:
         return self._statements
 
 
-if not config.config['test_database']:
-    raise RuntimeError('Test database not configured.')
-
 _query_counter = QueryCounter()
-_engine = sa.create_engine(config.config['test_database'])
+_engine = sa.create_engine('sqlite:///:memory:')
 model.Base.metadata.drop_all(bind=_engine)
 model.Base.metadata.create_all(bind=_engine)
 sa.event.listen(
@@ -66,9 +63,9 @@ def query_counter():
     return _query_counter
 
 
-@pytest.fixture
-def query_logger():
-    if pytest.config.option.verbose > 0:
+@pytest.fixture(scope='session')
+def query_logger(pytestconfig):
+    if pytestconfig.option.verbose > 0:
         import logging
         import coloredlogs
         coloredlogs.install(

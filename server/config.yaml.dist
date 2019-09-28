@@ -9,8 +9,6 @@ domain: # example: http://example.com
 user_agent:
 # used to salt the users' password hashes and generate filenames for static content
 secret: change
-# required for running the test suite
-test_database: 'sqlite:///:memory:'
 
 # Delete thumbnails and source files on post delete
 # Original functionality is no, to mitigate the impacts of admins going

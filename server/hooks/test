@@ -1,0 +1,23 @@
+#!/bin/sh
+set -e
+
+docker build \
+	--build-arg BASE_IMAGE=${IMAGE_NAME} \
+	--file - \
+	--tag ${IMAGE_NAME}-test \
+	. <<'EOF'
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+WORKDIR /opt/app
+USER root
+RUN pip3 install --no-cache-dir pytest-cov freezegun
+USER app
+ENV POSTGRES_HOST=x \
+    POSTGRES_USER=x \
+    POSTGRES_PASSWORD=x \
+    ESEARCH_HOST=x
+CMD ["pytest", "szurubooru/", \
+	"--cov-report=term-missing", "--cov=szurubooru", "--tb=short"]
+EOF
+
+docker run --rm -t ${IMAGE_NAME}-test
