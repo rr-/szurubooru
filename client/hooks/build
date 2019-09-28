@@ -1,4 +1,11 @@
 #!/bin/sh
-BUILD_INFO=docker-$(echo $SOURCE_COMMIT | cut -c1-7)-auto
+
+CLOSEST_VER=$(git describe --tags --abbrev=0)
+if git describe --exact-match --abbrev=0 2> /dev/null; then
+	BUILD_INFO="v${CLOSEST_VER}"
+else
+	BUILD_INFO="v${CLOSEST_VER}-edge-$(echo $SOURCE_COMMIT | cut -c1-7)"
+fi
+
 echo "Using BUILD_INFO=$BUILD_INFO"
 docker build --build-arg BUILD_INFO=$BUILD_INFO -f $DOCKERFILE_PATH -t $IMAGE_NAME .
