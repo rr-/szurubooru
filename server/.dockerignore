@@ -2,6 +2,8 @@
 .pylintrc
 mypy.ini
 
+# Python requirements files
+requirements.txt
 dev-requirements.txt
 
 # Docker build files

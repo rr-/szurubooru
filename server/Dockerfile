@@ -1,30 +1,44 @@
-FROM python:3.6-slim
+FROM alpine:latest
 WORKDIR /opt/app
 
-COPY requirements.txt ./requirements.txt
 RUN \
-    # Install ffmpeg
-    apt-get -yqq update && \
-    apt-get -yq install --no-install-recommends ffmpeg && \
-    rm -rf /var/lib/apt/lists/* && \
-    # Install waitress
-    pip3 install --no-cache-dir waitress && \
-    # Install app requirements
-    pip3 install --no-cache-dir -r ./requirements.txt
-
-COPY ./ /opt/app/
+    apk --no-cache add \
+        python3 \
+        dumb-init \
+        ffmpeg \
+        py3-waitress \
+        # from requirements.txt:
+        py3-yaml \
+        py3-psycopg2 \
+        py3-sqlalchemy \
+        py3-certifi \
+        py3-numpy \
+        py3-pillow \
+        py3-pynacl \
+        py3-tz \
+        py3-rfc3339 \
+    && \
+    pip3 install --no-cache-dir --disable-pip-version-check \
+        alembic \
+        "coloredlogs==5.0" \
+        "elasticsearch>=5.0.0,<7.0.0" \
+        "elasticsearch-dsl>=5.0.0,<7.0.0" \
+    && exit 0
 
 ARG PUID=1000
 ARG PGID=1000
 RUN \
     # Set users
     mkdir -p /opt/app /data && \
-    groupadd -g ${PGID} app && \
-    useradd -d /opt/app -M -c '' -g app -r -u ${PUID} app && \
+    addgroup -g ${PGID} app && \
+    adduser -SDH -h /opt/app -g '' -G app -u ${PUID} app && \
     chown -R app:app /opt/app /data
 USER app
 
-ENV PORT=6666
+COPY --chown=app:app ./ /opt/app/
+
+ARG PORT=6666
+ENV PORT=${PORT}
 EXPOSE ${PORT}
 VOLUME ["/data/"]
 CMD ["/opt/app/docker-start.sh"]

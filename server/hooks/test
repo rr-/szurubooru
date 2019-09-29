@@ -10,7 +10,14 @@ ARG BASE_IMAGE
 FROM ${BASE_IMAGE}
 WORKDIR /opt/app
 USER root
-RUN pip3 install --no-cache-dir pytest-cov freezegun
+RUN apk --no-cache add \
+		py3-pytest \
+		py3-pytest-cov \
+	&& \
+	pip3 install \
+		--no-cache-dir \
+		--disable-pip-version-check \
+		freezegun
 USER app
 ENV POSTGRES_HOST=x \
     POSTGRES_USER=x \
@@ -21,3 +28,5 @@ CMD ["pytest", "szurubooru/", \
 EOF
 
 docker run --rm -t ${IMAGE_NAME}-test
+
+exit $?
