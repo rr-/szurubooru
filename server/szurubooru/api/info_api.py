@@ -22,7 +22,7 @@ def _get_disk_usage() -> int:
             file_path = os.path.join(dir_path, file_name)
             try:
                 total_size += os.path.getsize(file_path)
-            except:
+            except FileNotFoundError:
                 pass
     _cache_time = now
     _cache_result = total_size
