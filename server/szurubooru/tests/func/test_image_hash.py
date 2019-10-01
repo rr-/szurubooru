@@ -13,10 +13,10 @@ def test_hashing(read_asset, config_injector):
         },
     })
 
-    if not image_hash.get_session().ping():
-        pytest.xfail(
-            'Unable to connect to ElasticSearch, '
-            'perhaps it is not available for this test?')
+    # if not image_hash.get_session().ping():
+    #     pytest.xfail(
+    #         'Unable to connect to ElasticSearch, '
+    #         'perhaps it is not available for this test?')
 
     image_hash.purge()
     image_hash.add_image('test', read_asset('jpeg.jpg'))
