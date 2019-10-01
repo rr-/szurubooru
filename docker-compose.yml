@@ -5,9 +5,8 @@
 version: '2'
 
 services:
-  api:
-    build:
-      context: ./server
+  server:
+    image: rrdash/szurubooru-server:latest
     depends_on:
       - sql
       - elasticsearch
@@ -33,14 +32,11 @@ services:
       - "${MOUNT_DATA}:/data"
       - "./server/config.yaml:/opt/app/config.yaml"
   client:
-    build:
-      context: ./client
-      args:
-        BUILD_INFO:
+    image: rrdash/szurubooru-client:latest
     depends_on:
-      - api
+      - server
     environment:
-      BACKEND_HOST: api
+      BACKEND_HOST: server
       BASE_URL:
     volumes:
       - "${MOUNT_DATA}:/data:ro"
