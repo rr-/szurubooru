@@ -29,3 +29,16 @@ COPY --from=approot / /
 
 CMD ["/docker-start.sh"]
 VOLUME ["/data"]
+
+ARG DOCKER_REPO
+ARG BUILD_DATE
+ARG SOURCE_COMMIT
+LABEL \
+    maintainer="" \
+    org.opencontainers.image.title="${DOCKER_REPO}" \
+    org.opencontainers.image.url="https://github.com/rr-/szurubooru" \
+    org.opencontainers.image.documentation="https://github.com/rr-/szurubooru/blob/${SOURCE_COMMIT}/doc/INSTALL.md" \
+    org.opencontainers.image.created="${BUILD_DATE}" \
+    org.opencontainers.image.source="https://github.com/rr-/szurubooru" \
+    org.opencontainers.image.revision="${SOURCE_COMMIT}" \
+    org.opencontainers.image.licenses="GPL-3.0"
