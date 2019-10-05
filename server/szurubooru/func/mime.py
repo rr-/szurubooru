@@ -18,6 +18,9 @@ def get_mime_type(content: bytes) -> str:
     if content[0:6] in (b'GIF87a', b'GIF89a'):
         return 'image/gif'
 
+    if content[8:12] == b'WEBP':
+        return 'image/webp'
+
     if content[0:4] == b'\x1A\x45\xDF\xA3':
         return 'video/webm'
 
@@ -33,6 +36,7 @@ def get_extension(mime_type: str) -> Optional[str]:
         'image/gif': 'gif',
         'image/jpeg': 'jpg',
         'image/png': 'png',
+        'image/webp': 'webp',
         'video/mp4': 'mp4',
         'video/webm': 'webm',
         'application/octet-stream': 'dat',
@@ -49,7 +53,7 @@ def is_video(mime_type: str) -> bool:
 
 
 def is_image(mime_type: str) -> bool:
-    return mime_type.lower() in ('image/jpeg', 'image/png', 'image/gif')
+    return mime_type.lower() in ('image/jpeg', 'image/png', 'image/gif', 'image/webp')
 
 
 def is_animated_gif(content: bytes) -> bool:

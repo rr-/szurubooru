@@ -9,6 +9,7 @@ from szurubooru.func import mime
     ('png.png', 'image/png'),
     ('jpeg.jpg', 'image/jpeg'),
     ('gif.gif', 'image/gif'),
+    ('webp.webp', 'image/webp'),
     ('text.txt', 'application/octet-stream'),
 ])
 def test_get_mime_type(read_asset, input_path, expected_mime_type):
@@ -26,6 +27,7 @@ def test_get_mime_type_for_empty_file():
     ('image/png', 'png'),
     ('image/jpeg', 'jpg'),
     ('image/gif', 'gif'),
+    ('image/webp', 'webp'),
     ('application/octet-stream', 'dat'),
 ])
 def test_get_extension(mime_type, expected_extension):
