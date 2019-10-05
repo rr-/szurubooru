@@ -13,6 +13,7 @@ function _mimeTypeToPostType(mimeType) {
         'image/gif': 'image',
         'image/jpeg': 'image',
         'image/png': 'image',
+        'image/webp': 'image',
         'video/mp4': 'video',
         'video/webm': 'video',
     }[mimeType] || 'unknown';
@@ -113,6 +114,7 @@ class Url extends Uploadable {
             'jpg': 'image/jpeg',
             'png': 'image/png',
             'gif': 'image/gif',
+            'webp': 'image/webp',
             'mp4': 'video/mp4',
             'webm': 'video/webm',
         };
