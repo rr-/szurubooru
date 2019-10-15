@@ -131,7 +131,7 @@ def create_app() -> Callable[[Any, Any], Any]:
 
     try:
         image_hash.get_session().cluster.health(
-            wait_for_status='yellow', request_timeout=30)
+            wait_for_status='yellow', request_timeout=120)
         posts.populate_reverse_search()
         db.session.commit()
     except errors.ThirdPartyError:
