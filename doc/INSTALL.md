@@ -3,7 +3,7 @@ and Docker Compose (version 1.6.0 or greater) already installed.
 
 ### Prepare things
 
-1. Getting `szurubooru`:
+1. Download the `szurubooru` source:
 
     ```console
     user@host:~$ git clone https://github.com/rr-/szurubooru.git szuru
@@ -44,24 +44,35 @@ and Docker Compose (version 1.6.0 or greater) already installed.
     on how to do so are provided
     [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#docker-cli-run-prod-mode).
 
-2. Build or update the containers:
+2. Running the application
 
+    Download containers:
     ```console
     user@host:szuru$ docker-compose pull
-    user@host:szuru$ docker-compose build --pull
     ```
 
-    This will build both the frontend and backend containers, and may take
-    some time.
-
-3. Start and stop the the application
-
+    For first run, it is reccomended to start the databases seperately:
     ```console
-    # To start:
+    user@host:szuru$ docker-compose up -d elasticsearch
+    user@host:szuru$ docker-compose up -d sql
+    ```
+    Then wait approx. 2 minutes before starting all containers.
+    This gives time for the databases to initalize their storage
+    structure.
+
+    To start all containers:
+    ```console
     user@host:szuru$ docker-compose up -d
-    # To monitor (CTRL+C to exit):
+    ```
+
+    To view/monitor the application logs:
+    ```console
     user@host:szuru$ docker-compose logs -f
-    # To stop
+    # (CTRL+C to exit)
+    ```
+
+    To stop all containers:
+    ```console
     user@host:szuru$ docker-compose down
     ```
 
