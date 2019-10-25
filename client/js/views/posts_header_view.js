@@ -246,8 +246,10 @@ class PostsHeaderView extends events.EventTarget {
     _navigate() {
         this._autoCompleteControl.hide();
         let parameters = {query: this._queryInputNode.value};
-        parameters.offset = parameters.query === this._ctx.parameters.query ?
-            this._ctx.parameters.offset : 0;
+        
+        // convert falsy values to an empty string "" so that we can correctly compare with the current query
+        const prevQuery = this._ctx.parameters.query ? this._ctx.parameters.query : "";
+        parameters.offset = parameters.query === prevQuery ? this._ctx.parameters.offset : 0;
         if (this._bulkTagEditor && this._bulkTagEditor.opened) {
             parameters.tag = this._bulkTagEditor.value;
             this._bulkTagEditor.blur();
