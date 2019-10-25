@@ -248,7 +248,7 @@ class PostsHeaderView extends events.EventTarget {
         let parameters = {query: this._queryInputNode.value};
         
         // convert falsy values to an empty string "" so that we can correctly compare with the current query
-        var prevQuery = this._ctx.parameters.query ? this._ctx.parameters.query : "";
+        const prevQuery = this._ctx.parameters.query ? this._ctx.parameters.query : "";
         parameters.offset = parameters.query === prevQuery ? this._ctx.parameters.offset : 0;
         if (this._bulkTagEditor && this._bulkTagEditor.opened) {
             parameters.tag = this._bulkTagEditor.value;
