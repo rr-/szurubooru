@@ -9,7 +9,7 @@
     "font-awesome": "^4.7.0",
     "ios-inner-height": "^1.0.3",
     "js-cookie": "^2.2.0",
-    "marked": "^0.4.0",
+    "marked": "^0.7.0",
     "mousetrap": "^1.6.2",
     "nprogress": "^0.2.0",
     "superagent": "^3.8.3"

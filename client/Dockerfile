@@ -1,7 +1,7 @@
 FROM node:9 as builder
 WORKDIR /opt/app
 
-COPY package.json ./
+COPY package.json package-lock.json ./
 RUN npm install
 
 COPY . ./
