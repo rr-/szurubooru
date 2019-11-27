@@ -6,7 +6,7 @@ version: '2'
 
 services:
   server:
-    image: rrdash/szurubooru-server:latest
+    image: szurubooru/server:latest
     depends_on:
       - sql
       - elasticsearch
@@ -32,7 +32,7 @@ services:
       - "${MOUNT_DATA}:/data"
       - "./server/config.yaml:/opt/app/config.yaml"
   client:
-    image: rrdash/szurubooru-client:latest
+    image: szurubooru/client:latest
     depends_on:
       - server
     environment:
