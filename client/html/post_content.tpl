@@ -17,6 +17,7 @@
                 class: 'resize-listener',
                 controls: true,
                 loop: (ctx.post.flags || []).includes('loop'),
+                playsinline: true,
                 autoplay: ctx.autoplay,
             },
             ctx.makeElement('source', {
