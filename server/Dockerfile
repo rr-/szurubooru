@@ -16,7 +16,7 @@ RUN \
         py3-pillow \
         py3-pynacl \
         py3-tz \
-        py3-rfc3339 \
+        py3-pyrfc3339 \
     && \
     pip3 install --no-cache-dir --disable-pip-version-check \
         alembic \
