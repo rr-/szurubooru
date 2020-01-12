@@ -88,7 +88,8 @@ FLAG_MAP = {
 def get_post_security_hash(id: int) -> str:
     return hmac.new(
         config.config['secret'].encode('utf8'),
-        str(id).encode('utf-8')).hexdigest()[0:16]
+        msg=str(id).encode('utf-8'),
+        digestmod='md5').hexdigest()[0:16]
 
 
 def get_post_content_url(post: model.Post) -> str:
