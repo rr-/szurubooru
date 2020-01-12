@@ -148,7 +148,7 @@ def test_get_category_by_name(tag_category_factory):
 def test_get_all_category_names(tag_category_factory):
     category1 = tag_category_factory(name='cat1')
     category2 = tag_category_factory(name='cat2')
-    db.session.add_all([category1, category2])
+    db.session.add_all([category2, category1])
     db.session.flush()
     assert tag_categories.get_all_category_names() == ['cat1', 'cat2']
 
@@ -156,7 +156,7 @@ def test_get_all_category_names(tag_category_factory):
 def test_get_all_categories(tag_category_factory):
     category1 = tag_category_factory(name='cat1')
     category2 = tag_category_factory(name='cat2')
-    db.session.add_all([category1, category2])
+    db.session.add_all([category2, category1])
     db.session.flush()
     assert tag_categories.get_all_categories() == [category1, category2]
 

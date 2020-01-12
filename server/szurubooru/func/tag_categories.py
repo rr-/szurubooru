@@ -131,11 +131,12 @@ def get_category_by_name(name: str, lock: bool = False) -> model.TagCategory:
 
 
 def get_all_category_names() -> List[str]:
-    return [row[0] for row in db.session.query(model.TagCategory.name).all()]
+    return [cat.name for cat in get_all_categories()]
 
 
 def get_all_categories() -> List[model.TagCategory]:
-    return db.session.query(model.TagCategory).all()
+    return db.session.query(model.TagCategory).order_by(
+        model.TagCategory.name.asc()).all()
 
 
 def try_get_default_category(

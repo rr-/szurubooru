@@ -17,7 +17,7 @@ def inject_config(config_injector):
 def test_retrieving_multiple(user_factory, tag_factory, context_factory):
     tag1 = tag_factory(names=['t1'])
     tag2 = tag_factory(names=['t2'])
-    db.session.add_all([tag1, tag2])
+    db.session.add_all([tag2, tag1])
     db.session.flush()
     with patch('szurubooru.func.tags.serialize_tag'):
         tags.serialize_tag.return_value = 'serialized tag'
