@@ -408,7 +408,7 @@ class PostEditSidebarControl extends events.EventTarget {
     }
 
     get _sourceInputNode() {
-        return this._formNode.querySelector('.post-source input');
+        return this._formNode.querySelector('.post-source textarea');
     }
 
     get _featureLinkNode() {

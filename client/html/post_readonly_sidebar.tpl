@@ -42,9 +42,10 @@
 
         <% if (ctx.post.source) { %>
             <section class='source'>
-                Source: <a href='<%- ctx.post.source %>' title='<%- ctx.post.source %>'>
-                    <%- ctx.post.prettyPrintSource() %>
-                </a>
+                Source: <% for (let i = 0; i < ctx.post.sourceSplit.length; i++) { %>
+                    <% if (i != 0) { %>&middot;<% } %>
+                    <a href='<%- ctx.post.sourceSplit[i] %>' title='<%- ctx.post.sourceSplit[i] %>'><%- ctx.extractRootDomain(ctx.post.sourceSplit[i]) %></a>
+                <% } %>
             </section>
         <% } %>
 

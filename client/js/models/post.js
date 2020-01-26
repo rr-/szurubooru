@@ -33,6 +33,7 @@ class Post extends events.EventTarget {
     get fullContentUrl()     { return this._fullContentUrl; }
     get thumbnailUrl()       { return this._thumbnailUrl; }
     get source()             { return this._source; }
+    get sourceSplit()        { return this._source.split('\n'); }
     get canvasWidth()        { return this._canvasWidth || 800; }
     get canvasHeight()       { return this._canvasHeight || 450; }
     get fileSize()           { return this._fileSize || 0; }
@@ -269,10 +270,6 @@ class Post extends events.EventTarget {
             this._orig._contentUrl +
             '?bypass-cache=' +
             Math.round(Math.random() * 1000);
-    }
-
-    prettyPrintSource() {
-        return uri.extractRootDomain(this._source);
     }
 
     _updateFromResponse(response) {

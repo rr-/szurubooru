@@ -60,9 +60,8 @@
 
         <% if (ctx.canEditPostSource) { %>
             <section class='post-source'>
-                <%= ctx.makeTextInput({
+                <%= ctx.makeTextarea({
                     text: 'Source',
-                    name: 'source',
                     value: ctx.post.source,
                 }) %>
             </section>
