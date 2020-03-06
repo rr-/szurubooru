@@ -119,7 +119,7 @@ def try_get_category_by_name(
         .query(model.TagCategory)
         .filter(sa.func.lower(model.TagCategory.name) == name.lower()))
     if lock:
-        query = query.with_lockmode('update')
+        query = query.with_for_update()
     return query.one_or_none()
 
 
@@ -146,7 +146,7 @@ def try_get_default_category(
         .query(model.TagCategory)
         .filter(model.TagCategory.default))
     if lock:
-        query = query.with_lockmode('update')
+        query = query.with_for_update()
     category = query.first()
     # if for some reason (e.g. as a result of migration) there's no default
     # category, get the first record available.
@@ -156,7 +156,7 @@ def try_get_default_category(
             .query(model.TagCategory)
             .order_by(model.TagCategory.tag_category_id.asc()))
         if lock:
-            query = query.with_lockmode('update')
+            query = query.with_for_update()
         category = query.first()
     return category
 
