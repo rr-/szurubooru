@@ -47,7 +47,7 @@ def test_serialize_tag_when_empty():
 def test_serialize_tag(post_factory, tag_factory, tag_category_factory):
     cat = tag_category_factory(name='cat')
     tag = tag_factory(names=['tag1', 'tag2'], category=cat)
-    tag.tag_id = 1
+    # tag.tag_id = 1
     tag.description = 'description'
     tag.suggestions = [
         tag_factory(names=['sug1'], category=cat),
@@ -58,12 +58,14 @@ def test_serialize_tag(post_factory, tag_factory, tag_category_factory):
         tag_factory(names=['impl2'], category=cat),
     ]
     tag.last_edit_time = datetime(1998, 1, 1)
+
     post1 = post_factory()
-    post2 = post_factory()
     post1.tags = [tag]
+    post2 = post_factory()
     post2.tags = [tag]
     db.session.add_all([tag, post1, post2])
     db.session.flush()
+
     result = tags.serialize_tag(tag)
     result['suggestions'].sort(key=lambda relation: relation['names'][0])
     result['implications'].sort(key=lambda relation: relation['names'][0])

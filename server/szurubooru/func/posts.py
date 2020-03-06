@@ -362,10 +362,11 @@ def create_post(
     post.type = ''
     post.checksum = ''
     post.mime_type = ''
-    db.session.add(post)
 
     update_post_content(post, content)
     new_tags = update_post_tags(post, tag_names)
+
+    db.session.add(post)
     return post, new_tags
 
 

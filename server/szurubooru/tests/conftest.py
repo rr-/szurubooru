@@ -11,37 +11,6 @@ import sqlalchemy as sa
 from szurubooru import config, db, model, rest
 
 
-class QueryCounter:
-    def __init__(self):
-        self._statements = []
-
-    def __enter__(self):
-        self._statements = []
-
-    def __exit__(self, *args, **kwargs):
-        self._statements = []
-
-    def create_before_cursor_execute(self):
-        def before_cursor_execute(
-                _conn, _cursor, statement, _params, _context, _executemany):
-            self._statements.append(statement)
-        return before_cursor_execute
-
-    @property
-    def statements(self):
-        return self._statements
-
-
-_query_counter = QueryCounter()
-_engine = sa.create_engine('sqlite:///:memory:')
-model.Base.metadata.drop_all(bind=_engine)
-model.Base.metadata.create_all(bind=_engine)
-sa.event.listen(
-    _engine,
-    'before_cursor_execute',
-    _query_counter.create_before_cursor_execute())
-
-
 def get_unique_name():
     alphabet = string.ascii_letters + string.digits
     return ''.join(random.choice(alphabet) for _ in range(8))
@@ -58,11 +27,6 @@ def fake_datetime():
     return injector
 
 
-@pytest.fixture()
-def query_counter():
-    return _query_counter
-
-
 @pytest.fixture(scope='session')
 def query_logger(pytestconfig):
     if pytestconfig.option.verbose > 0:
@@ -75,17 +39,13 @@ def query_logger(pytestconfig):
 
 
 @pytest.yield_fixture(scope='function', autouse=True)
-def session(query_logger):  # pylint: disable=unused-argument
-    db.sessionmaker = sa.orm.sessionmaker(
-        bind=_engine, autoflush=False)
-    db.session = sa.orm.scoped_session(db.sessionmaker)
+def session(query_logger, postgresql_db):  # pylint: disable=unused-argument
+    db.session = postgresql_db.session
+    postgresql_db.create_table(*model.Base.metadata.sorted_tables)
     try:
-        yield db.session
+        yield postgresql_db.session
     finally:
-        db.session.remove()
-        for table in reversed(model.Base.metadata.sorted_tables):
-            db.session.execute(table.delete())
-        db.session.commit()
+        postgresql_db.reset_db()
 
 
 @pytest.fixture

@@ -13,10 +13,12 @@ USER root
 RUN apk --no-cache add \
 		py3-pytest \
 		py3-pytest-cov \
+		postgresql \
 	&& \
 	pip3 install \
 		--no-cache-dir \
 		--disable-pip-version-check \
+		pytest-pgsql \
 		freezegun
 USER app
 ENV POSTGRES_HOST=x \

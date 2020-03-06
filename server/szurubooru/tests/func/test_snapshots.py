@@ -139,7 +139,7 @@ def test_create(tag_factory, user_factory):
 
 
 def test_modify_saves_non_empty_diffs(post_factory, user_factory):
-    if 'sqlite' in db.sessionmaker.kw['bind'].driver:
+    if 'sqlite' in db.session.get_bind().driver:
         pytest.xfail(
             'SQLite doesn\'t support transaction isolation, '
             'which is required to retrieve original entity')

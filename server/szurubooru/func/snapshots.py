@@ -1,5 +1,6 @@
 from typing import Any, Optional, Dict, Callable
 from datetime import datetime
+import sqlalchemy as sa
 from szurubooru import db, model
 from szurubooru.func import diff, users
 
@@ -104,7 +105,7 @@ def modify(entity: model.Base, auth_user: Optional[model.User]) -> None:
     snapshot = _create(model.Snapshot.OPERATION_MODIFIED, entity, auth_user)
     snapshot_factory = _snapshot_factories[snapshot.resource_type]
 
-    detached_session = db.sessionmaker()
+    detached_session = sa.orm.sessionmaker(bind=db.session.get_bind())()
     detached_entity = detached_session.query(table).get(snapshot.resource_pkey)
     assert detached_entity, 'Entity not found in DB, have you committed it?'
     detached_snapshot = snapshot_factory(detached_entity)

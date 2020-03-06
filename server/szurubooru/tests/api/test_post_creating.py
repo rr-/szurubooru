@@ -275,7 +275,6 @@ def test_errors_not_spending_ids(
                 params={'safety': 'safe', 'tags': []},
                 files={'content': read_asset('png.png')},
                 user=auth_user))
-    db.session.commit()
 
     # erroreous request (duplicate post)
     with pytest.raises(posts.PostAlreadyUploadedError):
@@ -284,7 +283,6 @@ def test_errors_not_spending_ids(
                 params={'safety': 'safe', 'tags': []},
                 files={'content': read_asset('png.png')},
                 user=auth_user))
-    db.session.rollback()
 
     # successful request
     with patch('szurubooru.func.posts.serialize_post'), \
