@@ -1,6 +1,15 @@
+# User-specific configuration
 config.yaml
 .env
+
+# Client Development Artifacts
 */*_modules/
+client/public
+
+# Server Development Artifacts
 .coverage
 .cache
-client/public
+server/**/lib/
+server/**/bin/
+server/**/pyvenv.cfg
+__pycache__/
