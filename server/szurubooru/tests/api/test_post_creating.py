@@ -12,6 +12,7 @@ def inject_config(config_injector):
             'posts:create:identified': model.User.RANK_REGULAR,
             'tags:create': model.User.RANK_REGULAR,
         },
+        'allow_broken_uploads': False,
     })
 
 
@@ -250,8 +251,7 @@ def test_omitting_optional_field(
 
 
 def test_errors_not_spending_ids(
-        config_injector, tmpdir, context_factory, read_asset, user_factory,
-        skip_post_hashing):
+        config_injector, tmpdir, context_factory, read_asset, user_factory):
     config_injector({
         'data_dir': str(tmpdir.mkdir('data')),
         'data_url': 'example.com',

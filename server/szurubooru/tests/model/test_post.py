@@ -81,7 +81,11 @@ def test_cascade_deletions(
     note.post = post
     note.polygon = ''
     note.text = ''
-    db.session.add_all([score, favorite, feature, note])
+    signature = model.PostSignature()
+    signature.post = post
+    signature.signature = b'testvalue'
+    signature.words = list(range(50))
+    db.session.add_all([score, favorite, feature, note, signature])
     db.session.flush()
 
     post.user = user
@@ -107,6 +111,7 @@ def test_cascade_deletions(
     assert db.session.query(model.PostNote).count() == 1
     assert db.session.query(model.PostFeature).count() == 1
     assert db.session.query(model.PostFavorite).count() == 1
+    assert db.session.query(model.PostSignature).count() == 1
     assert db.session.query(model.Comment).count() == 1
 
     db.session.delete(post)
@@ -122,6 +127,7 @@ def test_cascade_deletions(
     assert db.session.query(model.PostNote).count() == 0
     assert db.session.query(model.PostFeature).count() == 0
     assert db.session.query(model.PostFavorite).count() == 0
+    assert db.session.query(model.PostSignature).count() == 0
     assert db.session.query(model.Comment).count() == 0
 
 

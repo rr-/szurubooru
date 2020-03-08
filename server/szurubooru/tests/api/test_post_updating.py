@@ -19,6 +19,7 @@ def inject_config(config_injector):
             'posts:edit:thumbnail': model.User.RANK_REGULAR,
             'tags:create': model.User.RANK_MODERATOR,
         },
+        'allow_broken_uploads': False,
     })
 
 

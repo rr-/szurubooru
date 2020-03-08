@@ -139,15 +139,8 @@ def tag_factory():
     return factory
 
 
-@pytest.yield_fixture
-def skip_post_hashing():
-    with patch('szurubooru.func.image_hash.add_image'), \
-            patch('szurubooru.func.image_hash.delete_image'):
-        yield
-
-
 @pytest.fixture
-def post_factory(skip_post_hashing):
+def post_factory():
     # pylint: disable=invalid-name
     def factory(
             id=None,

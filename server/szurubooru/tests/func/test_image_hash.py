@@ -1,37 +1,26 @@
 import pytest
 from szurubooru.func import image_hash
+from numpy import array_equal
 
 
-def test_hashing(read_asset, config_injector):
-    config_injector({
-        'elasticsearch': {
-            'host': 'localhost',
-            'port': 9200,
-            'index': 'szurubooru_test',
-            'user': 'szurubooru',
-            'pass': None,
-        },
-    })
+def test_signature_functions(read_asset, config_injector):
+    sig1 = image_hash.generate_signature(read_asset('jpeg.jpg'))
+    sig2 = image_hash.generate_signature(read_asset('jpeg-similar.jpg'))
 
-    if not image_hash.get_session().ping():
-        pytest.xfail(
-            'Unable to connect to ElasticSearch, '
-            'perhaps it is not available for this test?')
+    sig1_repacked = image_hash.unpack_signature(
+        image_hash.pack_signature(sig1))
+    sig2_repacked = image_hash.unpack_signature(
+        image_hash.pack_signature(sig2))
+    assert array_equal(sig1, sig1_repacked)
+    assert array_equal(sig2, sig2_repacked)
 
-    image_hash.purge()
-    image_hash.add_image('test', read_asset('jpeg.jpg'))
+    dist1 = image_hash.normalized_distance([sig1], sig2)
+    assert abs(dist1[0] - 0.20599895341812172) < 1e-8
 
-    paths = image_hash.get_all_paths()
-    results_exact = image_hash.search_by_image(read_asset('jpeg.jpg'))
-    results_similar = image_hash.search_by_image(
-        read_asset('jpeg-similar.jpg'))
+    dist2 = image_hash.normalized_distance([sig2], sig2)
+    assert abs(dist2[0]) < 1e-8
 
-    assert len(paths) == 1
-    assert len(results_exact) == 1
-    assert len(results_similar) == 1
-    assert results_exact[0].path == 'test'
-    assert results_exact[0].score == 63
-    assert results_exact[0].distance == 0
-    assert results_similar[0].path == 'test'
-    assert results_similar[0].score == 17
-    assert abs(results_similar[0].distance - 0.20599895341812172) < 1e-8
+    words1 = image_hash.generate_words(sig1)
+    words2 = image_hash.generate_words(sig2)
+    words_match = sum(word1 == word2 for word1, word2 in zip(words1, words2))
+    assert words_match == 17
