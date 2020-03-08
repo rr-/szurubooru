@@ -120,7 +120,6 @@ def create_app() -> Callable[[Any, Any], Any]:
     ''' Create a WSGI compatible App object. '''
     validate_config()
     coloredlogs.install(fmt='[%(asctime)-15s] %(name)s %(message)s')
-    logging.getLogger('elasticsearch').disabled = True
     if config.config['debug']:
         logging.getLogger('szurubooru').setLevel(logging.INFO)
     if config.config['show_sql']:

@@ -21,12 +21,7 @@ def _merge(left: Dict, right: Dict) -> Dict:
 
 
 def _docker_config() -> Dict:
-    for key in [
-            'POSTGRES_USER',
-            'POSTGRES_PASSWORD',
-            'POSTGRES_HOST',
-            'ESEARCH_HOST'
-    ]:
+    for key in ['POSTGRES_USER', 'POSTGRES_PASSWORD', 'POSTGRES_HOST']:
         if not os.getenv(key, False):
             raise errors.ConfigError(f'Environment variable "{key}" not set')
     return {
@@ -40,13 +35,6 @@ def _docker_config() -> Dict:
             'host': os.getenv('POSTGRES_HOST'),
             'port': int(os.getenv('POSTGRES_PORT', 5432)),
             'db': os.getenv('POSTGRES_DB', os.getenv('POSTGRES_USER'))
-        },
-        'elasticsearch': {
-            'host': os.getenv('ESEARCH_HOST'),
-            'port': int(os.getenv('ESEARCH_PORT', 9200)),
-            'index': os.getenv('ESEARCH_INDEX', 'szurubooru'),
-            'user': os.getenv('ESEARCH_USER', os.getenv('ESEARCH_INDEX', 'szurubooru')),
-            'pass': os.getenv('ESEARCH_PASSWORD', False)
         }
     }
 

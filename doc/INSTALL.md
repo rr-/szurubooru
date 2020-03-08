@@ -36,45 +36,31 @@ and Docker Compose (version 1.6.0 or greater) already installed.
 
 ### Running the Application
 
-1. Configurations for ElasticSearch:
+Download containers:
+```console
+user@host:szuru$ docker-compose pull
+```
 
-    You may need to raise the `vm.max_map_count`
-    parameter to at least `262144` in order for the
-    ElasticSearch container to function. Instructions
-    on how to do so are provided
-    [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#docker-cli-run-prod-mode).
+For first run, it is recommended to start the database separately:
+```console
+user@host:szuru$ docker-compose up -d sql
+```
 
-2. Running the application
+To start all containers:
+```console
+user@host:szuru$ docker-compose up -d
+```
 
-    Download containers:
-    ```console
-    user@host:szuru$ docker-compose pull
-    ```
+To view/monitor the application logs:
+```console
+user@host:szuru$ docker-compose logs -f
+# (CTRL+C to exit)
+```
 
-    For first run, it is reccomended to start the databases seperately:
-    ```console
-    user@host:szuru$ docker-compose up -d elasticsearch
-    user@host:szuru$ docker-compose up -d sql
-    ```
-    Then wait approx. 2 minutes before starting all containers.
-    This gives time for the databases to initalize their storage
-    structure.
-
-    To start all containers:
-    ```console
-    user@host:szuru$ docker-compose up -d
-    ```
-
-    To view/monitor the application logs:
-    ```console
-    user@host:szuru$ docker-compose logs -f
-    # (CTRL+C to exit)
-    ```
-
-    To stop all containers:
-    ```console
-    user@host:szuru$ docker-compose down
-    ```
+To stop all containers:
+```console
+user@host:szuru$ docker-compose down
+```
 
 ### Additional Features
 

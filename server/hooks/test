@@ -23,8 +23,7 @@ RUN apk --no-cache add \
 USER app
 ENV POSTGRES_HOST=x \
     POSTGRES_USER=x \
-    POSTGRES_PASSWORD=x \
-    ESEARCH_HOST=x
+    POSTGRES_PASSWORD=x
 CMD ["pytest", "szurubooru/", \
 	"--cov-report=term-missing", "--cov=szurubooru", "--tb=short"]
 EOF

@@ -144,9 +144,3 @@ privileges:
 ## usage: schema://user:password@host:port/database_name
 ## example: postgres://szuru:dog@localhost:5432/szuru_test
 #database:
-#elasticsearch: # used for reverse image search
-#    host: localhost
-#    port: 9200
-#    index: szurubooru
-#    user: szurubooru
-#    pass:
