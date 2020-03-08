@@ -1,3 +1,4 @@
+import logging
 import hmac
 from typing import Any, Optional, Tuple, List, Dict, Callable
 from datetime import datetime
@@ -6,6 +7,9 @@ from szurubooru import config, db, model, errors, rest
 from szurubooru.func import (
     users, scores, comments, tags, util,
     mime, images, files, image_hash, serialization, snapshots)
+
+
+logger = logging.getLogger(__name__)
 
 
 EMPTY_PIXEL = (
@@ -58,12 +62,6 @@ class InvalidPostNoteError(errors.ValidationError):
 
 class InvalidPostFlagError(errors.ValidationError):
     pass
-
-
-class PostLookalike(image_hash.Lookalike):
-    def __init__(self, score: int, distance: float, post: model.Post) -> None:
-        super().__init__(score, distance, post.post_id)
-        self.post = post
 
 
 SAFETY_MAP = {
@@ -402,7 +400,6 @@ def _after_post_update(
 def _before_post_delete(
         _mapper: Any, _connection: Any, post: model.Post) -> None:
     if post.post_id:
-        image_hash.delete_image(post.post_id)
         if config.config['delete_source_files']:
             files.delete(get_post_content_path(post))
             files.delete(get_post_thumbnail_path(post))
@@ -416,10 +413,6 @@ def _sync_post_content(post: model.Post) -> None:
         files.save(get_post_content_path(post), content)
         delattr(post, '__content')
         regenerate_thumb = True
-        if post.post_id and post.type in (
-                model.Post.TYPE_IMAGE, model.Post.TYPE_ANIMATION):
-            image_hash.delete_image(post.post_id)
-            image_hash.add_image(post.post_id, content)
 
     if hasattr(post, '__thumbnail'):
         if getattr(post, '__thumbnail'):
@@ -485,14 +478,56 @@ def test_sound(post: model.Post, content: bytes) -> None:
             update_post_flags(post, flags)
 
 
+def purge_post_signature(post: model.Post) -> None:
+    old_signature = (
+        db.session
+        .query(model.PostSignature)
+        .filter(model.PostSignature.post_id == post.post_id)
+        .one_or_none())
+    if old_signature:
+        db.session.delete(old_signature)
+
+
+def generate_post_signature(post: model.Post, content: bytes) -> None:
+    try:
+        unpacked_signature = image_hash.generate_signature(content)
+        packed_signature = image_hash.pack_signature(unpacked_signature)
+        words = image_hash.generate_words(unpacked_signature)
+
+        db.session.add(model.PostSignature(
+            post=post, signature=packed_signature, words=words))
+    except errors.ProcessingError:
+        if not config.config['allow_broken_uploads']:
+            raise InvalidPostContentError(
+                'Unable to generate image hash data.')
+
+
+def update_all_post_signatures() -> None:
+    posts_to_hash = (
+        db.session
+        .query(model.Post)
+        .filter(
+            (model.Post.type == model.Post.TYPE_IMAGE) |
+            (model.Post.type == model.Post.TYPE_ANIMATION))
+        .filter(model.Post.signature == None)
+        .order_by(model.Post.post_id.asc())
+        .all())
+    for post in posts_to_hash:
+        logger.info('Generating hash info for %d', post.post_id)
+        generate_post_signature(post, files.get(get_post_content_path(post)))
+
+
 def update_post_content(post: model.Post, content: Optional[bytes]) -> None:
     assert post
     if not content:
         raise InvalidPostContentError('Post content missing.')
+
+    update_signature = False
     post.mime_type = mime.get_mime_type(content)
     if mime.is_flash(post.mime_type):
         post.type = model.Post.TYPE_FLASH
     elif mime.is_image(post.mime_type):
+        update_signature = True
         if mime.is_animated_gif(content):
             post.type = model.Post.TYPE_ANIMATION
         else:
@@ -515,18 +550,30 @@ def update_post_content(post: model.Post, content: Optional[bytes]) -> None:
             and other_post.post_id != post.post_id:
         raise PostAlreadyUploadedError(other_post)
 
+    if update_signature:
+        purge_post_signature(post)
+        post.signature = generate_post_signature(post, content)
+
     post.file_size = len(content)
     try:
         image = images.Image(content)
         post.canvas_width = image.width
         post.canvas_height = image.height
     except errors.ProcessingError:
-        post.canvas_width = None
-        post.canvas_height = None
+        if not config.config['allow_broken_uploads']:
+            raise InvalidPostContentError(
+                'Unable to process image metadata')
+        else:
+            post.canvas_width = None
+            post.canvas_height = None
     if (post.canvas_width is not None and post.canvas_width <= 0) \
             or (post.canvas_height is not None and post.canvas_height <= 0):
-        post.canvas_width = None
-        post.canvas_height = None
+        if not config.config['allow_broken_uploads']:
+            raise InvalidPostContentError(
+                'Invalid image dimensions returned during processing')
+        else:
+            post.canvas_width = None
+            post.canvas_height = None
     setattr(post, '__content', content)
 
 
@@ -751,6 +798,8 @@ def merge_posts(
     if replace_content:
         content = files.get(get_post_content_path(source_post))
         transfer_flags(source_post.post_id, target_post.post_id)
+        purge_post_signature(source_post)
+        purge_post_signature(target_post)
 
     delete(source_post)
     db.session.flush()
@@ -768,38 +817,31 @@ def search_by_image_exact(image_content: bytes) -> Optional[model.Post]:
         .one_or_none())
 
 
-def search_by_image(image_content: bytes) -> List[PostLookalike]:
-    ret = []
-    for result in image_hash.search_by_image(image_content):
-        post = try_get_post_by_id(result.path)
-        if post:
-            ret.append(PostLookalike(
-                score=result.score,
-                distance=result.distance,
-                post=post))
-    return ret
+def search_by_image(image_content: bytes) -> List[Tuple[float, model.Post]]:
+    query_signature = image_hash.generate_signature(image_content)
+    query_words = image_hash.generate_words(query_signature)
 
+    dbquery = '''
+    SELECT s.post_id, s.signature, count(a.query) AS score
+    FROM post_signature AS s, unnest(s.words, :q) AS a(word, query)
+    WHERE a.word = a.query
+    GROUP BY s.post_id
+    ORDER BY score DESC LIMIT 100;
+    '''
 
-def populate_reverse_search() -> None:
-    excluded_post_ids = image_hash.get_all_paths()
-
-    post_ids_to_hash = (
-        db.session
-        .query(model.Post.post_id)
-        .filter(
-            (model.Post.type == model.Post.TYPE_IMAGE) |
-            (model.Post.type == model.Post.TYPE_ANIMATION))
-        .filter(~model.Post.post_id.in_(excluded_post_ids))
-        .order_by(model.Post.post_id.asc())
-        .all())
-
-    for post_ids_chunk in util.chunks(post_ids_to_hash, 100):
-        posts_chunk = (
-            db.session
-            .query(model.Post)
-            .filter(model.Post.post_id.in_(post_ids_chunk))
-            .all())
-        for post in posts_chunk:
-            content_path = get_post_content_path(post)
-            if files.has(content_path):
-                image_hash.add_image(post.post_id, files.get(content_path))
+    candidates = db.session.execute(dbquery, {'q': query_words})
+    data = tuple(zip(*[
+        (post_id, image_hash.unpack_signature(packedsig))
+        for post_id, packedsig, score in candidates
+    ]))
+    if data:
+        candidate_post_ids, sigarray = data
+        distances = image_hash.normalized_distance(sigarray, query_signature)
+        return [
+            (distance, try_get_post_by_id(candidate_post_id))
+            for candidate_post_id, distance
+            in zip(candidate_post_ids, distances)
+            if distance < image_hash.DISTANCE_CUTOFF
+        ]
+    else:
+        return []

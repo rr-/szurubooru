@@ -21,10 +21,14 @@ thumbnails:
     post_width: 300
     post_height: 300
 
+# automatically convert animated GIF uploads to video formats
 convert:
    gif:
      to_webm: false
      to_mp4: false
+
+# allow posts to be uploaded even if some image processing errors occur
+allow_broken_uploads: false
 
 # used to send password reset e-mails
 smtp:

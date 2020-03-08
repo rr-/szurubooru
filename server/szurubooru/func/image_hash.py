@@ -2,8 +2,7 @@ import logging
 from io import BytesIO
 from datetime import datetime
 from typing import Any, Optional, Tuple, Set, List, Callable
-import elasticsearch
-import elasticsearch_dsl
+import math
 import numpy as np
 from PIL import Image
 from szurubooru import config, errors
@@ -24,30 +23,25 @@ N = 9
 P = None
 SAMPLE_WORDS = 16
 MAX_WORDS = 63
-ES_DOC_TYPE = 'image'
-ES_MAX_RESULTS = 100
+SIG_CHUNK_BITS = 32
+
+SIG_BASE = 2*N_LEVELS + 2
+SIG_CHUNK_WIDTH = int(SIG_CHUNK_BITS / math.log2(SIG_BASE))
+SIG_CHUNK_NUMS = 8*N*N / SIG_CHUNK_WIDTH
+assert 8*N*N % SIG_CHUNK_WIDTH == 0
 
 Window = Tuple[Tuple[float, float], Tuple[float, float]]
-NpMatrix = Any
-
-
-def get_session() -> elasticsearch.Elasticsearch:
-    extra_args = {}
-    if config.config['elasticsearch']['pass']:
-        extra_args['http_auth'] = (
-            config.config['elasticsearch']['user'],
-            config.config['elasticsearch']['pass'])
-        extra_args['scheme'] = 'https'
-        extra_args['port'] = 443
-    return elasticsearch.Elasticsearch([{
-        'host': config.config['elasticsearch']['host'],
-        'port': config.config['elasticsearch']['port'],
-    }], **extra_args)
+NpMatrix = np.ndarray
 
 
 def _preprocess_image(content: bytes) -> NpMatrix:
-    img = Image.open(BytesIO(content))
-    return np.asarray(img.convert('L'), dtype=np.uint8)
+    try:
+        img = Image.open(BytesIO(content))
+        return np.asarray(img.convert('L'), dtype=np.uint8)
+    except IOError:
+        raise errors.ProcessingError(
+            'Unable to generate a signature hash '
+            'for this image.')
 
 
 def _crop_image(
@@ -175,7 +169,31 @@ def _compute_differentials(grey_level_matrix: NpMatrix) -> NpMatrix:
         lower_right_neighbors]))
 
 
-def _generate_signature(content: bytes) -> NpMatrix:
+def _words_to_int(word_array: NpMatrix) -> List[int]:
+    width = word_array.shape[1]
+    coding_vector = 3**np.arange(width)
+    return np.dot(word_array + 1, coding_vector).astype(int).tolist()
+
+
+def _get_words(array: NpMatrix, k: int, n: int) -> NpMatrix:
+    word_positions = np.linspace(
+        0, array.shape[0], n, endpoint=False).astype('int')
+    assert k <= array.shape[0]
+    assert word_positions.shape[0] <= array.shape[0]
+    words = np.zeros((n, k)).astype('int8')
+    for i, pos in enumerate(word_positions):
+        if pos + k <= array.shape[0]:
+            words[i] = array[pos:pos + k]
+        else:
+            temp = array[pos:].copy()
+            temp.resize(k, refcheck=False)
+            words[i] = temp
+    words[words > 0] = 1
+    words[words < 0] = -1
+    return words
+
+
+def generate_signature(content: bytes) -> NpMatrix:
     im_array = _preprocess_image(content)
     image_limits = _crop_image(
         im_array,
@@ -192,40 +210,15 @@ def _generate_signature(content: bytes) -> NpMatrix:
     return np.ravel(diff_matrix).astype('int8')
 
 
-def _get_words(array: NpMatrix, k: int, n: int) -> NpMatrix:
-    word_positions = np.linspace(
-        0, array.shape[0], n, endpoint=False).astype('int')
-    assert k <= array.shape[0]
-    assert word_positions.shape[0] <= array.shape[0]
-    words = np.zeros((n, k)).astype('int8')
-    for i, pos in enumerate(word_positions):
-        if pos + k <= array.shape[0]:
-            words[i] = array[pos:pos + k]
-        else:
-            temp = array[pos:].copy()
-            temp.resize(k)
-            words[i] = temp
-    _max_contrast(words)
-    words = _words_to_int(words)
-    return words
+def generate_words(signature: NpMatrix) -> List[int]:
+    return _words_to_int(_get_words(signature, k=SAMPLE_WORDS, n=MAX_WORDS))
 
 
-def _words_to_int(word_array: NpMatrix) -> NpMatrix:
-    width = word_array.shape[1]
-    coding_vector = 3**np.arange(width)
-    return np.dot(word_array + 1, coding_vector)
-
-
-def _max_contrast(array: NpMatrix) -> None:
-    array[array > 0] = 1
-    array[array < 0] = -1
-
-
-def _normalized_distance(
-        target_array: NpMatrix,
+def normalized_distance(
+        target_array: Any,
         vec: NpMatrix,
         nan_value: float = 1.0) -> List[float]:
-    target_array = target_array.astype(int)
+    target_array = np.array(target_array).astype(int)
     vec = vec.astype(int)
     topvec = np.linalg.norm(vec - target_array, axis=1)
     norm1 = np.linalg.norm(vec, axis=0)
@@ -235,124 +228,21 @@ def _normalized_distance(
     return finvec
 
 
-def _safety_blanket(default_param_factory: Callable[[], Any]) -> Callable:
-    def wrapper_outer(target_function: Callable) -> Callable:
-        def wrapper_inner(*args: Any, **kwargs: Any) -> Any:
-            try:
-                return target_function(*args, **kwargs)
-            except elasticsearch.exceptions.NotFoundError:
-                # index not yet created, will be created dynamically by
-                # add_image()
-                return default_param_factory()
-            except elasticsearch.exceptions.ElasticsearchException as ex:
-                logger.warning('Problem with elastic search: %s', ex)
-                raise errors.ThirdPartyError(
-                    'Error connecting to elastic search.')
-            except IOError:
-                raise errors.ProcessingError('Not an image.')
-            except Exception as ex:
-                raise errors.ThirdPartyError('Unknown error (%s).' % ex)
-        return wrapper_inner
-    return wrapper_outer
+def pack_signature(signature: NpMatrix) -> bytes:
+    base = 2 * N_LEVELS + 1
+    coding_vector = np.flipud(SIG_BASE**np.arange(SIG_CHUNK_WIDTH))
+    return np.array([
+        np.dot(x, coding_vector) for x in
+        np.reshape(signature + N_LEVELS, (-1, SIG_CHUNK_WIDTH))
+    ]).astype(f'uint{SIG_CHUNK_BITS}').tobytes()
 
 
-class Lookalike:
-    def __init__(self, score: int, distance: float, path: Any) -> None:
-        self.score = score
-        self.distance = distance
-        self.path = path
-
-
-@_safety_blanket(lambda: None)
-def add_image(path: str, image_content: bytes) -> None:
-    assert path
-    assert image_content
-    signature = _generate_signature(image_content)
-    words = _get_words(signature, k=SAMPLE_WORDS, n=MAX_WORDS)
-
-    record = {
-        'signature': signature.tolist(),
-        'path': path,
-        'timestamp': datetime.now(),
-    }
-    for i in range(MAX_WORDS):
-        record['simple_word_' + str(i)] = words[i].tolist()
-
-    get_session().index(
-        index=config.config['elasticsearch']['index'],
-        doc_type=ES_DOC_TYPE,
-        body=record,
-        refresh=True)
-
-
-@_safety_blanket(lambda: None)
-def delete_image(path: str) -> None:
-    assert path
-    get_session().delete_by_query(
-        index=config.config['elasticsearch']['index'],
-        doc_type=ES_DOC_TYPE,
-        body={'query': {'term': {'path': path}}})
-
-
-@_safety_blanket(lambda: [])
-def search_by_image(image_content: bytes) -> List[Lookalike]:
-    signature = _generate_signature(image_content)
-    words = _get_words(signature, k=SAMPLE_WORDS, n=MAX_WORDS)
-
-    res = get_session().search(
-        index=config.config['elasticsearch']['index'],
-        doc_type=ES_DOC_TYPE,
-        body={
-            'query':
-            {
-                'bool':
-                {
-                    'should':
-                    [
-                        {'term': {'simple_word_%d' % i: word.tolist()}}
-                        for i, word in enumerate(words)
-                    ]
-                }
-            },
-            '_source': {'excludes': ['simple_word_*']}},
-        size=ES_MAX_RESULTS,
-        timeout='10s')['hits']['hits']
-
-    if len(res) == 0:
-        return []
-
-    sigs = np.array([x['_source']['signature'] for x in res])
-    dists = _normalized_distance(sigs, np.array(signature))
-
-    ids = set()  # type: Set[int]
-    ret = []
-    for item, dist in zip(res, dists):
-        id = item['_id']
-        score = item['_score']
-        path = item['_source']['path']
-        if id in ids:
-            continue
-        ids.add(id)
-        if dist < DISTANCE_CUTOFF:
-            ret.append(Lookalike(score=score, distance=dist, path=path))
-    return ret
-
-
-@_safety_blanket(lambda: None)
-def purge() -> None:
-    get_session().delete_by_query(
-        index=config.config['elasticsearch']['index'],
-        doc_type=ES_DOC_TYPE,
-        body={'query': {'match_all': {}}},
-        refresh=True)
-
-
-@_safety_blanket(lambda: set())
-def get_all_paths() -> Set[str]:
-    search = (
-        elasticsearch_dsl.Search(
-            using=get_session(),
-            index=config.config['elasticsearch']['index'],
-            doc_type=ES_DOC_TYPE)
-        .source(['path']))
-    return set(h.path for h in search.scan())
+def unpack_signature(packed: bytes) -> NpMatrix:
+    base = 2 * N_LEVELS + 1
+    return np.ravel(np.array([
+        [
+            int(digit) - N_LEVELS for digit in
+            np.base_repr(e, base=SIG_BASE).zfill(SIG_CHUNK_WIDTH)
+        ] for e in
+        np.frombuffer(packed, dtype=f'uint{SIG_CHUNK_BITS}')
+    ]).astype('int8'))

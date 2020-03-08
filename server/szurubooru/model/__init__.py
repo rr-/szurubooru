@@ -9,7 +9,8 @@ from szurubooru.model.post import (
     PostFavorite,
     PostScore,
     PostNote,
-    PostFeature)
+    PostFeature,
+    PostSignature)
 from szurubooru.model.comment import Comment, CommentScore
 from szurubooru.model.snapshot import Snapshot
 import szurubooru.model.util

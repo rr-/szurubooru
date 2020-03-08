@@ -262,9 +262,9 @@ def get_posts_by_image(
         'similarPosts':
             [
                 {
-                    'distance': lookalike.distance,
-                    'post': _serialize_post(ctx, lookalike.post),
+                    'distance': distance,
+                    'post': _serialize_post(ctx, post),
                 }
-                for lookalike in lookalikes
+                for distance, post in lookalikes
             ],
     }
