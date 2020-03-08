@@ -513,8 +513,13 @@ def update_all_post_signatures() -> None:
         .order_by(model.Post.post_id.asc())
         .all())
     for post in posts_to_hash:
-        logger.info('Generating hash info for %d', post.post_id)
-        generate_post_signature(post, files.get(get_post_content_path(post)))
+        try:
+            generate_post_signature(
+                post, files.get(get_post_content_path(post)))
+            db.session.commit()
+            logger.info('Hashed Post %d', post.post_id)
+        except Exception as ex:
+            logger.exception(ex)
 
 
 def update_post_content(post: model.Post, content: Optional[bytes]) -> None:

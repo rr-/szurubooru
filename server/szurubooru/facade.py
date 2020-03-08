@@ -8,7 +8,8 @@ import coloredlogs
 import sqlalchemy as sa
 import sqlalchemy.orm.exc
 from szurubooru import config, db, errors, rest
-from szurubooru.func import file_uploads
+from szurubooru.func.posts import update_all_post_signatures
+from szurubooru.func.file_uploads import purge_old_uploads
 # pylint: disable=unused-import
 from szurubooru import api, middleware
 
@@ -106,10 +107,10 @@ def validate_config() -> None:
                 'From address must be set to use mail-based password reset')
 
 
-def purge_old_uploads() -> None:
+def purge_old_uploads_daemon() -> None:
     while True:
         try:
-            file_uploads.purge_old_uploads()
+            purge_old_uploads()
         except Exception as ex:
             logging.exception(ex)
         time.sleep(60 * 5)
@@ -125,9 +126,13 @@ def create_app() -> Callable[[Any, Any], Any]:
     if config.config['show_sql']:
         logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
-    purge_thread = threading.Thread(target=purge_old_uploads)
+    purge_thread = threading.Thread(target=purge_old_uploads_daemon)
     purge_thread.daemon = True
     purge_thread.start()
+
+    hashing_thread = threading.Thread(target=update_all_post_signatures)
+    hashing_thread.daemon = False
+    hashing_thread.start()
 
     db.session.commit()
 
