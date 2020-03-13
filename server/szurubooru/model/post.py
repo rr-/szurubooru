@@ -207,7 +207,7 @@ class Post(Base):
     signature = sa.orm.relationship(
         'PostSignature',
         uselist=False,
-        cascade='all, delete-orphan',
+        cascade='all, delete, delete-orphan',
         lazy='joined')
     relations = sa.orm.relationship(
         'Post',

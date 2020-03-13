@@ -479,13 +479,10 @@ def test_sound(post: model.Post, content: bytes) -> None:
 
 
 def purge_post_signature(post: model.Post) -> None:
-    old_signature = (
-        db.session
+    (db.session
         .query(model.PostSignature)
         .filter(model.PostSignature.post_id == post.post_id)
-        .one_or_none())
-    if old_signature:
-        db.session.delete(old_signature)
+        .delete())
 
 
 def generate_post_signature(post: model.Post, content: bytes) -> None:
@@ -788,24 +785,25 @@ def merge_posts(
             .values(child_id=target_post_id))
         db.session.execute(update_stmt)
 
-    def transfer_flags(source_post_id: int, target_post_id: int) -> None:
-        target = get_post_by_id(target_post_id)
-        source = get_post_by_id(source_post_id)
-        target.flags = source.flags
-
     merge_tags(source_post.post_id, target_post.post_id)
     merge_comments(source_post.post_id, target_post.post_id)
     merge_scores(source_post.post_id, target_post.post_id)
     merge_favorites(source_post.post_id, target_post.post_id)
     merge_relations(source_post.post_id, target_post.post_id)
 
+    def transfer_flags(source_post_id: int, target_post_id: int) -> None:
+        target = get_post_by_id(target_post_id)
+        source = get_post_by_id(source_post_id)
+        target.flags = source.flags
+        db.session.flush()
+
     content = None
     if replace_content:
         content = files.get(get_post_content_path(source_post))
         transfer_flags(source_post.post_id, target_post.post_id)
-        purge_post_signature(source_post)
-        purge_post_signature(target_post)
 
+    # fixes unknown issue with SA's cascade deletions
+    purge_post_signature(source_post)
     delete(source_post)
     db.session.flush()
 
@@ -825,6 +823,14 @@ def search_by_image_exact(image_content: bytes) -> Optional[model.Post]:
 def search_by_image(image_content: bytes) -> List[Tuple[float, model.Post]]:
     query_signature = image_hash.generate_signature(image_content)
     query_words = image_hash.generate_words(query_signature)
+
+    '''
+    The unnest function is used here to expand one row containing the 'words'
+    array into multiple rows each containing a singular word.
+
+    Documentation of the unnest function can be found here:
+    https://www.postgresql.org/docs/9.2/functions-array.html
+    '''
 
     dbquery = '''
     SELECT s.post_id, s.signature, count(a.query) AS score

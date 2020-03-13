@@ -25,10 +25,11 @@ SAMPLE_WORDS = 16
 MAX_WORDS = 63
 SIG_CHUNK_BITS = 32
 
-SIG_BASE = 2*N_LEVELS + 2
+SIG_NUMS = 8 * N * N
+SIG_BASE = 2 * N_LEVELS + 2
 SIG_CHUNK_WIDTH = int(SIG_CHUNK_BITS / math.log2(SIG_BASE))
-SIG_CHUNK_NUMS = 8*N*N / SIG_CHUNK_WIDTH
-assert 8*N*N % SIG_CHUNK_WIDTH == 0
+SIG_CHUNK_NUMS = SIG_NUMS / SIG_CHUNK_WIDTH
+assert SIG_NUMS % SIG_CHUNK_WIDTH == 0
 
 Window = Tuple[Tuple[float, float], Tuple[float, float]]
 NpMatrix = np.ndarray
@@ -229,6 +230,18 @@ def normalized_distance(
 
 
 def pack_signature(signature: NpMatrix) -> bytes:
+    '''
+    Serializes the signature vector for efficient storage in a database.
+
+    Shifts the range of the signature vector from [-N_LEVELS,+N_LEVELS]
+    to [0, base]
+
+    The vector can then be broken up into chunks, with each chunk
+    consisting of SIG_CHUNK_WIDTH digits of radix `base`.
+
+    This is then converted into a more packed array consisting of
+    uint32 elements (for SIG_CHUNK_BITS = 32).
+    '''
     base = 2 * N_LEVELS + 1
     coding_vector = np.flipud(SIG_BASE**np.arange(SIG_CHUNK_WIDTH))
     return np.array([
@@ -238,6 +251,11 @@ def pack_signature(signature: NpMatrix) -> bytes:
 
 
 def unpack_signature(packed: bytes) -> NpMatrix:
+    '''
+    Deserializes the signature vector once recieved from the database.
+
+    Functions as an inverse transformation of pack_signature()
+    '''
     base = 2 * N_LEVELS + 1
     return np.ravel(np.array([
         [
