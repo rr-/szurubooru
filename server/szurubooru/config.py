@@ -1,7 +1,11 @@
 from typing import Dict
+import logging
 import os
 import yaml
 from szurubooru import errors
+
+
+logger = logging.getLogger(__name__)
 
 
 def _merge(left: Dict, right: Dict) -> Dict:
@@ -49,13 +53,16 @@ def _docker_config() -> Dict:
 
 def _file_config(filename: str) -> Dict:
     with open(filename) as handle:
-        return yaml.load(handle.read(), Loader=yaml.SafeLoader)
+        return yaml.load(handle.read(), Loader=yaml.SafeLoader) or {}
 
 
 def _read_config() -> Dict:
     ret = _file_config('config.yaml.dist')
-    if os.path.exists('config.yaml'):
+    if os.path.isfile('config.yaml'):
         ret = _merge(ret, _file_config('config.yaml'))
+    elif os.path.isdir('config.yaml'):
+        logger.warning(
+            '\'config.yaml\' should be a file, not a directory, skipping')
     if os.path.exists('/.dockerenv'):
         ret = _merge(ret, _docker_config())
     return ret
