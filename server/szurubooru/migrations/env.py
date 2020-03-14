@@ -4,6 +4,7 @@ import sys
 import alembic
 import sqlalchemy as sa
 import logging.config
+from time import sleep
 
 # make szurubooru module importable
 dir_to_self = os.path.dirname(os.path.realpath(__file__))
@@ -56,7 +57,16 @@ def run_migrations_online():
         prefix='sqlalchemy.',
         poolclass=sa.pool.NullPool)
 
-    with connectable.connect() as connection:
+    def connect_with_timeout(connectable, timeout=45):
+        dt = 5
+        for _ in range(int(timeout / dt)):
+            try:
+                return connectable.connect()
+            except sa.exc.OperationalError:
+                sleep(dt)
+        return connectable.connect()
+
+    with connect_with_timeout(connectable) as connection:
         alembic.context.configure(
             connection=connection,
             target_metadata=target_metadata,
