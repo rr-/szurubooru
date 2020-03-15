@@ -59,7 +59,7 @@ class TagName(Base):
         sa.ForeignKey('tag.id'),
         nullable=False,
         index=True)
-    name = sa.Column('name', sa.Unicode(64), nullable=False, unique=True)
+    name = sa.Column('name', sa.Unicode(128), nullable=False, unique=True)
     order = sa.Column('ord', sa.Integer, nullable=False, index=True)
 
     def __init__(self, name: str, order: int) -> None:

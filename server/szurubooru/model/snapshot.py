@@ -18,7 +18,7 @@ class Snapshot(Base):
     resource_pkey = sa.Column(
         'resource_pkey', sa.Integer, nullable=False, index=True)
     resource_name = sa.Column(
-        'resource_name', sa.Unicode(64), nullable=False)
+        'resource_name', sa.Unicode(128), nullable=False)
     user_id = sa.Column(
         'user_id',
         sa.Integer,
