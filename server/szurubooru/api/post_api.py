@@ -54,7 +54,9 @@ def create_post(
         source = ctx.get_param_as_string('contentUrl', default='')
     relations = ctx.get_param_as_int_list('relations', default=[])
     notes = ctx.get_param_as_list('notes', default=[])
-    flags = ctx.get_param_as_string_list('flags', default=[])
+    flags = ctx.get_param_as_string_list(
+        'flags',
+        default=posts.get_default_flags(content))
 
     post, new_tags = posts.create_post(
         content, tag_names, None if anonymous else ctx.user)
@@ -65,7 +67,6 @@ def create_post(
     posts.update_post_relations(post, relations)
     posts.update_post_notes(post, notes)
     posts.update_post_flags(post, flags)
-    posts.test_sound(post, content)
     if ctx.has_file('thumbnail'):
         posts.update_post_thumbnail(post, ctx.get_file('thumbnail'))
     ctx.session.add(post)

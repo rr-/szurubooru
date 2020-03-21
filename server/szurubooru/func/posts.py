@@ -467,15 +467,14 @@ def generate_alternate_formats(post: model.Post, content: bytes) \
     return new_posts
 
 
-def test_sound(post: model.Post, content: bytes) -> None:
-    assert post
+def get_default_flags(content: bytes) -> List[str]:
     assert content
+    ret = []
     if mime.is_video(mime.get_mime_type(content)):
+        ret.append(model.Post.FLAG_LOOP)
         if images.Image(content).check_for_sound():
-            flags = post.flags
-            if model.Post.FLAG_SOUND not in flags:
-                flags.append(model.Post.FLAG_SOUND)
-            update_post_flags(post, flags)
+            ret.append(model.Post.FLAG_SOUND)
+    return ret
 
 
 def purge_post_signature(post: model.Post) -> None:
