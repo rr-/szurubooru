@@ -64,16 +64,6 @@
                         }) %>
                     </div>
                 <% } %>
-
-                <% if (['video'].includes(ctx.uploadable.type)) { %>
-                    <div class='loop-video'>
-                        <%= ctx.makeCheckbox({
-                            text: 'Loop video',
-                            name: 'loop-video',
-                            checked: ctx.uploadable.flags.includes('loop'),
-                        }) %>
-                    </div>
-                <% } %>
             </div>
 
             <div class='messages'></div>

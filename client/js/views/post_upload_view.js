@@ -49,12 +49,6 @@ class Uploadable extends events.EventTarget {
     get name() {
         throw new Error('Not implemented');
     }
-
-    _initComplete() {
-        if (['video'].includes(this.type)) {
-            this.flags.push('loop');
-        }
-    }
 }
 
 class File extends Uploadable {
@@ -74,7 +68,6 @@ class File extends Uploadable {
                     new CustomEvent('finish', {detail: {uploadable: this}}));
             });
         }
-        this._initComplete();
     }
 
     destroy() {
@@ -105,7 +98,6 @@ class Url extends Uploadable {
         super();
         this.url = url;
         this.dispatchEvent(new CustomEvent('finish'));
-        this._initComplete();
     }
 
     get mimeType() {
@@ -288,11 +280,6 @@ class PostUploadView extends events.EventTarget {
         const anonymousNode = rowNode.querySelector('.anonymous input:checked');
         if (anonymousNode) {
             uploadable.anonymous = true;
-        }
-
-        uploadable.flags = [];
-        if (rowNode.querySelector('.loop-video input:checked')) {
-            uploadable.flags.push('loop');
         }
 
         uploadable.tags = [];
