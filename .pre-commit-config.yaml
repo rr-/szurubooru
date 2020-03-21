@@ -53,7 +53,7 @@ repos:
     hooks:
     -   id: docker-build-client
         name: Docker - build client
-        entry: bash -c 'docker build client/'
+        entry: bash -c '<client/Dockerfile sed "s/--platform.*BUILDPLATFORM//g" | docker build -f - client/'
         language: system
         types: [file]
         files: client/

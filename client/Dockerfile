@@ -1,4 +1,4 @@
-FROM node:9 as builder
+FROM --platform=$BUILDPLATFORM node:9 as builder
 WORKDIR /opt/app
 
 COPY package.json package-lock.json ./
@@ -11,7 +11,7 @@ ARG CLIENT_BUILD_ARGS=""
 RUN BASE_URL="__BASEURL__" node build.js --gzip ${CLIENT_BUILD_ARGS}
 
 
-FROM scratch as approot
+FROM --platform=$BUILDPLATFORM scratch as approot
 
 COPY docker-start.sh /
 

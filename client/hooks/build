@@ -7,8 +7,11 @@ else
 	BUILD_INFO="v${CLOSEST_VER}-edge-$(git rev-parse --short ${SOURCE_COMMIT})"
 fi
 
+export DOCKER_CLI_EXPERIMENTAL=enabled
+export DOCKER_BUILDKIT=1
 echo "Using BUILD_INFO=${BUILD_INFO}"
-docker build \
+docker buildx build \
+	--platform linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/386,linux/arm/v7,linux/arm/v6 \
 	--build-arg BUILD_INFO=${BUILD_INFO} \
 	--build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ') \
 	--build-arg SOURCE_COMMIT \
