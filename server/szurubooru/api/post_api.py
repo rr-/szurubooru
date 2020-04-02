@@ -2,7 +2,8 @@ from typing import Optional, Dict, List
 from datetime import datetime
 from szurubooru import db, model, errors, rest, search
 from szurubooru.func import (
-    auth, tags, posts, snapshots, favorites, scores, serialization, versions)
+    auth, tags, posts, snapshots, favorites, scores,
+    serialization, versions, mime)
 
 
 _search_executor_config = search.configs.PostSearchConfig()
@@ -46,7 +47,10 @@ def create_post(
         auth.verify_privilege(ctx.user, 'posts:create:anonymous')
     else:
         auth.verify_privilege(ctx.user, 'posts:create:identified')
-    content = ctx.get_file('content')
+    content = ctx.get_file(
+        'content',
+        use_video_downloader=auth.has_privilege(
+            ctx.user, 'uploads:use_downloader'))
     tag_names = ctx.get_param_as_string_list('tags', default=[])
     safety = ctx.get_param_as_string('safety')
     source = ctx.get_param_as_string('source', default='')
@@ -105,7 +109,10 @@ def update_post(ctx: rest.Context, params: Dict[str, str]) -> rest.Response:
     versions.bump_version(post)
     if ctx.has_file('content'):
         auth.verify_privilege(ctx.user, 'posts:edit:content')
-        posts.update_post_content(post, ctx.get_file('content'))
+        posts.update_post_content(
+            post,
+            ctx.get_file('content', use_video_downloader=auth.has_privilege(
+                ctx.user, 'uploads:use_downloader')))
     if ctx.has_param('tags'):
         auth.verify_privilege(ctx.user, 'posts:edit:tags')
         new_tags = posts.update_post_tags(

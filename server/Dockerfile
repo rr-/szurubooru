@@ -21,6 +21,7 @@ RUN \
     pip3 install --no-cache-dir --disable-pip-version-check \
         alembic \
         "coloredlogs==5.0" \
+        youtube-dl \
     && exit 0
 
 ARG PUID=1000

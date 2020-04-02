@@ -25,7 +25,8 @@ def test_get_file_from_url():
         ctx = rest.Context(
             env={}, method=None, url=None, params={'keyUrl': 'example.com'})
         assert ctx.get_file('key') == b'content'
-        net.download.assert_called_once_with('example.com')
+        net.download.assert_called_once_with(
+            'example.com', use_video_downloader=False)
         with pytest.raises(errors.ValidationError):
             assert ctx.get_file('non-existing')
 

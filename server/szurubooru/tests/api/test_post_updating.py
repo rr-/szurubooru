@@ -18,6 +18,7 @@ def inject_config(config_injector):
             'posts:edit:flags': model.User.RANK_REGULAR,
             'posts:edit:thumbnail': model.User.RANK_REGULAR,
             'tags:create': model.User.RANK_MODERATOR,
+            'uploads:use_downloader': model.User.RANK_REGULAR,
         },
         'allow_broken_uploads': False,
     })
@@ -97,7 +98,8 @@ def test_uploading_from_url_saves_source(
                 params={'contentUrl': 'example.com', 'version': 1},
                 user=user_factory(rank=model.User.RANK_REGULAR)),
             {'post_id': post.post_id})
-        net.download.assert_called_once_with('example.com')
+        net.download.assert_called_once_with(
+            'example.com', use_video_downloader=True)
         posts.update_post_content.assert_called_once_with(post, b'content')
         posts.update_post_source.assert_called_once_with(post, 'example.com')
 
@@ -121,7 +123,8 @@ def test_uploading_from_url_with_source_specified(
                     'version': 1},
                 user=user_factory(rank=model.User.RANK_REGULAR)),
             {'post_id': post.post_id})
-        net.download.assert_called_once_with('example.com')
+        net.download.assert_called_once_with(
+            'example.com', use_video_downloader=True)
         posts.update_post_content.assert_called_once_with(post, b'content')
         posts.update_post_source.assert_called_once_with(post, 'example2.com')
 

@@ -135,6 +135,7 @@ privileges:
     'snapshots:list':               power
 
     'uploads:create':               regular
+    'uploads:use_downloader':       power
 
 ## ONLY SET THESE IF DEPLOYING OUTSIDE OF DOCKER
 #debug: 0 # generate server logs?

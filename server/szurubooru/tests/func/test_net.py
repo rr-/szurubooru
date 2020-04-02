@@ -1,4 +1,7 @@
+import pytest
+from szurubooru.errors import ThirdPartyError
 from szurubooru.func import net
+from szurubooru.func.util import get_sha1
 
 
 def test_download(config_injector):
@@ -47,3 +50,26 @@ def test_download(config_injector):
 
     actual_content = net.download(url)
     assert actual_content == expected_content
+
+
+def test_video_download(tmpdir, config_injector):
+    config_injector({
+        'user_agent': None,
+        'data_dir': str(tmpdir.mkdir('data'))
+    })
+    url = 'https://www.youtube.com/watch?v=C0DPdy98e4c'
+    expected_sha1 = '508f89ee85bc6186e18cfaa4f4d0279bcf2418ab'
+
+    actual_content = net.download(url, use_video_downloader=True)
+    assert get_sha1(actual_content) == expected_sha1
+
+
+def test_failed_video_download(tmpdir, config_injector):
+    config_injector({
+        'user_agent': None,
+        'data_dir': str(tmpdir.mkdir('data'))
+    })
+    url = 'http://info.cern.ch/hypertext/WWW/TheProject.html'
+
+    with pytest.raises(ThirdPartyError):
+        net.download(url, use_video_downloader=True)
