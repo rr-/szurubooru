@@ -31,9 +31,12 @@ def download(url: str, use_video_downloader: bool = False) -> bytes:
 def _youtube_dl_wrapper(url: str) -> bytes:
     options = {
         'quiet': True,
+        'ignoreerrors': False,
         'format': 'webm/mp4',
         'logger': logger,
         'noplaylist': True,
+        'max_filesize': config.config['max_dl_filesize'],
+        'max_downloads': 1,
         'outtmpl': os.path.join(
             config.config['data_dir'],
             'temporary-uploads',
@@ -42,9 +45,19 @@ def _youtube_dl_wrapper(url: str) -> bytes:
     with YoutubeDL(options) as ydl:
         try:
             ydl_info = ydl.extract_info(url, download=True)
+            # need to confirm if download was skipped due to size
+            if ydl_info['filesize'] > config.config['max_dl_filesize']:
+                raise errors.DownloadTooLargeError(
+                    'Requested video too large (%d MB > %d MB)' % (
+                        ydl_info['filesize'] / 1.0e6,
+                        config.config['max_dl_filesize'] / 1.0e6))
             ydl_filename = ydl.prepare_filename(ydl_info)
         except YoutubeDLError as ex:
             raise errors.ThirdPartyError(
                 'Error downloading video %s (%s)' % (url, ex))
-    with open(ydl_filename, 'rb') as f:
-        return f.read()
+    try:
+        with open(ydl_filename, 'rb') as f:
+            return f.read()
+    except FileNotFoundError as ex:
+        raise errors.ThirdPartyError(
+            'Error downloading video %s' % (url))

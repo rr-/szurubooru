@@ -5,8 +5,6 @@
 name: szurubooru
 # full url to the homepage of this szurubooru site, with no trailing slash
 domain: # example: http://example.com
-# user agent name used to download files from the web on behalf of the api users
-user_agent:
 # used to salt the users' password hashes and generate filenames for static content
 secret: change
 
@@ -20,6 +18,10 @@ thumbnails:
     avatar_height: 300
     post_width: 300
     post_height: 300
+
+# settings used to download files from the web on behalf of the api users
+user_agent:
+max_dl_filesize: 25.0E+6 # maximum filesize limit in bytes
 
 # automatically convert animated GIF uploads to video formats
 convert:

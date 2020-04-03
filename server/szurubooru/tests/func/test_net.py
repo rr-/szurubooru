@@ -1,13 +1,19 @@
 import pytest
-from szurubooru.errors import ThirdPartyError
+from szurubooru import errors
 from szurubooru.func import net
 from szurubooru.func.util import get_sha1
 
 
-def test_download(config_injector):
+@pytest.fixture(autouse=True)
+def inject_config(tmpdir, config_injector):
     config_injector({
-        'user_agent': None
+        'user_agent': None,
+        'max_dl_filesize': 1.0E+6,
+        'data_dir': str(tmpdir.mkdir('data')),
     })
+
+
+def test_download():
     url = 'http://info.cern.ch/hypertext/WWW/TheProject.html'
 
     expected_content = (
@@ -52,11 +58,15 @@ def test_download(config_injector):
     assert actual_content == expected_content
 
 
-def test_video_download(tmpdir, config_injector):
-    config_injector({
-        'user_agent': None,
-        'data_dir': str(tmpdir.mkdir('data'))
-    })
+def test_too_large_download():
+    pytest.xfail('Download limit not implemented yet')
+    url = 'https://samples.ffmpeg.org/MPEG-4/video.mp4'
+
+    with pytest.raises(errors.DownloadTooLargeError):
+        net.download(url)
+
+
+def test_video_download():
     url = 'https://www.youtube.com/watch?v=C0DPdy98e4c'
     expected_sha1 = '508f89ee85bc6186e18cfaa4f4d0279bcf2418ab'
 
@@ -64,12 +74,15 @@ def test_video_download(tmpdir, config_injector):
     assert get_sha1(actual_content) == expected_sha1
 
 
-def test_failed_video_download(tmpdir, config_injector):
-    config_injector({
-        'user_agent': None,
-        'data_dir': str(tmpdir.mkdir('data'))
-    })
-    url = 'http://info.cern.ch/hypertext/WWW/TheProject.html'
+def test_failed_video_download():
+    url = 'https://samples.ffmpeg.org/flac/short.flac'
 
-    with pytest.raises(ThirdPartyError):
+    with pytest.raises(errors.ThirdPartyError):
+        net.download(url, use_video_downloader=True)
+
+
+def test_too_large_video_download():
+    url = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+
+    with pytest.raises(errors.DownloadTooLargeError):
         net.download(url, use_video_downloader=True)
