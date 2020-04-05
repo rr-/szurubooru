@@ -68,7 +68,7 @@ def test_too_large_download():
 
 def test_video_download():
     url = 'https://www.youtube.com/watch?v=C0DPdy98e4c'
-    expected_sha1 = '508f89ee85bc6186e18cfaa4f4d0279bcf2418ab'
+    expected_sha1 = '365af1c8f59c6865e1a84c6e13e3e25ff89e0ba1'
 
     actual_content = net.download(url, use_video_downloader=True)
     assert get_sha1(actual_content) == expected_sha1
