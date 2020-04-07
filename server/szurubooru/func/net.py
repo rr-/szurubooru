@@ -29,36 +29,26 @@ def download(url: str, use_video_downloader: bool = False) -> bytes:
 
 
 def _youtube_dl_wrapper(url: str) -> bytes:
+    outpath = os.path.join(
+        config.config['data_dir'],
+        'temporary-uploads',
+        'youtubedl-' + util.get_sha1(url)[0:8] + '.dat')
     options = {
-        'quiet': True,
         'ignoreerrors': False,
         'format': 'best[ext=webm]/best[ext=mp4]/best[ext=flv]',
         'logger': logger,
-        'noplaylist': True,
         'max_filesize': config.config['max_dl_filesize'],
         'max_downloads': 1,
-        'outtmpl': os.path.join(
-            config.config['data_dir'],
-            'temporary-uploads',
-            'youtubedl-' + util.get_sha1(url)[0:8] + '.%(ext)s'),
+        'outtmpl': outpath,
     }
-    with YoutubeDL(options) as ydl:
-        try:
-            ydl_info = ydl.extract_info(url, download=True)
-            # need to confirm if download was skipped due to size
-            if 'filesize' in ydl_info:
-                if ydl_info['filesize'] > config.config['max_dl_filesize']:
-                    raise errors.DownloadTooLargeError(
-                        'Requested video too large (%d MB > %d MB)' % (
-                            ydl_info['filesize'] / 1.0e6,
-                            config.config['max_dl_filesize'] / 1.0e6))
-            ydl_filename = ydl.prepare_filename(ydl_info)
-        except YoutubeDLError as ex:
-            raise errors.ThirdPartyError(
-                'Error downloading video %s (%s)' % (url, ex))
     try:
-        with open(ydl_filename, 'rb') as f:
+        with YoutubeDL(options) as ydl:
+            ydl.extract_info(url, download=True)
+        with open(outpath, 'rb') as f:
             return f.read()
+    except YoutubeDLError as ex:
+        raise errors.ThirdPartyError(
+            'Error downloading video %s (%s)' % (url, ex))
     except FileNotFoundError as ex:
         raise errors.ThirdPartyError(
-            'Error downloading video %s' % (url))
+            'Error downloading video %s (file could not be saved)' % (url))

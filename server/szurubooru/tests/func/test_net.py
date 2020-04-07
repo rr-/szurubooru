@@ -58,31 +58,30 @@ def test_download():
     assert actual_content == expected_content
 
 
-def test_too_large_download():
+@pytest.mark.parametrize('url', [
+    'https://samples.ffmpeg.org/MPEG-4/video.mp4',
+])
+def test_too_large_download(url):
     pytest.xfail('Download limit not implemented yet')
-    url = 'https://samples.ffmpeg.org/MPEG-4/video.mp4'
-
-    with pytest.raises(errors.DownloadTooLargeError):
+    with pytest.raises(errors.ProcessingError):
         net.download(url)
 
 
-def test_video_download():
-    url = 'https://www.youtube.com/watch?v=C0DPdy98e4c'
-    expected_sha1 = '365af1c8f59c6865e1a84c6e13e3e25ff89e0ba1'
-
+@pytest.mark.parametrize('url,expected_sha1', [
+    ('https://www.youtube.com/watch?v=C0DPdy98e4c',
+        '365af1c8f59c6865e1a84c6e13e3e25ff89e0ba1'),
+    ('https://gfycat.com/immaterialchillyiberianmole',
+        '953000e81d7bd1da95ce264f872e7b6c4a6484be'),
+])
+def test_video_download(url, expected_sha1):
     actual_content = net.download(url, use_video_downloader=True)
     assert get_sha1(actual_content) == expected_sha1
 
 
-def test_failed_video_download():
-    url = 'https://samples.ffmpeg.org/flac/short.flac'
-
+@pytest.mark.parametrize('url', [
+    'https://samples.ffmpeg.org/flac/short.flac',   # not a video
+    'https://www.youtube.com/watch?v=dQw4w9WgXcQ',  # video too large
+])
+def test_failed_video_download(url):
     with pytest.raises(errors.ThirdPartyError):
-        net.download(url, use_video_downloader=True)
-
-
-def test_too_large_video_download():
-    url = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
-
-    with pytest.raises(errors.DownloadTooLargeError):
         net.download(url, use_video_downloader=True)

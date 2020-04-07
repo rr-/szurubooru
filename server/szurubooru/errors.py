@@ -56,6 +56,3 @@ class InvalidParameterError(ValidationError):
 
 class ThirdPartyError(BaseError):
     pass
-
-class DownloadTooLargeError(ProcessingError):
-    pass
