@@ -89,7 +89,7 @@ class FileDropperControl extends events.EventTarget {
 
     _evtDragEnter(e) {
         this._dropperNode.classList.add('active');
-        counter++;
+        this._counter++;
     }
 
     _evtDragLeave(e) {
