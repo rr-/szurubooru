@@ -94,7 +94,7 @@ class Executor:
                 disable_eager_loads = True
 
         key = (id(self.config), hash(search_query), offset, limit)
-        if cache.has(key):
+        if not disable_eager_loads and cache.has(key):
             return cache.get(key)
 
         filter_query = self.config.create_filter_query(disable_eager_loads)
