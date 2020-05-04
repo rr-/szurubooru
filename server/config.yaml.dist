@@ -4,7 +4,7 @@
 # shown in the website title and on the front page
 name: szurubooru
 # full url to the homepage of this szurubooru site, with no trailing slash
-domain: # example: http://example.com
+domain: localhost # example: http://example.com
 # used to salt the users' password hashes and generate filenames for static content
 secret: change
 
@@ -49,6 +49,9 @@ enable_safety: yes
 tag_name_regex: ^\S+$
 tag_category_name_regex: ^[^\s%+#/]+$
 
+pool_name_regex: ^\S+$
+pool_category_name_regex: ^[^\s%+#/]+$
+
 # don't make these more restrictive unless you want to annoy people; if you do
 # customize them, make sure to update the instructions in the registration form
 # template as well.
@@ -58,86 +61,100 @@ user_name_regex: '^[a-zA-Z0-9_-]{1,32}$'
 default_rank: regular
 
 privileges:
-    'users:create:self':            anonymous # Registration permission
-    'users:create:any':             administrator
-    'users:list':                   regular
-    'users:view':                   regular
-    'users:edit:any:name':          moderator
-    'users:edit:any:pass':          moderator
-    'users:edit:any:email':         moderator
-    'users:edit:any:avatar':        moderator
-    'users:edit:any:rank':          moderator
-    'users:edit:self:name':         regular
-    'users:edit:self:pass':         regular
-    'users:edit:self:email':        regular
-    'users:edit:self:avatar':       regular
-    'users:edit:self:rank':         moderator # one can't promote themselves or anyone to upper rank than their own.
-    'users:delete:any':             administrator
-    'users:delete:self':            regular
+    'users:create:self':             anonymous # Registration permission
+    'users:create:any':              administrator
+    'users:list':                    regular
+    'users:view':                    regular
+    'users:edit:any:name':           moderator
+    'users:edit:any:pass':           moderator
+    'users:edit:any:email':          moderator
+    'users:edit:any:avatar':         moderator
+    'users:edit:any:rank':           moderator
+    'users:edit:self:name':          regular
+    'users:edit:self:pass':          regular
+    'users:edit:self:email':         regular
+    'users:edit:self:avatar':        regular
+    'users:edit:self:rank':          moderator # one can't promote themselves or anyone to upper rank than their own.
+    'users:delete:any':              administrator
+    'users:delete:self':             regular
 
-    'user_tokens:list:any':         administrator
-    'user_tokens:list:self':        regular
-    'user_tokens:create:any':       administrator
-    'user_tokens:create:self':      regular
-    'user_tokens:edit:any':         administrator
-    'user_tokens:edit:self':        regular
-    'user_tokens:delete:any':       administrator
-    'user_tokens:delete:self':      regular
+    'user_tokens:list:any':          administrator
+    'user_tokens:list:self':         regular
+    'user_tokens:create:any':        administrator
+    'user_tokens:create:self':       regular
+    'user_tokens:edit:any':          administrator
+    'user_tokens:edit:self':         regular
+    'user_tokens:delete:any':        administrator
+    'user_tokens:delete:self':       regular
 
-    'posts:create:anonymous':       regular
-    'posts:create:identified':      regular
-    'posts:list':                   anonymous
-    'posts:reverse_search':         regular
-    'posts:view':                   anonymous
-    'posts:view:featured':          anonymous
-    'posts:edit:content':           power
-    'posts:edit:flags':             regular
-    'posts:edit:notes':             regular
-    'posts:edit:relations':         regular
-    'posts:edit:safety':            power
-    'posts:edit:source':            regular
-    'posts:edit:tags':              regular
-    'posts:edit:thumbnail':         power
-    'posts:feature':                moderator
-    'posts:delete':                 moderator
-    'posts:score':                  regular
-    'posts:merge':                  moderator
-    'posts:favorite':               regular
-    'posts:bulk-edit:tags':         power
-    'posts:bulk-edit:safety':       power
+    'posts:create:anonymous':        regular
+    'posts:create:identified':       regular
+    'posts:list':                    anonymous
+    'posts:reverse_search':          regular
+    'posts:view':                    anonymous
+    'posts:view:featured':           anonymous
+    'posts:edit:content':            power
+    'posts:edit:flags':              regular
+    'posts:edit:notes':              regular
+    'posts:edit:relations':          regular
+    'posts:edit:safety':             power
+    'posts:edit:source':             regular
+    'posts:edit:tags':               regular
+    'posts:edit:thumbnail':          power
+    'posts:feature':                 moderator
+    'posts:delete':                  moderator
+    'posts:score':                   regular
+    'posts:merge':                   moderator
+    'posts:favorite':                regular
+    'posts:bulk-edit:tags':          power
+    'posts:bulk-edit:safety':        power
 
-    'tags:create':                  regular
-    'tags:edit:names':              power
-    'tags:edit:category':           power
-    'tags:edit:description':        power
-    'tags:edit:implications':       power
-    'tags:edit:suggestions':        power
-    'tags:list':                    regular
-    'tags:view':                    anonymous
-    'tags:merge':                   moderator
-    'tags:delete':                  moderator
+    'tags:create':                   regular
+    'tags:edit:names':               power
+    'tags:edit:category':            power
+    'tags:edit:description':         power
+    'tags:edit:implications':        power
+    'tags:edit:suggestions':         power
+    'tags:list':                     regular
+    'tags:view':                     anonymous
+    'tags:merge':                    moderator
+    'tags:delete':                   moderator
 
-    'tag_categories:create':        moderator
-    'tag_categories:edit:name':     moderator
-    'tag_categories:edit:color':    moderator
-    'tag_categories:list':          anonymous
-    'tag_categories:view':          anonymous
-    'tag_categories:delete':        moderator
-    'tag_categories:set_default':   moderator
+    'tag_categories:create':         moderator
+    'tag_categories:edit:name':      moderator
+    'tag_categories:edit:color':     moderator
+    'tag_categories:list':           anonymous
+    'tag_categories:view':           anonymous
+    'tag_categories:delete':         moderator
+    'tag_categories:set_default':    moderator
 
-    'comments:create':              regular
-    'comments:delete:any':          moderator
-    'comments:delete:own':          regular
-    'comments:edit:any':            moderator
-    'comments:edit:own':            regular
-    'comments:list':                regular
-    'comments:view':                regular
-    'comments:score':               regular
+    'pools:create':                  regular
+    'pools:list':                    regular
+    'pools:view':                    anonymous
+    'pools:merge':                   moderator
+    'pools:delete':                  moderator
 
-    'snapshots:list':               power
+    'pool_categories:create':        moderator
+    'pool_categories:edit:name':     moderator
+    'pool_categories:edit:color':    moderator
+    'pool_categories:list':          anonymous
+    'pool_categories:view':          anonymous
+    'pool_categories:delete':        moderator
+    'pool_categories:set_default':   moderator
 
-    'uploads:create':               regular
-    'uploads:use_downloader':       power
+    'comments:create':               regular
+    'comments:delete:any':           moderator
+    'comments:delete:own':           regular
+    'comments:edit:any':             moderator
+    'comments:edit:own':             regular
+    'comments:list':                 regular
+    'comments:view':                 regular
+    'comments:score':                regular
+
+    'snapshots:list':                power
+
+    'uploads:create':                regular
+    'uploads:use_downloader':        power
 
 ## ONLY SET THESE IF DEPLOYING OUTSIDE OF DOCKER
 #debug: 0 # generate server logs?

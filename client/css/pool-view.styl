@@ -1,0 +1,33 @@
+#pool
+    width: 100%
+    max-width: 40em
+    h1
+        word-break: break-all
+        line-height: 130%
+        margin-top: 0
+    form
+        width: 100%
+    .pool-edit
+        textarea
+            height: 10em
+    .pool-summary
+        section
+            &.description
+                margin: 1.5em 0 0 0
+            &.details
+                vertical-align: top
+                padding-right: 0.5em
+                ul
+                    margin: 0
+                    padding: 0
+                    list-style-type: none
+                li
+                    display: inline
+                    margin: 0
+                    padding: 0
+                li:not(:last-of-type):after
+                    content: ', '
+                ul:empty:after
+                    content: '(none)'
+                section
+                    margin-bottom: 1em

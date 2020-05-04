@@ -17,6 +17,7 @@ const subsectionTemplates = {
         'posts': views.getTemplate('help-search-posts'),
         'users': views.getTemplate('help-search-users'),
         'tags': views.getTemplate('help-search-tags'),
+        'pools': views.getTemplate('help-search-pools'),
     },
 };
 

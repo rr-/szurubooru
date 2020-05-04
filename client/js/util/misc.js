@@ -163,6 +163,11 @@ function escapeHtml(unsafe) {
 }
 
 function arraysDiffer(source1, source2, orderImportant) {
+    if ((source1 instanceof Array && source2 === undefined)
+     || (source1 === undefined && source2 instanceof Array)) {
+      return true
+    }
+
     source1 = [...source1];
     source2 = [...source2];
     if (orderImportant === true) {

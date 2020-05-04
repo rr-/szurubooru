@@ -10,6 +10,8 @@ def get_resource_info(entity: Base) -> Tuple[Any, Any, Union[str, int]]:
         'tag_category': lambda category: category.name,
         'comment': lambda comment: comment.comment_id,
         'post': lambda post: post.post_id,
+        'pool': lambda pool: pool.pool_id,
+        'pool_category': lambda category: category.name,
     }  # type: Dict[str, Callable[[Base], Any]]
 
     resource_type = entity.__table__.name

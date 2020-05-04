@@ -9,3 +9,4 @@ pillow>=4.3.0
 pynacl>=1.2.1
 pytz>=2018.3
 pyRFC3339>=1.0
+youtube_dl>=2020.5.3

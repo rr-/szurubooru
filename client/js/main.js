@@ -27,6 +27,7 @@ router.enter(
     });
 
 const tags = require('./tags.js');
+const pools = require('./pools.js');
 const api = require('./api.js');
 
 api.fetchConfig().then(() => {
@@ -45,6 +46,10 @@ api.fetchConfig().then(() => {
     controllers.push(require('./controllers/tag_controller.js'));
     controllers.push(require('./controllers/tag_list_controller.js'));
     controllers.push(require('./controllers/tag_categories_controller.js'));
+    controllers.push(require('./controllers/pool_create_controller.js'));
+    controllers.push(require('./controllers/pool_controller.js'));
+    controllers.push(require('./controllers/pool_list_controller.js'));
+    controllers.push(require('./controllers/pool_categories_controller.js'));
     controllers.push(require('./controllers/settings_controller.js'));
     controllers.push(require('./controllers/user_controller.js'));
     controllers.push(require('./controllers/user_list_controller.js'));
@@ -61,6 +66,7 @@ api.fetchConfig().then(() => {
 }).then(() => {
     api.loginFromCookies().then(() => {
             tags.refreshCategoryColorMap();
+            pools.refreshCategoryColorMap();
             router.start();
         }, error => {
             if (window.location.href.indexOf('login') !== -1) {

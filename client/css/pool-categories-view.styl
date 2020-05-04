@@ -1,0 +1,30 @@
+@import colors
+
+.content-wrapper.pool-categories
+    width: 100%
+    max-width: 45em
+    table
+        border-spacing: 0
+        width: 100%
+        tr.default td
+            background: $default-pool-category-background-color
+        td, th
+            padding: .4em
+            &.color
+                input[type=text]
+                    width: 8em
+            &.usages
+                text-align: center
+            &.remove, &.set-default
+                white-space: pre
+        th
+            white-space: nowrap
+            &:first-child
+                padding-left: 0
+            &:last-child
+                padding-right: 0
+        tfoot
+            display: none
+    form
+        width: auto
+

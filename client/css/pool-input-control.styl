@@ -1,0 +1,53 @@
+@import colors
+
+div.pool-input
+    position: relative
+
+    .main-control
+        display: flex
+        input
+            flex: 5
+        button
+            flex: 1
+            margin: 0 0 0 0.5em
+
+
+ul.compact-pools
+    width: 100%
+    margin: 0.5em 0 0 0
+    padding: 0
+    li
+        margin: 0
+        width: 100%
+        line-height: 140%
+        white-space: nowrap
+        overflow: hidden
+        text-overflow: ellipsis
+        transition: background-color 0.5s linear
+        a
+            display: inline
+        a:focus
+            outline: 0
+            box-shadow: inset 0 0 0 2px $main-color
+        &.implication
+            background: $implied-pool-background-color
+            color: $implied-pool-text-color
+        &.new
+            background: $new-pool-background-color
+            color: $new-pool-text-color
+        &.duplicate
+            background: $duplicate-pool-background-color
+            color: $duplicate-pool-text-color
+    i
+        padding-right: 0.4em
+
+div.pool-input, ul.compact-pools
+    .pool-usages, .pool-weight, .remove-pool
+        color: $inactive-link-color
+        unselectable()
+    .pool-usages, .pool-weight
+        font-size: 90%
+    .pool-usages, .pool-weight
+        margin-left: 0.7em
+    .remove-pool
+        margin-right: 0.5em
