@@ -87,6 +87,12 @@
             </section>
         <% } %>
 
+        <% if (ctx.canEditPoolPosts) { %>
+            <section class='pools'>
+                <%= ctx.makeTextInput({}) %>
+            </section>
+        <% } %>
+
         <% if (ctx.canEditPostContent) { %>
             <section class='post-content'>
                 <label>Content</label>

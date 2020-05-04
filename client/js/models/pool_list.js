@@ -22,6 +22,23 @@ class PoolList extends AbstractList {
                     {results: PoolList.fromResponse(response.results)}));
             });
     }
+
+    hasPoolId(poolId) {
+        for (let pool of this._list) {
+            if (pool.id === poolId) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    removeById(poolId) {
+        for (let pool of this._list) {
+            if (pool.id === poolId) {
+                this.remove(pool);
+            }
+        }
+    }
 }
 
 PoolList._itemClass = Pool;

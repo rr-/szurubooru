@@ -7,6 +7,7 @@ const events = require('../events.js');
 const TagList = require('./tag_list.js');
 const NoteList = require('./note_list.js');
 const CommentList = require('./comment_list.js');
+const PoolList = require('./pool_list.js');
 const misc = require('../util/misc.js');
 
 class Post extends events.EventTarget {
@@ -18,6 +19,7 @@ class Post extends events.EventTarget {
             obj._tags = new TagList();
             obj._notes = new NoteList();
             obj._comments = new CommentList();
+            obj._pools = new PoolList();
         }
 
         this._updateFromResponse({});
@@ -46,6 +48,7 @@ class Post extends events.EventTarget {
     get notes()              { return this._notes; }
     get comments()           { return this._comments; }
     get relations()          { return this._relations; }
+    get pools()              { return this._pools; }
 
     get score()              { return this._score; }
     get commentCount()       { return this._commentCount; }
@@ -128,6 +131,7 @@ class Post extends events.EventTarget {
         if (this._source !== this._orig._source) {
             detail.source = this._source;
         }
+        // TODO pools
 
         let apiPromise = this._id ?
             api.put(uri.formatApiLink('post', this.id), detail, files) :
@@ -304,6 +308,7 @@ class Post extends events.EventTarget {
             obj._tags.sync(response.tags);
             obj._notes.sync(response.notes);
             obj._comments.sync(response.comments);
+            obj._pools.sync(response.pools);
         }
 
         Object.assign(this, map());

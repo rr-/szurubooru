@@ -48,7 +48,7 @@ def upgrade():
     op.create_table(
         'pool_post',
         sa.Column('pool_id', sa.Integer(), nullable=False),
-        sa.Column('post_id', sa.Integer(), nullable=False),
+        sa.Column('post_id', sa.Integer(), nullable=False, index=True),
         sa.Column('ord', sa.Integer(), nullable=False, index=True),
         sa.ForeignKeyConstraint(['pool_id'], ['pool.id'], ondelete='CASCADE'),
         sa.ForeignKeyConstraint(['post_id'], ['post.id'], ondelete='CASCADE'),

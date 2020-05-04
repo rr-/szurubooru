@@ -7,6 +7,7 @@ const views = require('../util/views.js');
 const Note = require('../models/note.js');
 const Point = require('../models/point.js');
 const TagInputControl = require('./tag_input_control.js');
+const PoolInputControl = require('./pool_input_control.js');
 const ExpanderControl = require('../controls/expander_control.js');
 const FileDropperControl = require('../controls/file_dropper_control.js');
 
@@ -37,7 +38,8 @@ class PostEditSidebarControl extends events.EventTarget {
             canEditPostFlags: api.hasPrivilege('posts:edit:flags'),
             canEditPostContent: api.hasPrivilege('posts:edit:content'),
             canEditPostThumbnail: api.hasPrivilege('posts:edit:thumbnail'),
-            canEditPostSource : api.hasPrivilege('posts:edit:source'),
+            canEditPostSource: api.hasPrivilege('posts:edit:source'),
+            canEditPoolPosts: api.hasPrivilege('pools:edit:posts'),
             canCreateAnonymousPosts: api.hasPrivilege('posts:create:anonymous'),
             canDeletePosts: api.hasPrivilege('posts:delete'),
             canFeaturePosts: api.hasPrivilege('posts:feature'),
@@ -56,6 +58,10 @@ class PostEditSidebarControl extends events.EventTarget {
             'post-notes',
             'Notes',
             this._hostNode.querySelectorAll('.notes'));
+        this._poolsExpander = new ExpanderControl(
+            'post-pools',
+            `Pools (${this._post.pools.length})`,
+            this._hostNode.querySelectorAll('.pools'));
         new ExpanderControl(
             'post-content',
             'Content',
@@ -74,6 +80,11 @@ class PostEditSidebarControl extends events.EventTarget {
         if (this._tagInputNode) {
             this._tagControl = new TagInputControl(
                 this._tagInputNode, post.tags);
+        }
+
+        if (this._poolInputNode) {
+            this._poolControl = new PoolInputControl(
+                this._poolInputNode, post.pools);
         }
 
         if (this._contentInputNode) {
@@ -170,6 +181,9 @@ class PostEditSidebarControl extends events.EventTarget {
             this._post.notes.addEventListener(eventType, e => {
                 this._syncExpanderTitles();
             });
+            this._post.pools.addEventListener(eventType, e => {
+                this._syncExpanderTitles();
+            });
         }
 
         this._tagControl.addEventListener(
@@ -182,11 +196,18 @@ class PostEditSidebarControl extends events.EventTarget {
             this._noteTextareaNode.addEventListener(
                 'change', e => this._evtNoteTextChangeRequest(e));
         }
+
+        this._poolControl.addEventListener(
+            'change', e => {
+                this.dispatchEvent(new CustomEvent('change'));
+                this._syncExpanderTitles();
+            });
     }
 
     _syncExpanderTitles() {
         this._notesExpander.title = `Notes (${this._post.notes.length})`;
         this._tagsExpander.title = `Tags (${this._post.tags.length})`;
+        this._poolsExpander.title = `Pools (${this._post.pools.length})`;
     }
 
     _evtPostContentChange(e) {
@@ -338,6 +359,10 @@ class PostEditSidebarControl extends events.EventTarget {
                     misc.splitByWhitespace(this._tagInputNode.value) :
                     undefined,
 
+                pools: this._poolInputNode ?
+                    misc.splitByWhitespace(this._poolInputNode.value) :
+                    undefined,
+
                 relations: this._relationsInputNode ?
                     misc.splitByWhitespace(this._relationsInputNode.value)
                         .map(x => parseInt(x)) :
@@ -372,6 +397,10 @@ class PostEditSidebarControl extends events.EventTarget {
 
     get _tagInputNode() {
         return this._formNode.querySelector('.tags input');
+    }
+
+    get _poolInputNode() {
+        return this._formNode.querySelector('.pools input');
     }
 
     get _loopVideoInputNode() {

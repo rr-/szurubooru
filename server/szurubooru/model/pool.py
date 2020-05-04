@@ -2,7 +2,6 @@ import sqlalchemy as sa
 from sqlalchemy.ext.orderinglist import ordering_list
 from sqlalchemy.ext.associationproxy import association_proxy
 from szurubooru.model.base import Base
-import szurubooru.model as model
 
 
 class PoolName(Base):
@@ -43,9 +42,9 @@ class PoolPost(Base):
     order = sa.Column('ord', sa.Integer, nullable=False, index=True)
 
     pool = sa.orm.relationship('Pool', back_populates='_posts')
-    post = sa.orm.relationship('Post')
+    post = sa.orm.relationship('Post', back_populates='_pools')
 
-    def __init__(self, post: model.Post) -> None:
+    def __init__(self, post) -> None:
         self.post_id = post.post_id
 
 class Pool(Base):

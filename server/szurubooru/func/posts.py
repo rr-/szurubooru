@@ -5,7 +5,7 @@ from datetime import datetime
 import sqlalchemy as sa
 from szurubooru import config, db, model, errors, rest
 from szurubooru.func import (
-    users, scores, comments, tags, util,
+    users, scores, comments, tags, pools, util,
     mime, images, files, image_hash, serialization, snapshots)
 
 
@@ -176,6 +176,7 @@ class PostSerializer(serialization.BaseSerializer):
             'hasCustomThumbnail': self.serialize_has_custom_thumbnail,
             'notes': self.serialize_notes,
             'comments': self.serialize_comments,
+            'pools': self.serialize_pools,
         }
 
     def serialize_id(self) -> Any:
@@ -298,6 +299,14 @@ class PostSerializer(serialization.BaseSerializer):
             for comment in sorted(
                 self.post.comments,
                 key=lambda comment: comment.creation_time)]
+
+    def serialize_pools(self) -> Any:
+        return [
+            pools.serialize_pool(pool)
+            for pool in sorted(
+                self.post.pools,
+                key=lambda pool: pool.creation_time)]
+
 
 
 def serialize_post(

@@ -2,7 +2,10 @@ from typing import List
 import sqlalchemy as sa
 from szurubooru.model.base import Base
 from szurubooru.model.comment import Comment
+from szurubooru.model.pool import PoolPost
+from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.ext.orderinglist import ordering_list
 
 
 class PostFeature(Base):
@@ -224,6 +227,12 @@ class Post(Base):
     notes = sa.orm.relationship(
         'PostNote', cascade='all, delete-orphan', lazy='joined')
     comments = sa.orm.relationship('Comment', cascade='all, delete-orphan')
+    _pools = sa.orm.relationship(
+        'PoolPost',
+        lazy='select',
+        order_by='PoolPost.order',
+        back_populates='post')
+    pools = association_proxy('_pools', 'pool')
 
     # dynamic columns
     tag_count = sa.orm.column_property(
