@@ -14,6 +14,7 @@ class PoolMergeView extends events.EventTarget {
 
         this._pool = ctx.pool;
         this._hostNode = ctx.hostNode;
+        this._target_pool_id = null;
         ctx.poolNamePattern = api.getPoolNameRegex();
         views.replaceContent(this._hostNode, template(ctx));
 
@@ -22,9 +23,11 @@ class PoolMergeView extends events.EventTarget {
             this._autoCompleteControl = new PoolAutoCompleteControl(
                 this._targetPoolFieldNode,
                 {
-                    confirm: pool =>
+                    confirm: pool => {
+                        this._target_pool_id = pool.id;
                         this._autoCompleteControl.replaceSelectedText(
-                            pool.names[0], false),
+                            pool.names[0], false);
+                    }
                 });
         }
 
@@ -56,7 +59,7 @@ class PoolMergeView extends events.EventTarget {
         this.dispatchEvent(new CustomEvent('submit', {
             detail: {
                 pool: this._pool,
-                targetPoolName: this._targetPoolFieldNode.value
+                targetPoolId: this._target_pool_id
             },
         }));
     }

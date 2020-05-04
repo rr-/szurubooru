@@ -11,9 +11,9 @@
                 </th>
                 <th class='post-count'>
                      <% if (ctx.parameters.query == 'sort:post-count') { %>
-                        <a href='<%- ctx.formatClientLink('pools', {query: '-sort:post-count'}) %>'>Post Count</a>
+                        <a href='<%- ctx.formatClientLink('pools', {query: '-sort:post-count'}) %>'>Post count</a>
                      <% } else { %>
-                        <a href='<%- ctx.formatClientLink('pools', {query: 'sort:post-count'}) %>'>Post Count</a>
+                        <a href='<%- ctx.formatClientLink('pools', {query: 'sort:post-count'}) %>'>Post count</a>
                      <% } %>
                      </th>
                 <th class='creation-time'>

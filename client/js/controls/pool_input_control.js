@@ -64,10 +64,6 @@ class PoolInputControl extends events.EventTarget {
                 verticalShift: -2
             });
 
-        // dom events
-        this._poolInputNode.addEventListener(
-            'keydown', e => this._evtInputKeyDown(e));
-
         // show
         this._hostNode.style.display = 'none';
         this._hostNode.parentNode.insertBefore(
@@ -117,23 +113,6 @@ class PoolInputControl extends events.EventTarget {
     this.dispatchEvent(new CustomEvent('change'));
   }
 
-  _evtAddPoolButtonClick(e) {
-    // TODO
-    // e.preventDefault();
-    // this.addPoolByName(this._poolInputNode.value, SOURCE_USER_INPUT);
-    // this._poolInputNode.value = '';
-  }
-
-  _evtInputKeyDown(e) {
-    // TODO
-    if (e.which == KEY_RETURN || e.which == KEY_SPACE) {
-      e.preventDefault();
-    //   this._hideAutoComplete();
-    //   this.addPoolByText(this._poolInputNode.value, SOURCE_USER_INPUT);
-    //   this._poolInputNode.value = '';
-    }
-  }
-
   _createListItemNode(pool) {
     const className = pool.category ?
                       misc.makeCssName(pool.category, 'pool') :
@@ -159,10 +138,6 @@ class PoolInputControl extends events.EventTarget {
       'href', uri.formatClientLink(
         'posts', {query: "pool:" + pool.id}));
     searchLinkNode.textContent = pool.names[0] + ' ';
-    searchLinkNode.addEventListener('click', e => {
-      // TODO?
-      // e.preventDefault();
-    });
 
     const usagesNode = document.createElement('span');
     usagesNode.classList.add('pool-usages');

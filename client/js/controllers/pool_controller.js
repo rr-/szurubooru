@@ -105,13 +105,13 @@ class PoolController {
         this._view.clearMessages();
         this._view.disableForm();
         e.detail.pool
-            .merge(e.detail.targetPoolName, e.detail.addAlias)
+            .merge(e.detail.targetPoolId, e.detail.addAlias)
             .then(() => {
                 this._view.showSuccess('Pool merged.');
                 this._view.enableForm();
                 router.replace(
                     uri.formatClientLink(
-                        'pool', e.detail.targetPoolName, 'merge'),
+                        'pool', e.detail.targetPoolId, 'merge'),
                     null, false);
             }, error => {
                 this._view.showError(error.message);

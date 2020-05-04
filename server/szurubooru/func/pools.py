@@ -6,7 +6,6 @@ from szurubooru import config, db, model, errors, rest
 from szurubooru.func import util, pool_categories, serialization, posts
 
 
-
 class PoolNotFoundError(errors.NotFoundError):
     pass
 
@@ -32,6 +31,10 @@ class InvalidPoolCategoryError(errors.ValidationError):
 
 
 class InvalidPoolDescriptionError(errors.ValidationError):
+    pass
+
+
+class InvalidPoolRelationError(errors.ValidationError):
     pass
 
 
@@ -211,45 +214,18 @@ def merge_pools(source_pool: model.Pool, target_pool: model.Pool) -> None:
         raise InvalidPoolRelationError('Cannot merge pool with itself.')
 
     def merge_posts(source_pool_id: int, target_pool_id: int) -> None:
-        pass
-        # alias1 = model.PostPool
-        # alias2 = sa.orm.util.aliased(model.PostPool)
-        # update_stmt = (
-        #     sa.sql.expression.update(alias1)
-        #     .where(alias1.pool_id == source_pool_id))
-        # update_stmt = (
-        #     update_stmt
-        #     .where(
-        #         ~sa.exists()
-        #         .where(alias1.post_id == alias2.post_id)
-        #         .where(alias2.pool_id == target_pool_id)))
-        # update_stmt = update_stmt.values(pool_id=target_pool_id)
-        # db.session.execute(update_stmt)
-
-    def merge_relations(
-            table: model.Base, source_pool_id: int, target_pool_id: int) -> None:
-        alias1 = table
-        alias2 = sa.orm.util.aliased(table)
+        alias1 = model.PoolPost
+        alias2 = sa.orm.util.aliased(model.PoolPost)
         update_stmt = (
             sa.sql.expression.update(alias1)
-            .where(alias1.parent_id == source_pool_id)
-            .where(alias1.child_id != target_pool_id)
-            .where(
-                ~sa.exists()
-                .where(alias2.child_id == alias1.child_id)
-                .where(alias2.parent_id == target_pool_id))
-            .values(parent_id=target_pool_id))
-        db.session.execute(update_stmt)
-
+            .where(alias1.pool_id == source_pool_id))
         update_stmt = (
-            sa.sql.expression.update(alias1)
-            .where(alias1.child_id == source_pool_id)
-            .where(alias1.parent_id != target_pool_id)
+            update_stmt
             .where(
                 ~sa.exists()
-                .where(alias2.parent_id == alias1.parent_id)
-                .where(alias2.child_id == target_pool_id))
-            .values(child_id=target_pool_id))
+                .where(alias1.post_id == alias2.post_id)
+                .where(alias2.pool_id == target_pool_id)))
+        update_stmt = update_stmt.values(pool_id=target_pool_id)
         db.session.execute(update_stmt)
 
     merge_posts(source_pool.pool_id, target_pool.pool_id)
@@ -314,7 +290,6 @@ def update_pool_description(pool: model.Pool, description: str) -> None:
     if util.value_exceeds_column_size(description, model.Pool.description):
         raise InvalidPoolDescriptionError('Description is too long.')
     pool.description = description or None
-
 
 
 def update_pool_posts(pool: model.Pool, post_ids: List[int]) -> None:
