@@ -80,27 +80,6 @@ class PoolInputControl extends events.EventTarget {
         }
     }
 
-    addPoolByText(text, source) {
-        for (let poolName of text.split(/\s+/).filter(word => word).reverse()) {
-            this.addPoolByName(poolName, source);
-        }
-    }
-
-    addPoolByName(name, source) {
-        name = name.trim();
-        if (!name) {
-            return;
-        }
-        return Pool.get(name).then(pool => {
-            return this.addPool(pool, source);
-        }, () => {
-            const pool = new Pool();
-            pool.names = [name];
-            pool.category = null;
-            return this.addPool(pool, source);
-        });
-    }
-
     addPool(pool, source) {
         if (source != SOURCE_INIT && this.pools.hasPoolId(pool.id)) {
             return Promise.resolve();
@@ -178,10 +157,11 @@ class PoolInputControl extends events.EventTarget {
     }
     searchLinkNode.setAttribute(
       'href', uri.formatClientLink(
-        'posts', {query: uri.escapeColons(pool.names[0])}));
+        'posts', {query: "pool:" + pool.id}));
     searchLinkNode.textContent = pool.names[0] + ' ';
     searchLinkNode.addEventListener('click', e => {
-      e.preventDefault();
+      // TODO?
+      // e.preventDefault();
     });
 
     const usagesNode = document.createElement('span');

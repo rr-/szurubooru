@@ -86,6 +86,10 @@ class AbstractList extends events.EventTarget {
         return this._list.map(...args);
     }
 
+    filter(...args) {
+        return this._list.filter(...args);
+    }
+
     [Symbol.iterator]() {
         return this._list[Symbol.iterator]();
     }

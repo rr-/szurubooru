@@ -34,7 +34,7 @@ class PoolAutoCompleteControl extends AutoCompleteControl {
             return new Promise((resolve, reject) => {
                 PoolList.search(
                     query, 0, this._options.maxResults,
-                    ['id', 'names', 'category', 'postCount'])
+                    ['id', 'names', 'category', 'postCount', 'version'])
                 .then(
                     response => resolve(
                         _poolListToMatches(response.results, this._options)),

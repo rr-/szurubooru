@@ -96,6 +96,29 @@ class Post extends events.EventTarget {
             });
     }
 
+    _savePoolPosts() {
+        const difference = (a, b) => a.filter(post => !b.hasPoolId(post.id));
+        const added = difference(this.pools, this._orig._pools);
+        const removed = difference(this._orig._pools, this.pools);
+        let ops = [];
+
+        for (let pool of added) {
+            if (!pool.posts.hasPostId(this._id)) {
+                pool.posts.addById(this._id);
+                ops.push(pool.save());
+            }
+        }
+
+        for (let pool of removed) {
+            if (pool.posts.hasPostId(this._id)) {
+                pool.posts.removeById(this._id);
+                ops.push(pool.save());
+            }
+        }
+
+        return Promise.all(ops);
+    }
+
     save(anonymous) {
         const files = {};
         const detail = {version: this._version};
@@ -131,13 +154,18 @@ class Post extends events.EventTarget {
         if (this._source !== this._orig._source) {
             detail.source = this._source;
         }
-        // TODO pools
 
         let apiPromise = this._id ?
             api.put(uri.formatApiLink('post', this.id), detail, files) :
             api.post(uri.formatApiLink('posts'), detail, files);
 
         return apiPromise.then(response => {
+            if (this._pools !== this._orig._pools) {
+                return this._savePoolPosts()
+                       .then(() => Promise.resolve(response));
+            }
+            return Promise.resolve(response);
+        }).then(response => {
             this._updateFromResponse(response);
             this.dispatchEvent(
                 new CustomEvent('change', {detail: {post: this}}));
@@ -149,6 +177,7 @@ class Post extends events.EventTarget {
                 this.dispatchEvent(
                     new CustomEvent('changeThumbnail', {detail: {post: this}}));
             }
+
             return Promise.resolve();
         }, error => {
             if (error.response &&

@@ -32,6 +32,7 @@
                 <% if (ctx.canEditPosts) { %>
                     <%= ctx.makeTextInput({
                         text: 'Posts',
+                        placeholder: 'space-separated post IDs',
                         value: ctx.pool.posts.map(post => post.id).join(' ')
                     }) %>
                 <% } %>

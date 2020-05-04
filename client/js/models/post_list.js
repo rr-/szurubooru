@@ -49,6 +49,31 @@ class PostList extends AbstractList {
         return text.trim();
     }
 
+    hasPostId(testId) {
+        for (let post of this._list) {
+            if (post.id === testId) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    addById(id) {
+        if (this.hasPostId(id)) {
+            return;
+        }
+
+        let post = new Post.fromResponse({id: id});
+        this.add(post);
+    }
+
+    removeById(testId) {
+        for (let post of this._list) {
+            if (post.id === testId) {
+                this.remove(post);
+            }
+        }
+    }
 }
 
 PostList._itemClass = Post;

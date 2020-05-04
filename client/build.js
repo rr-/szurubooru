@@ -35,7 +35,7 @@ const app_manifest = {
             src: baseUrl() + 'img/android-chrome-192x192.png',
             type: 'image/png',
             sizes: '192x192'
-        }, 
+        },
         {
             src: baseUrl() + 'img/android-chrome-512x512.png',
             type: 'image/png',
@@ -301,8 +301,12 @@ function makeOutputDirs() {
 
 makeOutputDirs();
 bundleConfig();
-bundleBinaryAssets();
-bundleWebAppFiles();
+if (!process.argv.includes('--no-binary-assets')) {
+    bundleBinaryAssets();
+}
+if (!process.argv.includes('--no-web-app-files')) {
+    bundleWebAppFiles();
+}
 if (!process.argv.includes('--no-html')) {
     bundleHtml();
 }
