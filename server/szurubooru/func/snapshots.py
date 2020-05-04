@@ -38,7 +38,7 @@ def get_pool_snapshot(pool: model.Pool) -> Dict[str, Any]:
     return {
         'names': [pool_name.name for pool_name in pool.names],
         'category': pool.category.name,
-        # TODO
+        'posts': [post.post_id for post in pool.posts]
     }
 
 

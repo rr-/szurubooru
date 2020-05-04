@@ -334,6 +334,22 @@ def get_post_by_id(post_id: int) -> model.Post:
     return post
 
 
+def get_posts_by_ids(ids: List[int]) -> List[model.Pool]:
+    if len(ids) == 0:
+        return []
+    posts = (
+        db.session.query(model.Post)
+        .filter(
+            sa.sql.or_(
+                model.Post.post_id == post_id
+                for post_id in ids))
+        .all())
+    id_order = {
+        v: k for k, v in enumerate(ids)
+    }
+    return sorted(posts, key=lambda post: id_order.get(post.post_id))
+
+
 def try_get_current_post_feature() -> Optional[model.PostFeature]:
     return (
         db.session

@@ -17,17 +17,18 @@ const fields = [
 
 class PostListController {
     constructor(ctx) {
+        this._pageController = new PageController();
+
         if (!api.hasPrivilege('posts:list')) {
             this._view = new EmptyView();
             this._view.showError('You don\'t have privileges to view posts.');
             return;
         }
 
+        this._ctx = ctx;
+
         topNavigation.activate('posts');
         topNavigation.setTitle('Listing posts');
-
-        this._ctx = ctx;
-        this._pageController = new PageController();
 
         this._headerView = new PostsHeaderView({
             hostNode: this._pageController.view.pageHeaderHolderNode,

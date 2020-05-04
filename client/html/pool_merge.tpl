@@ -6,7 +6,7 @@
             </li>
 
             <li>
-                <p>Posts between the two pools will be combined.
+                <p>Posts in the two pools will be combined.
                 Category needs to be handled manually.</p>
 
                 <%= ctx.makeCheckbox({required: true, text: 'I confirm that I want to merge this pool.'}) %>

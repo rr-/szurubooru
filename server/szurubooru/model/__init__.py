@@ -11,7 +11,7 @@ from szurubooru.model.post import (
     PostNote,
     PostFeature,
     PostSignature)
-from szurubooru.model.pool import Pool, PoolName
+from szurubooru.model.pool import Pool, PoolName, PoolPost
 from szurubooru.model.pool_category import PoolCategory
 from szurubooru.model.comment import Comment, CommentScore
 from szurubooru.model.snapshot import Snapshot

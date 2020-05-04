@@ -3,7 +3,7 @@ from typing import Any, Optional, Tuple, List, Dict, Callable
 from datetime import datetime
 import sqlalchemy as sa
 from szurubooru import config, db, model, errors, rest
-from szurubooru.func import util, pool_categories, serialization
+from szurubooru.func import util, pool_categories, serialization, posts
 
 
 
@@ -23,7 +23,7 @@ class InvalidPoolNameError(errors.ValidationError):
     pass
 
 
-class InvalidPoolRelationError(errors.ValidationError):
+class InvalidPoolDuplicateError(errors.ValidationError):
     pass
 
 
@@ -60,6 +60,10 @@ def _check_name_intersection(
     return len(set(names1).intersection(names2)) > 0
 
 
+def _check_post_duplication(post_ids: List[int]) -> bool:
+    return len(post_ids) != len(set(post_ids))
+
+
 def sort_pools(pools: List[model.Pool]) -> List[model.Pool]:
     default_category_name = pool_categories.get_default_category_name()
     return sorted(
@@ -84,7 +88,8 @@ class PoolSerializer(serialization.BaseSerializer):
             'description': self.serialize_description,
             'creationTime': self.serialize_creation_time,
             'lastEditTime': self.serialize_last_edit_time,
-            'postCount': self.serialize_post_count
+            'postCount': self.serialize_post_count,
+            'posts': self.serialize_posts
         }
 
     def serialize_id(self) -> Any:
@@ -110,6 +115,13 @@ class PoolSerializer(serialization.BaseSerializer):
 
     def serialize_post_count(self) -> Any:
         return self.pool.post_count
+
+    def serialize_posts(self) -> Any:
+        return [
+            {
+                'id': post.post_id
+            }
+            for post in self.pool.posts]
 
 
 def serialize_pool(
@@ -180,7 +192,8 @@ def get_or_create_pools_by_names(
         if not found:
             new_pool = create_pool(
                 names=[name],
-                category_name=pool_category_name)
+                category_name=pool_category_name,
+                post_ids=[])
             db.session.add(new_pool)
             new_pools.append(new_pool)
     return existing_pools, new_pools
@@ -245,11 +258,13 @@ def merge_pools(source_pool: model.Pool, target_pool: model.Pool) -> None:
 
 def create_pool(
         names: List[str],
-        category_name: str) -> model.Pool:
+        category_name: str,
+        post_ids: List[int]) -> model.Pool:
     pool = model.Pool()
     pool.creation_time = datetime.utcnow()
     update_pool_names(pool, names)
     update_pool_category_name(pool, category_name)
+    update_pool_posts(pool, post_ids)
     return pool
 
 
@@ -299,4 +314,13 @@ def update_pool_description(pool: model.Pool, description: str) -> None:
     if util.value_exceeds_column_size(description, model.Pool.description):
         raise InvalidPoolDescriptionError('Description is too long.')
     pool.description = description or None
-    
+
+
+
+def update_pool_posts(pool: model.Pool, post_ids: List[int]) -> None:
+    assert pool
+    if _check_post_duplication(post_ids):
+        raise InvalidPoolDuplicateError('Duplicate post in pool.')
+    pool.posts.clear()
+    for post in posts.get_posts_by_ids(post_ids):
+        pool.posts.append(post)

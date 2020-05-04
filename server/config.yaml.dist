@@ -129,6 +129,10 @@ privileges:
     'tag_categories:set_default':    moderator
 
     'pools:create':                  regular
+    'pools:edit:names':              power
+    'pools:edit:category':           power
+    'pools:edit:description':        power
+    'pools:edit:posts':              power
     'pools:list':                    regular
     'pools:view':                    anonymous
     'pools:merge':                   moderator

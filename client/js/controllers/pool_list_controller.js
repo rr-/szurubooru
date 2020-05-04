@@ -13,25 +13,25 @@ const EmptyView = require('../views/empty_view.js');
 const fields = [
     'id',
     'names',
-  /* 'suggestions',
-   * 'implications', */
+    'posts',
     'creationTime',
     'postCount',
     'category'];
 
 class PoolListController {
     constructor(ctx) {
+        this._pageController = new PageController();
+
         if (!api.hasPrivilege('pools:list')) {
             this._view = new EmptyView();
             this._view.showError('You don\'t have privileges to view pools.');
             return;
         }
 
+        this._ctx = ctx;
+
         topNavigation.activate('pools');
         topNavigation.setTitle('Listing pools');
-
-        this._ctx = ctx;
-        this._pageController = new PageController();
 
         this._headerView = new PoolsHeaderView({
             hostNode: this._pageController.view.pageHeaderHolderNode,

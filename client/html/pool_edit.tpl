@@ -28,6 +28,14 @@
                     }) %>
                 <% } %>
             </li>
+            <li class='posts'>
+                <% if (ctx.canEditPosts) { %>
+                    <%= ctx.makeTextInput({
+                        text: 'Posts',
+                        value: ctx.pool.posts.map(post => post.id).join(' ')
+                    }) %>
+                <% } %>
+            </li>
         </ul>
 
         <% if (ctx.canEditAnything) { %>

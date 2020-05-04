@@ -39,7 +39,7 @@ class PoolCreateController {
     _evtCreate(e) {
         this._view.clearMessages();
         this._view.disableForm();
-        e.detail.pool.save()
+        api.post(uri.formatApiLink('pool'), e.detail)
             .then(() => {
                 this._view.clearMessages();
                 misc.disableExitConfirmation();
@@ -49,10 +49,6 @@ class PoolCreateController {
                 this._view.showError(error.message);
                 this._view.enableForm();
             });
-    }
-
-    _evtChange(e) {
-        misc.enableExitConfirmation();
     }
 }
 

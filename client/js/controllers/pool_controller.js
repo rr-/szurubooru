@@ -5,6 +5,7 @@ const api = require('../api.js');
 const misc = require('../util/misc.js');
 const uri = require('../util/uri.js');
 const Pool = require('../models/pool.js');
+const Post = require('../models/post.js');
 const PoolCategoryList = require('../models/pool_category_list.js');
 const topNavigation = require('../models/top_navigation.js');
 const PoolView = require('../views/pool_view.js');
@@ -42,6 +43,7 @@ class PoolController {
                 canEditNames: api.hasPrivilege('pools:edit:names'),
                 canEditCategory: api.hasPrivilege('pools:edit:category'),
                 canEditDescription: api.hasPrivilege('pools:edit:description'),
+                canEditPosts: api.hasPrivilege('pools:edit:posts'),
                 canMerge: api.hasPrivilege('pools:merge'),
                 canDelete: api.hasPrivilege('pools:delete'),
                 categories: categories,
@@ -83,6 +85,12 @@ class PoolController {
         }
         if (e.detail.description !== undefined) {
             e.detail.pool.description = e.detail.description;
+        }
+        if (e.detail.posts !== undefined) {
+            e.detail.pool.posts.clear()
+            for (let post_id of e.detail.posts) {
+                e.detail.pool.posts.add(Post.fromResponse({ id: parseInt(post_id) }))
+            }
         }
         e.detail.pool.save().then(() => {
             this._view.showSuccess('Pool saved.');

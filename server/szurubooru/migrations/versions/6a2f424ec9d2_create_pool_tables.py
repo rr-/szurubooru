@@ -45,8 +45,18 @@ def upgrade():
         sa.PrimaryKeyConstraint('pool_name_id'),
         sa.UniqueConstraint('name'))
 
+    op.create_table(
+        'pool_post',
+        sa.Column('pool_id', sa.Integer(), nullable=False),
+        sa.Column('post_id', sa.Integer(), nullable=False),
+        sa.Column('ord', sa.Integer(), nullable=False, index=True),
+        sa.ForeignKeyConstraint(['pool_id'], ['pool.id'], ondelete='CASCADE'),
+        sa.ForeignKeyConstraint(['post_id'], ['post.id'], ondelete='CASCADE'),
+        sa.PrimaryKeyConstraint('pool_id', 'post_id'))
+
 def downgrade():
     op.drop_index(op.f('ix_pool_name_ord'), table_name='pool_name')
+    op.drop_table('pool_post')
     op.drop_table('pool_name')
     op.drop_table('pool')
     op.drop_table('pool_category')

@@ -4,6 +4,7 @@ const events = require('../events.js');
 const api = require('../api.js');
 const misc = require('../util/misc.js');
 const views = require('../util/views.js');
+const Post = require('../models/post.js');
 
 const template = views.getTemplate('pool-edit');
 
@@ -22,8 +23,13 @@ class PoolEditView extends events.EventTarget {
                 'input', e => this._evtNameInput(e));
         }
 
+        if (this._postsFieldNode) {
+            this._postsFieldNode.addEventListener(
+                'input', e => this._evtPostsInput(e));
+        }
+
         for (let node of this._formNode.querySelectorAll(
-                'input, select, textarea')) {
+                'input, select, textarea, posts')) {
             node.addEventListener(
                 'change', e => {
                     this.dispatchEvent(new CustomEvent('change'));
@@ -74,6 +80,21 @@ class PoolEditView extends events.EventTarget {
         this._namesFieldNode.setCustomValidity('');
     }
 
+    _evtPostsInput(e) {
+        const regex = /^\d+$/;
+        const list = misc.splitByWhitespace(this._postsFieldNode.value);
+
+        for (let item of list) {
+            if (!regex.test(item)) {
+                this._postsFieldNode.setCustomValidity(
+                    `Pool ID "${item}" is not an integer.`);
+                return;
+            }
+        }
+
+        this._postsFieldNode.setCustomValidity('');
+    }
+
     _evtSubmit(e) {
         e.preventDefault();
         this.dispatchEvent(new CustomEvent('submit', {
@@ -90,6 +111,10 @@ class PoolEditView extends events.EventTarget {
 
                 description: this._descriptionFieldNode ?
                     this._descriptionFieldNode.value :
+                    undefined,
+
+                posts: this._postsFieldNode ?
+                    misc.splitByWhitespace(this._postsFieldNode.value) :
                     undefined,
             },
         }));
@@ -109,6 +134,10 @@ class PoolEditView extends events.EventTarget {
 
     get _descriptionFieldNode() {
         return this._formNode.querySelector('.description textarea');
+    }
+
+    get _postsFieldNode() {
+        return this._formNode.querySelector('.posts input');
     }
 }
 

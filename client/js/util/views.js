@@ -221,20 +221,20 @@ function makeTagLink(name, includeHash, includeCount, tag) {
             misc.escapeHtml(text));
 }
 
-function makePoolLink(pool, includeHash, includeCount, name) {
-    const category = pool.category;
+function makePoolLink(id, includeHash, includeCount, pool, name) {
+    const category = pool ? pool.category : 'unknown';
     let text = name ? name : pool.names[0];
     if (includeHash === true) {
         text = '#' + text;
     }
     if (includeCount === true) {
-        text += ' (' + pool.postCount + ')';
+        text += ' (' + (pool ? pool.postCount : 0) + ')';
     }
     return api.hasPrivilege('pools:view') ?
         makeElement(
             'a',
             {
-                href: uri.formatClientLink('pool', pool.id),
+                href: uri.formatClientLink('pool', id),
                 class: misc.makeCssName(category, 'pool'),
             },
             misc.escapeHtml(text)) :

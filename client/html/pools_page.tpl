@@ -30,12 +30,12 @@
                         <td class='names'>
                             <ul>
                                 <% for (let name of pool.names) { %>
-                                    <li><%= ctx.makePoolLink(pool, false, false, name) %></li>
+                                    <li><%= ctx.makePoolLink(pool.id, false, false, pool, name) %></li>
                                 <% } %>
                             </ul>
                         </td>
                         <td class='post-count'>
-                            <a href='<%- ctx.formatClientLink('pools', {query: 'pool:' + pool.id}) %>'><%- pool.postCount %></a>
+                            <a href='<%- ctx.formatClientLink('posts', {query: 'pool:' + pool.id}) %>'><%- pool.postCount %></a>
                         </td>
                         <td class='creation-time'>
                             <%= ctx.makeRelativeTime(pool.creationTime) %>

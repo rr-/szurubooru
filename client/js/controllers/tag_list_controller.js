@@ -20,17 +20,18 @@ const fields = [
 
 class TagListController {
     constructor(ctx) {
+        this._pageController = new PageController();
+
         if (!api.hasPrivilege('tags:list')) {
             this._view = new EmptyView();
             this._view.showError('You don\'t have privileges to view tags.');
             return;
         }
 
+        this._ctx = ctx;
+
         topNavigation.activate('tags');
         topNavigation.setTitle('Listing tags');
-
-        this._ctx = ctx;
-        this._pageController = new PageController();
 
         this._headerView = new TagsHeaderView({
             hostNode: this._pageController.view.pageHeaderHolderNode,

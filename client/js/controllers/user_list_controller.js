@@ -12,6 +12,8 @@ const EmptyView = require('../views/empty_view.js');
 
 class UserListController {
     constructor(ctx) {
+        this._pageController = new PageController();
+
         if (!api.hasPrivilege('users:list')) {
             this._view = new EmptyView();
             this._view.showError('You don\'t have privileges to view users.');
@@ -22,7 +24,6 @@ class UserListController {
         topNavigation.setTitle('Listing users');
 
         this._ctx = ctx;
-        this._pageController = new PageController();
 
         this._headerView = new UsersHeaderView({
             hostNode: this._pageController.view.pageHeaderHolderNode,

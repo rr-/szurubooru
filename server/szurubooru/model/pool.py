@@ -1,5 +1,8 @@
 import sqlalchemy as sa
+from sqlalchemy.ext.orderinglist import ordering_list
+from sqlalchemy.ext.associationproxy import association_proxy
 from szurubooru.model.base import Base
+import szurubooru.model as model
 
 
 class PoolName(Base):
@@ -18,6 +21,32 @@ class PoolName(Base):
     def __init__(self, name: str, order: int) -> None:
         self.name = name
         self.order = order
+        
+
+class PoolPost(Base):
+    __tablename__ = 'pool_post'
+
+    pool_id = sa.Column(
+        'pool_id',
+        sa.Integer,
+        sa.ForeignKey('pool.id'),
+        nullable=False,
+        primary_key=True,
+        index=True)
+    post_id = sa.Column(
+        'post_id',
+        sa.Integer,
+        sa.ForeignKey('post.id'),
+        nullable=False,
+        primary_key=True,
+        index=True)
+    order = sa.Column('ord', sa.Integer, nullable=False, index=True)
+
+    pool = sa.orm.relationship('Pool', back_populates='_posts')
+    post = sa.orm.relationship('Post')
+
+    def __init__(self, post: model.Post) -> None:
+        self.post_id = post.post_id
 
 class Pool(Base):
     __tablename__ = 'pool'
@@ -40,18 +69,23 @@ class Pool(Base):
         cascade='all,delete-orphan',
         lazy='joined',
         order_by='PoolName.order')
+    _posts = sa.orm.relationship(
+        'PoolPost',
+        back_populates='pool',
+        cascade='all,delete-orphan',
+        lazy='joined',
+        order_by='PoolPost.order',
+        collection_class=ordering_list('order'))
+    posts = association_proxy('_posts', 'post')
 
-    # post_count = sa.orm.column_property(
-    #     sa.sql.expression.select(
-    #         [sa.sql.expression.func.count(PostPool.post_id)])
-    #     .where(PostPool.pool_id == pool_id)
-    #     .correlate_except(PostPool))
-    # TODO
-    from random import randint
     post_count = sa.orm.column_property(
-        sa.sql.expression.select([randint(1, 1000)])
-            .limit(1)
-            .as_scalar())
+        (
+            sa.sql.expression.select(
+                [sa.sql.expression.func.count(PoolPost.post_id)])
+            .where(PoolPost.pool_id == pool_id)
+            .as_scalar()
+        ),
+        deferred=True)
 
     first_name = sa.orm.column_property(
         (
@@ -62,7 +96,6 @@ class Pool(Base):
             .as_scalar()
         ),
         deferred=True)
-
 
     __mapper_args__ = {
         'version_id_col': version,

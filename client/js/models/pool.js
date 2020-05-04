@@ -7,15 +7,13 @@ const misc = require('../util/misc.js');
 
 class Pool extends events.EventTarget {
     constructor() {
-        // const PoolList = require('./pool_list.js');
+        const PostList = require('./post_list.js');
 
         super();
         this._orig = {};
 
         for (let obj of [this, this._orig]) {
-            // TODO
-            // obj._suggestions = new PoolList();
-            // obj._implications = new PoolList();
+            obj._posts = new PostList();
         }
 
         this._updateFromResponse({});
@@ -25,8 +23,7 @@ class Pool extends events.EventTarget {
     get names()             { return this._names; }
     get category()          { return this._category; }
     get description()       { return this._description; }
-  /* get suggestions()       { return this._suggestions; }
-   * get implications()      { return this._implications; } */
+    get posts()             { return this._posts; }
     get postCount()         { return this._postCount; }
     get creationTime()      { return this._creationTime; }
     get lastEditTime()      { return this._lastEditTime; }
@@ -61,15 +58,9 @@ class Pool extends events.EventTarget {
         if (this._description !== this._orig._description) {
             detail.description = this._description;
         }
-        // TODO
-        // if (misc.arraysDiffer(this._implications, this._orig._implications)) {
-        //     detail.implications = this._implications.map(
-        //         relation => relation.names[0]);
-        // }
-        // if (misc.arraysDiffer(this._suggestions, this._orig._suggestions)) {
-        //     detail.suggestions = this._suggestions.map(
-        //         relation => relation.names[0]);
-        // }
+        if (misc.arraysDiffer(this._posts, this._orig._posts)) {
+            detail.posts = this._posts.map(post => post.id);
+        }
 
         let promise = this._id ?
             api.put(uri.formatApiLink('pool', this._id), detail) :
@@ -138,13 +129,11 @@ class Pool extends events.EventTarget {
             _description:  response.description,
             _creationTime: response.creationTime,
             _lastEditTime: response.lastEditTime,
-            _postCount:    response.usages || 0,
+            _postCount:    response.postCount || 0,
         };
 
         for (let obj of [this, this._orig]) {
-          // TODO
-          // obj._suggestions.sync(response.suggestions);
-          // obj._implications.sync(response.implications);
+          obj._posts.sync(response.posts);
         }
 
         Object.assign(this, map);

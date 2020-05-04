@@ -9,10 +9,6 @@ function _poolListToMatches(pools, options) {
         return pool2.postCount - pool1.postCount;
     }).map(pool => {
         let cssName = misc.makeCssName(pool.category, 'pool');
-      // TODO
-      if (options.isPooledWith(pool.id)) {
-          cssName += ' disabled';
-      }
         const caption = (
             '<span class="' + cssName + '">'
             + misc.escapeHtml(pool.names[0] + ' (' + pool.postCount + ')')
@@ -27,10 +23,6 @@ function _poolListToMatches(pools, options) {
 class PoolAutoCompleteControl extends AutoCompleteControl {
     constructor(input, options) {
         const minLengthForPartialSearch = 3;
-
-        options = Object.assign({
-            isPooledWith: poolId => false,
-        }, options);
 
         options.getMatches = text => {
             const term = misc.escapeSearchTerm(text);

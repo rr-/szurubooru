@@ -16,17 +16,6 @@ def _get_pool(params: Dict[str, str]) -> model.Pool:
     return pools.get_pool_by_id(params['pool_id'])
 
 
-# def _create_if_needed(pool_names: List[str], user: model.User) -> None:
-#     if not pool_names:
-#         return
-#     _existing_pools, new_pools = pools.get_or_create_pools_by_names(pool_names)
-#     if len(new_pools):
-#         auth.verify_privilege(user, 'pools:create')
-#     db.session.flush()
-#     for pool in new_pools:
-#         snapshots.create(pool, user)
-
-
 @rest.routes.get('/pools/?')
 def get_pools(ctx: rest.Context, _params: Dict[str, str] = {}) -> rest.Response:
     auth.verify_privilege(ctx.user, 'pools:list')
@@ -34,7 +23,7 @@ def get_pools(ctx: rest.Context, _params: Dict[str, str] = {}) -> rest.Response:
         ctx, lambda pool: _serialize(ctx, pool))
 
 
-@rest.routes.post('/pools/?')
+@rest.routes.post('/pool/?')
 def create_pool(
         ctx: rest.Context, _params: Dict[str, str] = {}) -> rest.Response:
     auth.verify_privilege(ctx.user, 'pools:create')
@@ -42,14 +31,9 @@ def create_pool(
     names = ctx.get_param_as_string_list('names')
     category = ctx.get_param_as_string('category')
     description = ctx.get_param_as_string('description', default='')
-    # TODO
-    # suggestions = ctx.get_param_as_string_list('suggestions', default=[])
-    # implications = ctx.get_param_as_string_list('implications', default=[])
+    posts = ctx.get_param_as_int_list('posts', default=[])
 
-    # _create_if_needed(suggestions, ctx.user)
-    # _create_if_needed(implications, ctx.user)
-
-    pool = pools.create_pool(names, category)
+    pool = pools.create_pool(names, category, posts)
     pools.update_pool_description(pool, description)
     ctx.session.add(pool)
     ctx.session.flush()
@@ -81,17 +65,10 @@ def update_pool(ctx: rest.Context, params: Dict[str, str]) -> rest.Response:
         auth.verify_privilege(ctx.user, 'pools:edit:description')
         pools.update_pool_description(
             pool, ctx.get_param_as_string('description'))
-    # TODO
-    # if ctx.has_param('suggestions'):
-    #     auth.verify_privilege(ctx.user, 'pools:edit:suggestions')
-    #     suggestions = ctx.get_param_as_string_list('suggestions')
-    #     _create_if_needed(suggestions, ctx.user)
-    #     pools.update_pool_suggestions(pool, suggestions)
-    # if ctx.has_param('implications'):
-    #     auth.verify_privilege(ctx.user, 'pools:edit:implications')
-    #     implications = ctx.get_param_as_string_list('implications')
-    #     _create_if_needed(implications, ctx.user)
-    #     pools.update_pool_implications(pool, implications)
+    if ctx.has_param('posts'):
+        auth.verify_privilege(ctx.user, 'pools:edit:posts')
+        posts = ctx.get_param_as_int_list('posts')
+        pools.update_pool_posts(pool, posts)
     pool.last_edit_time = datetime.utcnow()
     ctx.session.flush()
     snapshots.modify(pool, ctx.user)

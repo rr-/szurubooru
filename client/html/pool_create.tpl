@@ -22,6 +22,12 @@
                     value: '',
                 }) %>
             </li>
+            <li class='posts'>
+                <%= ctx.makeTextInput({
+                    text: 'Posts',
+                    value: '',
+                }) %>
+            </li>
         </ul>
 
         <% if (ctx.canCreate) { %>
