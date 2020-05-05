@@ -3,7 +3,7 @@ from typing import Any, Optional, Tuple, List, Dict, Callable
 from datetime import datetime
 import sqlalchemy as sa
 from szurubooru import config, db, model, errors, rest
-from szurubooru.func import util, pool_categories, serialization, posts
+from szurubooru.func import util, pool_categories, posts, serialization
 
 
 class PoolNotFoundError(errors.NotFoundError):
@@ -130,11 +130,9 @@ class PoolSerializer(serialization.BaseSerializer):
         return self.pool.post_count
 
     def serialize_posts(self) -> Any:
-        return [
-            {
-                'id': post.post_id
-            }
-            for post in self.pool.posts]
+        return [post for post in
+                [posts.serialize_micro_post(rel, None)
+                 for rel in self.pool.posts]]
 
 
 def serialize_pool(

@@ -209,7 +209,12 @@ def test_serialize_post(
                     'description': 'desc',
                     'category': 'test-cat1',
                     'postCount': 1,
-                    'posts': [{'id': 1}],
+                    'posts': [
+                        {
+                            'id': 1,
+                            'thumbnailUrl': 'http://example.com/generated-thumbnails/1_244c8840887984c4.jpg',
+                        }
+                    ],
                     'version': 1,
                     'creationTime': datetime(1996, 1, 1),
                     'lastEditTime': datetime(1998, 1, 1),
@@ -220,7 +225,12 @@ def test_serialize_post(
                     'description': 'desc2',
                     'category': 'test-cat2',
                     'postCount': 1,
-                    'posts': [{'id': 1}],
+                    'posts': [
+                        {
+                            'id': 1,
+                            'thumbnailUrl': 'http://example.com/generated-thumbnails/1_244c8840887984c4.jpg',
+                        }
+                    ],
                     'version': 1,
                     'creationTime': datetime(1996, 1, 1),
                     'lastEditTime': datetime(1998, 1, 1),

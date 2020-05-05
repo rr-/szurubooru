@@ -44,7 +44,7 @@
         </tr>
         <tr>
             <td><code>pool</code></td>
-            <td>belonging to given pool ID</td>
+            <td>belonging to the pool with the given ID</td>
         </tr>
         <tr>
             <td><code>tag-count</code></td>

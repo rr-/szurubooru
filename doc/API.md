@@ -44,6 +44,20 @@
         - [Getting featured post](#getting-featured-post)
         - [Featuring post](#featuring-post)
         - [Reverse image search](#reverse-image-search)
+    - Pool categories
+        - [Listing pool categories](#listing-pool-categories)
+        - [Creating pool category](#creating-pool-category)
+        - [Updating pool category](#updating-pool-category)
+        - [Getting pool category](#getting-pool-category)
+        - [Deleting pool category](#deleting-pool-category)
+        - [Setting default pool category](#setting-default-pool-category)
+    - Pools
+        - [Listing pools](#listing-pool)
+        - [Creating pool](#creating-pool)
+        - [Updating pool](#updating-pool)
+        - [Getting pool](#getting-pool)
+        - [Deleting pool](#deleting-pool)
+        - [Merging pools](#merging-pools)
     - Comments
         - [Listing comments](#listing-comments)
         - [Creating comment](#creating-comment)
@@ -82,6 +96,8 @@
    - [Micro tag](#micro-tag)
    - [Post](#post)
    - [Micro post](#micro-post)
+   - [Pool category](#pool-category)
+   - [Pool](#pool)
    - [Note](#note)
    - [Comment](#comment)
    - [Snapshot](#snapshot)
@@ -724,6 +740,7 @@ data.
     | `submit`             | alias of upload                                                                                                                         |
     | `comment`            | commented by given user (accepts wildcards)                                                                                             |
     | `fav`                | favorited by given user (accepts wildcards)                                                                                             |
+    | `pool`               | belonging to the pool with the given ID                                                                                                 |
     | `tag-count`          | having given number of tags                                                                                                             |
     | `comment-count`      | having given number of comments                                                                                                         |
     | `fav-count`          | favorited by given number of users                                                                                                      |
@@ -1117,6 +1134,383 @@ data.
 - **Description**
 
     Retrieves posts that look like the input image.
+
+## Listing pool categories
+- **Request**
+
+    `GET /pool-categories`
+
+- **Output**
+
+    An [unpaged search result](#unpaged-search-result), for which `<resource>`
+    is a [pool category resource](#pool-category).
+
+- **Errors**
+
+    - privileges are too low
+
+- **Description**
+
+    Lists all pool categories. Doesn't use paging.
+
+## Creating pool category
+- **Request**
+
+    `POST /pool-categories`
+
+- **Input**
+
+    ```json5
+    {
+        "name":  <name>,
+        "color": <color>
+    }
+    ```
+
+- **Output**
+
+    A [pool category resource](#pool-category).
+
+- **Errors**
+
+    - the name is used by an existing pool category (names are case insensitive)
+    - the name is invalid or missing
+    - the color is invalid or missing
+    - privileges are too low
+
+- **Description**
+
+    Creates a new pool category using specified parameters. Name must match
+    `pool_category_name_regex` from server's configuration. First category
+    created becomes the default category.
+
+## Updating pool category
+- **Request**
+
+    `PUT /pool-category/<name>`
+
+- **Input**
+
+    ```json5
+    {
+        "version": <version>,
+        "name":    <name>,    // optional
+        "color":   <color>,   // optional
+    }
+    ```
+
+- **Output**
+
+    A [pool category resource](#pool-category).
+
+- **Errors**
+
+    - the version is outdated
+    - the pool category does not exist
+    - the name is used by an existing pool category (names are case insensitive)
+    - the name is invalid
+    - the color is invalid
+    - privileges are too low
+
+- **Description**
+
+    Updates an existing pool category using specified parameters. Name must
+    match `pool_category_name_regex` from server's configuration. All fields
+    except the [`version`](#versioning) are optional - update concerns only
+    provided fields.
+
+## Getting pool category
+- **Request**
+
+    `GET /pool-category/<name>`
+
+- **Output**
+
+    A [pool category resource](#pool-category).
+
+- **Errors**
+
+    - the pool category does not exist
+    - privileges are too low
+
+- **Description**
+
+    Retrieves information about an existing pool category.
+
+## Deleting pool category
+- **Request**
+
+    `DELETE /pool-category/<name>`
+
+- **Input**
+
+    ```json5
+    {
+        "version": <version>
+    }
+    ```
+
+- **Output**
+
+    ```json5
+    {}
+    ```
+
+- **Errors**
+
+    - the version is outdated
+    - the pool category does not exist
+    - the pool category is used by some pools
+    - the pool category is the last pool category available
+    - privileges are too low
+
+- **Description**
+
+    Deletes existing pool category. The pool category to be deleted must have no
+    usages.
+
+## Setting default pool category
+- **Request**
+
+    `PUT /pool-category/<name>/default`
+
+- **Input**
+
+    ```json5
+    {}
+    ```
+
+- **Output**
+
+    A [pool category resource](#pool-category).
+
+- **Errors**
+
+    - the pool category does not exist
+    - privileges are too low
+
+- **Description**
+
+    Sets given pool category as default. All new pools created manually or
+    automatically will have this category.
+
+## Listing pools
+- **Request**
+
+    `GET /pools/?offset=<initial-pos>&limit=<page-size>&query=<query>`
+
+- **Output**
+
+    A [paged search result resource](#paged-search-result), for which
+    `<resource>` is a [pool resource](#pool).
+
+- **Errors**
+
+    - privileges are too low
+
+- **Description**
+
+    Searches for pools.
+
+    **Anonymous tokens**
+
+    Same as `name` token.
+
+    **Named tokens**
+
+    | `<key>`             | Description                               |
+    | ------------------- | ----------------------------------------- |
+    | `name`              | having given name (accepts wildcards)     |
+    | `category`          | having given category (accepts wildcards) |
+    | `creation-date`     | created at given date                     |
+    | `creation-time`     | alias of `creation-date`                  |
+    | `last-edit-date`    | edited at given date                      |
+    | `last-edit-time`    | alias of `last-edit-date`                 |
+    | `edit-date`         | alias of `last-edit-date`                 |
+    | `edit-time`         | alias of `last-edit-date`                 |
+    | `post-count`        | used in given number of posts             |
+
+    **Sort style tokens**
+
+    | `<value>`           | Description                  |
+    | ------------------- | ---------------------------- |
+    | `random`            | as random as it can get      |
+    | `name`              | A to Z                       |
+    | `category`          | category (A to Z)            |
+    | `creation-date`     | recently created first       |
+    | `creation-time`     | alias of `creation-date`     |
+    | `last-edit-date`    | recently edited first        |
+    | `last-edit-time`    | alias of `creation-time`     |
+    | `edit-date`         | alias of `creation-time`     |
+    | `edit-time`         | alias of `creation-time`     |
+    | `post-count`        | used in most posts first     |
+
+    **Special tokens**
+
+    None.
+
+## Creating pool
+- **Request**
+
+    `POST /pools/create`
+
+- **Input**
+
+    ```json5
+    {
+        "names":        [<name1>, <name2>, ...],
+        "category":     <category>,
+        "description":  <description>,           // optional
+        "posts":        [<id1>, <id2>, ...],     // optional
+    }
+    ```
+
+- **Output**
+
+    A [pool resource](#pool).
+
+- **Errors**
+
+    - any name is invalid
+    - category is invalid
+    - no name was specified
+    - there is at least one duplicate post
+    - at least one post ID does not exist
+    - privileges are too low
+
+- **Description**
+
+    Creates a new pool using specified parameters. Names, suggestions and
+    implications must match `pool_name_regex` from server's configuration.
+    Category must exist and is the same as `name` field within
+    [`<pool-category>` resource](#pool-category). `posts` is an optional list of
+    integer post IDs. If the specified posts do not exist, an error will be
+    thrown.
+
+## Updating pool
+- **Request**
+
+    `PUT /pool/<id>`
+
+- **Input**
+
+    ```json5
+    {
+        "version":      <version>,
+        "names":        [<name1>, <name2>, ...], // optional
+        "category":     <category>,              // optional
+        "description":  <description>,           // optional
+        "posts":        [<id1>, <id2>, ...],     // optional
+    }
+    ```
+
+- **Output**
+
+    A [pool resource](#pool).
+
+- **Errors**
+
+    - the version is outdated
+    - the pool does not exist
+    - any name is invalid
+    - category is invalid
+    - no name was specified
+    - there is at least one duplicate post
+    - at least one post ID does not exist
+    - privileges are too low
+
+- **Description**
+
+    Updates an existing pool using specified parameters. Names, suggestions and
+    implications must match `pool_name_regex` from server's configuration.
+    Category must exist and is the same as `name` field within
+    [`<pool-category>` resource](#pool-category). `posts` is an optional list of
+    integer post IDs. If the specified posts do not exist yet, an error will be
+    thrown. The full list of post IDs must be provided if they are being
+    updated, and the previous list of posts will be replaced with the new one.
+    All fields except the [`version`](#versioning) are optional - update
+    concerns only provided fields.
+
+## Getting pool
+- **Request**
+
+    `GET /pool/<id>`
+
+- **Output**
+
+    A [pool resource](#pool).
+
+- **Errors**
+
+    - the pool does not exist
+    - privileges are too low
+
+- **Description**
+
+    Retrieves information about an existing pool.
+
+## Deleting pool
+- **Request**
+
+    `DELETE /pool/<name>`
+
+- **Input**
+
+    ```json5
+    {
+        "version": <version>
+    }
+    ```
+
+- **Output**
+
+    ```json5
+    {}
+    ```
+
+- **Errors**
+
+    - the version is outdated
+    - the pool does not exist
+    - privileges are too low
+
+- **Description**
+
+    Deletes existing pool. All posts in the pool will only have their relation
+    to the pool removed.
+
+## Merging pools
+- **Request**
+
+    `POST /pool-merge/`
+
+- **Input**
+
+    ```json5
+    {
+        "removeVersion":  <source-pool-version>,
+        "remove":         <source-pool-id>,
+        "mergeToVersion": <target-pool-version>,
+        "mergeTo":        <target-pool-id>
+    }
+    ```
+
+- **Output**
+
+    A [pool resource](#pool) containing the merged pool.
+
+- **Errors**
+
+    - the version of either pool is outdated
+    - the source or target pool does not exist
+    - the source pool is the same as the target pool
+    - privileges are too low
+
+- **Description**
+
+    Removes source pool and merges all of its posts with the target pool. Other
+    pool properties such as category and aliases do not get transferred and are
+    discarded.
 
 ## Listing comments
 - **Request**
@@ -2073,6 +2467,68 @@ A text annotation rendered on top of the post.
   will draw it inside the post's upper left quarter.
 - `<text>`: the annotation text. The client should render is as Markdown.
 
+## Pool category
+**Description**
+
+A single pool category. The primary purpose of pool categories is to distinguish
+certain pool types (such as series, relations etc.), which improves user
+experience.
+
+**Structure**
+
+```json5
+{
+    "version": <version>,
+    "name":    <name>,
+    "color":   <color>,
+    "usages":  <usages>
+    "default": <is-default>
+}
+```
+
+**Field meaning**
+
+- `<version>`: resource version. See [versioning](#versioning).
+- `<name>`: the category name.
+- `<color>`: the category color.
+- `<usages>`: how many pools is the given category used with.
+- `<is-default>`: whether the pool category is the default one.
+
+## Pool
+**Description**
+
+An ordered list of posts, with a description and category.
+
+**Structure**
+
+```json5
+{
+    "version":      <version>,
+    "id":           <id>
+    "names":        <names>,
+    "category":     <category>,
+    "posts":        <suggestions>,
+    "creationTime": <creation-time>,
+    "lastEditTime": <last-edit-time>,
+    "postCount":   <post-count>,
+    "description":  <description>
+}
+```
+
+**Field meaning**
+
+- `<version>`: resource version. See [versioning](#versioning).
+- `<id>`: the pool identifier.
+- `<names>`: a list of pool names (aliases).
+- `<category>`: the name of the category the given pool belongs to.
+- `<posts>`: an ordered list of posts, serialized as [micro
+  post resource](#micro-post). Posts are ordered by insertion by default.
+- `<creation-time>`: time the pool was created, formatted as per RFC 3339.
+- `<last-edit-time>`: time the pool was edited, formatted as per RFC 3339.
+- `<post-count>`: the number of posts the pool has.
+- `<description>`: the pool description (instructions how to use, history etc.)
+  The client should render it as Markdown.
+
 ## Comment
 **Description**
 
@@ -2144,6 +2600,7 @@ A snapshot is a version of a database resource.
     | `"tag"`           | first tag name at given time    |
     | `"tag_category"`  | tag category name at given time |
     | `"post"`          | post ID                         |
+    | `"pool"`          | pool ID                         |
 
 - `<issuer>`: a [micro user resource](#micro-user) representing the user who
     has made the change.
