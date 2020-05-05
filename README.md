@@ -20,6 +20,7 @@ scrubbing](http://sjp.pwn.pl/sjp/;2527372). It is pronounced as *shoorubooru*.
 - Tag suggestions
 - Tag implications (adding a tag automatically adds another)
 - Tag aliases
+- Pools and pool categories
 - Duplicate detection
 - Post rating and favoriting; comment rating
 - Polished UI

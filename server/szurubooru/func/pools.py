@@ -38,6 +38,10 @@ class InvalidPoolRelationError(errors.ValidationError):
     pass
 
 
+class InvalidPoolNonexistentPostError(errors.ValidationError):
+    pass
+
+
 def _verify_name_validity(name: str) -> None:
     if util.value_exceeds_column_size(name, model.PoolName.name):
         raise InvalidPoolNameError('Name is too long.')
@@ -63,9 +67,15 @@ def _check_name_intersection(
     return len(set(names1).intersection(names2)) > 0
 
 
-def _check_post_duplication(post_ids: List[int]) -> bool:
-    return len(post_ids) != len(set(post_ids))
-
+def _duplicates(a: List[int]) -> List[int]:
+    seen = set()
+    dupes = []
+    for x in a:
+        if x not in seen:
+            seen.add(x)
+        else:
+            dupes.append(x)
+    return dupes
 
 def sort_pools(pools: List[model.Pool]) -> List[model.Pool]:
     default_category_name = pool_categories.get_default_category_name()
@@ -294,8 +304,17 @@ def update_pool_description(pool: model.Pool, description: str) -> None:
 
 def update_pool_posts(pool: model.Pool, post_ids: List[int]) -> None:
     assert pool
-    if _check_post_duplication(post_ids):
-        raise InvalidPoolDuplicateError('Duplicate post in pool.')
+    dupes = _duplicates(post_ids)
+    if len(dupes) > 0:
+        print(str(dupes))
+        print(str(post_ids))
+        dupes = ', '.join(list(str(x) for x in dupes))
+        raise InvalidPoolDuplicateError('Duplicate post(s) in pool: ' + dupes)
+    ret = posts.get_posts_by_ids(post_ids)
+    if len(post_ids) != len(ret):
+        missing = set(post_ids) - set(post.post_id for post in ret)
+        missing = ', '.join(list(str(x) for x in missing))
+        raise InvalidPoolNonexistentPostError('The following posts do not exist: ' + missing)
     pool.posts.clear()
-    for post in posts.get_posts_by_ids(post_ids):
+    for post in ret:
         pool.posts.append(post)

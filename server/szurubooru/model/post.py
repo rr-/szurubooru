@@ -229,6 +229,7 @@ class Post(Base):
     comments = sa.orm.relationship('Comment', cascade='all, delete-orphan')
     _pools = sa.orm.relationship(
         'PoolPost',
+        cascade='all,delete-orphan',
         lazy='select',
         order_by='PoolPost.order',
         back_populates='post')

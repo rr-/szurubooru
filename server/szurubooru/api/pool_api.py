@@ -34,6 +34,7 @@ def create_pool(
     posts = ctx.get_param_as_int_list('posts', default=[])
 
     pool = pools.create_pool(names, category, posts)
+    pool.last_edit_time = datetime.utcnow()
     pools.update_pool_description(pool, description)
     ctx.session.add(pool)
     ctx.session.flush()

@@ -70,9 +70,9 @@ class Pool(Base):
         order_by='PoolName.order')
     _posts = sa.orm.relationship(
         'PoolPost',
-        back_populates='pool',
         cascade='all,delete-orphan',
         lazy='joined',
+        back_populates='pool',
         order_by='PoolPost.order',
         collection_class=ordering_list('order'))
     posts = association_proxy('_posts', 'post')
