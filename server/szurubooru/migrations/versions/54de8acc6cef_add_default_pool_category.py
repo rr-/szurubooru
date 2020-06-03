@@ -33,6 +33,7 @@ class PoolCategory(Base):
         'version_id_generator': False,
     }
 
+
 def upgrade():
     session = sa.orm.session.Session(bind=op.get_bind())
     if session.query(PoolCategory).count() == 0:

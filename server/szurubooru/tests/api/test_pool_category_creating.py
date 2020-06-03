@@ -26,13 +26,15 @@ def test_creating_category(
             patch('szurubooru.func.pool_categories.update_category_name'), \
             patch('szurubooru.func.snapshots.create'):
         pool_categories.create_category.return_value = category
-        pool_categories.update_category_name.side_effect = _update_category_name
+        pool_categories.update_category_name.side_effect = \
+            _update_category_name
         pool_categories.serialize_category.return_value = 'serialized category'
         result = api.pool_category_api.create_pool_category(
             context_factory(
                 params={'name': 'meta', 'color': 'black'}, user=auth_user))
         assert result == 'serialized category'
-        pool_categories.create_category.assert_called_once_with('meta', 'black')
+        pool_categories.create_category.assert_called_once_with(
+            'meta', 'black')
         snapshots.create.assert_called_once_with(category, auth_user)
 
 

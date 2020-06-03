@@ -17,7 +17,8 @@ def _get_pool(params: Dict[str, str]) -> model.Pool:
 
 
 @rest.routes.get('/pools/?')
-def get_pools(ctx: rest.Context, _params: Dict[str, str] = {}) -> rest.Response:
+def get_pools(
+        ctx: rest.Context, _params: Dict[str, str] = {}) -> rest.Response:
     auth.verify_privilege(ctx.user, 'pools:list')
     return _search_executor.execute_and_serialize(
         ctx, lambda pool: _serialize(ctx, pool))

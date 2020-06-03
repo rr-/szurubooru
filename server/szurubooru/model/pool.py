@@ -20,7 +20,7 @@ class PoolName(Base):
     def __init__(self, name: str, order: int) -> None:
         self.name = name
         self.order = order
-        
+
 
 class PoolPost(Base):
     __tablename__ = 'pool_post'
@@ -46,6 +46,7 @@ class PoolPost(Base):
 
     def __init__(self, post) -> None:
         self.post_id = post.post_id
+
 
 class Pool(Base):
     __tablename__ = 'pool'

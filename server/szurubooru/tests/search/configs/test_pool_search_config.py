@@ -222,7 +222,11 @@ def test_filter_by_edit_time(
     ('post-count-max:1', ['t2']),
 ])
 def test_filter_by_post_count(
-        verify_unpaged, pool_factory, post_factory, input, expected_pool_names):
+        verify_unpaged,
+        pool_factory,
+        post_factory,
+        input,
+        expected_pool_names):
     post1 = post_factory(id=1)
     post2 = post_factory(id=2)
     pool1 = pool_factory(id=1, names=['t1'])
@@ -257,7 +261,11 @@ def test_filter_by_invalid_input(executor, input):
     ('-sort:name,asc', ['t2', 't1']),
     ('-sort:name,desc', ['t1', 't2']),
 ])
-def test_sort_by_name(verify_unpaged, pool_factory, input, expected_pool_names):
+def test_sort_by_name(
+        verify_unpaged,
+        pool_factory,
+        input,
+        expected_pool_names):
     db.session.add(pool_factory(id=2, names=['t2']))
     db.session.add(pool_factory(id=1, names=['t1']))
     db.session.flush()
@@ -306,7 +314,11 @@ def test_sort_by_last_edit_time(
     ('sort:post-count', ['t2', 't1']),
 ])
 def test_sort_by_post_count(
-        verify_unpaged, pool_factory, post_factory, input, expected_pool_names):
+        verify_unpaged,
+        pool_factory,
+        post_factory,
+        input,
+        expected_pool_names):
     post1 = post_factory(id=1)
     post2 = post_factory(id=2)
     pool1 = pool_factory(id=1, names=['t1'])

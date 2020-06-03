@@ -28,7 +28,8 @@ def test_simple_updating(user_factory, pool_category_factory, context_factory):
             patch('szurubooru.func.pool_categories.update_category_name'), \
             patch('szurubooru.func.pool_categories.update_category_color'), \
             patch('szurubooru.func.snapshots.modify'):
-        pool_categories.update_category_name.side_effect = _update_category_name
+        pool_categories.update_category_name.side_effect = \
+            _update_category_name
         pool_categories.serialize_category.return_value = 'serialized category'
         result = api.pool_category_api.update_pool_category(
             context_factory(
@@ -93,7 +94,8 @@ def test_set_as_default(user_factory, pool_category_factory, context_factory):
     db.session.commit()
     with patch('szurubooru.func.pool_categories.serialize_category'), \
             patch('szurubooru.func.pool_categories.set_default_category'):
-        pool_categories.update_category_name.side_effect = _update_category_name
+        pool_categories.update_category_name.side_effect = \
+            _update_category_name
         pool_categories.serialize_category.return_value = 'serialized category'
         result = api.pool_category_api.set_pool_category_as_default(
             context_factory(

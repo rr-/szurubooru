@@ -131,8 +131,12 @@ class PoolSerializer(serialization.BaseSerializer):
         return self.pool.post_count
 
     def serialize_posts(self) -> Any:
-        return [post for post in
-                [posts.serialize_micro_post(rel, None) for rel in self.pool.posts]]
+        return [
+            post for post in [
+                posts.serialize_micro_post(rel, None)
+                for rel in self.pool.posts
+            ]
+        ]
 
 
 def serialize_pool(
@@ -310,7 +314,8 @@ def update_pool_posts(pool: model.Pool, post_ids: List[int]) -> None:
     if len(post_ids) != len(ret):
         missing = set(post_ids) - set(post.post_id for post in ret)
         missing = ', '.join(list(str(x) for x in missing))
-        raise InvalidPoolNonexistentPostError('The following posts do not exist: ' + missing)
+        raise InvalidPoolNonexistentPostError(
+            'The following posts do not exist: ' + missing)
     pool.posts.clear()
     for post in ret:
         pool.posts.append(post)

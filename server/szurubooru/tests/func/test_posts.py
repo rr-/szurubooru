@@ -212,7 +212,9 @@ def test_serialize_post(
                     'posts': [
                         {
                             'id': 1,
-                            'thumbnailUrl': 'http://example.com/generated-thumbnails/1_244c8840887984c4.jpg',
+                            'thumbnailUrl':
+                                'http://example.com/'
+                                'generated-thumbnails/1_244c8840887984c4.jpg',
                         }
                     ],
                     'version': 1,
@@ -228,7 +230,9 @@ def test_serialize_post(
                     'posts': [
                         {
                             'id': 1,
-                            'thumbnailUrl': 'http://example.com/generated-thumbnails/1_244c8840887984c4.jpg',
+                            'thumbnailUrl':
+                                'http://example.com/'
+                                'generated-thumbnails/1_244c8840887984c4.jpg',
                         }
                     ],
                     'version': 1,

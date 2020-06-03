@@ -23,13 +23,13 @@ def test_simple_updating(user_factory, pool_factory, context_factory):
     db.session.add(pool)
     db.session.commit()
     with patch('szurubooru.func.pools.create_pool'), \
-         patch('szurubooru.func.posts.get_posts_by_ids'), \
-         patch('szurubooru.func.pools.update_pool_names'), \
-         patch('szurubooru.func.pools.update_pool_category_name'), \
-         patch('szurubooru.func.pools.update_pool_description'), \
-         patch('szurubooru.func.pools.update_pool_posts'), \
-         patch('szurubooru.func.pools.serialize_pool'), \
-         patch('szurubooru.func.snapshots.modify'):
+            patch('szurubooru.func.posts.get_posts_by_ids'), \
+            patch('szurubooru.func.pools.update_pool_names'), \
+            patch('szurubooru.func.pools.update_pool_category_name'), \
+            patch('szurubooru.func.pools.update_pool_description'), \
+            patch('szurubooru.func.pools.update_pool_posts'), \
+            patch('szurubooru.func.pools.serialize_pool'), \
+            patch('szurubooru.func.snapshots.modify'):
         posts.get_posts_by_ids.return_value = ([], [])
         pools.serialize_pool.return_value = 'serialized pool'
         result = api.pool_api.update_pool(
@@ -72,9 +72,9 @@ def test_omitting_optional_field(
     }
     del params[field]
     with patch('szurubooru.func.pools.create_pool'), \
-         patch('szurubooru.func.pools.update_pool_names'), \
-         patch('szurubooru.func.pools.update_pool_category_name'), \
-         patch('szurubooru.func.pools.serialize_pool'):
+            patch('szurubooru.func.pools.update_pool_names'), \
+            patch('szurubooru.func.pools.update_pool_category_name'), \
+            patch('szurubooru.func.pools.serialize_pool'):
         api.pool_api.update_pool(
             context_factory(
                 params={**params, **{'version': 1}},
@@ -113,11 +113,14 @@ def test_trying_to_create_pools_without_privileges(
     pool = pool_factory(id=1)
     db.session.add(pool)
     db.session.commit()
-    config_injector({'privileges': {
-        'pools:create': model.User.RANK_ADMINISTRATOR,
-        'pools:edit:posts': model.User.RANK_REGULAR,
-    },
-                     'delete_source_files': False})
+    config_injector(
+        {
+            'privileges': {
+                'pools:create': model.User.RANK_ADMINISTRATOR,
+                'pools:edit:posts': model.User.RANK_REGULAR,
+            },
+            'delete_source_files': False,
+        })
     with patch('szurubooru.func.posts.get_posts_by_ids'):
         posts.get_posts_by_ids.return_value = ([], ['new-post'])
         with pytest.raises(errors.AuthError):

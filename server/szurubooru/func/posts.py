@@ -308,7 +308,6 @@ class PostSerializer(serialization.BaseSerializer):
                 key=lambda pool: pool.creation_time)]
 
 
-
 def serialize_post(
         post: Optional[model.Post],
         auth_user: model.User,

@@ -14,6 +14,7 @@ down_revision = '1e280b5d5df1'
 branch_labels = None
 depends_on = None
 
+
 def upgrade():
     op.create_table(
         'pool_category',
@@ -53,6 +54,7 @@ def upgrade():
         sa.ForeignKeyConstraint(['pool_id'], ['pool.id'], ondelete='CASCADE'),
         sa.ForeignKeyConstraint(['post_id'], ['post.id'], ondelete='CASCADE'),
         sa.PrimaryKeyConstraint('pool_id', 'post_id'))
+
 
 def downgrade():
     op.drop_index(op.f('ix_pool_name_ord'), table_name='pool_name')

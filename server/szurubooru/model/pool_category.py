@@ -18,7 +18,8 @@ class PoolCategory(Base):
         self.name = name
 
     pool_count = sa.orm.column_property(
-        sa.sql.expression.select([sa.sql.expression.func.count('Pool.pool_id')])
+        sa.sql.expression.select(
+            [sa.sql.expression.func.count('Pool.pool_id')])
         .where(Pool.category_id == pool_category_id)
         .correlate_except(sa.table('Pool')))
 

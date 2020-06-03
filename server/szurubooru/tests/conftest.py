@@ -214,7 +214,8 @@ def pool_category_factory():
 
 @pytest.fixture
 def pool_factory():
-    def factory(id=None, names=None, description=None, category=None, time=None):
+    def factory(
+            id=None, names=None, description=None, category=None, time=None):
         if not category:
             category = model.PoolCategory(get_unique_name())
             db.session.add(category)
