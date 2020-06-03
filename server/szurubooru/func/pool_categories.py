@@ -195,5 +195,5 @@ def delete_category(category: model.PoolCategory) -> None:
     if (category.pool_count or 0) > 0:
         raise PoolCategoryIsInUseError(
             'Pool category has some usages and cannot be deleted. ' +
-            'Please remove this category from relevant pools first..')
+            'Please remove this category from relevant pools first.')
     db.session.delete(category)

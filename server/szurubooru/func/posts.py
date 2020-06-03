@@ -300,7 +300,7 @@ class PostSerializer(serialization.BaseSerializer):
                 self.post.comments,
                 key=lambda comment: comment.creation_time)]
 
-    def serialize_pools(self) -> Any:
+    def serialize_pools(self) -> List[Any]:
         return [
             pools.serialize_pool(pool)
             for pool in sorted(
@@ -343,7 +343,7 @@ def get_post_by_id(post_id: int) -> model.Post:
     return post
 
 
-def get_posts_by_ids(ids: List[int]) -> List[model.Pool]:
+def get_posts_by_ids(ids: List[int]) -> List[model.Post]:
     if len(ids) == 0:
         return []
     posts = (

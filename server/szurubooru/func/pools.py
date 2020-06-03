@@ -77,6 +77,7 @@ def _duplicates(a: List[int]) -> List[int]:
             dupes.append(x)
     return dupes
 
+
 def sort_pools(pools: List[model.Pool]) -> List[model.Pool]:
     default_category_name = pool_categories.get_default_category_name()
     return sorted(
@@ -131,8 +132,7 @@ class PoolSerializer(serialization.BaseSerializer):
 
     def serialize_posts(self) -> Any:
         return [post for post in
-                [posts.serialize_micro_post(rel, None)
-                 for rel in self.pool.posts]]
+                [posts.serialize_micro_post(rel, None) for rel in self.pool.posts]]
 
 
 def serialize_pool(
@@ -221,7 +221,7 @@ def merge_pools(source_pool: model.Pool, target_pool: model.Pool) -> None:
     if source_pool.pool_id == target_pool.pool_id:
         raise InvalidPoolRelationError('Cannot merge pool with itself.')
 
-    def merge_posts(source_pool_id: int, target_pool_id: int) -> None:
+    def merge_pool_posts(source_pool_id: int, target_pool_id: int) -> None:
         alias1 = model.PoolPost
         alias2 = sa.orm.util.aliased(model.PoolPost)
         update_stmt = (
@@ -236,7 +236,7 @@ def merge_pools(source_pool: model.Pool, target_pool: model.Pool) -> None:
         update_stmt = update_stmt.values(pool_id=target_pool_id)
         db.session.execute(update_stmt)
 
-    merge_posts(source_pool.pool_id, target_pool.pool_id)
+    merge_pool_posts(source_pool.pool_id, target_pool.pool_id)
     delete(source_pool)
 
 
@@ -304,8 +304,6 @@ def update_pool_posts(pool: model.Pool, post_ids: List[int]) -> None:
     assert pool
     dupes = _duplicates(post_ids)
     if len(dupes) > 0:
-        print(str(dupes))
-        print(str(post_ids))
         dupes = ', '.join(list(str(x) for x in dupes))
         raise InvalidPoolDuplicateError('Duplicate post(s) in pool: ' + dupes)
     ret = posts.get_posts_by_ids(post_ids)

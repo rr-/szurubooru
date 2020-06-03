@@ -6,12 +6,12 @@
         </section>
 
         <section>
-        Aliases:<br/>
-        <ul><!--
-            --><% for (let name of ctx.pool.names.slice(1)) { %><!--
-                --><li><%= ctx.makePoolLink(ctx.pool.id, false, false, ctx.pool, name) %></li><!--
-            --><% } %><!--
-        --></ul>
+            Aliases:<br/>
+            <ul>
+                <% for (let name of ctx.pool.names.slice(1)) { %>
+                <li><%= ctx.makePoolLink(ctx.pool.id, false, false, ctx.pool, name) %></li>
+                <% } %>
+            </ul>
         </section>
     </section>
 

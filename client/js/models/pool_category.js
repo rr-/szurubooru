@@ -17,7 +17,7 @@ class PoolCategory extends events.EventTarget {
 
     get name()        { return this._name; }
     get color()       { return this._color; }
-    get poolCount()    { return this._poolCount; }
+    get poolCount()   { return this._poolCount; }
     get isDefault()   { return this._isDefault; }
     get isTransient() { return !this._origName; }
 

@@ -54,8 +54,7 @@ class PoolController {
             this._view.addEventListener('submit', e => this._evtUpdate(e));
             this._view.addEventListener('merge', e => this._evtMerge(e));
             this._view.addEventListener('delete', e => this._evtDelete(e));
-        },
-                  error => {
+        }, error => {
             this._view = new EmptyView();
             this._view.showError(error.message);
         });
@@ -68,9 +67,7 @@ class PoolController {
     _evtSaved(e, section) {
         misc.disableExitConfirmation();
         if (this._name !== e.detail.pool.names[0]) {
-            router.replace(
-              uri.formatClientLink('pool', e.detail.pool.id, section),
-              null, false);
+            router.replace(uri.formatClientLink('pool', e.detail.pool.id, section), null, false);
         }
     }
 
@@ -87,9 +84,9 @@ class PoolController {
             e.detail.pool.description = e.detail.description;
         }
         if (e.detail.posts !== undefined) {
-            e.detail.pool.posts.clear()
+            e.detail.pool.posts.clear();
             for (let post_id of e.detail.posts) {
-                e.detail.pool.posts.add(Post.fromResponse({ id: parseInt(post_id) }))
+                e.detail.pool.posts.add(Post.fromResponse({ id: parseInt(post_id) }));
             }
         }
         e.detail.pool.save().then(() => {

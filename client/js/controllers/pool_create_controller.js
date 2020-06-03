@@ -16,8 +16,7 @@ class PoolCreateController {
             return;
         }
 
-        PoolCategoryList.get()
-          .then(poolCategoriesResponse => {
+        PoolCategoryList.get().then(poolCategoriesResponse => {
                 const categories = {};
                 for (let category of poolCategoriesResponse.results) {
                     categories[category.name] = category.name;
