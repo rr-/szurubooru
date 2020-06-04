@@ -7,6 +7,7 @@ RUN \
         dumb-init \
         ffmpeg \
         py3-waitress \
+        py3-setuptools \
         py3-pip \
         # from requirements.txt:
         py3-yaml \
