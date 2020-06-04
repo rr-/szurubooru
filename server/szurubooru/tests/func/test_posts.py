@@ -991,7 +991,7 @@ def test_search_by_image(post_factory, config_injector, read_asset):
     result1 = posts.search_by_image(read_asset('jpeg-similar.jpg'))
     assert len(result1) == 1
     result1_distance, result1_post = result1[0]
-    assert abs(result1_distance - 0.20599895341812172) < 1e-8
+    assert abs(result1_distance - 0.19713075553164386) < 1e-8
     assert result1_post.post_id == post.post_id
 
     result2 = posts.search_by_image(read_asset('png.png'))

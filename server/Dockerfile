@@ -1,4 +1,4 @@
-FROM alpine:latest
+FROM alpine:3.12
 WORKDIR /opt/app
 
 RUN \
@@ -7,6 +7,7 @@ RUN \
         dumb-init \
         ffmpeg \
         py3-waitress \
+        py3-pip \
         # from requirements.txt:
         py3-yaml \
         py3-psycopg2 \
@@ -22,7 +23,7 @@ RUN \
         alembic \
         "coloredlogs==5.0" \
         youtube-dl \
-    && exit 0
+    && apk --no-cache del py3-pip
 
 ARG PUID=1000
 ARG PGID=1000

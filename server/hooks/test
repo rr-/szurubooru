@@ -11,6 +11,7 @@ FROM ${BASE_IMAGE}
 WORKDIR /opt/app
 USER root
 RUN apk --no-cache add \
+		py3-pip \
 		py3-pytest \
 		py3-pytest-cov \
 		postgresql \
