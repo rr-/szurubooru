@@ -54,6 +54,6 @@ class CommentListControl extends events.EventTarget {
     _evtRemove(e) {
         this._uninstallCommentNode(e.detail.comment);
     }
-};
+}
 
 module.exports = CommentListControl;

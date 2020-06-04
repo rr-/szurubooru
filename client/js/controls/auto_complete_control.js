@@ -121,7 +121,9 @@ class AutoCompleteControl {
         document.body.appendChild(this._suggestionDiv);
 
         views.monitorNodeRemoval(
-            this._sourceInputNode, () => { this._uninstall(); });
+            this._sourceInputNode, () => {
+                this._uninstall();
+            });
     }
 
     _uninstall() {
@@ -137,13 +139,21 @@ class AutoCompleteControl {
             if (key === KEY_ESCAPE) {
                 func = this.hide;
             } else if (key === KEY_TAB && shift) {
-                func = () => { this._selectPrevious(); };
+                func = () => {
+                    this._selectPrevious();
+                };
             } else if (key === KEY_TAB && !shift) {
-                func = () => { this._selectNext(); };
+                func = () => {
+                    this._selectNext();
+                };
             } else if (key === KEY_UP) {
-                func = () => { this._selectPrevious(); };
+                func = () => {
+                    this._selectPrevious();
+                };
             } else if (key === KEY_DOWN) {
-                func = () => { this._selectNext(); };
+                func = () => {
+                    this._selectNext();
+                };
             } else if (key === KEY_RETURN && this._activeResult >= 0) {
                 func = () => {
                     this._confirm(this._getActiveSuggestion());
@@ -165,13 +175,17 @@ class AutoCompleteControl {
         } else {
             window.clearTimeout(this._showTimeout);
             this._showTimeout = window.setTimeout(
-                () => { this._showOrHide(); }, 250);
+                () => {
+                    this._showOrHide();
+                }, 250);
         }
     }
 
     _evtBlur(e) {
         window.clearTimeout(this._showTimeout);
-        window.setTimeout(() => { this.hide(); }, 50);
+        window.setTimeout(() => {
+            this.hide();
+        }, 50);
     }
 
     _getActiveSuggestion() {
@@ -261,10 +275,10 @@ class AutoCompleteControl {
         // choose where to view the suggestions: if there's more space above
         // the input - draw the suggestions above it, otherwise below
         const direction =
-            inputRect.top + inputRect.height / 2 < viewPortHeight / 2 ? 1 : -1;
+            inputRect.top + (inputRect.height / 2) < viewPortHeight / 2 ? 1 : -1;
 
         let x = inputRect.left - bodyRect.left;
-        let y = direction == 1 ?
+        let y = direction === 1 ?
             inputRect.bottom - bodyRect.top - verticalShift :
             inputRect.top - bodyRect.top - listRect.height + verticalShift;
 
@@ -276,7 +290,7 @@ class AutoCompleteControl {
             const prevHeight = listRect.height;
             listRect = this._suggestionDiv.getBoundingClientRect();
             const heightDelta = prevHeight - listRect.height;
-            if (direction == -1) {
+            if (direction === -1) {
                 y += heightDelta;
             }
         }
@@ -296,6 +310,6 @@ class AutoCompleteControl {
             activeItem.classList.add('active');
         }
     }
-};
+}
 
 module.exports = AutoCompleteControl;

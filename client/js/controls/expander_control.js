@@ -39,6 +39,7 @@ class ExpanderControl {
         this._syncIcon();
     }
 
+    // eslint-disable-next-line accessor-pairs
     set title(newTitle) {
         if (this._expanderNode) {
             this._expanderNode

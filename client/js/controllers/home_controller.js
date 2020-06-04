@@ -41,10 +41,10 @@ class HomeController {
     showError(message) {
         this._homeView.showError(message);
     }
-};
+}
 
 module.exports = router => {
     router.enter([], (ctx, next) => {
         ctx.controller = new HomeController();
     });
-};
+}

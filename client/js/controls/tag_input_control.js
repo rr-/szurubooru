@@ -51,7 +51,7 @@ class SuggestionList {
     }
 
     set(suggestion, weight) {
-        if (this._suggestions.hasOwnProperty(suggestion)) {
+        if (Object.prototype.hasOwnProperty.call(this._suggestions, suggestion)) {
             weight = Math.max(weight, this._suggestions[suggestion]);
         }
         this._suggestions[suggestion] = weight;
@@ -72,7 +72,7 @@ class SuggestionList {
         tuples.sort((a, b) => {
             let weightDiff = b[1] - a[1];
             let nameDiff = a[0].localeCompare(b[0]);
-            return weightDiff == 0 ? nameDiff : weightDiff;
+            return weightDiff === 0 ? nameDiff : weightDiff;
         });
         return tuples.map(tuple => {
             return {tagName: tuple[0], weight: tuple[1]};
@@ -102,7 +102,7 @@ class TagInputControl extends events.EventTarget {
                 },
                 confirm: tag => {
                     this._tagInputNode.value = '';
-                    // XXX: tags from autocomplete don't contain implications
+                    // note: tags from autocomplete don't contain implications
                     // so they need to be looked up in API
                     this.addTagByName(tag.names[0], SOURCE_USER_INPUT);
                 },
@@ -160,7 +160,7 @@ class TagInputControl extends events.EventTarget {
     }
 
     addTag(tag, source) {
-        if (source != SOURCE_INIT && this.tags.isTaggedWith(tag.names[0])) {
+        if (source !== SOURCE_INIT && this.tags.isTaggedWith(tag.names[0])) {
             const listItemNode = this._getListItemNode(tag);
             if (source !== SOURCE_IMPLICATION) {
                 listItemNode.classList.add('duplicate');
@@ -240,7 +240,7 @@ class TagInputControl extends events.EventTarget {
     }
 
     _evtInputKeyDown(e) {
-        if (e.which == KEY_RETURN || e.which == KEY_SPACE) {
+        if (e.which === KEY_RETURN || e.which === KEY_SPACE) {
             e.preventDefault();
             this._hideAutoComplete();
             this.addTagByText(this._tagInputNode.value, SOURCE_USER_INPUT);
@@ -328,8 +328,8 @@ class TagInputControl extends events.EventTarget {
             return;
         }
         api.get(
-                uri.formatApiLink('tag-siblings', tag.names[0]),
-                {noProgress: true})
+            uri.formatApiLink('tag-siblings', tag.names[0]),
+            {noProgress: true})
             .then(response => {
                 return Promise.resolve(response.results);
             }, response => {

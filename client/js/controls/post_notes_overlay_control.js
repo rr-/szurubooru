@@ -48,7 +48,7 @@ function _getNoteCentroid(note) {
         const y0 = note.polygon.at(i).y;
         const x1 = note.polygon.at((i + 1) % vertexCount).x;
         const y1 = note.polygon.at((i + 1) % vertexCount).y;
-        const a = x0 * y1 - x1 * y0;
+        const a = (x0 * y1) - (x1 * y0);
         signedArea += a;
         centroid.x += (x0 + x1) * a;
         centroid.y += (y0 + y1) * a;
@@ -188,12 +188,12 @@ class SelectedState extends ActiveState {
     evtCanvasKeyDown(e) {
         const delta = e.ctrlKey ? 10 : 1;
         const offsetMap = {
-            [KEY_LEFT]:  [-delta, 0],
-            [KEY_UP]:    [0, -delta],
-            [KEY_DOWN]:  [0, delta],
+            [KEY_LEFT]: [-delta, 0],
+            [KEY_UP]: [0, -delta],
+            [KEY_DOWN]: [0, delta],
             [KEY_RIGHT]: [delta, 0],
         };
-        if (offsetMap.hasOwnProperty(e.which)) {
+        if (Object.prototype.hasOwnProperty.call(offsetMap, e.witch)) {
             e.stopPropagation();
             e.stopImmediatePropagation();
             e.preventDefault();
@@ -283,8 +283,8 @@ class SelectedState extends ActiveState {
         const origin = _getNoteCentroid(this._note);
         const originalSize = _getNoteSize(this._note);
         const targetSize = new Point(
-            originalSize.x + x / this._control.boundingBox.width,
-            originalSize.y + y / this._control.boundingBox.height);
+            originalSize.x + (x / this._control.boundingBox.width),
+            originalSize.y + (y / this._control.boundingBox.height));
         const scale = new Point(
             targetSize.x / originalSize.x,
             targetSize.y / originalSize.y);
@@ -305,7 +305,7 @@ class MovingPointState extends ActiveState {
     }
 
     evtCanvasKeyDown(e) {
-        if (e.which == KEY_ESCAPE) {
+        if (e.which === KEY_ESCAPE) {
             this._notePoint.x = this._originalNotePoint.x;
             this._notePoint.y = this._originalNotePoint.y;
             this._control._state = new SelectedState(this._control, this._note);
@@ -333,7 +333,7 @@ class MovingNoteState extends ActiveState {
     }
 
     evtCanvasKeyDown(e) {
-        if (e.which == KEY_ESCAPE) {
+        if (e.which === KEY_ESCAPE) {
             for (let i of misc.range(this._note.polygon.length)) {
                 this._note.polygon.at(i).x = this._originalPolygon[i].x;
                 this._note.polygon.at(i).y = this._originalPolygon[i].y;
@@ -366,7 +366,7 @@ class ScalingNoteState extends ActiveState {
     }
 
     evtCanvasKeyDown(e) {
-        if (e.which == KEY_ESCAPE) {
+        if (e.which === KEY_ESCAPE) {
             for (let i of misc.range(this._note.polygon.length)) {
                 this._note.polygon.at(i).x = this._originalPolygon[i].x;
                 this._note.polygon.at(i).y = this._originalPolygon[i].y;
@@ -384,12 +384,12 @@ class ScalingNoteState extends ActiveState {
             const originalPolygonPoint = this._originalPolygon[i];
             polygonPoint.x =
                 originalMousePoint.x +
-                (originalPolygonPoint.x - originalMousePoint.x) *
-                (1 + (mousePoint.x - originalMousePoint.x) / originalSize.x);
+                ((originalPolygonPoint.x - originalMousePoint.x) *
+                (1 + ((mousePoint.x - originalMousePoint.x) / originalSize.x)));
             polygonPoint.y =
                 originalMousePoint.y +
-                (originalPolygonPoint.y - originalMousePoint.y) *
-                (1 + (mousePoint.y - originalMousePoint.y) / originalSize.y);
+                ((originalPolygonPoint.y - originalMousePoint.y) *
+                (1 + ((mousePoint.y - originalMousePoint.y) / originalSize.y)));
         }
     }
 
@@ -466,12 +466,12 @@ class DrawingPolygonState extends ActiveState {
     }
 
     evtCanvasKeyDown(e) {
-        if (e.which == KEY_ESCAPE) {
+        if (e.which === KEY_ESCAPE) {
             this._note.polygon.remove(this._note.polygon.secondLastPoint);
             if (this._note.polygon.length === 1) {
                 this._cancel();
             }
-        } else if (e.which == KEY_RETURN) {
+        } else if (e.which === KEY_RETURN) {
             this._finish();
         }
     }
@@ -674,13 +674,13 @@ class PostNotesOverlayControl extends events.EventTarget {
         const x = (
             -bodyRect.left +
             svgRect.left +
-            svgRect.width * centroid.x -
-            noteRect.width / 2);
+            (svgRect.width * centroid.x) -
+            (noteRect.width / 2));
         const y = (
             -bodyRect.top +
             svgRect.top +
-            svgRect.height * centroid.y -
-            noteRect.height / 2);
+            (svgRect.height * centroid.y) -
+            (noteRect.height / 2));
         this._textNode.style.left = x + 'px';
         this._textNode.style.top = y + 'px';
     }

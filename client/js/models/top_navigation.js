@@ -12,7 +12,7 @@ class TopNavigationItem {
         this.imageUrl = imageUrl === undefined ? null : imageUrl;
         this.key = null;
     }
-};
+}
 
 class TopNavigation extends events.EventTarget {
     constructor() {
@@ -72,7 +72,7 @@ class TopNavigation extends events.EventTarget {
     hide(key) {
         this.get(key).available = false;
     }
-};
+}
 
 function _makeTopNavigation() {
     const ret = new TopNavigation();

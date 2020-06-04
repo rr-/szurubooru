@@ -7,22 +7,41 @@ const events = require('../events.js');
 class TagCategory extends events.EventTarget {
     constructor() {
         super();
-        this._name      = '';
-        this._color     = '#000000';
-        this._tagCount  = 0;
+        this._name = '';
+        this._color = '#000000';
+        this._tagCount = 0;
         this._isDefault = false;
-        this._origName  = null;
+        this._origName = null;
         this._origColor = null;
     }
 
-    get name()        { return this._name; }
-    get color()       { return this._color; }
-    get tagCount()    { return this._tagCount; }
-    get isDefault()   { return this._isDefault; }
-    get isTransient() { return !this._origName; }
+    get name() {
+        return this._name;
+    }
 
-    set name(value)   { this._name = value; }
-    set color(value)  { this._color = value; }
+    get color() {
+        return this._color;
+    }
+
+    get tagCount() {
+        return this._tagCount;
+    }
+
+    get isDefault() {
+        return this._isDefault;
+    }
+
+    get isTransient() {
+        return !this._origName;
+    }
+
+    set name(value) {
+        this._name = value;
+    }
+
+    set color(value) {
+        this._color = value;
+    }
 
     static fromResponse(response) {
         const ret = new TagCategory();
@@ -64,8 +83,8 @@ class TagCategory extends events.EventTarget {
 
     delete() {
         return api.delete(
-                uri.formatApiLink('tag-category', this._origName),
-                {version: this._version})
+            uri.formatApiLink('tag-category', this._origName),
+            {version: this._version})
             .then(response => {
                 this.dispatchEvent(new CustomEvent('delete', {
                     detail: {
@@ -77,12 +96,12 @@ class TagCategory extends events.EventTarget {
     }
 
     _updateFromResponse(response) {
-        this._version   = response.version;
-        this._name      = response.name;
-        this._color     = response.color;
+        this._version = response.version;
+        this._name = response.name;
+        this._color = response.color;
         this._isDefault = response.default;
-        this._tagCount  = response.usages;
-        this._origName  = this.name;
+        this._tagCount = response.usages;
+        this._origName = this.name;
         this._origColor = this.color;
     }
 }

@@ -33,7 +33,7 @@ class TagEditView extends events.EventTarget {
         }
 
         for (let node of this._formNode.querySelectorAll(
-                'input, select, textarea')) {
+            'input, select, textarea')) {
             node.addEventListener(
                 'change', e => {
                     this.dispatchEvent(new CustomEvent('change'));

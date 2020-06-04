@@ -48,7 +48,7 @@ class TildeWrapper extends BaseMarkdownWrapper {
     }
 }
 
-//prevent ^#... from being treated as headers, due to tag permalinks
+// prevent ^#... from being treated as headers, due to tag permalinks
 class TagPermalinkFixWrapper extends BaseMarkdownWrapper {
     preprocess(text) {
         return text.replace(/^#/g, '%%%#');
@@ -59,7 +59,7 @@ class TagPermalinkFixWrapper extends BaseMarkdownWrapper {
     }
 }
 
-//post, user and tags permalinks
+// post, user and tags permalinks
 class EntityPermalinkWrapper extends BaseMarkdownWrapper {
     preprocess(text) {
         // URL-based permalinks
@@ -127,7 +127,7 @@ function createRenderer() {
     const renderer = new marked.Renderer();
     renderer.image = (href, title, alt) => {
         let [_, url, width, height] =
-            /^(.+?)(?:\s=\s*(\d*)\s*x\s*(\d*)\s*)?$/.exec(href);
+            (/^(.+?)(?:\s=\s*(\d*)\s*x\s*(\d*)\s*)?$/).exec(href);
         let res = '<img src="' + sanitize(url) + '" alt="' + sanitize(alt);
         if (width) {
             res += '" width="' + width;

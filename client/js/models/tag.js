@@ -20,18 +20,49 @@ class Tag extends events.EventTarget {
         this._updateFromResponse({});
     }
 
-    get names()             { return this._names; }
-    get category()          { return this._category; }
-    get description()       { return this._description; }
-    get suggestions()       { return this._suggestions; }
-    get implications()      { return this._implications; }
-    get postCount()         { return this._postCount; }
-    get creationTime()      { return this._creationTime; }
-    get lastEditTime()      { return this._lastEditTime; }
+    get names() {
+        return this._names;
+    }
 
-    set names(value)        { this._names = value; }
-    set category(value)     { this._category = value; }
-    set description(value)  { this._description = value; }
+    get category() {
+        return this._category;
+    }
+
+    get description() {
+        return this._description;
+    }
+
+    get suggestions() {
+        return this._suggestions;
+    }
+
+    get implications() {
+        return this._implications;
+    }
+
+    get postCount() {
+        return this._postCount;
+    }
+
+    get creationTime() {
+        return this._creationTime;
+    }
+
+    get lastEditTime() {
+        return this._lastEditTime;
+    }
+
+    set names(value) {
+        this._names = value;
+    }
+
+    set category(value) {
+        this._category = value;
+    }
+
+    set description(value) {
+        this._description = value;
+    }
 
     static fromResponse(response) {
         const ret = new Tag();
@@ -113,8 +144,8 @@ class Tag extends events.EventTarget {
 
     delete() {
         return api.delete(
-                uri.formatApiLink('tag', this._origName),
-                {version: this._version})
+            uri.formatApiLink('tag', this._origName),
+            {version: this._version})
             .then(response => {
                 this.dispatchEvent(new CustomEvent('delete', {
                     detail: {
@@ -127,14 +158,14 @@ class Tag extends events.EventTarget {
 
     _updateFromResponse(response) {
         const map = {
-            _version:      response.version,
-            _origName:     response.names ? response.names[0] : null,
-            _names:        response.names,
-            _category:     response.category,
-            _description:  response.description,
+            _version: response.version,
+            _origName: response.names ? response.names[0] : null,
+            _names: response.names,
+            _category: response.category,
+            _description: response.description,
             _creationTime: response.creationTime,
             _lastEditTime: response.lastEditTime,
-            _postCount:    response.usages || 0,
+            _postCount: response.usages || 0,
         };
 
         for (let obj of [this, this._orig]) {
@@ -145,6 +176,6 @@ class Tag extends events.EventTarget {
         Object.assign(this, map);
         Object.assign(this._orig, map);
     }
-};
+}
 
 module.exports = Tag;

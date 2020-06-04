@@ -9,10 +9,10 @@ class NotFoundController {
         topNavigation.setTitle('Not found');
         this._notFoundView = new NotFoundView(path);
     }
-};
+}
 
 module.exports = router => {
     router.enter(null, (ctx, next) => {
         ctx.controller = new NotFoundController(ctx.canonicalPath);
     });
-};
+}

@@ -36,22 +36,21 @@ class TagAutoCompleteControl extends AutoCompleteControl {
             const term = misc.escapeSearchTerm(text);
             const query = (
                 text.length < minLengthForPartialSearch
-                ? term + '*'
-                : '*' + term + '*') + ' sort:usages';
+                    ? term + '*'
+                    : '*' + term + '*') + ' sort:usages';
 
             return new Promise((resolve, reject) => {
                 TagList.search(
-                    query, 0, this._options.maxResults,
-                    ['names', 'category', 'usages'])
-                .then(
-                    response => resolve(
-                        _tagListToMatches(response.results, this._options)),
-                    reject);
+                    query, 0, this._options.maxResults, ['names', 'category', 'usages'])
+                    .then(
+                        response => resolve(
+                            _tagListToMatches(response.results, this._options)),
+                        reject);
             });
         };
 
         super(input, options);
     }
-};
+}
 
 module.exports = TagAutoCompleteControl;

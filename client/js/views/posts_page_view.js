@@ -100,7 +100,7 @@ class PostsPageView extends events.EventTarget {
             if (tagFlipperNode) {
                 let tagged = true;
                 for (let tag of this._ctx.bulkEdit.tags) {
-                    tagged = tagged & post.tags.isTaggedWith(tag);
+                    tagged &= post.tags.isTaggedWith(tag);
                 }
                 tagFlipperNode.classList.toggle('tagged', tagged);
             }
@@ -109,7 +109,7 @@ class PostsPageView extends events.EventTarget {
             if (safetyFlipperNode) {
                 for (let linkNode of safetyFlipperNode.querySelectorAll('a')) {
                     const safety = linkNode.getAttribute('data-safety');
-                    linkNode.classList.toggle('active', post.safety == safety);
+                    linkNode.classList.toggle('active', post.safety === safety);
                 }
             }
         }

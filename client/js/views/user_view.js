@@ -37,7 +37,7 @@ class UserView extends events.EventTarget {
         }
 
         ctx.hostNode = this._hostNode.querySelector('#user-content-holder');
-        if (ctx.section == 'edit') {
+        if (ctx.section === 'edit') {
             if (!this._ctx.canEditAnything) {
                 this._view = new EmptyView();
                 this._view.showError(
@@ -46,7 +46,7 @@ class UserView extends events.EventTarget {
                 this._view = new UserEditView(ctx);
                 events.proxyEvent(this._view, this, 'submit');
             }
-        } else if (ctx.section == 'list-tokens') {
+        } else if (ctx.section === 'list-tokens') {
             if (!this._ctx.canListTokens) {
                 this._view = new EmptyView();
                 this._view.showError(
@@ -57,7 +57,7 @@ class UserView extends events.EventTarget {
                 events.proxyEvent(this._view, this, 'submit', 'create-token');
                 events.proxyEvent(this._view, this, 'update', 'update-token');
             }
-        } else if (ctx.section == 'delete') {
+        } else if (ctx.section === 'delete') {
             if (!this._ctx.canDelete) {
                 this._view = new EmptyView();
                 this._view.showError(

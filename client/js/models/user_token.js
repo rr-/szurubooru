@@ -11,16 +11,41 @@ class UserToken extends events.EventTarget {
         this._updateFromResponse({});
     }
 
-    get token()          { return this._token; }
-    get note()           { return this._note; }
-    get enabled()        { return this._enabled; }
-    get version()        { return this._version; }
-    get expirationTime() { return this._expirationTime; }
-    get creationTime()   { return this._creationTime; }
-    get lastEditTime()   { return this._lastEditTime; }
-    get lastUsageTime()  { return this._lastUsageTime; }
+    get token() {
+        return this._token;
+    }
 
-    set note(value)      { this._note = value; }
+    get note() {
+        return this._note;
+    }
+
+    get enabled() {
+        return this._enabled;
+    }
+
+    get version() {
+        return this._version;
+    }
+
+    get expirationTime() {
+        return this._expirationTime;
+    }
+
+    get creationTime() {
+        return this._creationTime;
+    }
+
+    get lastEditTime() {
+        return this._lastEditTime;
+    }
+
+    get lastUsageTime() {
+        return this._lastUsageTime;
+    }
+
+    set note(value) {
+        this._note = value;
+    }
 
     static fromResponse(response) {
         if (typeof response.results !== 'undefined') {
@@ -98,14 +123,14 @@ class UserToken extends events.EventTarget {
 
     _updateFromResponse(response) {
         const map = {
-            _token:           response.token,
-            _note:            response.note,
-            _enabled:         response.enabled,
-            _expirationTime:  response.expirationTime,
-            _version:         response.version,
-            _creationTime:    response.creationTime,
-            _lastEditTime:    response.lastEditTime,
-            _lastUsageTime:   response.lastUsageTime,
+            _token: response.token,
+            _note: response.note,
+            _enabled: response.enabled,
+            _expirationTime: response.expirationTime,
+            _version: response.version,
+            _creationTime: response.creationTime,
+            _lastEditTime: response.lastEditTime,
+            _lastUsageTime: response.lastUsageTime,
         };
 
         Object.assign(this, map);

@@ -8,8 +8,8 @@ const User = require('./user.js');
 class UserList extends AbstractList {
     static search(text, offset, limit) {
         return api.get(
-                uri.formatApiLink(
-                    'users', {query: text, offset: offset, limit: limit}))
+            uri.formatApiLink(
+                'users', {query: text, offset: offset, limit: limit}))
             .then(response => {
                 return Promise.resolve(Object.assign(
                     {},

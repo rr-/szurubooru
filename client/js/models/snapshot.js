@@ -10,12 +10,29 @@ class Snapshot extends events.EventTarget {
         this._updateFromResponse({});
     }
 
-    get operation() { return this._operation; }
-    get type()      { return this._type; }
-    get id()        { return this._id; }
-    get user()      { return this._user; }
-    get data()      { return this._data; }
-    get time()      { return this._time; }
+    get operation() {
+        return this._operation;
+    }
+
+    get type() {
+        return this._type;
+    }
+
+    get id() {
+        return this._id;
+    }
+
+    get user() {
+        return this._user;
+    }
+
+    get data() {
+        return this._data;
+    }
+
+    get time() {
+        return this._time;
+    }
 
     static fromResponse(response) {
         const ret = new Snapshot();
@@ -26,11 +43,11 @@ class Snapshot extends events.EventTarget {
     _updateFromResponse(response) {
         const map = {
             _operation: response.operation,
-            _type:      response.type,
-            _id:        response.id,
-            _user:      response.user,
-            _data:      response.data,
-            _time:      response.time,
+            _type: response.type,
+            _id: response.id,
+            _user: response.user,
+            _data: response.data,
+            _time: response.time,
         };
 
         Object.assign(this, map);

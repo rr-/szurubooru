@@ -18,13 +18,13 @@ class PostList extends AbstractList {
 
     static search(text, offset, limit, fields) {
         return api.get(
-                uri.formatApiLink(
-                    'posts', {
-                        query: PostList._decorateSearchQuery(text || ''),
-                        offset: offset,
-                        limit: limit,
-                        fields: fields.join(','),
-                    }))
+            uri.formatApiLink(
+                'posts', {
+                    query: PostList._decorateSearchQuery(text || ''),
+                    offset: offset,
+                    limit: limit,
+                    fields: fields.join(','),
+                }))
             .then(response => {
                 return Promise.resolve(Object.assign(
                     {},

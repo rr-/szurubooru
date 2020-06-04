@@ -51,7 +51,7 @@ class Context {
     replaceState() {
         history.replaceState(this.state, this.title, this.canonicalPath);
     }
-};
+}
 
 class Route {
     constructor(path) {
@@ -119,7 +119,7 @@ class Route {
 
         return true;
     }
-};
+}
 
 class Router {
     constructor() {
@@ -217,14 +217,14 @@ class Router {
         if (current === ctx.canonicalPath) {
             return;
         }
-        router.stop();
+        this.stop();
         location.href = ctx.canonicalPath;
     }
 
     get url() {
         return location.pathname + location.search + location.hash;
     }
-};
+}
 
 const _onPopState = router => {
     let loaded = false;

@@ -1,3 +1,5 @@
+'use strict';
+
 const nprogress = require('nprogress');
 
 let nesting = 0;
@@ -20,5 +22,5 @@ function done() {
 
 module.exports = {
     start: start,
-    done:  done,
+    done: done,
 };

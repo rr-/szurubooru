@@ -11,7 +11,7 @@ class EventTarget {
             this[method] = this.eventTarget[method].bind(this.eventTarget);
         }
     }
-};
+}
 
 function proxyEvent(source, target, sourceEventType, targetEventType) {
     if (!source.addEventListener) {

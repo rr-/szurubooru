@@ -51,7 +51,7 @@ class UserListController {
             defaultLimit: 30,
             getClientUrlForPage: (offset, limit) => {
                 const parameters = Object.assign(
-                    {}, this._ctx.parameters, {offset, offset, limit: limit});
+                    {}, this._ctx.parameters, {offset: offset, limit: limit});
                 return uri.formatClientLink('users', parameters);
             },
             requestPage: (offset, limit) => {
@@ -71,5 +71,7 @@ class UserListController {
 module.exports = router => {
     router.enter(
         ['users'],
-        (ctx, next) => { ctx.controller = new UserListController(ctx); });
+        (ctx, next) => {
+            ctx.controller = new UserListController(ctx);
+        });
 };

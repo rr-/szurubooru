@@ -69,7 +69,8 @@ class TagController {
         if (this._name !== e.detail.tag.names[0]) {
             router.replace(
                 uri.formatClientLink('tag', e.detail.tag.names[0], section),
-                null, false);
+                null,
+                false);
         }
     }
 
@@ -105,7 +106,8 @@ class TagController {
                 router.replace(
                     uri.formatClientLink(
                         'tag', e.detail.targetTagName, 'merge'),
-                    null, false);
+                    null,
+                    false);
             }, error => {
                 this._view.showError(error.message);
                 this._view.enableForm();

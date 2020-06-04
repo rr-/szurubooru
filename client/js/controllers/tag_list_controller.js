@@ -16,7 +16,8 @@ const fields = [
     'implications',
     'creationTime',
     'usages',
-    'category'];
+    'category'
+];
 
 class TagListController {
     constructor(ctx) {
@@ -81,5 +82,7 @@ class TagListController {
 module.exports = router => {
     router.enter(
         ['tags'],
-        (ctx, next) => { ctx.controller = new TagListController(ctx); });
+        (ctx, next) => {
+            ctx.controller = new TagListController(ctx);
+        });
 };

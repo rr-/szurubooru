@@ -8,7 +8,7 @@ const Snapshot = require('./snapshot.js');
 class SnapshotList extends AbstractList {
     static search(text, offset, limit) {
         return api.get(uri.formatApiLink(
-                'snapshots', {query: text, offset: offset, limit: limit}))
+            'snapshots', {query: text, offset: offset, limit: limit}))
             .then(response => {
                 return Promise.resolve(Object.assign(
                     {},

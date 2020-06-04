@@ -43,7 +43,7 @@ class PostMainView {
                         margin,
                     iosCorrectedInnerHeight() -
                         topNavigationNode.getBoundingClientRect().height -
-                        margin * 2,
+                        (margin * 2),
                 ];
             });
 
@@ -80,7 +80,7 @@ class PostMainView {
         });
         keyboard.bind(['a', 'left'], showPreviousImage);
         keyboard.bind(['d', 'right'], showNextImage);
-        keyboard.bind('del', (e) => {
+        keyboard.bind('del', e => {
             if (ctx.editMode) {
                 this.sidebarControl._evtDeleteClick(e);
             }

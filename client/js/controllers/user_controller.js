@@ -42,7 +42,7 @@ class UserController {
             userTokenPromise,
             User.get(userName)
         ]).then(responses => {
-            const [userTokens, user]  = responses;
+            const [userTokens, user] = responses;
             const isLoggedIn = api.isLoggedIn(user);
             const infix = isLoggedIn ? 'self' : 'any';
 
@@ -133,7 +133,8 @@ class UserController {
         if (this._name !== e.detail.user.name) {
             router.replace(
                 uri.formatClientLink('user', e.detail.user.name, section),
-                null, false);
+                null,
+                false);
         }
     }
 

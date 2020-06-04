@@ -15,7 +15,7 @@ function resize() {
 }
 
 function runCallbacks() {
-    callbacks.forEach(function(callback) {
+    callbacks.forEach(callback => {
         callback();
     });
     running = false;

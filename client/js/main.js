@@ -60,17 +60,17 @@ api.fetchConfig().then(() => {
     window.alert('Could not fetch basic configuration from server');
 }).then(() => {
     api.loginFromCookies().then(() => {
-            tags.refreshCategoryColorMap();
+        tags.refreshCategoryColorMap();
+        router.start();
+    }, error => {
+        if (window.location.href.indexOf('login') !== -1) {
+            api.forget();
             router.start();
-        }, error => {
-            if (window.location.href.indexOf('login') !== -1) {
-                api.forget();
-                router.start();
-            } else {
-                const ctx = router.start('/');
-                ctx.controller.showError(
-                    'An error happened while trying to log you in: ' +
+        } else {
+            const ctx = router.start('/');
+            ctx.controller.showError(
+                'An error happened while trying to log you in: ' +
                         error.message);
-            }
-        });
+        }
+    });
 });

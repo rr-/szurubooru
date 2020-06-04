@@ -45,5 +45,7 @@ class SnapshotsController {
 
 module.exports = router => {
     router.enter(['history'],
-        (ctx, next) => { ctx.controller = new SnapshotsController(ctx); });
+        (ctx, next) => {
+            ctx.controller = new SnapshotsController(ctx);
+        });
 };

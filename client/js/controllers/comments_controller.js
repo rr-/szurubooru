@@ -34,7 +34,9 @@ class CommentsController {
             requestPage: (offset, limit) => {
                 return PostList.search(
                     'sort:comment-date comment-count-min:1',
-                    offset, limit, fields);
+                    offset,
+                    limit,
+                    fields);
             },
             pageRenderer: pageCtx => {
                 Object.assign(pageCtx, {
@@ -68,9 +70,10 @@ class CommentsController {
         e.detail.comment.delete()
             .catch(error => window.alert(error.message));
     }
-};
+}
 
 module.exports = router => {
-    router.enter(['comments'],
-        (ctx, next) => { new CommentsController(ctx); });
-};
+    router.enter(['comments'], (ctx, next) => {
+        new CommentsController(ctx);
+    });
+}

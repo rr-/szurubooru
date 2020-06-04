@@ -57,7 +57,8 @@ class PostDetailController extends BasePostController {
         if (this._id !== e.detail.post.id) {
             router.replace(
                 uri.formatClientLink('post', e.detail.post.id, section),
-                null, false);
+                null,
+                false);
         }
     }
 
@@ -71,7 +72,8 @@ class PostDetailController extends BasePostController {
                 router.replace(
                     uri.formatClientLink(
                         'post', e.detail.targetPost.id, 'merge'),
-                    null, false);
+                    null,
+                    false);
             }, error => {
                 this._view.showError(error.message);
                 this._view.enableForm();

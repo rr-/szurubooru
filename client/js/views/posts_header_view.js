@@ -52,10 +52,6 @@ class BulkEditor extends events.EventTarget {
 }
 
 class BulkSafetyEditor extends BulkEditor {
-    constructor(hostNode) {
-        super(hostNode);
-    }
-
     _evtOpenLinkClick(e) {
         e.preventDefault();
         this.toggleOpen(true);
@@ -75,9 +71,8 @@ class BulkTagEditor extends BulkEditor {
         this._autoCompleteControl = new TagAutoCompleteControl(
             this._inputNode,
             {
-                confirm: tag =>
-                    this._autoCompleteControl.replaceSelectedText(
-                        tag.names[0], false),
+                confirm: tag => this._autoCompleteControl.replaceSelectedText(
+                    tag.names[0], false),
             });
         this._hostNode.addEventListener('submit', e => this._evtFormSubmit(e));
     }
@@ -132,9 +127,8 @@ class PostsHeaderView extends events.EventTarget {
         this._autoCompleteControl = new TagAutoCompleteControl(
             this._queryInputNode,
             {
-                confirm: tag =>
-                    this._autoCompleteControl.replaceSelectedText(
-                        misc.escapeSearchTerm(tag.names[0]), true),
+                confirm: tag => this._autoCompleteControl.replaceSelectedText(
+                    misc.escapeSearchTerm(tag.names[0]), true),
             });
 
         keyboard.bind('p', () => this._focusFirstPostNode());
@@ -246,7 +240,7 @@ class PostsHeaderView extends events.EventTarget {
     _navigate() {
         this._autoCompleteControl.hide();
         let parameters = {query: this._queryInputNode.value};
-        
+
         // convert falsy values to an empty string "" so that we can correctly compare with the current query
         const prevQuery = this._ctx.parameters.query ? this._ctx.parameters.query : "";
         parameters.offset = parameters.query === prevQuery ? this._ctx.parameters.offset : 0;

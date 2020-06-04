@@ -1,3 +1,5 @@
+'use strict';
+
 const direction = {
     NONE: null,
     LEFT: 'left',
@@ -26,30 +28,29 @@ function handleTouchMove(handler, evt) {
         } else {
             handler._direction = direction.RIGHT;
         }
+    } else if (yDirection > 0) {
+        handler._direction = direction.DOWN;
     } else {
-        if (yDirection > 0) {
-            handler._direction = direction.DOWN;
-        } else {
-            handler._direction = direction.UP;
-        }
+        handler._direction = direction.UP;
     }
 }
 
 function handleTouchEnd(handler) {
     switch (handler._direction) {
-        case direction.NONE:
-            return;
-        case direction.LEFT:
-            handler._swipeLeftTask();
-            break;
-        case direction.RIGHT:
-            handler._swipeRightTask();
-            break;
-        case direction.DOWN:
-            handler._swipeDownTask();
-            break;
-        case direction.UP:
-            handler._swipeUpTask();
+    case direction.NONE:
+        return;
+    case direction.LEFT:
+        handler._swipeLeftTask();
+        break;
+    case direction.RIGHT:
+        handler._swipeRightTask();
+        break;
+    case direction.DOWN:
+        handler._swipeDownTask();
+        break;
+    case direction.UP:
+        handler._swipeUpTask();
+    // no default
     }
 
     handler._xStart = null;
@@ -58,10 +59,10 @@ function handleTouchEnd(handler) {
 
 class Touch {
     constructor(target,
-                swipeLeft = () => {},
-                swipeRight = () => {},
-                swipeUp = () => {},
-                swipeDown = () => {}) {
+        swipeLeft = () => {},
+        swipeRight = () => {},
+        swipeUp = () => {},
+        swipeDown = () => {}) {
         this._target = target;
 
         this._swipeLeftTask = swipeLeft;
@@ -74,11 +75,17 @@ class Touch {
         this._direction = direction.NONE;
 
         this._target.addEventListener('touchstart',
-            (evt) => { handleTouchStart(this, evt); });
+            evt => {
+                handleTouchStart(this, evt);
+            });
         this._target.addEventListener('touchmove',
-            (evt) => { handleTouchMove(this, evt); });
+            evt => {
+                handleTouchMove(this, evt);
+            });
         this._target.addEventListener('touchend',
-            () => { handleTouchEnd(this); });
+            () => {
+                handleTouchEnd(this);
+            });
     }
 }
 

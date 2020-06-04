@@ -11,7 +11,7 @@ function isScrolledIntoView(element) {
     do {
         top += element.offsetTop || 0;
         element = element.offsetParent;
-    } while(element);
+    } while (element);
     return (
         (top >= window.scrollY) &&
         (top <= window.scrollY + window.innerHeight));

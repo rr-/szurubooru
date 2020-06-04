@@ -39,7 +39,7 @@ class RegistrationView extends events.EventTarget {
         e.preventDefault();
         this.dispatchEvent(new CustomEvent('submit', {
             detail: {
-                name:  this._userNameFieldNode.value,
+                name: this._userNameFieldNode.value,
                 password: this._passwordFieldNode.value,
                 email: this._emailFieldNode.value,
             },

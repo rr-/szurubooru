@@ -19,7 +19,7 @@ class SettingsController {
         settings.save(e.detail);
         this._view.showSuccess('Settings saved.');
     }
-};
+}
 
 module.exports = router => {
     router.enter(['settings'], (ctx, next) => {

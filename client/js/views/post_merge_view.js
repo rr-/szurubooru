@@ -62,8 +62,7 @@ class PostMergeView extends events.EventTarget {
     _refreshSide(post, sideNode, sideName, isEditable) {
         views.replaceContent(
             sideNode,
-            sideTemplate(Object.assign({}, this._ctx, {
-                post: post,
+            sideTemplate(Object.assign({}, this._ctx, {post: post,
                 name: sideName,
                 editable: isEditable})));
 
@@ -85,10 +84,10 @@ class PostMergeView extends events.EventTarget {
             '.target-post-content :checked').value;
         this.dispatchEvent(new CustomEvent('submit', {
             detail: {
-                post: checkedTargetPost == 'left' ?
+                post: checkedTargetPost === 'left' ?
                     this._rightPost :
                     this._leftPost,
-                targetPost: checkedTargetPost == 'left' ?
+                targetPost: checkedTargetPost === 'left' ?
                     this._leftPost :
                     this._rightPost,
                 useOldContent: checkedTargetPostContent !== checkedTargetPost,

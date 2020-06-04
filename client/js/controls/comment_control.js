@@ -212,11 +212,6 @@ class CommentControl extends events.EventTarget {
         this._selectTab('preview');
     }
 
-    _evtEditClick(e) {
-        e.preventDefault();
-        this.enterEditMode();
-    }
-
     _evtSaveChangesClick(e) {
         e.preventDefault();
         this.dispatchEvent(new CustomEvent('submit', {
@@ -260,6 +255,6 @@ class CommentControl extends events.EventTarget {
     _forgetHeight() {
         this._heightKeeperNode.style.minHeight = null;
     }
-};
+}
 
 module.exports = CommentControl;

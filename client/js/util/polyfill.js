@@ -1,3 +1,5 @@
+/* eslint-disable func-names, no-extend-native */
+
 'use strict';
 
 // fix iterating over NodeList in Chrome and Opera

@@ -18,10 +18,10 @@ class PostMainController extends BasePostController {
 
         let parameters = ctx.parameters;
         Promise.all([
-                Post.get(ctx.parameters.id),
-                PostList.getAround(
-                    ctx.parameters.id,
-                    parameters ? parameters.query : null),
+            Post.get(ctx.parameters.id),
+            PostList.getAround(
+                ctx.parameters.id,
+                parameters ? parameters.query : null),
         ]).then(responses => {
             const [post, aroundResponse] = responses;
 

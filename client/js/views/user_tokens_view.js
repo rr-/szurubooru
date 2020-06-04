@@ -92,9 +92,9 @@ class UserTokenView extends events.EventTarget {
                 expirationTime:
                     (this._userTokenExpirationTimeInputNode
                         && this._userTokenExpirationTimeInputNode.value) ?
-                    new Date(this._userTokenExpirationTimeInputNode.value)
-                        .toISOString() :
-                    undefined,
+                        new Date(this._userTokenExpirationTimeInputNode.value)
+                            .toISOString() :
+                        undefined,
             },
         }));
     }

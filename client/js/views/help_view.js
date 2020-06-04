@@ -47,7 +47,7 @@ class HelpView {
         views.replaceContent(this._hostNode, sourceNode);
 
         for (let itemNode of
-                sourceNode.querySelectorAll('.primary [data-name]')) {
+            sourceNode.querySelectorAll('.primary [data-name]')) {
             itemNode.classList.toggle(
                 'active',
                 itemNode.getAttribute('data-name') === section);
@@ -59,7 +59,7 @@ class HelpView {
         }
 
         for (let itemNode of
-                sourceNode.querySelectorAll('.secondary [data-name]')) {
+            sourceNode.querySelectorAll('.secondary [data-name]')) {
             itemNode.classList.toggle(
                 'active',
                 itemNode.getAttribute('data-name') === subsection);

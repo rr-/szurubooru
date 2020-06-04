@@ -11,8 +11,8 @@ class UserEditView extends events.EventTarget {
     constructor(ctx) {
         super();
 
-        ctx.userNamePattern = api.getUserNameRegex() + /|^$/.source;
-        ctx.passwordPattern = api.getPasswordRegex() + /|^$/.source;
+        ctx.userNamePattern = api.getUserNameRegex() + (/|^$/).source;
+        ctx.passwordPattern = api.getPasswordRegex() + (/|^$/).source;
 
         this._user = ctx.user;
         this._hostNode = ctx.hostNode;

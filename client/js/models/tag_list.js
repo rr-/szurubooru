@@ -8,13 +8,13 @@ const Tag = require('./tag.js');
 class TagList extends AbstractList {
     static search(text, offset, limit, fields) {
         return api.get(
-                uri.formatApiLink(
-                    'tags', {
-                        query: text,
-                        offset: offset,
-                        limit: limit,
-                        fields: fields.join(','),
-                    }))
+            uri.formatApiLink(
+                'tags', {
+                    query: text,
+                    offset: offset,
+                    limit: limit,
+                    fields: fields.join(','),
+                }))
             .then(response => {
                 return Promise.resolve(Object.assign(
                     {},

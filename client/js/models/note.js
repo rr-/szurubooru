@@ -11,10 +11,17 @@ class Note extends events.EventTarget {
         this._polygon = new PointList();
     }
 
-    get text() { return this._text; }
-    get polygon() { return this._polygon; }
+    get text() {
+        return this._text;
+    }
 
-    set text(value) { this._text = value; }
+    get polygon() {
+        return this._polygon;
+    }
+
+    set text(value) {
+        this._text = value;
+    }
 
     static fromResponse(response) {
         const note = new Note();

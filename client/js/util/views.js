@@ -94,11 +94,10 @@ function makeSelect(options) {
                 name: options.name,
                 disabled: options.readonly,
             },
-            ...Object.keys(options.keyValues).map(key =>
-                makeElement(
-                    'option',
-                    {value: key, selected: key === options.selectedKey},
-                    options.keyValues[key])));
+            ...Object.keys(options.keyValues).map(key => makeElement(
+                'option',
+                {value: key, selected: key === options.selectedKey},
+                options.keyValues[key])));
 }
 
 function makeInput(options) {
@@ -157,10 +156,7 @@ function makeColorInput(options) {
                 color: ${options.value}`,
         });
     return makeElement(
-        'label', {class: 'color'},
-        textInput,
-        backgroundPreviewNode,
-        textPreviewNode);
+        'label', {class: 'color'}, textInput, backgroundPreviewNode, textPreviewNode);
 }
 
 function makeNumericInput(options) {
@@ -175,14 +171,12 @@ function makeDateInput(options) {
 
 function getPostUrl(id, parameters) {
     return uri.formatClientLink(
-        'post', id,
-        parameters ? {query: parameters.query} : {});
+        'post', id, parameters ? {query: parameters.query} : {});
 }
 
 function getPostEditUrl(id, parameters) {
     return uri.formatClientLink(
-        'post', id, 'edit',
-        parameters ? {query: parameters.query} : {});
+        'post', id, 'edit', parameters ? {query: parameters.query} : {});
 }
 
 function makePostLink(id, includeHash) {
@@ -335,26 +329,25 @@ function clearMessages(target) {
 function htmlToDom(html) {
     // code taken from jQuery + Krasimir Tsonev's blog
     const wrapMap = {
-        _:      [1, '<div>', '</div>'],
+        _: [1, '<div>', '</div>'],
         option: [1, '<select multiple>', '</select>'],
         legend: [1, '<fieldset>', '</fieldset>'],
-        area:   [1, '<map>', '</map>'],
-        param:  [1, '<object>', '</object>'],
-        thead:  [1, '<table>', '</table>'],
-        tr:     [2, '<table><tbody>', '</tbody></table>'],
-        td:     [3, '<table><tbody><tr>', '</tr></tbody></table>'],
-        col:    [2, '<table><tbody></tbody><colgroup>', '</colgroup></table>'],
+        area: [1, '<map>', '</map>'],
+        param: [1, '<object>', '</object>'],
+        thead: [1, '<table>', '</table>'],
+        tr: [2, '<table><tbody>', '</tbody></table>'],
+        td: [3, '<table><tbody><tr>', '</tr></tbody></table>'],
+        col: [2, '<table><tbody></tbody><colgroup>', '</colgroup></table>'],
     };
     wrapMap.optgroup = wrapMap.option;
-    wrapMap.tbody =
-        wrapMap.tfoot =
-        wrapMap.colgroup =
-        wrapMap.caption =
-        wrapMap.thead;
+    wrapMap.tbody = wrapMap.thead;
+    wrapMap.tfoot = wrapMap.thead;
+    wrapMap.colgroup = wrapMap.thead;
+    wrapMap.caption = wrapMap.thead;
     wrapMap.th = wrapMap.td;
 
     let element = document.createElement('div');
-    const match = /<\s*(\w+)[^>]*?>/g.exec(html);
+    const match = (/<\s*(\w+)[^>]*?>/g).exec(html);
 
     if (match) {
         const tag = match[1];
@@ -381,32 +374,32 @@ function getTemplate(templatePath) {
             ctx = {};
         }
         Object.assign(ctx, {
-            getPostUrl:        getPostUrl,
-            getPostEditUrl:    getPostEditUrl,
-            makeRelativeTime:  makeRelativeTime,
-            makeFileSize:      makeFileSize,
-            makeMarkdown:      makeMarkdown,
-            makeThumbnail:     makeThumbnail,
-            makeRadio:         makeRadio,
-            makeCheckbox:      makeCheckbox,
-            makeSelect:        makeSelect,
-            makeInput:         makeInput,
-            makeButton:        makeButton,
-            makeTextarea:      makeTextarea,
-            makeTextInput:     makeTextInput,
+            getPostUrl: getPostUrl,
+            getPostEditUrl: getPostEditUrl,
+            makeRelativeTime: makeRelativeTime,
+            makeFileSize: makeFileSize,
+            makeMarkdown: makeMarkdown,
+            makeThumbnail: makeThumbnail,
+            makeRadio: makeRadio,
+            makeCheckbox: makeCheckbox,
+            makeSelect: makeSelect,
+            makeInput: makeInput,
+            makeButton: makeButton,
+            makeTextarea: makeTextarea,
+            makeTextInput: makeTextInput,
             makePasswordInput: makePasswordInput,
-            makeEmailInput:    makeEmailInput,
-            makeColorInput:    makeColorInput,
-            makeDateInput:     makeDateInput,
-            makePostLink:      makePostLink,
-            makeTagLink:       makeTagLink,
-            makeUserLink:      makeUserLink,
-            makeFlexboxAlign:  makeFlexboxAlign,
-            makeAccessKey:     makeAccessKey,
-            makeElement:       makeElement,
-            makeCssName:       misc.makeCssName,
-            makeNumericInput:  makeNumericInput,
-            formatClientLink:  uri.formatClientLink
+            makeEmailInput: makeEmailInput,
+            makeColorInput: makeColorInput,
+            makeDateInput: makeDateInput,
+            makePostLink: makePostLink,
+            makeTagLink: makeTagLink,
+            makeUserLink: makeUserLink,
+            makeFlexboxAlign: makeFlexboxAlign,
+            makeAccessKey: makeAccessKey,
+            makeElement: makeElement,
+            makeCssName: misc.makeCssName,
+            makeNumericInput: makeNumericInput,
+            formatClientLink: uri.formatClientLink
         });
         return htmlToDom(templateFactory(ctx));
     };
@@ -444,7 +437,7 @@ function enableForm(form) {
 function syncScrollPosition() {
     window.requestAnimationFrame(
         () => {
-            if (history.state && history.state.hasOwnProperty('scrollX')) {
+            if (history.state && Object.prototype.hasOwnProperty.call(history.state, 'scrollX')) {
                 window.scrollTo(history.state.scrollX, history.state.scrollY);
             } else {
                 window.scrollTo(0, 0);
@@ -520,24 +513,24 @@ document.addEventListener('click', e => {
 });
 
 module.exports = {
-    htmlToDom:             htmlToDom,
-    getTemplate:           getTemplate,
-    emptyContent:          emptyContent,
-    replaceContent:        replaceContent,
-    enableForm:            enableForm,
-    disableForm:           disableForm,
-    decorateValidator:     decorateValidator,
-    makeTagLink:           makeTagLink,
-    makePostLink:          makePostLink,
-    makeCheckbox:          makeCheckbox,
-    makeRadio:             makeRadio,
-    syncScrollPosition:    syncScrollPosition,
-    slideDown:             slideDown,
-    slideUp:               slideUp,
-    monitorNodeRemoval:    monitorNodeRemoval,
-    clearMessages:         clearMessages,
+    htmlToDom: htmlToDom,
+    getTemplate: getTemplate,
+    emptyContent: emptyContent,
+    replaceContent: replaceContent,
+    enableForm: enableForm,
+    disableForm: disableForm,
+    decorateValidator: decorateValidator,
+    makeTagLink: makeTagLink,
+    makePostLink: makePostLink,
+    makeCheckbox: makeCheckbox,
+    makeRadio: makeRadio,
+    syncScrollPosition: syncScrollPosition,
+    slideDown: slideDown,
+    slideUp: slideUp,
+    monitorNodeRemoval: monitorNodeRemoval,
+    clearMessages: clearMessages,
     appendExclamationMark: appendExclamationMark,
-    showError:             showError,
-    showSuccess:           showSuccess,
-    showInfo:              showInfo,
+    showError: showError,
+    showSuccess: showSuccess,
+    showInfo: showInfo,
 };

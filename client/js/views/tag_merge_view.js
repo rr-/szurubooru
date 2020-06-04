@@ -22,9 +22,8 @@ class TagMergeView extends events.EventTarget {
             this._autoCompleteControl = new TagAutoCompleteControl(
                 this._targetTagFieldNode,
                 {
-                    confirm: tag =>
-                        this._autoCompleteControl.replaceSelectedText(
-                            tag.names[0], false),
+                    confirm: tag => this._autoCompleteControl.replaceSelectedText(
+                        tag.names[0], false),
                 });
         }
 

@@ -27,9 +27,8 @@ class HomeView {
             this._autoCompleteControl = new TagAutoCompleteControl(
                 this._searchInputNode,
                 {
-                    confirm: tag =>
-                        this._autoCompleteControl.replaceSelectedText(
-                            misc.escapeSearchTerm(tag.names[0]), true),
+                    confirm: tag => this._autoCompleteControl.replaceSelectedText(
+                        misc.escapeSearchTerm(tag.names[0]), true),
                 });
             this._formNode.addEventListener(
                 'submit', e => this._evtFormSubmit(e));
@@ -99,8 +98,7 @@ class HomeView {
     _evtFormSubmit(e) {
         e.preventDefault();
         this._searchInputNode.blur();
-        router.show(uri.formatClientLink('posts', {
-            query: this._searchInputNode.value}));
+        router.show(uri.formatClientLink('posts', {query: this._searchInputNode.value}));
     }
 }
 

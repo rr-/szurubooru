@@ -57,33 +57,32 @@ class PostUploadController {
         this._view.clearMessages();
 
         e.detail.uploadables.reduce(
-            (promise, uploadable) =>
-                promise.then(() => this._uploadSinglePost(
-                    uploadable, e.detail.skipDuplicates)),
+            (promise, uploadable) => promise.then(() => this._uploadSinglePost(
+                uploadable, e.detail.skipDuplicates)),
             Promise.resolve())
-                .then(() => {
-                    this._view.clearMessages();
-                    misc.disableExitConfirmation();
-                    const ctx = router.show(uri.formatClientLink('posts'));
-                    ctx.controller.showSuccess('Posts uploaded.');
-                }, error => {
-                    if (error.uploadable) {
-                        if (error.similarPosts) {
-                            error.uploadable.lookalikes = error.similarPosts;
-                            this._view.updateUploadable(error.uploadable);
-                            this._view.showInfo(genericErrorMessage);
-                            this._view.showInfo(
-                                error.message, error.uploadable);
-                        } else {
-                            this._view.showError(genericErrorMessage);
-                            this._view.showError(
-                                error.message, error.uploadable);
-                        }
+            .then(() => {
+                this._view.clearMessages();
+                misc.disableExitConfirmation();
+                const ctx = router.show(uri.formatClientLink('posts'));
+                ctx.controller.showSuccess('Posts uploaded.');
+            }, error => {
+                if (error.uploadable) {
+                    if (error.similarPosts) {
+                        error.uploadable.lookalikes = error.similarPosts;
+                        this._view.updateUploadable(error.uploadable);
+                        this._view.showInfo(genericErrorMessage);
+                        this._view.showInfo(
+                            error.message, error.uploadable);
                     } else {
-                        this._view.showError(error.message);
+                        this._view.showError(genericErrorMessage);
+                        this._view.showError(
+                            error.message, error.uploadable);
                     }
-                    this._view.enableForm();
-                });
+                } else {
+                    this._view.showError(error.message);
+                }
+                this._view.enableForm();
+            });
     }
 
     _uploadSinglePost(uploadable, skipDuplicates) {
@@ -153,7 +152,9 @@ class PostUploadController {
         post.newContent = uploadable.url || uploadable.file;
         // if uploadable.source is ever going to be a valid field (e.g when setting source directly in the upload window)
         // you'll need to change the line below to `post.source = uploadable.source || uploadable.url;`
-        if (uploadable.url) post.source = uploadable.url;
+        if (uploadable.url) {
+            post.source = uploadable.url;
+        }
         return post;
     }
 }

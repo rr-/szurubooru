@@ -23,43 +23,141 @@ class Post extends events.EventTarget {
         this._updateFromResponse({});
     }
 
-    get id()                 { return this._id; }
-    get type()               { return this._type; }
-    get mimeType()           { return this._mimeType; }
-    get creationTime()       { return this._creationTime; }
-    get user()               { return this._user; }
-    get safety()             { return this._safety; }
-    get contentUrl()         { return this._contentUrl; }
-    get fullContentUrl()     { return this._fullContentUrl; }
-    get thumbnailUrl()       { return this._thumbnailUrl; }
-    get source()             { return this._source; }
-    get sourceSplit()        { return this._source.split('\n'); }
-    get canvasWidth()        { return this._canvasWidth || 800; }
-    get canvasHeight()       { return this._canvasHeight || 450; }
-    get fileSize()           { return this._fileSize || 0; }
-    get newContent()         { throw 'Invalid operation'; }
-    get newThumbnail()       { throw 'Invalid operation'; }
+    get id() {
+        return this._id;
+    }
 
-    get flags()              { return this._flags; }
-    get tags()               { return this._tags; }
-    get tagNames()           { return this._tags.map(tag => tag.names[0]); }
-    get notes()              { return this._notes; }
-    get comments()           { return this._comments; }
-    get relations()          { return this._relations; }
+    get type() {
+        return this._type;
+    }
 
-    get score()              { return this._score; }
-    get commentCount()       { return this._commentCount; }
-    get favoriteCount()      { return this._favoriteCount; }
-    get ownFavorite()        { return this._ownFavorite; }
-    get ownScore()           { return this._ownScore; }
-    get hasCustomThumbnail() { return this._hasCustomThumbnail; }
+    get mimeType() {
+        return this._mimeType;
+    }
 
-    set flags(value)         { this._flags = value; }
-    set safety(value)        { this._safety = value; }
-    set relations(value)     { this._relations = value; }
-    set newContent(value)    { this._newContent = value; }
-    set newThumbnail(value)  { this._newThumbnail = value; }
-    set source(value)        { this._source = value; }
+    get creationTime() {
+        return this._creationTime;
+    }
+
+    get user() {
+        return this._user;
+    }
+
+    get safety() {
+        return this._safety;
+    }
+
+    get contentUrl() {
+        return this._contentUrl;
+    }
+
+    get fullContentUrl() {
+        return this._fullContentUrl;
+    }
+
+    get thumbnailUrl() {
+        return this._thumbnailUrl;
+    }
+
+    get source() {
+        return this._source;
+    }
+
+    get sourceSplit() {
+        return this._source.split('\n');
+    }
+
+    get canvasWidth() {
+        return this._canvasWidth || 800;
+    }
+
+    get canvasHeight() {
+        return this._canvasHeight || 450;
+    }
+
+    get fileSize() {
+        return this._fileSize || 0;
+    }
+
+    get newContent() {
+        throw 'Invalid operation';
+    }
+
+    get newThumbnail() {
+        throw 'Invalid operation';
+    }
+
+    get flags() {
+        return this._flags;
+    }
+
+    get tags() {
+        return this._tags;
+    }
+
+    get tagNames() {
+        return this._tags.map(tag => tag.names[0]);
+    }
+
+    get notes() {
+        return this._notes;
+    }
+
+    get comments() {
+        return this._comments;
+    }
+
+    get relations() {
+        return this._relations;
+    }
+
+    get score() {
+        return this._score;
+    }
+
+    get commentCount() {
+        return this._commentCount;
+    }
+
+    get favoriteCount() {
+        return this._favoriteCount;
+    }
+
+    get ownFavorite() {
+        return this._ownFavorite;
+    }
+
+    get ownScore() {
+        return this._ownScore;
+    }
+
+    get hasCustomThumbnail() {
+        return this._hasCustomThumbnail;
+    }
+
+    set flags(value) {
+        this._flags = value;
+    }
+
+    set safety(value) {
+        this._safety = value;
+    }
+
+    set relations(value) {
+        this._relations = value;
+    }
+
+    set newContent(value) {
+        this._newContent = value;
+    }
+
+    set newThumbnail(value) {
+        this._newThumbnail = value;
+    }
+
+    set source(value) {
+        this._source = value;
+    }
 
     static fromResponse(response) {
         const ret = new Post();
@@ -158,8 +256,8 @@ class Post extends events.EventTarget {
 
     feature() {
         return api.post(
-                uri.formatApiLink('featured-post'),
-                {id: this._id})
+            uri.formatApiLink('featured-post'),
+            {id: this._id})
             .then(response => {
                 return Promise.resolve();
             });
@@ -167,8 +265,8 @@ class Post extends events.EventTarget {
 
     delete() {
         return api.delete(
-                uri.formatApiLink('post', this.id),
-                {version: this._version})
+            uri.formatApiLink('post', this.id),
+            {version: this._version})
             .then(response => {
                 this.dispatchEvent(new CustomEvent('delete', {
                     detail: {
@@ -202,8 +300,8 @@ class Post extends events.EventTarget {
 
     setScore(score) {
         return api.put(
-                uri.formatApiLink('post', this.id, 'score'),
-                {score: score})
+            uri.formatApiLink('post', this.id, 'score'),
+            {score: score})
             .then(response => {
                 const prevFavorite = this._ownFavorite;
                 this._updateFromResponse(response);
@@ -274,29 +372,29 @@ class Post extends events.EventTarget {
 
     _updateFromResponse(response) {
         const map = () => ({
-            _version:       response.version,
-            _id:            response.id,
-            _type:          response.type,
-            _mimeType:      response.mimeType,
-            _creationTime:  response.creationTime,
-            _user:          response.user,
-            _safety:        response.safety,
-            _contentUrl:    response.contentUrl,
+            _version: response.version,
+            _id: response.id,
+            _type: response.type,
+            _mimeType: response.mimeType,
+            _creationTime: response.creationTime,
+            _user: response.user,
+            _safety: response.safety,
+            _contentUrl: response.contentUrl,
             _fullContentUrl: new URL(response.contentUrl, document.getElementsByTagName('base')[0].href).href,
-            _thumbnailUrl:  response.thumbnailUrl,
-            _source:        response.source,
-            _canvasWidth:   response.canvasWidth,
-            _canvasHeight:  response.canvasHeight,
-            _fileSize:      response.fileSize,
+            _thumbnailUrl: response.thumbnailUrl,
+            _source: response.source,
+            _canvasWidth: response.canvasWidth,
+            _canvasHeight: response.canvasHeight,
+            _fileSize: response.fileSize,
 
-            _flags:         [...response.flags || []],
-            _relations:     [...response.relations || []],
+            _flags: [...response.flags || []],
+            _relations: [...response.relations || []],
 
-            _score:         response.score,
-            _commentCount:  response.commentCount,
+            _score: response.score,
+            _commentCount: response.commentCount,
             _favoriteCount: response.favoriteCount,
-            _ownScore:      response.ownScore,
-            _ownFavorite:   response.ownFavorite,
+            _ownScore: response.ownScore,
+            _ownFavorite: response.ownFavorite,
             _hasCustomThumbnail: response.hasCustomThumbnail,
         });
 
@@ -309,6 +407,6 @@ class Post extends events.EventTarget {
         Object.assign(this, map());
         Object.assign(this._orig, map());
     }
-};
+}
 
 module.exports = Post;

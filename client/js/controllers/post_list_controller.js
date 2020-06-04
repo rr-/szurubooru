@@ -13,7 +13,8 @@ const EmptyView = require('../views/empty_view.js');
 
 const fields = [
     'id', 'thumbnailUrl', 'type', 'safety',
-    'score', 'favoriteCount', 'commentCount', 'tags', 'version'];
+    'score', 'favoriteCount', 'commentCount', 'tags', 'version'
+];
 
 class PostListController {
     constructor(ctx) {
@@ -62,8 +63,7 @@ class PostListController {
 
     _evtTag(e) {
         Promise.all(
-            this._bulkEditTags.map(tag =>
-                e.detail.post.tags.addByName(tag)))
+            this._bulkEditTags.map(tag => e.detail.post.tags.addByName(tag)))
             .then(e.detail.post.save())
             .catch(error => window.alert(error.message));
     }
@@ -117,5 +117,7 @@ class PostListController {
 module.exports = router => {
     router.enter(
         ['posts'],
-        (ctx, next) => { ctx.controller = new PostListController(ctx); });
+        (ctx, next) => {
+            ctx.controller = new PostListController(ctx);
+        });
 };

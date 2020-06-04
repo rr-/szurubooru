@@ -37,7 +37,6 @@ class PostEditSidebarControl extends events.EventTarget {
             canEditPostFlags: api.hasPrivilege('posts:edit:flags'),
             canEditPostContent: api.hasPrivilege('posts:edit:content'),
             canEditPostThumbnail: api.hasPrivilege('posts:edit:thumbnail'),
-            canEditPostSource : api.hasPrivilege('posts:edit:source'),
             canCreateAnonymousPosts: api.hasPrivilege('posts:create:anonymous'),
             canDeletePosts: api.hasPrivilege('posts:delete'),
             canFeaturePosts: api.hasPrivilege('posts:feature'),
@@ -78,8 +77,7 @@ class PostEditSidebarControl extends events.EventTarget {
 
         if (this._contentInputNode) {
             this._contentFileDropper = new FileDropperControl(
-                this._contentInputNode, {
-                    allowUrls: true,
+                this._contentInputNode, {allowUrls: true,
                     lock: true,
                     urlPlaceholder: '...or paste an URL here.'});
             this._contentFileDropper.addEventListener('fileadd', e => {
@@ -284,6 +282,7 @@ class PostEditSidebarControl extends events.EventTarget {
         try {
             success = document.execCommand('copy');
         } catch (err) {
+            // continue regardless of error
         }
         textarea.blur();
         document.body.removeChild(textarea);
@@ -383,10 +382,16 @@ class PostEditSidebarControl extends events.EventTarget {
     }
 
     get _videoFlags() {
-        if (!this._loopVideoInputNode) return undefined;
+        if (!this._loopVideoInputNode) {
+            return undefined;
+        }
         let ret = [];
-        if (this._loopVideoInputNode.checked) ret.push('loop');
-        if (this._soundVideoInputNode.checked) ret.push('sound');
+        if (this._loopVideoInputNode.checked) {
+            ret.push('loop');
+        }
+        if (this._soundVideoInputNode.checked) {
+            ret.push('sound');
+        }
         return ret;
     }
 
@@ -462,6 +467,6 @@ class PostEditSidebarControl extends events.EventTarget {
     showError(message) {
         views.showError(this._hostNode, message);
     }
-};
+}
 
 module.exports = PostEditSidebarControl;

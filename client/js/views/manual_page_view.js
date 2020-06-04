@@ -9,7 +9,7 @@ const navTemplate = views.getTemplate('manual-pager-nav');
 
 function _removeConsecutiveDuplicates(a) {
     return a.filter((item, pos, ary) => {
-        return !pos || item != ary[pos - 1];
+        return !pos || item !== ary[pos - 1];
     });
 }
 
@@ -23,20 +23,22 @@ function _getVisiblePageNumbers(currentPage, totalPages) {
         pagesVisible.push(i);
     }
     for (let i = currentPage - threshold;
-            i <= currentPage + threshold;
-            i++) {
+        i <= currentPage + threshold;
+        i++) {
         pagesVisible.push(i);
     }
     pagesVisible = pagesVisible.filter((item, pos, ary) => {
         return item >= 1 && item <= totalPages;
     });
-    pagesVisible = pagesVisible.sort((a, b) => { return a - b; });
+    pagesVisible = pagesVisible.sort((a, b) => {
+        return a - b;
+    });
     pagesVisible = _removeConsecutiveDuplicates(pagesVisible);
     return pagesVisible;
 }
 
 function _getPages(
-        currentPage, pageNumbers, limit, defaultLimit, removedItems) {
+    currentPage, pageNumbers, limit, defaultLimit, removedItems) {
     const pages = new Map();
     let prevPage = 0;
     for (let page of pageNumbers) {
@@ -46,7 +48,7 @@ function _getPages(
         pages.set(page, {
             number: page,
             offset:
-                (page - 1) * limit -
+                ((page - 1) * limit) -
                 (page > currentPage ? removedItems : 0),
             limit: limit === defaultLimit ? null : limit,
             active: currentPage === page,

@@ -11,28 +11,89 @@ class User extends events.EventTarget {
         this._updateFromResponse({});
     }
 
-    get name()               { return this._name; }
-    get rank()               { return this._rank; }
-    get email()              { return this._email; }
-    get avatarStyle()        { return this._avatarStyle; }
-    get avatarUrl()          { return this._avatarUrl; }
-    get creationTime()       { return this._creationTime; }
-    get lastLoginTime()      { return this._lastLoginTime; }
-    get commentCount()       { return this._commentCount; }
-    get favoritePostCount()  { return this._favoritePostCount; }
-    get uploadedPostCount()  { return this._uploadedPostCount; }
-    get likedPostCount()     { return this._likedPostCount; }
-    get dislikedPostCount()  { return this._dislikedPostCount; }
-    get rankName()           { return api.rankNames.get(this.rank); }
-    get avatarContent()      { throw 'Invalid operation'; }
-    get password()           { throw 'Invalid operation'; }
+    get name() {
+        return this._name;
+    }
 
-    set name(value)          { this._name = value; }
-    set rank(value)          { this._rank = value; }
-    set email(value)         { this._email = value || null; }
-    set avatarStyle(value)   { this._avatarStyle = value; }
-    set avatarContent(value) { this._avatarContent = value; }
-    set password(value)      { this._password = value; }
+    get rank() {
+        return this._rank;
+    }
+
+    get email() {
+        return this._email;
+    }
+
+    get avatarStyle() {
+        return this._avatarStyle;
+    }
+
+    get avatarUrl() {
+        return this._avatarUrl;
+    }
+
+    get creationTime() {
+        return this._creationTime;
+    }
+
+    get lastLoginTime() {
+        return this._lastLoginTime;
+    }
+
+    get commentCount() {
+        return this._commentCount;
+    }
+
+    get favoritePostCount() {
+        return this._favoritePostCount;
+    }
+
+    get uploadedPostCount() {
+        return this._uploadedPostCount;
+    }
+
+    get likedPostCount() {
+        return this._likedPostCount;
+    }
+
+    get dislikedPostCount() {
+        return this._dislikedPostCount;
+    }
+
+    get rankName() {
+        return api.rankNames.get(this.rank);
+    }
+
+    get avatarContent() {
+        throw 'Invalid operation';
+    }
+
+    get password() {
+        throw 'Invalid operation';
+    }
+
+    set name(value) {
+        this._name = value;
+    }
+
+    set rank(value) {
+        this._rank = value;
+    }
+
+    set email(value) {
+        this._email = value || null;
+    }
+
+    set avatarStyle(value) {
+        this._avatarStyle = value;
+    }
+
+    set avatarContent(value) {
+        this._avatarContent = value;
+    }
+
+    set password(value) {
+        this._password = value;
+    }
 
     static fromResponse(response) {
         const ret = new User();
@@ -91,8 +152,8 @@ class User extends events.EventTarget {
 
     delete() {
         return api.delete(
-                uri.formatApiLink('user', this._orig._name),
-                {version: this._version})
+            uri.formatApiLink('user', this._orig._name),
+            {version: this._version})
             .then(response => {
                 this.dispatchEvent(new CustomEvent('delete', {
                     detail: {
@@ -105,27 +166,27 @@ class User extends events.EventTarget {
 
     _updateFromResponse(response) {
         const map = {
-            _version:           response.version,
-            _name:              response.name,
-            _rank:              response.rank,
-            _email:             response.email,
-            _avatarStyle:       response.avatarStyle,
-            _avatarUrl:         response.avatarUrl,
-            _creationTime:      response.creationTime,
-            _lastLoginTime:     response.lastLoginTime,
-            _commentCount:      response.commentCount,
+            _version: response.version,
+            _name: response.name,
+            _rank: response.rank,
+            _email: response.email,
+            _avatarStyle: response.avatarStyle,
+            _avatarUrl: response.avatarUrl,
+            _creationTime: response.creationTime,
+            _lastLoginTime: response.lastLoginTime,
+            _commentCount: response.commentCount,
             _favoritePostCount: response.favoritePostCount,
             _uploadedPostCount: response.uploadedPostCount,
-            _likedPostCount:    response.likedPostCount,
+            _likedPostCount: response.likedPostCount,
             _dislikedPostCount: response.dislikedPostCount,
         };
 
         Object.assign(this, map);
         Object.assign(this._orig, map);
 
-        this._password          = null;
-        this._avatarContent     = null;
+        this._password = null;
+        this._avatarContent = null;
     }
-};
+}
 
 module.exports = User;

@@ -107,7 +107,9 @@ class PostContentControl {
         this._reinstall();
         optimizedResize.add(() => this._refreshSize());
         views.monitorNodeRemoval(
-            this._hostNode, () => { this._uninstall(); });
+            this._hostNode, () => {
+                this._uninstall();
+            });
     }
 
     _reinstall() {

@@ -197,6 +197,6 @@ class PostReadonlySidebarControl extends events.EventTarget {
     _evtChangeScore(e) {
         this._installScore();
     }
-};
+}
 
 module.exports = PostReadonlySidebarControl;

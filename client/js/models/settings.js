@@ -30,6 +30,7 @@ class Settings extends events.EventTarget {
         try {
             Object.assign(ret, JSON.parse(localStorage.getItem('settings')));
         } catch (e) {
+            // continue regardless of error
         }
         return ret;
     }
@@ -50,6 +51,6 @@ class Settings extends events.EventTarget {
     get() {
         return this.cache;
     }
-};
+}
 
 module.exports = new Settings();
