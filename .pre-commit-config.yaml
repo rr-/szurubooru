@@ -20,4 +20,31 @@ repos:
         additional_dependencies:
           -   flake8-print
         args: ['--config=server/setup.cfg']
+-   repo: local
+    hooks:
+    -   id: pytest
+        name: pytest
+        entry: >-
+            bash -c
+            'docker build -f server/Dockerfile.test -t $(git rev-parse --short HEAD)-test server/
+            && docker run --rm -t $(git rev-parse --short HEAD)-test szurubooru/
+            && docker rmi --no-prune $(git rev-parse --short HEAD)-test'
+        language: system
+        types: [python]
+        files: server/szurubooru/
+        pass_filenames: false
+    -   id: docker-build-client
+        name: Test building the client in Docker
+        entry: bash -c 'docker build -t szurubooru-client:$(git rev-parse --short HEAD) client/'
+        language: system
+        types: [file]
+        files: client/
+        pass_filenames: false
+    -   id: docker-build-server
+        name: Test building the server in Docker
+        entry: bash -c 'docker build -t szurubooru-server:$(git rev-parse --short HEAD) server/'
+        language: system
+        types: [file]
+        files: server/
+        pass_filenames: false
 exclude: LICENSE.md

@@ -1,34 +1,8 @@
 #!/bin/sh
 set -e
 
-docker build \
-	--build-arg BASE_IMAGE=${IMAGE_NAME} \
-	--file - \
-	--tag ${IMAGE_NAME}-test \
-	. <<'EOF'
-ARG BASE_IMAGE
-FROM ${BASE_IMAGE}
-WORKDIR /opt/app
-USER root
-RUN apk --no-cache add \
-		py3-pip \
-		py3-pytest \
-		py3-pytest-cov \
-		postgresql \
-	&& \
-	pip3 install \
-		--no-cache-dir \
-		--disable-pip-version-check \
-		pytest-pgsql \
-		freezegun
-USER app
-ENV POSTGRES_HOST=x \
-    POSTGRES_USER=x \
-    POSTGRES_PASSWORD=x
-CMD ["pytest", "szurubooru/", \
-	"--cov-report=term-missing", "--cov=szurubooru", "--tb=short"]
-EOF
-
+docker build -f ${DOCKERFILE_PATH:-Dockerfile}.test -t ${IMAGE_NAME}-test .
 docker run --rm -t ${IMAGE_NAME}-test
+docker rmi ${IMAGE_NAME}-test
 
 exit $?
