@@ -54,7 +54,7 @@ def create_password() -> str:
         'n': list('0123456789'),
     }
     pattern = 'cvcvnncvcv'
-    return ''.join(random.choice(alphabet[l]) for l in list(pattern))
+    return ''.join(random.choice(alphabet[type]) for type in list(pattern))
 
 
 def is_valid_password(user: model.User, password: str) -> bool:

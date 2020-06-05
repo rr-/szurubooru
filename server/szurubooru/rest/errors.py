@@ -1,7 +1,7 @@
 from typing import Optional, Callable, Type, Dict
 
 
-error_handlers = {}  # pylint: disable=invalid-name
+error_handlers = {}
 
 
 class BaseHttpError(RuntimeError):

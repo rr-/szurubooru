@@ -61,7 +61,6 @@ def get_post_snapshot(post: model.Post) -> Dict[str, Any]:
 
 _snapshot_factories = {
     # lambdas allow mocking target functions in the tests
-    # pylint: disable=unnecessary-lambda
     'tag_category': lambda entity: get_tag_category_snapshot(entity),
     'tag': lambda entity: get_tag_snapshot(entity),
     'post': lambda entity: get_post_snapshot(entity),
@@ -108,7 +107,6 @@ def create(entity: model.Base, auth_user: Optional[model.User]) -> None:
     db.session.add(snapshot)
 
 
-# pylint: disable=protected-access
 def modify(entity: model.Base, auth_user: Optional[model.User]) -> None:
     assert entity
 

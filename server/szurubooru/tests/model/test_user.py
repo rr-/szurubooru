@@ -111,7 +111,6 @@ def test_disliked_post_count(user_factory, post_factory):
     assert user1.disliked_post_count == 1
 
 
-# pylint: disable=too-many-statements
 def test_cascade_deletions(post_factory, user_factory, comment_factory):
     user = user_factory()
 

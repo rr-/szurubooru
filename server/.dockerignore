@@ -1,6 +1,5 @@
 # Linter configs
-.pylintrc
-mypy.ini
+setup.cfg
 
 # Python requirements files
 requirements.txt

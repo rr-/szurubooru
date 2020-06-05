@@ -529,7 +529,7 @@ def update_all_post_signatures() -> None:
         .filter(
             (model.Post.type == model.Post.TYPE_IMAGE) |
             (model.Post.type == model.Post.TYPE_ANIMATION))
-        .filter(model.Post.signature == None)
+        .filter(model.Post.signature == None)  # noqa: E711
         .order_by(model.Post.post_id.asc())
         .all())
     for post in posts_to_hash:

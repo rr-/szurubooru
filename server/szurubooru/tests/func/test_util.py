@@ -4,7 +4,7 @@ from szurubooru import errors
 from szurubooru.func import util
 
 
-dt = datetime  # pylint: disable=invalid-name
+dt = datetime
 
 
 def test_parsing_empty_date_time():

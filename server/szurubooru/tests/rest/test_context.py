@@ -1,4 +1,3 @@
-# pylint: disable=unexpected-keyword-arg
 import unittest.mock
 import pytest
 from szurubooru import rest, errors

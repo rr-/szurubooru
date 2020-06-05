@@ -4,7 +4,7 @@ import sqlalchemy as sa
 import sqlalchemy.orm
 from szurubooru import config
 
-# pylint: disable=invalid-name
+
 _data = threading.local()
 _engine = sa.create_engine(config.config['database'])  # type: Any
 _sessionmaker = sa.orm.sessionmaker(bind=_engine, autoflush=False)  # type: Any

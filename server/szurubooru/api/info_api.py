@@ -10,7 +10,7 @@ _cache_result = None  # type: Optional[int]
 
 
 def _get_disk_usage() -> int:
-    global _cache_time, _cache_result  # pylint: disable=global-statement
+    global _cache_time, _cache_result
     threshold = timedelta(hours=48)
     now = datetime.utcnow()
     if _cache_time and _cache_time > now - threshold:

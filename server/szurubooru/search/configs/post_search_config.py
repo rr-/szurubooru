@@ -80,8 +80,7 @@ def _user_filter(
     assert criterion
     if isinstance(criterion, criteria.PlainCriterion) \
             and not criterion.value:
-        # pylint: disable=singleton-comparison
-        expr = model.Post.user_id == None
+        expr = model.Post.user_id == None  # noqa: E711
         if negated:
             expr = ~expr
         return query.filter(expr)

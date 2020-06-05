@@ -7,7 +7,7 @@ import numpy as np
 from PIL import Image
 from szurubooru import config, errors
 
-# pylint: disable=invalid-name
+
 logger = logging.getLogger(__name__)
 
 # Math based on paper from H. Chi Wong, Marshall Bern and David Goldberg
@@ -242,7 +242,6 @@ def pack_signature(signature: NpMatrix) -> bytes:
     This is then converted into a more packed array consisting of
     uint32 elements (for SIG_CHUNK_BITS = 32).
     '''
-    base = 2 * N_LEVELS + 1
     coding_vector = np.flipud(SIG_BASE**np.arange(SIG_CHUNK_WIDTH))
     return np.array([
         np.dot(x, coding_vector) for x in
@@ -256,7 +255,6 @@ def unpack_signature(packed: bytes) -> NpMatrix:
 
     Functions as an inverse transformation of pack_signature()
     '''
-    base = 2 * N_LEVELS + 1
     return np.ravel(np.array([
         [
             int(digit) - N_LEVELS for digit in

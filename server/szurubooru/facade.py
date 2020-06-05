@@ -10,7 +10,6 @@ import sqlalchemy.orm.exc
 from szurubooru import config, db, errors, rest
 from szurubooru.func.posts import update_all_post_signatures
 from szurubooru.func.file_uploads import purge_old_uploads
-# pylint: disable=unused-import
 from szurubooru import api, middleware
 
 
@@ -147,4 +146,4 @@ def create_app() -> Callable[[Any, Any], Any]:
     return rest.application
 
 
-app = create_app()  # pylint: disable=invalid-name
+app = create_app()

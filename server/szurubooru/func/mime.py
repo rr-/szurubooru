@@ -53,7 +53,8 @@ def is_video(mime_type: str) -> bool:
 
 
 def is_image(mime_type: str) -> bool:
-    return mime_type.lower() in ('image/jpeg', 'image/png', 'image/gif', 'image/webp')
+    return mime_type.lower() in (
+        'image/jpeg', 'image/png', 'image/gif', 'image/webp')
 
 
 def is_animated_gif(content: bytes) -> bool:

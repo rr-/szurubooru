@@ -1,4 +1,3 @@
-# pylint: disable=redefined-outer-name
 from datetime import datetime
 import pytest
 from szurubooru import db, model, errors, search

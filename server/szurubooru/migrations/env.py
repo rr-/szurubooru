@@ -10,8 +10,8 @@ from time import sleep
 dir_to_self = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(dir_to_self, *[os.pardir] * 2))
 
-import szurubooru.model.base
-import szurubooru.config
+import szurubooru.model.base  # noqa: E402
+import szurubooru.config  # noqa: E402
 
 alembic_config = alembic.context.config
 logging.config.fileConfig(alembic_config.config_file_name)

@@ -56,4 +56,4 @@ def _read_config() -> Dict:
     return ret
 
 
-config = _read_config()  # pylint: disable=invalid-name
+config = _read_config()

@@ -17,7 +17,7 @@ def unescape(text: str, make_wildcards_special: bool = False) -> str:
     while i < len(text):
         if text[i] == '\\':
             try:
-                char = text[i+1]
+                char = text[i + 1]
                 i += 1
             except IndexError:
                 raise errors.SearchError(

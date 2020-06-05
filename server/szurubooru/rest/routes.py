@@ -3,7 +3,6 @@ from collections import defaultdict
 from szurubooru.rest.context import Context, Response
 
 
-# pylint: disable=invalid-name
 RouteHandler = Callable[[Context, Dict[str, str]], Response]
 routes = defaultdict(dict)  # type: Dict[str, Dict[str, RouteHandler]]
 

@@ -84,7 +84,7 @@ def is_valid_email(email: Optional[str]) -> bool:
     return not email or re.match(r'^[^@]*@[^@]*\.[^@]*$', email) is not None
 
 
-class dotdict(dict):  # pylint: disable=invalid-name
+class dotdict(dict):
     ''' dot.notation access to dictionary attributes. '''
     def __getattr__(self, attr: str) -> Any:
         return self.get(attr)

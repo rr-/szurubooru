@@ -49,6 +49,6 @@ def _youtube_dl_wrapper(url: str) -> bytes:
     except YoutubeDLError as ex:
         raise errors.ThirdPartyError(
             'Error downloading video %s (%s)' % (url, ex))
-    except FileNotFoundError as ex:
+    except FileNotFoundError:
         raise errors.ThirdPartyError(
             'Error downloading video %s (file could not be saved)' % (url))

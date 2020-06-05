@@ -36,7 +36,7 @@ def downgrade():
                 entry.name)
             if match:
                 post_id = int(match.group('name'))
-                security_hash = match.group('hash')
+                security_hash = match.group('hash')  # noqa: F841
                 ext = match.group('ext')
                 new_name = '%s.%s' % (post_id, ext)
                 new_path = os.path.join(os.path.dirname(entry.path), new_name)

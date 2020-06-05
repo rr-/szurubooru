@@ -1,4 +1,3 @@
-# pylint: disable=redefined-outer-name
 import contextlib
 import os
 import random
@@ -39,7 +38,7 @@ def query_logger(pytestconfig):
 
 
 @pytest.yield_fixture(scope='function', autouse=True)
-def session(query_logger, postgresql_db):  # pylint: disable=unused-argument
+def session(query_logger, postgresql_db):
     db.session = postgresql_db.session
     postgresql_db.create_table(*model.Base.metadata.sorted_tables)
     try:
@@ -141,7 +140,6 @@ def tag_factory():
 
 @pytest.fixture
 def post_factory():
-    # pylint: disable=invalid-name
     def factory(
             id=None,
             safety=model.Post.SAFETY_SAFE,

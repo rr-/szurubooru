@@ -50,7 +50,6 @@ def test_saving_post(post_factory, user_factory, tag_factory):
     assert len(related_post2.relations) == 0
 
 
-# pylint: disable=too-many-statements
 def test_cascade_deletions(
         post_factory, user_factory, tag_factory, comment_factory):
     user = user_factory()
