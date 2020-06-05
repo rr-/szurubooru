@@ -1,7 +1,8 @@
 from datetime import datetime
-from typing import Any, Optional, List, Dict, Callable
-from szurubooru import db, model, errors, rest
-from szurubooru.func import users, scores, serialization
+from typing import Any, Callable, Dict, List, Optional
+
+from szurubooru import db, errors, model, rest
+from szurubooru.func import scores, serialization, users
 
 
 class InvalidCommentIdError(errors.ValidationError):
@@ -23,15 +24,15 @@ class CommentSerializer(serialization.BaseSerializer):
 
     def _serializers(self) -> Dict[str, Callable[[], Any]]:
         return {
-            'id': self.serialize_id,
-            'user': self.serialize_user,
-            'postId': self.serialize_post_id,
-            'version': self.serialize_version,
-            'text': self.serialize_text,
-            'creationTime': self.serialize_creation_time,
-            'lastEditTime': self.serialize_last_edit_time,
-            'score': self.serialize_score,
-            'ownScore': self.serialize_own_score,
+            "id": self.serialize_id,
+            "user": self.serialize_user,
+            "postId": self.serialize_post_id,
+            "version": self.serialize_version,
+            "text": self.serialize_text,
+            "creationTime": self.serialize_creation_time,
+            "lastEditTime": self.serialize_last_edit_time,
+            "score": self.serialize_score,
+            "ownScore": self.serialize_own_score,
         }
 
     def serialize_id(self) -> Any:
@@ -63,9 +64,8 @@ class CommentSerializer(serialization.BaseSerializer):
 
 
 def serialize_comment(
-        comment: model.Comment,
-        auth_user: model.User,
-        options: List[str] = []) -> rest.Response:
+    comment: model.Comment, auth_user: model.User, options: List[str] = []
+) -> rest.Response:
     if comment is None:
         return None
     return CommentSerializer(comment, auth_user).serialize(options)
@@ -74,21 +74,22 @@ def serialize_comment(
 def try_get_comment_by_id(comment_id: int) -> Optional[model.Comment]:
     comment_id = int(comment_id)
     return (
-        db.session
-        .query(model.Comment)
+        db.session.query(model.Comment)
         .filter(model.Comment.comment_id == comment_id)
-        .one_or_none())
+        .one_or_none()
+    )
 
 
 def get_comment_by_id(comment_id: int) -> model.Comment:
     comment = try_get_comment_by_id(comment_id)
     if comment:
         return comment
-    raise CommentNotFoundError('Comment %r not found.' % comment_id)
+    raise CommentNotFoundError("Comment %r not found." % comment_id)
 
 
 def create_comment(
-        user: model.User, post: model.Post, text: str) -> model.Comment:
+    user: model.User, post: model.Post, text: str
+) -> model.Comment:
     comment = model.Comment()
     comment.user = user
     comment.post = post
@@ -100,5 +101,5 @@ def create_comment(
 def update_comment_text(comment: model.Comment, text: str) -> None:
     assert comment
     if not text:
-        raise EmptyCommentTextError('Comment text cannot be empty.')
+        raise EmptyCommentTextError("Comment text cannot be empty.")
     comment.text = text

@@ -1,6 +1,6 @@
-from typing import List, Callable
-from szurubooru.rest.context import Context
+from typing import Callable, List
 
+from szurubooru.rest.context import Context
 
 pre_hooks = []  # type: List[Callable[[Context], None]]
 post_hooks = []  # type: List[Callable[[Context], None]]

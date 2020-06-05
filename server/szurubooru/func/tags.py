@@ -1,9 +1,11 @@
 import re
-from typing import Any, Optional, Tuple, List, Dict, Callable
 from datetime import datetime
+from typing import Any, Callable, Dict, List, Optional, Tuple
+
 import sqlalchemy as sa
-from szurubooru import config, db, model, errors, rest
-from szurubooru.func import util, tag_categories, serialization
+
+from szurubooru import config, db, errors, model, rest
+from szurubooru.func import serialization, tag_categories, util
 
 
 class TagNotFoundError(errors.NotFoundError):
@@ -36,10 +38,10 @@ class InvalidTagDescriptionError(errors.ValidationError):
 
 def _verify_name_validity(name: str) -> None:
     if util.value_exceeds_column_size(name, model.TagName.name):
-        raise InvalidTagNameError('Name is too long.')
-    name_regex = config.config['tag_name_regex']
+        raise InvalidTagNameError("Name is too long.")
+    name_regex = config.config["tag_name_regex"]
     if not re.match(name_regex, name):
-        raise InvalidTagNameError('Name must satisfy regex %r.' % name_regex)
+        raise InvalidTagNameError("Name must satisfy regex %r." % name_regex)
 
 
 def _get_names(tag: model.Tag) -> List[str]:
@@ -52,7 +54,8 @@ def _lower_list(names: List[str]) -> List[str]:
 
 
 def _check_name_intersection(
-        names1: List[str], names2: List[str], case_sensitive: bool) -> bool:
+    names1: List[str], names2: List[str], case_sensitive: bool
+) -> bool:
     if not case_sensitive:
         names1 = _lower_list(names1)
         names2 = _lower_list(names2)
@@ -66,15 +69,16 @@ def sort_tags(tags: List[model.Tag]) -> List[model.Tag]:
         key=lambda tag: (
             default_category_name == tag.category.name,
             tag.category.name,
-            tag.names[0].name)
+            tag.names[0].name,
+        ),
     )
 
 
 def serialize_relation(tag):
     return {
-        'names': [tag_name.name for tag_name in tag.names],
-        'category': tag.category.name,
-        'usages': tag.post_count,
+        "names": [tag_name.name for tag_name in tag.names],
+        "category": tag.category.name,
+        "usages": tag.post_count,
     }
 
 
@@ -84,15 +88,15 @@ class TagSerializer(serialization.BaseSerializer):
 
     def _serializers(self) -> Dict[str, Callable[[], Any]]:
         return {
-            'names': self.serialize_names,
-            'category': self.serialize_category,
-            'version': self.serialize_version,
-            'description': self.serialize_description,
-            'creationTime': self.serialize_creation_time,
-            'lastEditTime': self.serialize_last_edit_time,
-            'usages': self.serialize_usages,
-            'suggestions': self.serialize_suggestions,
-            'implications': self.serialize_implications,
+            "names": self.serialize_names,
+            "category": self.serialize_category,
+            "version": self.serialize_version,
+            "description": self.serialize_description,
+            "creationTime": self.serialize_creation_time,
+            "lastEditTime": self.serialize_last_edit_time,
+            "usages": self.serialize_usages,
+            "suggestions": self.serialize_suggestions,
+            "implications": self.serialize_implications,
         }
 
     def serialize_names(self) -> Any:
@@ -119,16 +123,19 @@ class TagSerializer(serialization.BaseSerializer):
     def serialize_suggestions(self) -> Any:
         return [
             serialize_relation(relation)
-            for relation in sort_tags(self.tag.suggestions)]
+            for relation in sort_tags(self.tag.suggestions)
+        ]
 
     def serialize_implications(self) -> Any:
         return [
             serialize_relation(relation)
-            for relation in sort_tags(self.tag.implications)]
+            for relation in sort_tags(self.tag.implications)
+        ]
 
 
 def serialize_tag(
-        tag: model.Tag, options: List[str] = []) -> Optional[rest.Response]:
+    tag: model.Tag, options: List[str] = []
+) -> Optional[rest.Response]:
     if not tag:
         return None
     return TagSerializer(tag).serialize(options)
@@ -136,17 +143,17 @@ def serialize_tag(
 
 def try_get_tag_by_name(name: str) -> Optional[model.Tag]:
     return (
-        db.session
-        .query(model.Tag)
+        db.session.query(model.Tag)
         .join(model.TagName)
         .filter(sa.func.lower(model.TagName.name) == name.lower())
-        .one_or_none())
+        .one_or_none()
+    )
 
 
 def get_tag_by_name(name: str) -> model.Tag:
     tag = try_get_tag_by_name(name)
     if not tag:
-        raise TagNotFoundError('Tag %r not found.' % name)
+        raise TagNotFoundError("Tag %r not found." % name)
     return tag
 
 
@@ -160,12 +167,16 @@ def get_tags_by_names(names: List[str]) -> List[model.Tag]:
         .filter(
             sa.sql.or_(
                 sa.func.lower(model.TagName.name) == name.lower()
-                for name in names))
-        .all())
+                for name in names
+            )
+        )
+        .all()
+    )
 
 
 def get_or_create_tags_by_names(
-        names: List[str]) -> Tuple[List[model.Tag], List[model.Tag]]:
+    names: List[str],
+) -> Tuple[List[model.Tag], List[model.Tag]]:
     names = util.icase_unique(names)
     existing_tags = get_tags_by_names(names)
     new_tags = []
@@ -174,7 +185,8 @@ def get_or_create_tags_by_names(
         found = False
         for existing_tag in existing_tags:
             if _check_name_intersection(
-                    _get_names(existing_tag), [name], False):
+                _get_names(existing_tag), [name], False
+            ):
                 found = True
                 break
         if not found:
@@ -182,7 +194,8 @@ def get_or_create_tags_by_names(
                 names=[name],
                 category_name=tag_category_name,
                 suggestions=[],
-                implications=[])
+                implications=[],
+            )
             db.session.add(new_tag)
             new_tags.append(new_tag)
     return existing_tags, new_tags
@@ -194,8 +207,7 @@ def get_tag_siblings(tag: model.Tag) -> List[model.Tag]:
     pt_alias1 = sa.orm.aliased(model.PostTag)
     pt_alias2 = sa.orm.aliased(model.PostTag)
     result = (
-        db.session
-        .query(tag_alias, sa.func.count(pt_alias2.post_id))
+        db.session.query(tag_alias, sa.func.count(pt_alias2.post_id))
         .join(pt_alias1, pt_alias1.tag_id == tag_alias.tag_id)
         .join(pt_alias2, pt_alias2.post_id == pt_alias1.post_id)
         .filter(pt_alias2.tag_id == tag.tag_id)
@@ -203,18 +215,23 @@ def get_tag_siblings(tag: model.Tag) -> List[model.Tag]:
         .group_by(tag_alias.tag_id)
         .order_by(sa.func.count(pt_alias2.post_id).desc())
         .order_by(tag_alias.first_name)
-        .limit(50))
+        .limit(50)
+    )
     return result
 
 
 def delete(source_tag: model.Tag) -> None:
     assert source_tag
     db.session.execute(
-        sa.sql.expression.delete(model.TagSuggestion)
-        .where(model.TagSuggestion.child_id == source_tag.tag_id))
+        sa.sql.expression.delete(model.TagSuggestion).where(
+            model.TagSuggestion.child_id == source_tag.tag_id
+        )
+    )
     db.session.execute(
-        sa.sql.expression.delete(model.TagImplication)
-        .where(model.TagImplication.child_id == source_tag.tag_id))
+        sa.sql.expression.delete(model.TagImplication).where(
+            model.TagImplication.child_id == source_tag.tag_id
+        )
+    )
     db.session.delete(source_tag)
 
 
@@ -222,25 +239,25 @@ def merge_tags(source_tag: model.Tag, target_tag: model.Tag) -> None:
     assert source_tag
     assert target_tag
     if source_tag.tag_id == target_tag.tag_id:
-        raise InvalidTagRelationError('Cannot merge tag with itself.')
+        raise InvalidTagRelationError("Cannot merge tag with itself.")
 
     def merge_posts(source_tag_id: int, target_tag_id: int) -> None:
         alias1 = model.PostTag
         alias2 = sa.orm.util.aliased(model.PostTag)
-        update_stmt = (
-            sa.sql.expression.update(alias1)
-            .where(alias1.tag_id == source_tag_id))
-        update_stmt = (
-            update_stmt
-            .where(
-                ~sa.exists()
-                .where(alias1.post_id == alias2.post_id)
-                .where(alias2.tag_id == target_tag_id)))
+        update_stmt = sa.sql.expression.update(alias1).where(
+            alias1.tag_id == source_tag_id
+        )
+        update_stmt = update_stmt.where(
+            ~sa.exists()
+            .where(alias1.post_id == alias2.post_id)
+            .where(alias2.tag_id == target_tag_id)
+        )
         update_stmt = update_stmt.values(tag_id=target_tag_id)
         db.session.execute(update_stmt)
 
     def merge_relations(
-            table: model.Base, source_tag_id: int, target_tag_id: int) -> None:
+        table: model.Base, source_tag_id: int, target_tag_id: int
+    ) -> None:
         alias1 = table
         alias2 = sa.orm.util.aliased(table)
         update_stmt = (
@@ -250,8 +267,10 @@ def merge_tags(source_tag: model.Tag, target_tag: model.Tag) -> None:
             .where(
                 ~sa.exists()
                 .where(alias2.child_id == alias1.child_id)
-                .where(alias2.parent_id == target_tag_id))
-            .values(parent_id=target_tag_id))
+                .where(alias2.parent_id == target_tag_id)
+            )
+            .values(parent_id=target_tag_id)
+        )
         db.session.execute(update_stmt)
 
         update_stmt = (
@@ -261,8 +280,10 @@ def merge_tags(source_tag: model.Tag, target_tag: model.Tag) -> None:
             .where(
                 ~sa.exists()
                 .where(alias2.parent_id == alias1.parent_id)
-                .where(alias2.child_id == target_tag_id))
-            .values(child_id=target_tag_id))
+                .where(alias2.child_id == target_tag_id)
+            )
+            .values(child_id=target_tag_id)
+        )
         db.session.execute(update_stmt)
 
     def merge_suggestions(source_tag_id: int, target_tag_id: int) -> None:
@@ -278,10 +299,11 @@ def merge_tags(source_tag: model.Tag, target_tag: model.Tag) -> None:
 
 
 def create_tag(
-        names: List[str],
-        category_name: str,
-        suggestions: List[str],
-        implications: List[str]) -> model.Tag:
+    names: List[str],
+    category_name: str,
+    suggestions: List[str],
+    implications: List[str],
+) -> model.Tag:
     tag = model.Tag()
     tag.creation_time = datetime.utcnow()
     update_tag_names(tag, names)
@@ -301,7 +323,7 @@ def update_tag_names(tag: model.Tag, names: List[str]) -> None:
     assert tag
     names = util.icase_unique([name for name in names if name])
     if not len(names):
-        raise InvalidTagNameError('At least one name must be specified.')
+        raise InvalidTagNameError("At least one name must be specified.")
     for name in names:
         _verify_name_validity(name)
 
@@ -314,7 +336,8 @@ def update_tag_names(tag: model.Tag, names: List[str]) -> None:
     existing_tags = db.session.query(model.TagName).filter(expr).all()
     if len(existing_tags):
         raise TagAlreadyExistsError(
-            'One of names is already used by another tag.')
+            "One of names is already used by another tag."
+        )
 
     # remove unwanted items
     for tag_name in tag.names[:]:
@@ -336,7 +359,7 @@ def update_tag_names(tag: model.Tag, names: List[str]) -> None:
 def update_tag_implications(tag: model.Tag, relations: List[str]) -> None:
     assert tag
     if _check_name_intersection(_get_names(tag), relations, False):
-        raise InvalidTagRelationError('Tag cannot imply itself.')
+        raise InvalidTagRelationError("Tag cannot imply itself.")
     tag.implications = get_tags_by_names(relations)
 
 
@@ -344,12 +367,12 @@ def update_tag_implications(tag: model.Tag, relations: List[str]) -> None:
 def update_tag_suggestions(tag: model.Tag, relations: List[str]) -> None:
     assert tag
     if _check_name_intersection(_get_names(tag), relations, False):
-        raise InvalidTagRelationError('Tag cannot suggest itself.')
+        raise InvalidTagRelationError("Tag cannot suggest itself.")
     tag.suggestions = get_tags_by_names(relations)
 
 
 def update_tag_description(tag: model.Tag, description: str) -> None:
     assert tag
     if util.value_exceeds_column_size(description, model.Tag.description):
-        raise InvalidTagDescriptionError('Description is too long.')
+        raise InvalidTagDescriptionError("Description is too long.")
     tag.description = description or None

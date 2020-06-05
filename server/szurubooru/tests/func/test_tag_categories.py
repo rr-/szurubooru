@@ -1,7 +1,9 @@
 from unittest.mock import patch
+
 import pytest
+
 from szurubooru import db, model
-from szurubooru.func import tag_categories, cache
+from szurubooru.func import cache, tag_categories
 
 
 @pytest.fixture(autouse=True)
@@ -14,7 +16,7 @@ def test_serialize_category_when_empty():
 
 
 def test_serialize_category(tag_category_factory, tag_factory):
-    category = tag_category_factory(name='name', color='color')
+    category = tag_category_factory(name="name", color="color")
     category.category_id = 1
     category.default = True
     tag1 = tag_factory(category=category)
@@ -23,36 +25,42 @@ def test_serialize_category(tag_category_factory, tag_factory):
     db.session.flush()
     result = tag_categories.serialize_category(category)
     assert result == {
-        'name': 'name',
-        'color': 'color',
-        'default': True,
-        'version': 1,
-        'usages': 2,
+        "name": "name",
+        "color": "color",
+        "default": True,
+        "version": 1,
+        "usages": 2,
     }
 
 
 def test_create_category_when_first():
-    with patch('szurubooru.func.tag_categories.update_category_name'), \
-            patch('szurubooru.func.tag_categories.update_category_color'):
-        category = tag_categories.create_category('name', 'color')
+    with patch("szurubooru.func.tag_categories.update_category_name"), patch(
+        "szurubooru.func.tag_categories.update_category_color"
+    ):
+        category = tag_categories.create_category("name", "color")
         assert category.default
-        tag_categories.update_category_name \
-            .assert_called_once_with(category, 'name')
-        tag_categories.update_category_color \
-            .assert_called_once_with(category, 'color')
+        tag_categories.update_category_name.assert_called_once_with(
+            category, "name"
+        )
+        tag_categories.update_category_color.assert_called_once_with(
+            category, "color"
+        )
 
 
 def test_create_category_when_subsequent(tag_category_factory):
     db.session.add(tag_category_factory())
     db.session.flush()
-    with patch('szurubooru.func.tag_categories.update_category_name'), \
-            patch('szurubooru.func.tag_categories.update_category_color'):
-        category = tag_categories.create_category('name', 'color')
+    with patch("szurubooru.func.tag_categories.update_category_name"), patch(
+        "szurubooru.func.tag_categories.update_category_color"
+    ):
+        category = tag_categories.create_category("name", "color")
         assert not category.default
-        tag_categories.update_category_name \
-            .assert_called_once_with(category, 'name')
-        tag_categories.update_category_color \
-            .assert_called_once_with(category, 'color')
+        tag_categories.update_category_name.assert_called_once_with(
+            category, "name"
+        )
+        tag_categories.update_category_color.assert_called_once_with(
+            category, "color"
+        )
 
 
 def test_update_category_name_with_empty_string(tag_category_factory):
@@ -62,38 +70,42 @@ def test_update_category_name_with_empty_string(tag_category_factory):
 
 
 def test_update_category_name_with_invalid_name(
-        config_injector, tag_category_factory):
-    config_injector({'tag_category_name_regex': '^[a-z]+$'})
+    config_injector, tag_category_factory
+):
+    config_injector({"tag_category_name_regex": "^[a-z]+$"})
     category = tag_category_factory()
     with pytest.raises(tag_categories.InvalidTagCategoryNameError):
-        tag_categories.update_category_name(category, '0')
+        tag_categories.update_category_name(category, "0")
 
 
 def test_update_category_name_with_too_long_string(
-        config_injector, tag_category_factory):
-    config_injector({'tag_category_name_regex': '^[a-z]+$'})
+    config_injector, tag_category_factory
+):
+    config_injector({"tag_category_name_regex": "^[a-z]+$"})
     category = tag_category_factory()
     with pytest.raises(tag_categories.InvalidTagCategoryNameError):
-        tag_categories.update_category_name(category, 'a' * 3000)
+        tag_categories.update_category_name(category, "a" * 3000)
 
 
 def test_update_category_name_reusing_other_name(
-        config_injector, tag_category_factory):
-    config_injector({'tag_category_name_regex': '.*'})
-    db.session.add(tag_category_factory(name='name'))
+    config_injector, tag_category_factory
+):
+    config_injector({"tag_category_name_regex": ".*"})
+    db.session.add(tag_category_factory(name="name"))
     db.session.flush()
     category = tag_category_factory()
     with pytest.raises(tag_categories.TagCategoryAlreadyExistsError):
-        tag_categories.update_category_name(category, 'name')
+        tag_categories.update_category_name(category, "name")
     with pytest.raises(tag_categories.TagCategoryAlreadyExistsError):
-        tag_categories.update_category_name(category, 'NAME')
+        tag_categories.update_category_name(category, "NAME")
 
 
 def test_update_category_name_reusing_own_name(
-        config_injector, tag_category_factory):
-    config_injector({'tag_category_name_regex': '.*'})
-    for name in ['name', 'NAME']:
-        category = tag_category_factory(name='name')
+    config_injector, tag_category_factory
+):
+    config_injector({"tag_category_name_regex": ".*"})
+    for name in ["name", "NAME"]:
+        category = tag_category_factory(name="name")
         db.session.add(category)
         db.session.flush()
         tag_categories.update_category_name(category, name)
@@ -110,16 +122,16 @@ def test_update_category_color_with_empty_string(tag_category_factory):
 def test_update_category_color_with_too_long_string(tag_category_factory):
     category = tag_category_factory()
     with pytest.raises(tag_categories.InvalidTagCategoryColorError):
-        tag_categories.update_category_color(category, 'a' * 3000)
+        tag_categories.update_category_color(category, "a" * 3000)
 
 
 def test_update_category_color_with_invalid_string(tag_category_factory):
     category = tag_category_factory()
     with pytest.raises(tag_categories.InvalidTagCategoryColorError):
-        tag_categories.update_category_color(category, 'NOPE')
+        tag_categories.update_category_color(category, "NOPE")
 
 
-@pytest.mark.parametrize('attempt', ['#aaaaaa', '#012345', '012345', 'red'])
+@pytest.mark.parametrize("attempt", ["#aaaaaa", "#012345", "012345", "red"])
 def test_update_category_color(attempt, tag_category_factory):
     category = tag_category_factory()
     tag_categories.update_category_color(category, attempt)
@@ -127,35 +139,35 @@ def test_update_category_color(attempt, tag_category_factory):
 
 
 def test_try_get_category_by_name(tag_category_factory):
-    category = tag_category_factory(name='test')
+    category = tag_category_factory(name="test")
     db.session.add(category)
     db.session.flush()
-    assert tag_categories.try_get_category_by_name('test') == category
-    assert tag_categories.try_get_category_by_name('TEST') == category
-    assert tag_categories.try_get_category_by_name('-') is None
+    assert tag_categories.try_get_category_by_name("test") == category
+    assert tag_categories.try_get_category_by_name("TEST") == category
+    assert tag_categories.try_get_category_by_name("-") is None
 
 
 def test_get_category_by_name(tag_category_factory):
-    category = tag_category_factory(name='test')
+    category = tag_category_factory(name="test")
     db.session.add(category)
     db.session.flush()
-    assert tag_categories.get_category_by_name('test') == category
-    assert tag_categories.get_category_by_name('TEST') == category
+    assert tag_categories.get_category_by_name("test") == category
+    assert tag_categories.get_category_by_name("TEST") == category
     with pytest.raises(tag_categories.TagCategoryNotFoundError):
-        tag_categories.get_category_by_name('-')
+        tag_categories.get_category_by_name("-")
 
 
 def test_get_all_category_names(tag_category_factory):
-    category1 = tag_category_factory(name='cat1')
-    category2 = tag_category_factory(name='cat2')
+    category1 = tag_category_factory(name="cat1")
+    category2 = tag_category_factory(name="cat2")
     db.session.add_all([category2, category1])
     db.session.flush()
-    assert tag_categories.get_all_category_names() == ['cat1', 'cat2']
+    assert tag_categories.get_all_category_names() == ["cat1", "cat2"]
 
 
 def test_get_all_categories(tag_category_factory):
-    category1 = tag_category_factory(name='cat1')
-    category2 = tag_category_factory(name='cat2')
+    category1 = tag_category_factory(name="cat1")
+    category2 = tag_category_factory(name="cat2")
     db.session.add_all([category2, category1])
     db.session.flush()
     assert tag_categories.get_all_categories() == [category1, category2]
@@ -211,12 +223,12 @@ def test_get_default_category_name_caching(tag_category_factory):
 
 
 def test_get_default_category():
-    with patch('szurubooru.func.tag_categories.try_get_default_category'):
+    with patch("szurubooru.func.tag_categories.try_get_default_category"):
         tag_categories.try_get_default_category.return_value = None
         with pytest.raises(tag_categories.TagCategoryNotFoundError):
             tag_categories.get_default_category()
-        tag_categories.try_get_default_category.return_value = 'mocked'
-        assert tag_categories.get_default_category() == 'mocked'
+        tag_categories.try_get_default_category.return_value = "mocked"
+        assert tag_categories.get_default_category() == "mocked"
 
 
 def test_set_default_category_with_previous_default(tag_category_factory):
@@ -257,9 +269,9 @@ def test_delete_category_with_usages(tag_category_factory, tag_factory):
 
 def test_delete_category(tag_category_factory):
     db.session.add(tag_category_factory())
-    category = tag_category_factory(name='target')
+    category = tag_category_factory(name="target")
     db.session.add(category)
     db.session.flush()
     tag_categories.delete_category(category)
     db.session.flush()
-    assert tag_categories.try_get_category_by_name('target') is None
+    assert tag_categories.try_get_category_by_name("target") is None

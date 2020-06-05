@@ -1,14 +1,14 @@
-'use strict';
+"use strict";
 
-const api = require('../api.js');
-const uri = require('../util/uri.js');
-const events = require('../events.js');
+const api = require("../api.js");
+const uri = require("../util/uri.js");
+const events = require("../events.js");
 
 class PoolCategory extends events.EventTarget {
     constructor() {
         super();
-        this._name = '';
-        this._color = '#000000';
+        this._name = "";
+        this._color = "#000000";
         this._poolCount = 0;
         this._isDefault = false;
         this._origName = null;
@@ -50,7 +50,7 @@ class PoolCategory extends events.EventTarget {
     }
 
     save() {
-        const detail = {version: this._version};
+        const detail = { version: this._version };
 
         if (this.name !== this._origName) {
             detail.name = this.name;
@@ -63,34 +63,39 @@ class PoolCategory extends events.EventTarget {
             return Promise.resolve();
         }
 
-        let promise = this._origName ?
-            api.put(
-                uri.formatApiLink('pool-category', this._origName),
-                detail) :
-            api.post(uri.formatApiLink('pool-categories'), detail);
+        let promise = this._origName
+            ? api.put(
+                  uri.formatApiLink("pool-category", this._origName),
+                  detail
+              )
+            : api.post(uri.formatApiLink("pool-categories"), detail);
 
-        return promise
-            .then(response => {
-                this._updateFromResponse(response);
-                this.dispatchEvent(new CustomEvent('change', {
+        return promise.then((response) => {
+            this._updateFromResponse(response);
+            this.dispatchEvent(
+                new CustomEvent("change", {
                     detail: {
                         poolCategory: this,
                     },
-                }));
-                return Promise.resolve();
-            });
+                })
+            );
+            return Promise.resolve();
+        });
     }
 
     delete() {
-        return api.delete(
-            uri.formatApiLink('pool-category', this._origName),
-            {version: this._version})
-            .then(response => {
-                this.dispatchEvent(new CustomEvent('delete', {
-                    detail: {
-                        poolCategory: this,
-                    },
-                }));
+        return api
+            .delete(uri.formatApiLink("pool-category", this._origName), {
+                version: this._version,
+            })
+            .then((response) => {
+                this.dispatchEvent(
+                    new CustomEvent("delete", {
+                        detail: {
+                            poolCategory: this,
+                        },
+                    })
+                );
                 return Promise.resolve();
             });
     }

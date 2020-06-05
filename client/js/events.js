@@ -1,12 +1,12 @@
-'use strict';
+"use strict";
 
 class EventTarget {
     constructor() {
         this.eventTarget = document.createDocumentFragment();
         for (let method of [
-            'addEventListener',
-            'dispatchEvent',
-            'removeEventListener'
+            "addEventListener",
+            "dispatchEvent",
+            "removeEventListener",
         ]) {
             this[method] = this.eventTarget[method].bind(this.eventTarget);
         }
@@ -20,17 +20,19 @@ function proxyEvent(source, target, sourceEventType, targetEventType) {
     if (!targetEventType) {
         targetEventType = sourceEventType;
     }
-    source.addEventListener(sourceEventType, e => {
-        target.dispatchEvent(new CustomEvent(targetEventType, {
-            detail: e.detail,
-        }));
+    source.addEventListener(sourceEventType, (e) => {
+        target.dispatchEvent(
+            new CustomEvent(targetEventType, {
+                detail: e.detail,
+            })
+        );
     });
 }
 
 module.exports = {
-    Success: 'success',
-    Error: 'error',
-    Info: 'info',
+    Success: "success",
+    Error: "error",
+    Info: "info",
 
     proxyEvent: proxyEvent,
     EventTarget: EventTarget,

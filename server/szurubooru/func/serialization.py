@@ -1,9 +1,10 @@
-from typing import Any, List, Dict, Callable
-from szurubooru import model, rest, errors
+from typing import Any, Callable, Dict, List
+
+from szurubooru import errors, model, rest
 
 
 def get_serialization_options(ctx: rest.Context) -> List[str]:
-    return ctx.get_param_as_list('fields', default=[])
+    return ctx.get_param_as_list("fields", default=[])
 
 
 class BaseSerializer:
@@ -17,8 +18,9 @@ class BaseSerializer:
         for key in options:
             if key not in field_factories:
                 raise errors.ValidationError(
-                    'Invalid key: %r. Valid keys: %r.' % (
-                        key, list(sorted(field_factories.keys()))))
+                    "Invalid key: %r. Valid keys: %r."
+                    % (key, list(sorted(field_factories.keys())))
+                )
             factory = field_factories[key]
             ret[key] = factory()
         return ret

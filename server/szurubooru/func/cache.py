@@ -1,5 +1,5 @@
-from typing import Any, List, Dict
 from datetime import datetime
+from typing import Any, Dict, List
 
 
 class LruCacheItem:
@@ -18,12 +18,11 @@ class LruCache:
     def insert_item(self, item: LruCacheItem) -> None:
         if item.key in self.hash:
             item_index = next(
-                i
-                for i, v in enumerate(self.item_list)
-                if v.key == item.key)
+                i for i, v in enumerate(self.item_list) if v.key == item.key
+            )
             self.item_list[:] = (
-                self.item_list[:item_index] +
-                self.item_list[item_index + 1:])
+                self.item_list[:item_index] + self.item_list[item_index + 1 :]
+            )
             self.item_list.insert(0, item)
         else:
             if len(self.item_list) > self.length:

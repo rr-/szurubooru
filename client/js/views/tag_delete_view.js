@@ -1,9 +1,9 @@
-'use strict';
+"use strict";
 
-const events = require('../events.js');
-const views = require('../util/views.js');
+const events = require("../events.js");
+const views = require("../util/views.js");
 
-const template = views.getTemplate('tag-delete');
+const template = views.getTemplate("tag-delete");
 
 class TagDeleteView extends events.EventTarget {
     constructor(ctx) {
@@ -13,7 +13,7 @@ class TagDeleteView extends events.EventTarget {
         this._tag = ctx.tag;
         views.replaceContent(this._hostNode, template(ctx));
         views.decorateValidator(this._formNode);
-        this._formNode.addEventListener('submit', e => this._evtSubmit(e));
+        this._formNode.addEventListener("submit", (e) => this._evtSubmit(e));
     }
 
     clearMessages() {
@@ -38,15 +38,17 @@ class TagDeleteView extends events.EventTarget {
 
     _evtSubmit(e) {
         e.preventDefault();
-        this.dispatchEvent(new CustomEvent('submit', {
-            detail: {
-                tag: this._tag,
-            },
-        }));
+        this.dispatchEvent(
+            new CustomEvent("submit", {
+                detail: {
+                    tag: this._tag,
+                },
+            })
+        );
     }
 
     get _formNode() {
-        return this._hostNode.querySelector('form');
+        return this._hostNode.querySelector("form");
     }
 }
 

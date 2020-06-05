@@ -1,18 +1,18 @@
-'use strict';
+"use strict";
 
-const events = require('../events.js');
-const api = require('../api.js');
-const views = require('../util/views.js');
-const FileDropperControl = require('../controls/file_dropper_control.js');
+const events = require("../events.js");
+const api = require("../api.js");
+const views = require("../util/views.js");
+const FileDropperControl = require("../controls/file_dropper_control.js");
 
-const template = views.getTemplate('user-edit');
+const template = views.getTemplate("user-edit");
 
 class UserEditView extends events.EventTarget {
     constructor(ctx) {
         super();
 
-        ctx.userNamePattern = api.getUserNameRegex() + (/|^$/).source;
-        ctx.passwordPattern = api.getPasswordRegex() + (/|^$/).source;
+        ctx.userNamePattern = api.getUserNameRegex() + /|^$/.source;
+        ctx.passwordPattern = api.getPasswordRegex() + /|^$/.source;
 
         this._user = ctx.user;
         this._hostNode = ctx.hostNode;
@@ -22,24 +22,26 @@ class UserEditView extends events.EventTarget {
         this._avatarContent = null;
         if (this._avatarContentInputNode) {
             this._avatarFileDropper = new FileDropperControl(
-                this._avatarContentInputNode, {lock: true});
-            this._avatarFileDropper.addEventListener('fileadd', e => {
+                this._avatarContentInputNode,
+                { lock: true }
+            );
+            this._avatarFileDropper.addEventListener("fileadd", (e) => {
                 this._hostNode.querySelector(
-                    '[name=avatar-style][value=manual]').checked = true;
+                    "[name=avatar-style][value=manual]"
+                ).checked = true;
                 this._avatarContent = e.detail.files[0];
             });
         }
 
-        for (let node of this._formNode.querySelectorAll('input, select')) {
-            node.addEventListener(
-                'change', e => {
-                    if (!e.target.classList.contains('anticomplete')) {
-                        this.dispatchEvent(new CustomEvent('change'));
-                    }
-                });
+        for (let node of this._formNode.querySelectorAll("input, select")) {
+            node.addEventListener("change", (e) => {
+                if (!e.target.classList.contains("anticomplete")) {
+                    this.dispatchEvent(new CustomEvent("change"));
+                }
+            });
         }
 
-        this._formNode.addEventListener('submit', e => this._evtSubmit(e));
+        this._formNode.addEventListener("submit", (e) => this._evtSubmit(e));
     }
 
     clearMessages() {
@@ -64,61 +66,63 @@ class UserEditView extends events.EventTarget {
 
     _evtSubmit(e) {
         e.preventDefault();
-        this.dispatchEvent(new CustomEvent('submit', {
-            detail: {
-                user: this._user,
+        this.dispatchEvent(
+            new CustomEvent("submit", {
+                detail: {
+                    user: this._user,
 
-                name: this._userNameInputNode ?
-                    this._userNameInputNode.value :
-                    undefined,
+                    name: this._userNameInputNode
+                        ? this._userNameInputNode.value
+                        : undefined,
 
-                email: this._emailInputNode ?
-                    this._emailInputNode.value :
-                    undefined,
+                    email: this._emailInputNode
+                        ? this._emailInputNode.value
+                        : undefined,
 
-                rank: this._rankInputNode ?
-                    this._rankInputNode.value :
-                    undefined,
+                    rank: this._rankInputNode
+                        ? this._rankInputNode.value
+                        : undefined,
 
-                avatarStyle: this._avatarStyleInputNode ?
-                    this._avatarStyleInputNode.value :
-                    undefined,
+                    avatarStyle: this._avatarStyleInputNode
+                        ? this._avatarStyleInputNode.value
+                        : undefined,
 
-                password: this._passwordInputNode ?
-                    this._passwordInputNode.value :
-                    undefined,
+                    password: this._passwordInputNode
+                        ? this._passwordInputNode.value
+                        : undefined,
 
-                avatarContent: this._avatarContent,
-            },
-        }));
+                    avatarContent: this._avatarContent,
+                },
+            })
+        );
     }
 
     get _formNode() {
-        return this._hostNode.querySelector('form');
+        return this._hostNode.querySelector("form");
     }
 
     get _rankInputNode() {
-        return this._formNode.querySelector('[name=rank]');
+        return this._formNode.querySelector("[name=rank]");
     }
 
     get _emailInputNode() {
-        return this._formNode.querySelector('[name=email]');
+        return this._formNode.querySelector("[name=email]");
     }
 
     get _userNameInputNode() {
-        return this._formNode.querySelector('[name=name]');
+        return this._formNode.querySelector("[name=name]");
     }
 
     get _passwordInputNode() {
-        return this._formNode.querySelector('[name=password]');
+        return this._formNode.querySelector("[name=password]");
     }
 
     get _avatarContentInputNode() {
-        return this._formNode.querySelector('#avatar-content');
+        return this._formNode.querySelector("#avatar-content");
     }
 
     get _avatarStyleInputNode() {
-        return this._formNode.querySelector('[name=avatar-style]:checked');
+        return this._formNode.querySelector("[name=avatar-style]:checked");
     }
 }
 

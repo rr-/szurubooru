@@ -1,6 +1,6 @@
-'use strict';
+"use strict";
 
-const nprogress = require('nprogress');
+const nprogress = require("nprogress");
 
 let nesting = 0;
 

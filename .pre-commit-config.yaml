@@ -1,50 +1,91 @@
 repos:
+
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.4.0
     hooks:
     -   id: trailing-whitespace
     -   id: end-of-file-fixer
     -   id: check-yaml
-    -   id: check-added-large-files
+
+-   repo: https://github.com/psf/black
+    rev: stable
+    hooks:
+      - id: black
+        files: server/szurubooru/
+        language_version: python3.8
+
+-   repo: https://github.com/timothycrosley/isort
+    rev: '4.3.21-2'
+    hooks:
+    -   id: isort
+        files: server/szurubooru/
+        exclude: server/szurubooru/migrations/env.py
+        additional_dependencies:
+        -   toml
+
+-   repo: https://github.com/prettier/prettier
+    rev: '2.0.5'
+    hooks:
+    -   id: prettier
+        files: client/js/
+        exclude: client/js/.gitignore
+        args: ['--config', 'client/.prettierrc.yml']
+
 -   repo: https://github.com/pre-commit/mirrors-eslint
     rev: v7.1.0
     hooks:
     -   id: eslint
         files: client/js/
         args: ['--fix']
+        additional_dependencies:
+        -   eslint-config-prettier
+
 -   repo: https://gitlab.com/pycqa/flake8
     rev: '3.8.2'
     hooks:
     -   id: flake8
         files: server/szurubooru/
         additional_dependencies:
-          -   flake8-print
-        args: ['--config=server/setup.cfg']
+        -   flake8-print
+        args: ['--config=server/.flake8']
+
 -   repo: local
     hooks:
-    -   id: pytest
-        name: pytest
-        entry: >-
-            bash -c
-            'docker build -f server/Dockerfile.test -t $(git rev-parse --short HEAD)-test server/
-            && docker run --rm -t $(git rev-parse --short HEAD)-test szurubooru/
-            && docker rmi --no-prune $(git rev-parse --short HEAD)-test'
-        language: system
-        types: [python]
-        files: server/szurubooru/
-        pass_filenames: false
     -   id: docker-build-client
-        name: Test building the client in Docker
-        entry: bash -c 'docker build -t szurubooru-client:$(git rev-parse --short HEAD) client/'
+        name: Docker - build client
+        entry: bash -c 'docker build client/'
         language: system
         types: [file]
         files: client/
         pass_filenames: false
+
     -   id: docker-build-server
-        name: Test building the server in Docker
-        entry: bash -c 'docker build -t szurubooru-server:$(git rev-parse --short HEAD) server/'
+        name: Docker - build server
+        entry: bash -c 'docker build server/'
         language: system
         types: [file]
         files: server/
         pass_filenames: false
+
+    -   id: pytest
+        name: pytest
+        entry: bash -c 'docker run --rm -t $(docker build -f server/Dockerfile.test -q server/) szurubooru/'
+        language: system
+        types: [python]
+        files: server/szurubooru/
+        exclude: server/szurubooru/migrations/
+        pass_filenames: false
+
+    -   id: pytest-cov
+        name: pytest
+        entry: bash -c 'docker run --rm -t $(docker build -f server/Dockerfile.test -q server/) --cov-report=term-missing:skip-covered --cov=szurubooru szurubooru/'
+        language: system
+        types: [python]
+        files: server/szurubooru/
+        exclude: server/szurubooru/migrations/
+        pass_filenames: false
+        verbose: true
+        stages: [manual]
+
+fail_fast: true
 exclude: LICENSE.md

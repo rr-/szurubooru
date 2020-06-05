@@ -1,11 +1,11 @@
 /* eslint-disable func-names, no-extend-native */
 
-'use strict';
+"use strict";
 
 // fix iterating over NodeList in Chrome and Opera
 NodeList.prototype[Symbol.iterator] = Array.prototype[Symbol.iterator];
 
-NodeList.prototype.querySelector = function(...args) {
+NodeList.prototype.querySelector = function (...args) {
     for (let node of this) {
         if (node.nodeType === 3) {
             continue;
@@ -18,7 +18,7 @@ NodeList.prototype.querySelector = function(...args) {
     return null;
 };
 
-NodeList.prototype.querySelectorAll = function(...args) {
+NodeList.prototype.querySelectorAll = function (...args) {
     let result = [];
     for (let node of this) {
         if (node.nodeType === 3) {
@@ -32,7 +32,7 @@ NodeList.prototype.querySelectorAll = function(...args) {
 };
 
 // non standard
-Node.prototype.prependChild = function(child) {
+Node.prototype.prependChild = function (child) {
     if (this.firstChild) {
         this.insertBefore(child, this.firstChild);
     } else {
@@ -41,29 +41,25 @@ Node.prototype.prependChild = function(child) {
 };
 
 // non standard
-Promise.prototype.always = function(onResolveOrReject) {
-    return this.then(
-        onResolveOrReject,
-        reason => {
-            onResolveOrReject(reason);
-            throw reason;
-        });
+Promise.prototype.always = function (onResolveOrReject) {
+    return this.then(onResolveOrReject, (reason) => {
+        onResolveOrReject(reason);
+        throw reason;
+    });
 };
 
 // non standard
-Number.prototype.between = function(a, b, inclusive) {
+Number.prototype.between = function (a, b, inclusive) {
     const min = Math.min(a, b);
     const max = Math.max(a, b);
-    return inclusive ?
-        this >= min && this <= max :
-        this > min && this < max;
+    return inclusive ? this >= min && this <= max : this > min && this < max;
 };
 
 // non standard
 Promise.prototype.abort = () => {};
 
 // non standard
-Date.prototype.addDays = function(days) {
+Date.prototype.addDays = function (days) {
     let dat = new Date(this.valueOf());
     dat.setDate(dat.getDate() + days);
     return dat;

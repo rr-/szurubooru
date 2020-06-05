@@ -5,5 +5,5 @@ from szurubooru.rest import middleware
 
 @middleware.pre_hook
 def process_request(ctx: rest.Context) -> None:
-    if ctx.method != 'GET':
+    if ctx.method != "GET":
         cache.purge()

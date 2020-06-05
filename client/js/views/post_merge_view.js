@@ -1,11 +1,11 @@
-'use strict';
+"use strict";
 
-const events = require('../events.js');
-const views = require('../util/views.js');
+const events = require("../events.js");
+const views = require("../util/views.js");
 
 const KEY_RETURN = 13;
-const template = views.getTemplate('post-merge');
-const sideTemplate = views.getTemplate('post-merge-side');
+const template = views.getTemplate("post-merge");
+const sideTemplate = views.getTemplate("post-merge-side");
 
 class PostMergeView extends events.EventTarget {
     constructor(ctx) {
@@ -23,7 +23,7 @@ class PostMergeView extends events.EventTarget {
         this._refreshLeftSide();
         this._refreshRightSide();
 
-        this._formNode.addEventListener('submit', e => this._evtSubmit(e));
+        this._formNode.addEventListener("submit", (e) => this._evtSubmit(e));
     }
 
     clearMessages() {
@@ -52,47 +52,61 @@ class PostMergeView extends events.EventTarget {
     }
 
     _refreshLeftSide() {
-        this._refreshSide(this._leftPost, this._leftSideNode, 'left', false);
+        this._refreshSide(this._leftPost, this._leftSideNode, "left", false);
     }
 
     _refreshRightSide() {
-        this._refreshSide(this._rightPost, this._rightSideNode, 'right', true);
+        this._refreshSide(this._rightPost, this._rightSideNode, "right", true);
     }
 
     _refreshSide(post, sideNode, sideName, isEditable) {
         views.replaceContent(
             sideNode,
-            sideTemplate(Object.assign({}, this._ctx, {post: post,
-                name: sideName,
-                editable: isEditable})));
+            sideTemplate(
+                Object.assign({}, this._ctx, {
+                    post: post,
+                    name: sideName,
+                    editable: isEditable,
+                })
+            )
+        );
 
-        let postIdNode = sideNode.querySelector('input[type=text]');
-        let searchButtonNode = sideNode.querySelector('input[type=button]');
+        let postIdNode = sideNode.querySelector("input[type=text]");
+        let searchButtonNode = sideNode.querySelector("input[type=button]");
         if (isEditable) {
-            postIdNode.addEventListener(
-                'keydown', e => this._evtPostSearchFieldKeyDown(e));
-            searchButtonNode.addEventListener(
-                'click', e => this._evtPostSearchButtonClick(e, postIdNode));
+            postIdNode.addEventListener("keydown", (e) =>
+                this._evtPostSearchFieldKeyDown(e)
+            );
+            searchButtonNode.addEventListener("click", (e) =>
+                this._evtPostSearchButtonClick(e, postIdNode)
+            );
         }
     }
 
     _evtSubmit(e) {
         e.preventDefault();
         const checkedTargetPost = this._formNode.querySelector(
-            '.target-post :checked').value;
+            ".target-post :checked"
+        ).value;
         const checkedTargetPostContent = this._formNode.querySelector(
-            '.target-post-content :checked').value;
-        this.dispatchEvent(new CustomEvent('submit', {
-            detail: {
-                post: checkedTargetPost === 'left' ?
-                    this._rightPost :
-                    this._leftPost,
-                targetPost: checkedTargetPost === 'left' ?
-                    this._leftPost :
-                    this._rightPost,
-                useOldContent: checkedTargetPostContent !== checkedTargetPost,
-            },
-        }));
+            ".target-post-content :checked"
+        ).value;
+        this.dispatchEvent(
+            new CustomEvent("submit", {
+                detail: {
+                    post:
+                        checkedTargetPost === "left"
+                            ? this._rightPost
+                            : this._leftPost,
+                    targetPost:
+                        checkedTargetPost === "left"
+                            ? this._leftPost
+                            : this._rightPost,
+                    useOldContent:
+                        checkedTargetPostContent !== checkedTargetPost,
+                },
+            })
+        );
     }
 
     _evtPostSearchFieldKeyDown(e) {
@@ -102,33 +116,37 @@ class PostMergeView extends events.EventTarget {
         }
         e.target.blur();
         e.preventDefault();
-        this.dispatchEvent(new CustomEvent('select', {
-            detail: {
-                postId: e.target.value,
-            },
-        }));
+        this.dispatchEvent(
+            new CustomEvent("select", {
+                detail: {
+                    postId: e.target.value,
+                },
+            })
+        );
     }
 
     _evtPostSearchButtonClick(e, textNode) {
         e.target.blur();
         e.preventDefault();
-        this.dispatchEvent(new CustomEvent('select', {
-            detail: {
-                postId: textNode.value,
-            },
-        }));
+        this.dispatchEvent(
+            new CustomEvent("select", {
+                detail: {
+                    postId: textNode.value,
+                },
+            })
+        );
     }
 
     get _formNode() {
-        return this._hostNode.querySelector('form');
+        return this._hostNode.querySelector("form");
     }
 
     get _leftSideNode() {
-        return this._hostNode.querySelector('.left-post-container');
+        return this._hostNode.querySelector(".left-post-container");
     }
 
     get _rightSideNode() {
-        return this._hostNode.querySelector('.right-post-container');
+        return this._hostNode.querySelector(".right-post-container");
     }
 }
 

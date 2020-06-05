@@ -1,27 +1,27 @@
-'use strict';
+"use strict";
 
-require('../util/polyfill.js');
-const api = require('../api.js');
-const templates = require('../templates.js');
+require("../util/polyfill.js");
+const api = require("../api.js");
+const templates = require("../templates.js");
 const domParser = new DOMParser();
-const misc = require('./misc.js');
-const uri = require('./uri.js');
+const misc = require("./misc.js");
+const uri = require("./uri.js");
 
 function _imbueId(options) {
     if (!options.id) {
-        options.id = 'gen-' + Math.random().toString(36).substring(7);
+        options.id = "gen-" + Math.random().toString(36).substring(7);
     }
 }
 
 function _makeLabel(options, attrs) {
     if (!options.text) {
-        return '';
+        return "";
     }
     if (!attrs) {
         attrs = {};
     }
     attrs.for = options.id;
-    return makeElement('label', attrs, options.text);
+    return makeElement("label", attrs, options.text);
 }
 
 function makeFileSize(fileSize) {
@@ -34,251 +34,282 @@ function makeMarkdown(text) {
 
 function makeRelativeTime(time) {
     return makeElement(
-        'time', {datetime: time, title: time}, misc.formatRelativeTime(time));
+        "time",
+        { datetime: time, title: time },
+        misc.formatRelativeTime(time)
+    );
 }
 
 function makeThumbnail(url) {
     return makeElement(
-        'span',
-        url ?
-            {class: 'thumbnail', style: `background-image: url(\'${url}\')`} :
-            {class: 'thumbnail empty'},
-        makeElement('img', {alt: 'thumbnail', src: url}));
+        "span",
+        url
+            ? {
+                  class: "thumbnail",
+                  style: `background-image: url(\'${url}\')`,
+              }
+            : { class: "thumbnail empty" },
+        makeElement("img", { alt: "thumbnail", src: url })
+    );
 }
 
 function makeRadio(options) {
     _imbueId(options);
     return makeElement(
-        'label',
-        {for: options.id},
-        makeElement(
-            'input',
-            {
-                id: options.id,
-                name: options.name,
-                value: options.value,
-                type: 'radio',
-                checked: options.selectedValue === options.value,
-                disabled: options.readonly,
-                required: options.required,
-            }),
-        makeElement('span', {class: 'radio'}, options.text));
+        "label",
+        { for: options.id },
+        makeElement("input", {
+            id: options.id,
+            name: options.name,
+            value: options.value,
+            type: "radio",
+            checked: options.selectedValue === options.value,
+            disabled: options.readonly,
+            required: options.required,
+        }),
+        makeElement("span", { class: "radio" }, options.text)
+    );
 }
 
 function makeCheckbox(options) {
     _imbueId(options);
     return makeElement(
-        'label',
-        {for: options.id},
-        makeElement(
-            'input',
-            {
-                id: options.id,
-                name: options.name,
-                value: options.value,
-                type: 'checkbox',
-                checked: options.checked !== undefined ?
-                    options.checked : false,
-                disabled: options.readonly,
-                required: options.required,
-            }),
-        makeElement('span', {class: 'checkbox'}, options.text));
+        "label",
+        { for: options.id },
+        makeElement("input", {
+            id: options.id,
+            name: options.name,
+            value: options.value,
+            type: "checkbox",
+            checked: options.checked !== undefined ? options.checked : false,
+            disabled: options.readonly,
+            required: options.required,
+        }),
+        makeElement("span", { class: "checkbox" }, options.text)
+    );
 }
 
 function makeSelect(options) {
-    return _makeLabel(options) +
+    return (
+        _makeLabel(options) +
         makeElement(
-            'select',
+            "select",
             {
                 id: options.id,
                 name: options.name,
                 disabled: options.readonly,
             },
-            ...Object.keys(options.keyValues).map(key => makeElement(
-                'option',
-                {value: key, selected: key === options.selectedKey},
-                options.keyValues[key])));
+            ...Object.keys(options.keyValues).map((key) =>
+                makeElement(
+                    "option",
+                    { value: key, selected: key === options.selectedKey },
+                    options.keyValues[key]
+                )
+            )
+        )
+    );
 }
 
 function makeInput(options) {
-    options.value = options.value || '';
-    return _makeLabel(options) + makeElement('input', options);
+    options.value = options.value || "";
+    return _makeLabel(options) + makeElement("input", options);
 }
 
 function makeButton(options) {
-    options.type = 'button';
+    options.type = "button";
     return makeInput(options);
 }
 
 function makeTextInput(options) {
-    options.type = 'text';
+    options.type = "text";
     return makeInput(options);
 }
 
 function makeTextarea(options) {
-    const value = options.value || '';
+    const value = options.value || "";
     delete options.value;
-    return _makeLabel(options) + makeElement('textarea', options, value);
+    return _makeLabel(options) + makeElement("textarea", options, value);
 }
 
 function makePasswordInput(options) {
-    options.type = 'password';
+    options.type = "password";
     return makeInput(options);
 }
 
 function makeEmailInput(options) {
-    options.type = 'email';
+    options.type = "email";
     return makeInput(options);
 }
 
 function makeColorInput(options) {
-    const textInput = makeElement(
-        'input', {
-            type: 'text',
-            value: options.value || '',
-            required: options.required,
-            class: 'color',
-        });
-    const backgroundPreviewNode = makeElement(
-        'div',
-        {
-            class: 'preview background-preview',
-            style:
-                `border-color: ${options.value};
+    const textInput = makeElement("input", {
+        type: "text",
+        value: options.value || "",
+        required: options.required,
+        class: "color",
+    });
+    const backgroundPreviewNode = makeElement("div", {
+        class: "preview background-preview",
+        style: `border-color: ${options.value};
                 background-color: ${options.value}`,
-        });
-    const textPreviewNode = makeElement(
-        'div',
-        {
-            class: 'preview text-preview',
-            style:
-                `border-color: ${options.value};
+    });
+    const textPreviewNode = makeElement("div", {
+        class: "preview text-preview",
+        style: `border-color: ${options.value};
                 color: ${options.value}`,
-        });
+    });
     return makeElement(
-        'label', {class: 'color'}, textInput, backgroundPreviewNode, textPreviewNode);
+        "label",
+        { class: "color" },
+        textInput,
+        backgroundPreviewNode,
+        textPreviewNode
+    );
 }
 
 function makeNumericInput(options) {
-    options.type = 'number';
+    options.type = "number";
     return makeInput(options);
 }
 
 function makeDateInput(options) {
-    options.type = 'date';
-    return makeInput(options)
+    options.type = "date";
+    return makeInput(options);
 }
 
 function getPostUrl(id, parameters) {
     return uri.formatClientLink(
-        'post', id, parameters ? {query: parameters.query} : {});
+        "post",
+        id,
+        parameters ? { query: parameters.query } : {}
+    );
 }
 
 function getPostEditUrl(id, parameters) {
     return uri.formatClientLink(
-        'post', id, 'edit', parameters ? {query: parameters.query} : {});
+        "post",
+        id,
+        "edit",
+        parameters ? { query: parameters.query } : {}
+    );
 }
 
 function makePostLink(id, includeHash) {
     let text = id;
     if (includeHash) {
-        text = '@' + id;
+        text = "@" + id;
     }
-    return api.hasPrivilege('posts:view') ?
-        makeElement(
-            'a',
-            {href: uri.formatClientLink('post', id)},
-            misc.escapeHtml(text)) :
-        misc.escapeHtml(text);
+    return api.hasPrivilege("posts:view")
+        ? makeElement(
+              "a",
+              { href: uri.formatClientLink("post", id) },
+              misc.escapeHtml(text)
+          )
+        : misc.escapeHtml(text);
 }
 
 function makeTagLink(name, includeHash, includeCount, tag) {
-    const category = tag ? tag.category : 'unknown';
+    const category = tag ? tag.category : "unknown";
     let text = misc.getPrettyTagName(name);
     if (includeHash === true) {
-        text = '#' + text;
+        text = "#" + text;
     }
     if (includeCount === true) {
-        text += ' (' + (tag ? tag.postCount : 0) + ')';
+        text += " (" + (tag ? tag.postCount : 0) + ")";
     }
-    return api.hasPrivilege('tags:view') ?
-        makeElement(
-            'a',
-            {
-                href: uri.formatClientLink('tag', name),
-                class: misc.makeCssName(category, 'tag'),
-            },
-            misc.escapeHtml(text)) :
-        makeElement(
-            'span',
-            {class: misc.makeCssName(category, 'tag')},
-            misc.escapeHtml(text));
+    return api.hasPrivilege("tags:view")
+        ? makeElement(
+              "a",
+              {
+                  href: uri.formatClientLink("tag", name),
+                  class: misc.makeCssName(category, "tag"),
+              },
+              misc.escapeHtml(text)
+          )
+        : makeElement(
+              "span",
+              { class: misc.makeCssName(category, "tag") },
+              misc.escapeHtml(text)
+          );
 }
 
 function makePoolLink(id, includeHash, includeCount, pool, name) {
-    const category = pool ? pool.category : 'unknown';
+    const category = pool ? pool.category : "unknown";
     let text = name ? name : pool.names[0];
     if (includeHash === true) {
-        text = '#' + text;
+        text = "#" + text;
     }
     if (includeCount === true) {
-        text += ' (' + (pool ? pool.postCount : 0) + ')';
+        text += " (" + (pool ? pool.postCount : 0) + ")";
     }
-    return api.hasPrivilege('pools:view') ?
-        makeElement(
-            'a',
-            {
-                href: uri.formatClientLink('pool', id),
-                class: misc.makeCssName(category, 'pool'),
-            },
-            misc.escapeHtml(text)) :
-        makeElement(
-            'span',
-            {class: misc.makeCssName(category, 'pool')},
-            misc.escapeHtml(text));
+    return api.hasPrivilege("pools:view")
+        ? makeElement(
+              "a",
+              {
+                  href: uri.formatClientLink("pool", id),
+                  class: misc.makeCssName(category, "pool"),
+              },
+              misc.escapeHtml(text)
+          )
+        : makeElement(
+              "span",
+              { class: misc.makeCssName(category, "pool") },
+              misc.escapeHtml(text)
+          );
 }
 
 function makeUserLink(user) {
     let text = makeThumbnail(user ? user.avatarUrl : null);
-    text += user && user.name ? misc.escapeHtml(user.name) : 'Anonymous';
-    const link = user && api.hasPrivilege('users:view') ?
-        makeElement(
-            'a', {href: uri.formatClientLink('user', user.name)}, text) :
-        text;
-    return makeElement('span', {class: 'user'}, link);
+    text += user && user.name ? misc.escapeHtml(user.name) : "Anonymous";
+    const link =
+        user && api.hasPrivilege("users:view")
+            ? makeElement(
+                  "a",
+                  { href: uri.formatClientLink("user", user.name) },
+                  text
+              )
+            : text;
+    return makeElement("span", { class: "user" }, link);
 }
 
 function makeFlexboxAlign(options) {
     return [...misc.range(20)]
-        .map(() => '<li class="flexbox-dummy"></li>').join('');
+        .map(() => '<li class="flexbox-dummy"></li>')
+        .join("");
 }
 
 function makeAccessKey(html, key) {
-    const regex = new RegExp('(' + key + ')', 'i');
+    const regex = new RegExp("(" + key + ")", "i");
     html = html.replace(
-        regex, '<span class="access-key" data-accesskey="$1">$1</span>');
+        regex,
+        '<span class="access-key" data-accesskey="$1">$1</span>'
+    );
     return html;
 }
 
 function _serializeElement(name, attributes) {
     return [name]
-        .concat(Object.keys(attributes).map(key => {
-            if (attributes[key] === true) {
-                return key;
-            } else if (attributes[key] === false ||
-                    attributes[key] === undefined) {
-                return '';
-            }
-            const attribute = misc.escapeHtml(attributes[key] || '');
-            return `${key}="${attribute}"`;
-        }))
-        .join(' ');
+        .concat(
+            Object.keys(attributes).map((key) => {
+                if (attributes[key] === true) {
+                    return key;
+                } else if (
+                    attributes[key] === false ||
+                    attributes[key] === undefined
+                ) {
+                    return "";
+                }
+                const attribute = misc.escapeHtml(attributes[key] || "");
+                return `${key}="${attribute}"`;
+            })
+        )
+        .join(" ");
 }
 
 function makeElement(name, attrs, ...content) {
-    return content.length !== undefined ?
-        `<${_serializeElement(name, attrs)}>${content.join('')}</${name}>` :
-        `<${_serializeElement(name, attrs)}/>`;
+    return content.length !== undefined
+        ? `<${_serializeElement(name, attrs)}>${content.join("")}</${name}>`
+        : `<${_serializeElement(name, attrs)}/>`;
 }
 
 function emptyContent(target) {
@@ -302,25 +333,25 @@ function replaceContent(target, source) {
 
 function showMessage(target, message, className) {
     if (!message) {
-        message = 'Unknown message';
+        message = "Unknown message";
     }
-    const messagesHolderNode = target.querySelector('.messages');
+    const messagesHolderNode = target.querySelector(".messages");
     if (!messagesHolderNode) {
         return false;
     }
-    const textNode = document.createElement('div');
-    textNode.innerHTML = message.replace(/\n/g, '<br/>');
-    textNode.classList.add('message');
+    const textNode = document.createElement("div");
+    textNode.innerHTML = message.replace(/\n/g, "<br/>");
+    textNode.classList.add("message");
     textNode.classList.add(className);
-    const wrapperNode = document.createElement('div');
-    wrapperNode.classList.add('message-wrapper');
+    const wrapperNode = document.createElement("div");
+    wrapperNode.classList.add("message-wrapper");
     wrapperNode.appendChild(textNode);
     messagesHolderNode.appendChild(wrapperNode);
     return true;
 }
 
 function appendExclamationMark() {
-    if (!document.title.startsWith('!')) {
+    if (!document.title.startsWith("!")) {
         document.oldTitle = document.title;
         document.title = `! ${document.title}`;
     }
@@ -328,15 +359,15 @@ function appendExclamationMark() {
 
 function showError(target, message) {
     appendExclamationMark();
-    return showMessage(target, misc.formatInlineMarkdown(message), 'error');
+    return showMessage(target, misc.formatInlineMarkdown(message), "error");
 }
 
 function showSuccess(target, message) {
-    return showMessage(target, misc.formatInlineMarkdown(message), 'success');
+    return showMessage(target, misc.formatInlineMarkdown(message), "success");
 }
 
 function showInfo(target, message) {
-    return showMessage(target, misc.formatInlineMarkdown(message), 'info');
+    return showMessage(target, misc.formatInlineMarkdown(message), "info");
 }
 
 function clearMessages(target) {
@@ -344,7 +375,7 @@ function clearMessages(target) {
         document.title = document.oldTitle;
         document.oldTitle = null;
     }
-    for (let messagesHolderNode of target.querySelectorAll('.messages')) {
+    for (let messagesHolderNode of target.querySelectorAll(".messages")) {
         emptyContent(messagesHolderNode);
     }
 }
@@ -352,15 +383,15 @@ function clearMessages(target) {
 function htmlToDom(html) {
     // code taken from jQuery + Krasimir Tsonev's blog
     const wrapMap = {
-        _: [1, '<div>', '</div>'],
-        option: [1, '<select multiple>', '</select>'],
-        legend: [1, '<fieldset>', '</fieldset>'],
-        area: [1, '<map>', '</map>'],
-        param: [1, '<object>', '</object>'],
-        thead: [1, '<table>', '</table>'],
-        tr: [2, '<table><tbody>', '</tbody></table>'],
-        td: [3, '<table><tbody><tr>', '</tr></tbody></table>'],
-        col: [2, '<table><tbody></tbody><colgroup>', '</colgroup></table>'],
+        _: [1, "<div>", "</div>"],
+        option: [1, "<select multiple>", "</select>"],
+        legend: [1, "<fieldset>", "</fieldset>"],
+        area: [1, "<map>", "</map>"],
+        param: [1, "<object>", "</object>"],
+        thead: [1, "<table>", "</table>"],
+        tr: [2, "<table><tbody>", "</tbody></table>"],
+        td: [3, "<table><tbody><tr>", "</tr></tbody></table>"],
+        col: [2, "<table><tbody></tbody><colgroup>", "</colgroup></table>"],
     };
     wrapMap.optgroup = wrapMap.option;
     wrapMap.tbody = wrapMap.thead;
@@ -369,8 +400,8 @@ function htmlToDom(html) {
     wrapMap.caption = wrapMap.thead;
     wrapMap.th = wrapMap.td;
 
-    let element = document.createElement('div');
-    const match = (/<\s*(\w+)[^>]*?>/g).exec(html);
+    let element = document.createElement("div");
+    const match = /<\s*(\w+)[^>]*?>/g.exec(html);
 
     if (match) {
         const tag = match[1];
@@ -382,9 +413,9 @@ function htmlToDom(html) {
     } else {
         element.innerHTML = html;
     }
-    return element.childNodes.length > 1 ?
-        element.childNodes :
-        element.firstChild;
+    return element.childNodes.length > 1
+        ? element.childNodes
+        : element.firstChild;
 }
 
 function getTemplate(templatePath) {
@@ -392,7 +423,7 @@ function getTemplate(templatePath) {
         throw `Missing template: ${templatePath}`;
     }
     const templateFactory = templates[templatePath];
-    return ctx => {
+    return (ctx) => {
         if (!ctx) {
             ctx = {};
         }
@@ -423,7 +454,7 @@ function getTemplate(templatePath) {
             makeElement: makeElement,
             makeCssName: misc.makeCssName,
             makeNumericInput: makeNumericInput,
-            formatClientLink: uri.formatClientLink
+            formatClientLink: uri.formatClientLink,
         });
         return htmlToDom(templateFactory(ctx));
     };
@@ -432,49 +463,51 @@ function getTemplate(templatePath) {
 function decorateValidator(form) {
     // postpone showing form fields validity until user actually tries
     // to submit it (seeing red/green form w/o doing anything breaks POLA)
-    let submitButton = form.querySelector('.buttons input');
+    let submitButton = form.querySelector(".buttons input");
     if (!submitButton) {
-        submitButton = form.querySelector('input[type=submit]');
+        submitButton = form.querySelector("input[type=submit]");
     }
     if (submitButton) {
-        submitButton.addEventListener('click', e => {
-            form.classList.add('show-validation');
+        submitButton.addEventListener("click", (e) => {
+            form.classList.add("show-validation");
         });
     }
-    form.addEventListener('submit', e => {
-        form.classList.remove('show-validation');
+    form.addEventListener("submit", (e) => {
+        form.classList.remove("show-validation");
     });
 }
 
 function disableForm(form) {
-    for (let input of form.querySelectorAll('input')) {
+    for (let input of form.querySelectorAll("input")) {
         input.disabled = true;
     }
 }
 
 function enableForm(form) {
-    for (let input of form.querySelectorAll('input')) {
+    for (let input of form.querySelectorAll("input")) {
         input.disabled = false;
     }
 }
 
 function syncScrollPosition() {
-    window.requestAnimationFrame(
-        () => {
-            if (history.state && Object.prototype.hasOwnProperty.call(history.state, 'scrollX')) {
-                window.scrollTo(history.state.scrollX, history.state.scrollY);
-            } else {
-                window.scrollTo(0, 0);
-            }
-        });
+    window.requestAnimationFrame(() => {
+        if (
+            history.state &&
+            Object.prototype.hasOwnProperty.call(history.state, "scrollX")
+        ) {
+            window.scrollTo(history.state.scrollX, history.state.scrollY);
+        } else {
+            window.scrollTo(0, 0);
+        }
+    });
 }
 
 function slideDown(element) {
     const duration = 500;
     return new Promise((resolve, reject) => {
         const height = element.getBoundingClientRect().height;
-        element.style.maxHeight = '0';
-        element.style.overflow = 'hidden';
+        element.style.maxHeight = "0";
+        element.style.overflow = "hidden";
         window.setTimeout(() => {
             element.style.transition = `all ${duration}ms ease`;
             element.style.maxHeight = `${height}px`;
@@ -489,7 +522,7 @@ function slideUp(element) {
     const duration = 500;
     return new Promise((resolve, reject) => {
         const height = element.getBoundingClientRect().height;
-        element.style.overflow = 'hidden';
+        element.style.overflow = "hidden";
         element.style.maxHeight = `${height}px`;
         element.style.transition = `all ${duration}ms ease`;
         window.setTimeout(() => {
@@ -502,26 +535,27 @@ function slideUp(element) {
 }
 
 function monitorNodeRemoval(monitoredNode, callback) {
-    const mutationObserver = new MutationObserver(
-        mutations => {
-            for (let mutation of mutations) {
-                for (let node of mutation.removedNodes) {
-                    if (node.contains(monitoredNode)) {
-                        mutationObserver.disconnect();
-                        callback();
-                        return;
-                    }
+    const mutationObserver = new MutationObserver((mutations) => {
+        for (let mutation of mutations) {
+            for (let node of mutation.removedNodes) {
+                if (node.contains(monitoredNode)) {
+                    mutationObserver.disconnect();
+                    callback();
+                    return;
                 }
             }
-        });
-    mutationObserver.observe(
-        document.body, {childList: true, subtree: true});
+        }
+    });
+    mutationObserver.observe(document.body, {
+        childList: true,
+        subtree: true,
+    });
 }
 
-document.addEventListener('input', e => {
-    if (e.target.classList.contains('color')) {
-        let bkNode = e.target.parentNode.querySelector('.background-preview');
-        let textNode = e.target.parentNode.querySelector('.text-preview');
+document.addEventListener("input", (e) => {
+    if (e.target.classList.contains("color")) {
+        let bkNode = e.target.parentNode.querySelector(".background-preview");
+        let textNode = e.target.parentNode.querySelector(".text-preview");
         bkNode.style.backgroundColor = e.target.value;
         bkNode.style.borderColor = e.target.value;
         textNode.style.color = e.target.value;
@@ -530,8 +564,8 @@ document.addEventListener('input', e => {
 });
 
 // prevent opening buttons in new tabs
-document.addEventListener('click', e => {
-    if (e.target.getAttribute('href') === '' && e.which === 2) {
+document.addEventListener("click", (e) => {
+    if (e.target.getAttribute("href") === "" && e.which === 2) {
         e.preventDefault();
     }
 });

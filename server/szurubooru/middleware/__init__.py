@@ -1,4 +1,4 @@
-''' Various hooks that get executed for each request. '''
+""" Various hooks that get executed for each request. """
 
 import szurubooru.middleware.authenticator
 import szurubooru.middleware.cache_purger

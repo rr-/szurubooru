@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
 
 def get_list_diff(old: List[Any], new: List[Any]) -> Any:
@@ -16,8 +16,11 @@ def get_list_diff(old: List[Any], new: List[Any]) -> Any:
             equal = False
             added.append(item)
 
-    return None if equal else {
-        'type': 'list change', 'added': added, 'removed': removed}
+    return (
+        None
+        if equal
+        else {"type": "list change", "added": added, "removed": removed}
+    )
 
 
 def get_dict_diff(old: Dict[str, Any], new: Dict[str, Any]) -> Any:
@@ -40,23 +43,20 @@ def get_dict_diff(old: Dict[str, Any], new: Dict[str, Any]) -> Any:
                 else:
                     equal = False
                     value[key] = {
-                        'type': 'primitive change',
-                        'old-value': old[key],
-                        'new-value': new[key],
+                        "type": "primitive change",
+                        "old-value": old[key],
+                        "new-value": new[key],
                     }
         else:
             equal = False
-            value[key] = {
-                'type': 'deleted property',
-                'value': old[key]
-            }
+            value[key] = {"type": "deleted property", "value": old[key]}
 
     for key in new.keys():
         if key not in old:
             equal = False
             value[key] = {
-                'type': 'added property',
-                'value': new[key],
+                "type": "added property",
+                "value": new[key],
             }
 
-    return None if equal else {'type': 'object change', 'value': value}
+    return None if equal else {"type": "object change", "value": value}

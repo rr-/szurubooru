@@ -1,8 +1,8 @@
-'use strict';
+"use strict";
 
-const api = require('../api.js');
-const uri = require('../util/uri.js');
-const events = require('../events.js');
+const api = require("../api.js");
+const uri = require("../util/uri.js");
+const events = require("../events.js");
 
 class Comment extends events.EventTarget {
     constructor() {
@@ -31,7 +31,7 @@ class Comment extends events.EventTarget {
     }
 
     get text() {
-        return this._text || '';
+        return this._text || "";
     }
 
     get user() {
@@ -63,47 +63,57 @@ class Comment extends events.EventTarget {
             version: this._version,
             text: this._text,
         };
-        let promise = this._id ?
-            api.put(uri.formatApiLink('comment', this.id), detail) :
-            api.post(uri.formatApiLink('comments'),
-                Object.assign({postId: this._postId}, detail));
+        let promise = this._id
+            ? api.put(uri.formatApiLink("comment", this.id), detail)
+            : api.post(
+                  uri.formatApiLink("comments"),
+                  Object.assign({ postId: this._postId }, detail)
+              );
 
-        return promise.then(response => {
+        return promise.then((response) => {
             this._updateFromResponse(response);
-            this.dispatchEvent(new CustomEvent('change', {
-                detail: {
-                    comment: this,
-                },
-            }));
+            this.dispatchEvent(
+                new CustomEvent("change", {
+                    detail: {
+                        comment: this,
+                    },
+                })
+            );
             return Promise.resolve();
         });
     }
 
     delete() {
-        return api.delete(
-            uri.formatApiLink('comment', this.id),
-            {version: this._version})
-            .then(response => {
-                this.dispatchEvent(new CustomEvent('delete', {
-                    detail: {
-                        comment: this,
-                    },
-                }));
+        return api
+            .delete(uri.formatApiLink("comment", this.id), {
+                version: this._version,
+            })
+            .then((response) => {
+                this.dispatchEvent(
+                    new CustomEvent("delete", {
+                        detail: {
+                            comment: this,
+                        },
+                    })
+                );
                 return Promise.resolve();
             });
     }
 
     setScore(score) {
-        return api.put(
-            uri.formatApiLink('comment', this.id, 'score'),
-            {score: score})
-            .then(response => {
+        return api
+            .put(uri.formatApiLink("comment", this.id, "score"), {
+                score: score,
+            })
+            .then((response) => {
                 this._updateFromResponse(response);
-                this.dispatchEvent(new CustomEvent('changeScore', {
-                    detail: {
-                        comment: this,
-                    },
-                }));
+                this.dispatchEvent(
+                    new CustomEvent("changeScore", {
+                        detail: {
+                            comment: this,
+                        },
+                    })
+                );
                 return Promise.resolve();
             });
     }

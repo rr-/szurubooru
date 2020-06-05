@@ -1,9 +1,9 @@
-'use strict';
+"use strict";
 
-const api = require('../api.js');
-const uri = require('../util/uri.js');
-const AbstractList = require('./abstract_list.js');
-const PoolCategory = require('./pool_category.js');
+const api = require("../api.js");
+const uri = require("../util/uri.js");
+const AbstractList = require("./abstract_list.js");
+const PoolCategory = require("./pool_category.js");
 
 class PoolCategoryList extends AbstractList {
     constructor() {
@@ -11,7 +11,7 @@ class PoolCategoryList extends AbstractList {
         this._defaultCategory = null;
         this._origDefaultCategory = null;
         this._deletedCategories = [];
-        this.addEventListener('remove', e => this._evtCategoryDeleted(e));
+        this.addEventListener("remove", (e) => this._evtCategoryDeleted(e));
     }
 
     static fromResponse(response) {
@@ -27,12 +27,16 @@ class PoolCategoryList extends AbstractList {
     }
 
     static get() {
-        return api.get(uri.formatApiLink('pool-categories'))
-            .then(response => {
-                return Promise.resolve(Object.assign(
-                    {},
-                    response,
-                    {results: PoolCategoryList.fromResponse(response.results)}));
+        return api
+            .get(uri.formatApiLink("pool-categories"))
+            .then((response) => {
+                return Promise.resolve(
+                    Object.assign({}, response, {
+                        results: PoolCategoryList.fromResponse(
+                            response.results
+                        ),
+                    })
+                );
             });
     }
 
@@ -57,16 +61,18 @@ class PoolCategoryList extends AbstractList {
             promises.push(
                 api.put(
                     uri.formatApiLink(
-                        'pool-category',
+                        "pool-category",
                         this._defaultCategory.name,
-                        'default')));
+                        "default"
+                    )
+                )
+            );
         }
 
-        return Promise.all(promises)
-            .then(response => {
-                this._deletedCategories = [];
-                return Promise.resolve();
-            });
+        return Promise.all(promises).then((response) => {
+            this._deletedCategories = [];
+            return Promise.resolve();
+        });
     }
 
     _evtCategoryDeleted(e) {
@@ -77,6 +83,6 @@ class PoolCategoryList extends AbstractList {
 }
 
 PoolCategoryList._itemClass = PoolCategory;
-PoolCategoryList._itemName = 'poolCategory';
+PoolCategoryList._itemName = "poolCategory";
 
 module.exports = PoolCategoryList;

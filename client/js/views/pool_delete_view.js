@@ -1,9 +1,9 @@
-'use strict';
+"use strict";
 
-const events = require('../events.js');
-const views = require('../util/views.js');
+const events = require("../events.js");
+const views = require("../util/views.js");
 
-const template = views.getTemplate('pool-delete');
+const template = views.getTemplate("pool-delete");
 
 class PoolDeleteView extends events.EventTarget {
     constructor(ctx) {
@@ -13,7 +13,7 @@ class PoolDeleteView extends events.EventTarget {
         this._pool = ctx.pool;
         views.replaceContent(this._hostNode, template(ctx));
         views.decorateValidator(this._formNode);
-        this._formNode.addEventListener('submit', e => this._evtSubmit(e));
+        this._formNode.addEventListener("submit", (e) => this._evtSubmit(e));
     }
 
     clearMessages() {
@@ -38,15 +38,17 @@ class PoolDeleteView extends events.EventTarget {
 
     _evtSubmit(e) {
         e.preventDefault();
-        this.dispatchEvent(new CustomEvent('submit', {
-            detail: {
-                pool: this._pool,
-            },
-        }));
+        this.dispatchEvent(
+            new CustomEvent("submit", {
+                detail: {
+                    pool: this._pool,
+                },
+            })
+        );
     }
 
     get _formNode() {
-        return this._hostNode.querySelector('form');
+        return this._hostNode.querySelector("form");
     }
 }
 

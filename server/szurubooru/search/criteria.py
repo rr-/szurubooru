@@ -1,4 +1,5 @@
-from typing import Optional, List
+from typing import List, Optional
+
 from szurubooru.search.typing import SaQuery
 
 
@@ -12,16 +13,17 @@ class BaseCriterion:
 
 class RangedCriterion(BaseCriterion):
     def __init__(
-            self,
-            original_text: str,
-            min_value: Optional[str],
-            max_value: Optional[str]) -> None:
+        self,
+        original_text: str,
+        min_value: Optional[str],
+        max_value: Optional[str],
+    ) -> None:
         super().__init__(original_text)
         self.min_value = min_value
         self.max_value = max_value
 
     def __hash__(self) -> int:
-        return hash(('range', self.min_value, self.max_value))
+        return hash(("range", self.min_value, self.max_value))
 
 
 class PlainCriterion(BaseCriterion):
@@ -39,4 +41,4 @@ class ArrayCriterion(BaseCriterion):
         self.values = values
 
     def __hash__(self) -> int:
-        return hash(tuple(['array'] + self.values))
+        return hash(tuple(["array"] + self.values))

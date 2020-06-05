@@ -1,7 +1,7 @@
 import logging
+
 from szurubooru import db, rest
 from szurubooru.rest import middleware
-
 
 logger = logging.getLogger(__name__)
 
@@ -14,8 +14,9 @@ def process_request(_ctx: rest.Context) -> None:
 @middleware.post_hook
 def process_response(ctx: rest.Context) -> None:
     logger.info(
-        '%s %s (user=%s, queries=%d)',
+        "%s %s (user=%s, queries=%d)",
         ctx.method,
         ctx.url,
         ctx.user.name,
-        db.get_query_count())
+        db.get_query_count(),
+    )

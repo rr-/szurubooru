@@ -1,3 +1,3 @@
-'use strict';
+"use strict";
 
-module.exports = require('./.templates.autogen.js');
+module.exports = require("./.templates.autogen.js");

@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 
-const api = require('../api.js');
-const events = require('../events.js');
+const api = require("../api.js");
+const events = require("../events.js");
 
 class Snapshot extends events.EventTarget {
     constructor() {

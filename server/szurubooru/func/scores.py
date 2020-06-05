@@ -1,6 +1,7 @@
 import datetime
-from typing import Any, Tuple, Callable
-from szurubooru import db, model, errors
+from typing import Any, Callable, Tuple
+
+from szurubooru import db, errors, model
 
 
 class InvalidScoreTargetError(errors.ValidationError):
@@ -12,12 +13,13 @@ class InvalidScoreValueError(errors.ValidationError):
 
 
 def _get_table_info(
-        entity: model.Base) -> Tuple[model.Base, Callable[[model.Base], Any]]:
+    entity: model.Base,
+) -> Tuple[model.Base, Callable[[model.Base], Any]]:
     assert entity
     resource_type, _, _ = model.util.get_resource_info(entity)
-    if resource_type == 'post':
+    if resource_type == "post":
         return model.PostScore, lambda table: table.post_id
-    elif resource_type == 'comment':
+    elif resource_type == "comment":
         return model.CommentScore, lambda table: table.comment_id
     raise InvalidScoreTargetError()
 
@@ -40,16 +42,17 @@ def get_score(entity: model.Base, user: model.User) -> int:
     assert user
     table, get_column = _get_table_info(entity)
     row = (
-        db.session
-        .query(table.score)
+        db.session.query(table.score)
         .filter(get_column(table) == get_column(entity))
         .filter(table.user_id == user.user_id)
-        .one_or_none())
+        .one_or_none()
+    )
     return row[0] if row else 0
 
 
 def set_score(entity: model.Base, user: model.User, score: int) -> None:
     from szurubooru.func import favorites
+
     assert entity
     assert user
     if not score:
@@ -61,7 +64,8 @@ def set_score(entity: model.Base, user: model.User, score: int) -> None:
         return
     if score not in (-1, 1):
         raise InvalidScoreValueError(
-            'Score %r is invalid. Valid scores: %r.' % (score, (-1, 1)))
+            "Score %r is invalid. Valid scores: %r." % (score, (-1, 1))
+        )
     score_entity = _get_score_entity(entity, user)
     if score_entity:
         score_entity.score = score

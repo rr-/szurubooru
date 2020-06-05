@@ -1,15 +1,15 @@
 from datetime import datetime
+
 import pytest
+
 from szurubooru import db, model
 
 
 @pytest.fixture(autouse=True)
 def inject_config(config_injector):
-    config_injector({
-        'secret': 'secret',
-        'data_dir': '',
-        'delete_source_files': False
-    })
+    config_injector(
+        {"secret": "secret", "data_dir": "", "delete_source_files": False}
+    )
 
 
 def test_saving_post(post_factory, user_factory, tag_factory):
@@ -19,12 +19,12 @@ def test_saving_post(post_factory, user_factory, tag_factory):
     related_post1 = post_factory()
     related_post2 = post_factory()
     post = model.Post()
-    post.safety = 'safety'
-    post.type = 'type'
-    post.checksum = 'deadbeef'
+    post.safety = "safety"
+    post.type = "type"
+    post.checksum = "deadbeef"
     post.creation_time = datetime(1997, 1, 1)
     post.last_edit_time = datetime(1998, 1, 1)
-    post.mime_type = 'application/whatever'
+    post.mime_type = "application/whatever"
     db.session.add_all([user, tag1, tag2, related_post1, related_post2, post])
 
     post.user = user
@@ -39,9 +39,9 @@ def test_saving_post(post_factory, user_factory, tag_factory):
     db.session.refresh(related_post2)
     assert not db.session.dirty
     assert post.user.user_id is not None
-    assert post.safety == 'safety'
-    assert post.type == 'type'
-    assert post.checksum == 'deadbeef'
+    assert post.safety == "safety"
+    assert post.type == "type"
+    assert post.checksum == "deadbeef"
     assert post.creation_time == datetime(1997, 1, 1)
     assert post.last_edit_time == datetime(1998, 1, 1)
     assert len(post.relations) == 2
@@ -51,7 +51,8 @@ def test_saving_post(post_factory, user_factory, tag_factory):
 
 
 def test_cascade_deletions(
-        post_factory, user_factory, tag_factory, comment_factory):
+    post_factory, user_factory, tag_factory, comment_factory
+):
     user = user_factory()
     tag1 = tag_factory()
     tag2 = tag_factory()
@@ -59,8 +60,9 @@ def test_cascade_deletions(
     related_post2 = post_factory()
     post = post_factory()
     comment = comment_factory(post=post, user=user)
-    db.session.add_all([
-        user, tag1, tag2, post, related_post1, related_post2, comment])
+    db.session.add_all(
+        [user, tag1, tag2, post, related_post1, related_post2, comment]
+    )
     db.session.flush()
 
     score = model.PostScore()
@@ -78,11 +80,11 @@ def test_cascade_deletions(
     feature.time = datetime(1997, 1, 1)
     note = model.PostNote()
     note.post = post
-    note.polygon = ''
-    note.text = ''
+    note.polygon = ""
+    note.text = ""
     signature = model.PostSignature()
     signature.post = post
-    signature.signature = b'testvalue'
+    signature.signature = b"testvalue"
     signature.words = list(range(50))
     db.session.add_all([score, favorite, feature, note, signature])
     db.session.flush()

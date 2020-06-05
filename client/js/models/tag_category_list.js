@@ -1,9 +1,9 @@
-'use strict';
+"use strict";
 
-const api = require('../api.js');
-const uri = require('../util/uri.js');
-const AbstractList = require('./abstract_list.js');
-const TagCategory = require('./tag_category.js');
+const api = require("../api.js");
+const uri = require("../util/uri.js");
+const AbstractList = require("./abstract_list.js");
+const TagCategory = require("./tag_category.js");
 
 class TagCategoryList extends AbstractList {
     constructor() {
@@ -11,7 +11,7 @@ class TagCategoryList extends AbstractList {
         this._defaultCategory = null;
         this._origDefaultCategory = null;
         this._deletedCategories = [];
-        this.addEventListener('remove', e => this._evtCategoryDeleted(e));
+        this.addEventListener("remove", (e) => this._evtCategoryDeleted(e));
     }
 
     static fromResponse(response) {
@@ -27,12 +27,16 @@ class TagCategoryList extends AbstractList {
     }
 
     static get() {
-        return api.get(uri.formatApiLink('tag-categories'))
-            .then(response => {
-                return Promise.resolve(Object.assign(
-                    {},
-                    response,
-                    {results: TagCategoryList.fromResponse(response.results)}));
+        return api
+            .get(uri.formatApiLink("tag-categories"))
+            .then((response) => {
+                return Promise.resolve(
+                    Object.assign({}, response, {
+                        results: TagCategoryList.fromResponse(
+                            response.results
+                        ),
+                    })
+                );
             });
     }
 
@@ -57,16 +61,18 @@ class TagCategoryList extends AbstractList {
             promises.push(
                 api.put(
                     uri.formatApiLink(
-                        'tag-category',
+                        "tag-category",
                         this._defaultCategory.name,
-                        'default')));
+                        "default"
+                    )
+                )
+            );
         }
 
-        return Promise.all(promises)
-            .then(response => {
-                this._deletedCategories = [];
-                return Promise.resolve();
-            });
+        return Promise.all(promises).then((response) => {
+            this._deletedCategories = [];
+            return Promise.resolve();
+        });
     }
 
     _evtCategoryDeleted(e) {
@@ -77,6 +83,6 @@ class TagCategoryList extends AbstractList {
 }
 
 TagCategoryList._itemClass = TagCategory;
-TagCategoryList._itemName = 'tagCategory';
+TagCategoryList._itemName = "tagCategory";
 
 module.exports = TagCategoryList;

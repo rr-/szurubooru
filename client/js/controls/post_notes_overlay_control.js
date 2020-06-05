@@ -1,13 +1,13 @@
-'use strict';
+"use strict";
 
-const keyboard = require('../util/keyboard.js');
-const views = require('../util/views.js');
-const events = require('../events.js');
-const misc = require('../util/misc.js');
-const Note = require('../models/note.js');
-const Point = require('../models/point.js');
+const keyboard = require("../util/keyboard.js");
+const views = require("../util/views.js");
+const events = require("../events.js");
+const misc = require("../util/misc.js");
+const Note = require("../models/note.js");
+const Point = require("../models/point.js");
 
-const svgNS = 'http://www.w3.org/2000/svg';
+const svgNS = "http://www.w3.org/2000/svg";
 const snapThreshold = 10;
 const circleSize = 10;
 
@@ -22,19 +22,19 @@ const KEY_RETURN = 13;
 
 function _getDistance(point1, point2) {
     return Math.sqrt(
-        Math.pow(point1.x - point2.x, 2) +
-        Math.pow(point1.y - point2.y, 2));
+        Math.pow(point1.x - point2.x, 2) + Math.pow(point1.y - point2.y, 2)
+    );
 }
 
 function _setNodeState(node, stateName) {
     if (node === null) {
         return;
     }
-    node.setAttribute('data-state', stateName);
+    node.setAttribute("data-state", stateName);
 }
 
 function _clearEditedNote(hostNode) {
-    const node = hostNode.querySelector('[data-state=\'editing\']');
+    const node = hostNode.querySelector("[data-state='editing']");
     _setNodeState(node, null);
     return node !== null;
 }
@@ -48,7 +48,7 @@ function _getNoteCentroid(note) {
         const y0 = note.polygon.at(i).y;
         const x1 = note.polygon.at((i + 1) % vertexCount).x;
         const y1 = note.polygon.at((i + 1) % vertexCount).y;
-        const a = (x0 * y1) - (x1 * y0);
+        const a = x0 * y1 - x1 * y0;
         signedArea += a;
         centroid.x += (x0 + x1) * a;
         centroid.y += (y0 + y1) * a;
@@ -82,32 +82,30 @@ class State {
         return false;
     }
 
-    evtCanvasKeyDown(e) {
-    }
+    evtCanvasKeyDown(e) {}
 
-    evtNoteMouseDown(e, hoveredNote) {
-    }
+    evtNoteMouseDown(e, hoveredNote) {}
 
-    evtCanvasMouseDown(e) {
-    }
+    evtCanvasMouseDown(e) {}
 
-    evtCanvasMouseMove(e) {
-    }
+    evtCanvasMouseMove(e) {}
 
-    evtCanvasMouseUp(e) {
-    }
+    evtCanvasMouseUp(e) {}
 
     _getScreenPoint(point) {
         return new Point(
             point.x * this._control.boundingBox.width,
-            point.y * this._control.boundingBox.height);
+            point.y * this._control.boundingBox.height
+        );
     }
 
     _snapPoints(targetPoint, referencePoint) {
         const targetScreenPoint = this._getScreenPoint(targetPoint);
         const referenceScreenPoint = this._getScreenPoint(referencePoint);
-        if (_getDistance(targetScreenPoint, referenceScreenPoint) <
-                snapThreshold) {
+        if (
+            _getDistance(targetScreenPoint, referenceScreenPoint) <
+            snapThreshold
+        ) {
             targetPoint.x = referencePoint.x;
             targetPoint.y = referencePoint.y;
         }
@@ -124,15 +122,16 @@ class State {
             (e.clientX - this._control.boundingBox.left) /
                 this._control.boundingBox.width,
             (e.clientY - this._control.boundingBox.top) /
-                this._control.boundingBox.height);
+                this._control.boundingBox.height
+        );
     }
 }
 
 class ReadOnlyState extends State {
     constructor(control) {
-        super(control, 'read-only');
+        super(control, "read-only");
         if (_clearEditedNote(control._hostNode)) {
-            this._control.dispatchEvent(new CustomEvent('blur'));
+            this._control.dispatchEvent(new CustomEvent("blur"));
         }
         keyboard.unpause();
     }
@@ -144,9 +143,9 @@ class ReadOnlyState extends State {
 
 class PassiveState extends State {
     constructor(control) {
-        super(control, 'passive');
+        super(control, "passive");
         if (_clearEditedNote(control._hostNode)) {
-            this._control.dispatchEvent(new CustomEvent('blur'));
+            this._control.dispatchEvent(new CustomEvent("blur"));
         }
         keyboard.unpause();
     }
@@ -164,23 +163,24 @@ class ActiveState extends State {
     constructor(control, note, stateName) {
         super(control, stateName);
         if (_clearEditedNote(control._hostNode)) {
-            this._control.dispatchEvent(new CustomEvent('blur'));
+            this._control.dispatchEvent(new CustomEvent("blur"));
         }
         keyboard.pause();
         if (note !== null) {
             this._note = note;
             this._control.dispatchEvent(
-                new CustomEvent('focus', {
-                    detail: {note: note},
-                }));
-            _setNodeState(this._note.groupNode, 'editing');
+                new CustomEvent("focus", {
+                    detail: { note: note },
+                })
+            );
+            _setNodeState(this._note.groupNode, "editing");
         }
     }
 }
 
 class SelectedState extends ActiveState {
     constructor(control, note) {
-        super(control, note, 'selected');
+        super(control, note, "selected");
         this._clickTimeout = null;
         this._control._hideNoteText();
     }
@@ -211,27 +211,40 @@ class SelectedState extends ActiveState {
         const mouseScreenPoint = this._getScreenPoint(mousePoint);
         if (e.shiftKey) {
             this._control._state = new ScalingNoteState(
-                this._control, this._note, mousePoint);
+                this._control,
+                this._note,
+                mousePoint
+            );
             return;
         }
         if (this._note !== hoveredNote) {
-            this._control._state =
-                new SelectedState(this._control, hoveredNote);
+            this._control._state = new SelectedState(
+                this._control,
+                hoveredNote
+            );
             return;
         }
         this._clickTimeout = window.setTimeout(() => {
             for (let polygonPoint of this._note.polygon) {
                 const distance = _getDistance(
                     mouseScreenPoint,
-                    this._getScreenPoint(polygonPoint));
+                    this._getScreenPoint(polygonPoint)
+                );
                 if (distance < circleSize) {
                     this._control._state = new MovingPointState(
-                        this._control, this._note, polygonPoint, mousePoint);
+                        this._control,
+                        this._note,
+                        polygonPoint,
+                        mousePoint
+                    );
                     return;
                 }
             }
             this._control._state = new MovingNoteState(
-                this._control, this._note, mousePoint);
+                this._control,
+                this._note,
+                mousePoint
+            );
         }, 100);
     }
 
@@ -241,9 +254,12 @@ class SelectedState extends ActiveState {
         for (let polygonPoint of this._note.polygon) {
             const distance = _getDistance(
                 mouseScreenPoint,
-                this._getScreenPoint(polygonPoint));
+                this._getScreenPoint(polygonPoint)
+            );
             polygonPoint.edgeNode.classList.toggle(
-                'nearby', distance < circleSize);
+                "nearby",
+                distance < circleSize
+            );
         }
     }
 
@@ -252,16 +268,24 @@ class SelectedState extends ActiveState {
         const mouseScreenPoint = this._getScreenPoint(mousePoint);
         if (e.shiftKey) {
             this._control._state = new ScalingNoteState(
-                this._control, this._note, mousePoint);
+                this._control,
+                this._note,
+                mousePoint
+            );
             return;
         }
         for (let polygonPoint of this._note.polygon) {
             const distance = _getDistance(
                 mouseScreenPoint,
-                this._getScreenPoint(polygonPoint));
+                this._getScreenPoint(polygonPoint)
+            );
             if (distance < circleSize) {
                 this._control._state = new MovingPointState(
-                    this._control, this._note, polygonPoint, mousePoint);
+                    this._control,
+                    this._note,
+                    polygonPoint,
+                    mousePoint
+                );
                 return;
             }
         }
@@ -283,32 +307,37 @@ class SelectedState extends ActiveState {
         const origin = _getNoteCentroid(this._note);
         const originalSize = _getNoteSize(this._note);
         const targetSize = new Point(
-            originalSize.x + (x / this._control.boundingBox.width),
-            originalSize.y + (y / this._control.boundingBox.height));
+            originalSize.x + x / this._control.boundingBox.width,
+            originalSize.y + y / this._control.boundingBox.height
+        );
         const scale = new Point(
             targetSize.x / originalSize.x,
-            targetSize.y / originalSize.y);
+            targetSize.y / originalSize.y
+        );
         for (let point of this._note.polygon) {
-            point.x = origin.x + ((point.x - origin.x) * scale.x);
-            point.y = origin.y + ((point.y - origin.y) * scale.y);
+            point.x = origin.x + (point.x - origin.x) * scale.x;
+            point.y = origin.y + (point.y - origin.y) * scale.y;
         }
     }
 }
 
 class MovingPointState extends ActiveState {
     constructor(control, note, notePoint, mousePoint) {
-        super(control, note, 'moving-point');
+        super(control, note, "moving-point");
         this._notePoint = notePoint;
-        this._originalNotePoint = {x: notePoint.x, y: notePoint.y};
+        this._originalNotePoint = { x: notePoint.x, y: notePoint.y };
         this._originalPosition = mousePoint;
-        _setNodeState(this._note.groupNode, 'editing');
+        _setNodeState(this._note.groupNode, "editing");
     }
 
     evtCanvasKeyDown(e) {
         if (e.which === KEY_ESCAPE) {
             this._notePoint.x = this._originalNotePoint.x;
             this._notePoint.y = this._originalNotePoint.y;
-            this._control._state = new SelectedState(this._control, this._note);
+            this._control._state = new SelectedState(
+                this._control,
+                this._note
+            );
         }
     }
 
@@ -326,9 +355,11 @@ class MovingPointState extends ActiveState {
 
 class MovingNoteState extends ActiveState {
     constructor(control, note, mousePoint) {
-        super(control, note, 'moving-note');
-        this._originalPolygon = [...note.polygon].map(
-            point => ({x: point.x, y: point.y}));
+        super(control, note, "moving-note");
+        this._originalPolygon = [...note.polygon].map((point) => ({
+            x: point.x,
+            y: point.y,
+        }));
         this._originalPosition = mousePoint;
     }
 
@@ -338,7 +369,10 @@ class MovingNoteState extends ActiveState {
                 this._note.polygon.at(i).x = this._originalPolygon[i].x;
                 this._note.polygon.at(i).y = this._originalPolygon[i].y;
             }
-            this._control._state = new SelectedState(this._control, this._note);
+            this._control._state = new SelectedState(
+                this._control,
+                this._note
+            );
         }
     }
 
@@ -358,9 +392,11 @@ class MovingNoteState extends ActiveState {
 
 class ScalingNoteState extends ActiveState {
     constructor(control, note, mousePoint) {
-        super(control, note, 'scaling-note');
-        this._originalPolygon = [...note.polygon].map(
-            point => ({x: point.x, y: point.y}));
+        super(control, note, "scaling-note");
+        this._originalPolygon = [...note.polygon].map((point) => ({
+            x: point.x,
+            y: point.y,
+        }));
         this._originalMousePoint = mousePoint;
         this._originalSize = _getNoteSize(note);
     }
@@ -371,7 +407,10 @@ class ScalingNoteState extends ActiveState {
                 this._note.polygon.at(i).x = this._originalPolygon[i].x;
                 this._note.polygon.at(i).y = this._originalPolygon[i].y;
             }
-            this._control._state = new SelectedState(this._control, this._note);
+            this._control._state = new SelectedState(
+                this._control,
+                this._note
+            );
         }
     }
 
@@ -384,12 +423,16 @@ class ScalingNoteState extends ActiveState {
             const originalPolygonPoint = this._originalPolygon[i];
             polygonPoint.x =
                 originalMousePoint.x +
-                ((originalPolygonPoint.x - originalMousePoint.x) *
-                (1 + ((mousePoint.x - originalMousePoint.x) / originalSize.x)));
+                (originalPolygonPoint.x - originalMousePoint.x) *
+                    (1 +
+                        (mousePoint.x - originalMousePoint.x) /
+                            originalSize.x);
             polygonPoint.y =
                 originalMousePoint.y +
-                ((originalPolygonPoint.y - originalMousePoint.y) *
-                (1 + ((mousePoint.y - originalMousePoint.y) / originalSize.y)));
+                (originalPolygonPoint.y - originalMousePoint.y) *
+                    (1 +
+                        (mousePoint.y - originalMousePoint.y) /
+                            originalSize.y);
         }
     }
 
@@ -400,7 +443,7 @@ class ScalingNoteState extends ActiveState {
 
 class ReadyToDrawState extends ActiveState {
     constructor(control) {
-        super(control, null, 'ready-to-draw');
+        super(control, null, "ready-to-draw");
     }
 
     evtNoteMouseDown(e, hoveredNote) {
@@ -411,23 +454,27 @@ class ReadyToDrawState extends ActiveState {
         const mousePoint = this._getPointFromEvent(e);
         if (e.shiftKey) {
             this._control._state = new DrawingRectangleState(
-                this._control, mousePoint);
+                this._control,
+                mousePoint
+            );
         } else {
             this._control._state = new DrawingPolygonState(
-                this._control, mousePoint);
+                this._control,
+                mousePoint
+            );
         }
     }
 }
 
 class DrawingRectangleState extends ActiveState {
     constructor(control, mousePoint) {
-        super(control, null, 'drawing-rectangle');
+        super(control, null, "drawing-rectangle");
         this._note = this._createNote();
         this._note.polygon.add(new Point(mousePoint.x, mousePoint.y));
         this._note.polygon.add(new Point(mousePoint.x, mousePoint.y));
         this._note.polygon.add(new Point(mousePoint.x, mousePoint.y));
         this._note.polygon.add(new Point(mousePoint.x, mousePoint.y));
-        _setNodeState(this._note.groupNode, 'drawing');
+        _setNodeState(this._note.groupNode, "drawing");
     }
 
     evtCanvasMouseUp(e) {
@@ -443,7 +490,10 @@ class DrawingRectangleState extends ActiveState {
             this._control._state = new ReadyToDrawState(this._control);
         } else {
             this._control._post.notes.add(this._note);
-            this._control._state = new SelectedState(this._control, this._note);
+            this._control._state = new SelectedState(
+                this._control,
+                this._note
+            );
         }
     }
 
@@ -458,11 +508,11 @@ class DrawingRectangleState extends ActiveState {
 
 class DrawingPolygonState extends ActiveState {
     constructor(control, mousePoint) {
-        super(control, null, 'drawing-polygon');
+        super(control, null, "drawing-polygon");
         this._note = this._createNote();
         this._note.polygon.add(new Point(mousePoint.x, mousePoint.y));
         this._note.polygon.add(new Point(mousePoint.x, mousePoint.y));
-        _setNodeState(this._note.groupNode, 'drawing');
+        _setNodeState(this._note.groupNode, "drawing");
     }
 
     evtCanvasKeyDown(e) {
@@ -502,11 +552,16 @@ class DrawingPolygonState extends ActiveState {
         }
 
         if (e.shiftKey && secondLastPoint) {
-            const direction = (Math.round(
-                Math.atan2(
-                    secondLastPoint.y - mousePoint.y,
-                    secondLastPoint.x - mousePoint.x) /
-                (2 * Math.PI / 4)) + 4) % 4;
+            const direction =
+                (Math.round(
+                    Math.atan2(
+                        secondLastPoint.y - mousePoint.y,
+                        secondLastPoint.x - mousePoint.x
+                    ) /
+                        ((2 * Math.PI) / 4)
+                ) +
+                    4) %
+                4;
             if (direction === 0 || direction === 2) {
                 lastPoint.x = mousePoint.x;
                 lastPoint.y = secondLastPoint.y;
@@ -533,7 +588,10 @@ class DrawingPolygonState extends ActiveState {
         } else {
             this._control._deleteDomNode(this._note);
             this._control._post.notes.add(this._note);
-            this._control._state = new SelectedState(this._control, this._note);
+            this._control._state = new SelectedState(
+                this._control,
+                this._note
+            );
         }
     }
 }
@@ -544,48 +602,51 @@ class PostNotesOverlayControl extends events.EventTarget {
         this._post = post;
         this._hostNode = hostNode;
 
-        this._svgNode = document.createElementNS(svgNS, 'svg');
-        this._svgNode.classList.add('resize-listener');
-        this._svgNode.classList.add('notes-overlay');
-        this._svgNode.setAttribute('preserveAspectRatio', 'none');
-        this._svgNode.setAttribute('viewBox', '0 0 1 1');
+        this._svgNode = document.createElementNS(svgNS, "svg");
+        this._svgNode.classList.add("resize-listener");
+        this._svgNode.classList.add("notes-overlay");
+        this._svgNode.setAttribute("preserveAspectRatio", "none");
+        this._svgNode.setAttribute("viewBox", "0 0 1 1");
         for (let note of this._post.notes) {
             this._createPolygonNode(note);
         }
         this._hostNode.appendChild(this._svgNode);
-        this._post.addEventListener('change', e => this._evtPostChange(e));
-        this._post.notes.addEventListener('remove', e => {
+        this._post.addEventListener("change", (e) => this._evtPostChange(e));
+        this._post.notes.addEventListener("remove", (e) => {
             this._deleteDomNode(e.detail.note);
         });
-        this._post.notes.addEventListener('add', e => {
+        this._post.notes.addEventListener("add", (e) => {
             this._createPolygonNode(e.detail.note);
         });
 
-        const keyHandler = e => this._evtCanvasKeyDown(e);
-        document.addEventListener('keydown', keyHandler);
-        this._svgNode.addEventListener(
-            'mousedown', e => this._evtCanvasMouseDown(e));
-        this._svgNode.addEventListener(
-            'mouseup', e => this._evtCanvasMouseUp(e));
-        this._svgNode.addEventListener(
-            'mousemove', e => this._evtCanvasMouseMove(e));
+        const keyHandler = (e) => this._evtCanvasKeyDown(e);
+        document.addEventListener("keydown", keyHandler);
+        this._svgNode.addEventListener("mousedown", (e) =>
+            this._evtCanvasMouseDown(e)
+        );
+        this._svgNode.addEventListener("mouseup", (e) =>
+            this._evtCanvasMouseUp(e)
+        );
+        this._svgNode.addEventListener("mousemove", (e) =>
+            this._evtCanvasMouseMove(e)
+        );
 
-        const wrapperNode = document.createElement('div');
-        wrapperNode.classList.add('wrapper');
-        this._textNode = document.createElement('div');
-        this._textNode.classList.add('note-text');
+        const wrapperNode = document.createElement("div");
+        wrapperNode.classList.add("wrapper");
+        this._textNode = document.createElement("div");
+        this._textNode.classList.add("note-text");
         this._textNode.appendChild(wrapperNode);
-        this._textNode.addEventListener(
-            'mouseleave', e => this._evtNoteMouseLeave(e));
+        this._textNode.addEventListener("mouseleave", (e) =>
+            this._evtNoteMouseLeave(e)
+        );
         document.body.appendChild(this._textNode);
 
-        views.monitorNodeRemoval(
-            this._hostNode, () => {
-                this._hostNode.removeChild(this._svgNode);
-                document.removeEventListener('keydown', keyHandler);
-                document.body.removeChild(this._textNode);
-                this._state = new ReadOnlyState(this);
-            });
+        views.monitorNodeRemoval(this._hostNode, () => {
+            this._hostNode.removeChild(this._svgNode);
+            document.removeEventListener("keydown", keyHandler);
+            document.body.removeChild(this._textNode);
+            this._state = new ReadOnlyState(this);
+        });
 
         this._state = new ReadOnlyState(this);
     }
@@ -613,7 +674,7 @@ class PostNotesOverlayControl extends events.EventTarget {
     }
 
     _evtCanvasKeyDown(e) {
-        const illegalNodeNames = ['textarea', 'input', 'select'];
+        const illegalNodeNames = ["textarea", "input", "select"];
         if (illegalNodeNames.includes(e.target.nodeName.toLowerCase())) {
             return;
         }
@@ -655,53 +716,58 @@ class PostNotesOverlayControl extends events.EventTarget {
 
     _evtNoteMouseLeave(e) {
         const newElement = e.relatedTarget;
-        if (newElement === this._svgNode ||
-                (!this._svgNode.contains(newElement) &&
+        if (
+            newElement === this._svgNode ||
+            (!this._svgNode.contains(newElement) &&
                 !this._textNode.contains(newElement) &&
-                newElement !== this._textNode)) {
+                newElement !== this._textNode)
+        ) {
             this._hideNoteText();
         }
     }
 
     _showNoteText(note) {
-        this._textNode.querySelector('.wrapper').innerHTML =
-            misc.formatMarkdown(note.text);
-        this._textNode.style.display = 'block';
+        this._textNode.querySelector(
+            ".wrapper"
+        ).innerHTML = misc.formatMarkdown(note.text);
+        this._textNode.style.display = "block";
         const bodyRect = document.body.getBoundingClientRect();
         const noteRect = this._textNode.getBoundingClientRect();
         const svgRect = this.boundingBox;
         const centroid = _getNoteCentroid(note);
-        const x = (
+        const x =
             -bodyRect.left +
             svgRect.left +
-            (svgRect.width * centroid.x) -
-            (noteRect.width / 2));
-        const y = (
+            svgRect.width * centroid.x -
+            noteRect.width / 2;
+        const y =
             -bodyRect.top +
             svgRect.top +
-            (svgRect.height * centroid.y) -
-            (noteRect.height / 2));
-        this._textNode.style.left = x + 'px';
-        this._textNode.style.top = y + 'px';
+            svgRect.height * centroid.y -
+            noteRect.height / 2;
+        this._textNode.style.left = x + "px";
+        this._textNode.style.top = y + "px";
     }
 
     _hideNoteText() {
-        this._textNode.style.display = 'none';
+        this._textNode.style.display = "none";
     }
 
     _updatePolygonNotePoints(note) {
         note.polygonNode.setAttribute(
-            'points',
-            [...note.polygon].map(
-                point => [point.x, point.y].join(',')).join(' '));
+            "points",
+            [...note.polygon]
+                .map((point) => [point.x, point.y].join(","))
+                .join(" ")
+        );
     }
 
     _createEdgeNode(point, groupNode) {
-        const node = document.createElementNS(svgNS, 'ellipse');
-        node.setAttribute('cx', point.x);
-        node.setAttribute('cy', point.y);
-        node.setAttribute('rx', circleSize / 2 / this.boundingBox.width);
-        node.setAttribute('ry', circleSize / 2 / this.boundingBox.height);
+        const node = document.createElementNS(svgNS, "ellipse");
+        node.setAttribute("cx", point.x);
+        node.setAttribute("cy", point.y);
+        node.setAttribute("rx", circleSize / 2 / this.boundingBox.width);
+        node.setAttribute("ry", circleSize / 2 / this.boundingBox.height);
         point.edgeNode = node;
         groupNode.appendChild(node);
     }
@@ -713,8 +779,8 @@ class PostNotesOverlayControl extends events.EventTarget {
 
     _updateEdgeNode(point, note) {
         this._updatePolygonNotePoints(note);
-        point.edgeNode.setAttribute('cx', point.x);
-        point.edgeNode.setAttribute('cy', point.y);
+        point.edgeNode.setAttribute("cx", point.x);
+        point.edgeNode.setAttribute("cy", point.y);
     }
 
     _deleteDomNode(note) {
@@ -722,17 +788,19 @@ class PostNotesOverlayControl extends events.EventTarget {
     }
 
     _createPolygonNode(note) {
-        const groupNode = document.createElementNS(svgNS, 'g');
+        const groupNode = document.createElementNS(svgNS, "g");
         note.groupNode = groupNode;
         {
-            const node = document.createElementNS(svgNS, 'polygon');
+            const node = document.createElementNS(svgNS, "polygon");
             note.polygonNode = node;
-            node.setAttribute('vector-effect', 'non-scaling-stroke');
-            node.setAttribute('stroke-alignment', 'inside');
-            node.addEventListener(
-                'mouseenter', e => this._evtNoteMouseEnter(e, note));
-            node.addEventListener(
-                'mouseleave', e => this._evtNoteMouseLeave(e));
+            node.setAttribute("vector-effect", "non-scaling-stroke");
+            node.setAttribute("stroke-alignment", "inside");
+            node.addEventListener("mouseenter", (e) =>
+                this._evtNoteMouseEnter(e, note)
+            );
+            node.addEventListener("mouseleave", (e) =>
+                this._evtNoteMouseLeave(e)
+            );
             this._updatePolygonNotePoints(note);
             groupNode.appendChild(node);
         }
@@ -740,17 +808,17 @@ class PostNotesOverlayControl extends events.EventTarget {
             this._createEdgeNode(point, groupNode);
         }
 
-        note.polygon.addEventListener('change', e => {
+        note.polygon.addEventListener("change", (e) => {
             this._updateEdgeNode(e.detail.point, note);
-            this.dispatchEvent(new CustomEvent('change'));
+            this.dispatchEvent(new CustomEvent("change"));
         });
-        note.polygon.addEventListener('remove', e => {
+        note.polygon.addEventListener("remove", (e) => {
             this._deleteEdgeNode(e.detail.point, note);
-            this.dispatchEvent(new CustomEvent('change'));
+            this.dispatchEvent(new CustomEvent("change"));
         });
-        note.polygon.addEventListener('add', e => {
+        note.polygon.addEventListener("add", (e) => {
             this._createEdgeNode(e.detail.point, groupNode);
-            this.dispatchEvent(new CustomEvent('change'));
+            this.dispatchEvent(new CustomEvent("change"));
         });
 
         this._svgNode.appendChild(groupNode);

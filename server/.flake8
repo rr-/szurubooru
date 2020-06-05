@@ -1,0 +1,5 @@
+[flake8]
+filename = szurubooru/
+exclude = __pycache__
+ignore = F401, W503, W504, E203, E231
+max-line-length = 79

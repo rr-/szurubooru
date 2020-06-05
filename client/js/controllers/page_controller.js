@@ -1,8 +1,8 @@
-'use strict';
+"use strict";
 
-const settings = require('../models/settings.js');
-const EndlessPageView = require('../views/endless_page_view.js');
-const ManualPageView = require('../views/manual_page_view.js');
+const settings = require("../models/settings.js");
+const EndlessPageView = require("../views/endless_page_view.js");
+const ManualPageView = require("../views/manual_page_view.js");
 
 class PageController {
     constructor(ctx) {

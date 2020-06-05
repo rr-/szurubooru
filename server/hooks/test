@@ -1,8 +1,8 @@
 #!/bin/sh
 set -e
 
-docker build -f ${DOCKERFILE_PATH:-Dockerfile}.test -t ${IMAGE_NAME}-test .
-docker run --rm -t ${IMAGE_NAME}-test
-docker rmi ${IMAGE_NAME}-test
+docker run --rm \
+	-t $(docker build -f ${DOCKERFILE_PATH:-Dockerfile}.test -q .) \
+	--color=no szurubooru/
 
 exit $?

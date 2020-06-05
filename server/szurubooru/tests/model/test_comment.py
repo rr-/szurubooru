@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from szurubooru import db, model
 
 
@@ -6,7 +7,7 @@ def test_saving_comment(user_factory, post_factory):
     user = user_factory()
     post = post_factory()
     comment = model.Comment()
-    comment.text = 'long text' * 1000
+    comment.text = "long text" * 1000
     comment.user = user
     comment.post = post
     comment.creation_time = datetime(1997, 1, 1)
@@ -17,7 +18,7 @@ def test_saving_comment(user_factory, post_factory):
     db.session.refresh(comment)
     assert not db.session.dirty
     assert comment.user is not None and comment.user.user_id is not None
-    assert comment.text == 'long text' * 1000
+    assert comment.text == "long text" * 1000
     assert comment.creation_time == datetime(1997, 1, 1)
     assert comment.last_edit_time == datetime(1998, 1, 1)
 

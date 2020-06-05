@@ -1,8 +1,8 @@
-'use strict';
+"use strict";
 
-const api = require('../api.js');
-const uri = require('../util/uri.js');
-const events = require('../events.js');
+const api = require("../api.js");
+const uri = require("../util/uri.js");
+const events = require("../events.js");
 
 class User extends events.EventTarget {
     constructor() {
@@ -64,11 +64,11 @@ class User extends events.EventTarget {
     }
 
     get avatarContent() {
-        throw 'Invalid operation';
+        throw "Invalid operation";
     }
 
     get password() {
-        throw 'Invalid operation';
+        throw "Invalid operation";
     }
 
     set name(value) {
@@ -102,15 +102,14 @@ class User extends events.EventTarget {
     }
 
     static get(name) {
-        return api.get(uri.formatApiLink('user', name))
-            .then(response => {
-                return Promise.resolve(User.fromResponse(response));
-            });
+        return api.get(uri.formatApiLink("user", name)).then((response) => {
+            return Promise.resolve(User.fromResponse(response));
+        });
     }
 
     save() {
         const files = [];
-        const detail = {version: this._version};
+        const detail = { version: this._version };
         const transient = this._orig._name;
 
         if (this._name !== this._orig._name) {
@@ -133,33 +132,40 @@ class User extends events.EventTarget {
             detail.password = this._password;
         }
 
-        let promise = this._orig._name ?
-            api.put(
-                uri.formatApiLink('user', this._orig._name), detail, files) :
-            api.post(uri.formatApiLink('users'), detail, files);
+        let promise = this._orig._name
+            ? api.put(
+                  uri.formatApiLink("user", this._orig._name),
+                  detail,
+                  files
+              )
+            : api.post(uri.formatApiLink("users"), detail, files);
 
-        return promise
-            .then(response => {
-                this._updateFromResponse(response);
-                this.dispatchEvent(new CustomEvent('change', {
+        return promise.then((response) => {
+            this._updateFromResponse(response);
+            this.dispatchEvent(
+                new CustomEvent("change", {
                     detail: {
                         user: this,
                     },
-                }));
-                return Promise.resolve();
-            });
+                })
+            );
+            return Promise.resolve();
+        });
     }
 
     delete() {
-        return api.delete(
-            uri.formatApiLink('user', this._orig._name),
-            {version: this._version})
-            .then(response => {
-                this.dispatchEvent(new CustomEvent('delete', {
-                    detail: {
-                        user: this,
-                    },
-                }));
+        return api
+            .delete(uri.formatApiLink("user", this._orig._name), {
+                version: this._version,
+            })
+            .then((response) => {
+                this.dispatchEvent(
+                    new CustomEvent("delete", {
+                        detail: {
+                            user: this,
+                        },
+                    })
+                );
                 return Promise.resolve();
             });
     }

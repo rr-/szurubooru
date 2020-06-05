@@ -1,11 +1,11 @@
-'use strict';
+"use strict";
 
-const router = require('../router.js');
-const keyboard = require('../util/keyboard.js');
-const views = require('../util/views.js');
+const router = require("../router.js");
+const keyboard = require("../util/keyboard.js");
+const views = require("../util/views.js");
 
-const holderTemplate = views.getTemplate('manual-pager');
-const navTemplate = views.getTemplate('manual-pager-nav');
+const holderTemplate = views.getTemplate("manual-pager");
+const navTemplate = views.getTemplate("manual-pager-nav");
 
 function _removeConsecutiveDuplicates(a) {
     return a.filter((item, pos, ary) => {
@@ -22,9 +22,7 @@ function _getVisiblePageNumbers(currentPage, totalPages) {
     for (let i = totalPages - threshold; i <= totalPages; i++) {
         pagesVisible.push(i);
     }
-    for (let i = currentPage - threshold;
-        i <= currentPage + threshold;
-        i++) {
+    for (let i = currentPage - threshold; i <= currentPage + threshold; i++) {
         pagesVisible.push(i);
     }
     pagesVisible = pagesVisible.filter((item, pos, ary) => {
@@ -38,18 +36,22 @@ function _getVisiblePageNumbers(currentPage, totalPages) {
 }
 
 function _getPages(
-    currentPage, pageNumbers, limit, defaultLimit, removedItems) {
+    currentPage,
+    pageNumbers,
+    limit,
+    defaultLimit,
+    removedItems
+) {
     const pages = new Map();
     let prevPage = 0;
     for (let page of pageNumbers) {
         if (page !== prevPage + 1) {
-            pages.set(page - 1, {ellipsis: true});
+            pages.set(page - 1, { ellipsis: true });
         }
         pages.set(page, {
             number: page,
             offset:
-                ((page - 1) * limit) -
-                (page > currentPage ? removedItems : 0),
+                (page - 1) * limit - (page > currentPage ? removedItems : 0),
             limit: limit === defaultLimit ? null : limit,
             active: currentPage === page,
         });
@@ -60,7 +62,7 @@ function _getPages(
 
 class ManualPageView {
     constructor(ctx) {
-        this._hostNode = document.getElementById('content-holder');
+        this._hostNode = document.getElementById("content-holder");
         views.replaceContent(this._hostNode, holderTemplate());
     }
 
@@ -70,52 +72,65 @@ class ManualPageView {
         this.clearMessages();
         views.emptyContent(this._pageNavNode);
 
-        ctx.requestPage(offset, limit).then(response => {
-            ctx.pageRenderer({
-                parameters: ctx.parameters,
-                response: response,
-                hostNode: this._pageContentHolderNode,
-            });
+        ctx.requestPage(offset, limit).then(
+            (response) => {
+                ctx.pageRenderer({
+                    parameters: ctx.parameters,
+                    response: response,
+                    hostNode: this._pageContentHolderNode,
+                });
 
-            keyboard.bind(['a', 'left'], () => {
-                this._navigateToPrevNextPage('prev');
-            });
-            keyboard.bind(['d', 'right'], () => {
-                this._navigateToPrevNextPage('next');
-            });
+                keyboard.bind(["a", "left"], () => {
+                    this._navigateToPrevNextPage("prev");
+                });
+                keyboard.bind(["d", "right"], () => {
+                    this._navigateToPrevNextPage("next");
+                });
 
-            let removedItems = 0;
-            if (response.total) {
-                this._refreshNav(
-                    offset, limit, response.total, removedItems, ctx);
+                let removedItems = 0;
+                if (response.total) {
+                    this._refreshNav(
+                        offset,
+                        limit,
+                        response.total,
+                        removedItems,
+                        ctx
+                    );
+                }
+
+                if (!response.results.length) {
+                    this.showInfo("No data to show");
+                }
+
+                response.results.addEventListener("remove", (e) => {
+                    removedItems++;
+                    this._refreshNav(
+                        offset,
+                        limit,
+                        response.total,
+                        removedItems,
+                        ctx
+                    );
+                });
+
+                views.syncScrollPosition();
+            },
+            (response) => {
+                this.showError(response.message);
             }
-
-            if (!response.results.length) {
-                this.showInfo('No data to show');
-            }
-
-            response.results.addEventListener('remove', e => {
-                removedItems++;
-                this._refreshNav(
-                    offset, limit, response.total, removedItems, ctx);
-            });
-
-            views.syncScrollPosition();
-        }, response => {
-            this.showError(response.message);
-        });
+        );
     }
 
     get pageHeaderHolderNode() {
-        return this._hostNode.querySelector('.page-header-holder');
+        return this._hostNode.querySelector(".page-header-holder");
     }
 
     get _pageContentHolderNode() {
-        return this._hostNode.querySelector('.page-content-holder');
+        return this._hostNode.querySelector(".page-content-holder");
     }
 
     get _pageNavNode() {
-        return this._hostNode.querySelector('.page-nav');
+        return this._hostNode.querySelector(".page-nav");
     }
 
     clearMessages() {
@@ -135,11 +150,11 @@ class ManualPageView {
     }
 
     _navigateToPrevNextPage(className) {
-        const linkNode = this._hostNode.querySelector('a.' + className);
-        if (linkNode.classList.contains('disabled')) {
+        const linkNode = this._hostNode.querySelector("a." + className);
+        if (linkNode.classList.contains("disabled")) {
             return;
         }
-        router.show(linkNode.getAttribute('href'));
+        router.show(linkNode.getAttribute("href"));
     }
 
     _refreshNav(offset, limit, total, removedItems, ctx) {
@@ -147,7 +162,12 @@ class ManualPageView {
         const totalPages = Math.ceil((total - removedItems) / limit);
         const pageNumbers = _getVisiblePageNumbers(currentPage, totalPages);
         const pages = _getPages(
-            currentPage, pageNumbers, limit, ctx.defaultLimit, removedItems);
+            currentPage,
+            pageNumbers,
+            limit,
+            ctx.defaultLimit,
+            removedItems
+        );
 
         views.replaceContent(
             this._pageNavNode,
@@ -158,7 +178,8 @@ class ManualPageView {
                 currentPage: currentPage,
                 totalPages: totalPages,
                 pages: pages,
-            }));
+            })
+        );
     }
 }
 

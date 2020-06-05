@@ -1,35 +1,37 @@
-'use strict';
+"use strict";
 
-const settings = require('../models/settings.js');
-const api = require('../api.js');
-const uri = require('../util/uri.js');
-const AbstractList = require('./abstract_list.js');
-const Post = require('./post.js');
+const settings = require("../models/settings.js");
+const api = require("../api.js");
+const uri = require("../util/uri.js");
+const AbstractList = require("./abstract_list.js");
+const Post = require("./post.js");
 
 class PostList extends AbstractList {
     static getAround(id, searchQuery) {
         return api.get(
-            uri.formatApiLink(
-                'post', id, 'around', {
-                    query: PostList._decorateSearchQuery(searchQuery || ''),
-                    fields: 'id',
-                }));
+            uri.formatApiLink("post", id, "around", {
+                query: PostList._decorateSearchQuery(searchQuery || ""),
+                fields: "id",
+            })
+        );
     }
 
     static search(text, offset, limit, fields) {
-        return api.get(
-            uri.formatApiLink(
-                'posts', {
-                    query: PostList._decorateSearchQuery(text || ''),
+        return api
+            .get(
+                uri.formatApiLink("posts", {
+                    query: PostList._decorateSearchQuery(text || ""),
                     offset: offset,
                     limit: limit,
-                    fields: fields.join(','),
-                }))
-            .then(response => {
-                return Promise.resolve(Object.assign(
-                    {},
-                    response,
-                    {results: PostList.fromResponse(response.results)}));
+                    fields: fields.join(","),
+                })
+            )
+            .then((response) => {
+                return Promise.resolve(
+                    Object.assign({}, response, {
+                        results: PostList.fromResponse(response.results),
+                    })
+                );
             });
     }
 
@@ -43,7 +45,7 @@ class PostList extends AbstractList {
                 }
             }
             if (disabledSafety.length) {
-                text = `-rating:${disabledSafety.join(',')} ${text}`;
+                text = `-rating:${disabledSafety.join(",")} ${text}`;
             }
         }
         return text.trim();
@@ -63,7 +65,7 @@ class PostList extends AbstractList {
             return;
         }
 
-        let post = Post.fromResponse({id: id});
+        let post = Post.fromResponse({ id: id });
         this.add(post);
     }
 
@@ -77,6 +79,6 @@ class PostList extends AbstractList {
 }
 
 PostList._itemClass = Post;
-PostList._itemName = 'post';
+PostList._itemName = "post";
 
 module.exports = PostList;

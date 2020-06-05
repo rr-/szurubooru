@@ -1,10 +1,11 @@
-from typing import Any, Optional, List
 import os
+from typing import Any, List, Optional
+
 from szurubooru import config
 
 
 def _get_full_path(path: str) -> str:
-    return os.path.join(config.config['data_dir'], path)
+    return os.path.join(config.config["data_dir"], path)
 
 
 def delete(path: str) -> None:
@@ -31,12 +32,12 @@ def get(path: str) -> Optional[bytes]:
     full_path = _get_full_path(path)
     if not os.path.exists(full_path):
         return None
-    with open(full_path, 'rb') as handle:
+    with open(full_path, "rb") as handle:
         return handle.read()
 
 
 def save(path: str, content: bytes) -> None:
     full_path = _get_full_path(path)
     os.makedirs(os.path.dirname(full_path), exist_ok=True)
-    with open(full_path, 'wb') as handle:
+    with open(full_path, "wb") as handle:
         handle.write(content)

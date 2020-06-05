@@ -1,2 +1,2 @@
-from szurubooru.search.executor import Executor
 import szurubooru.search.configs
+from szurubooru.search.executor import Executor

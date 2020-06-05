@@ -1,9 +1,9 @@
-'use strict';
+"use strict";
 
-const events = require('../events.js');
-const views = require('../util/views.js');
+const events = require("../events.js");
+const views = require("../util/views.js");
 
-const template = views.getTemplate('user-delete');
+const template = views.getTemplate("user-delete");
 
 class UserDeleteView extends events.EventTarget {
     constructor(ctx) {
@@ -14,7 +14,7 @@ class UserDeleteView extends events.EventTarget {
         views.replaceContent(this._hostNode, template(ctx));
         views.decorateValidator(this._formNode);
 
-        this._formNode.addEventListener('submit', e => this._evtSubmit(e));
+        this._formNode.addEventListener("submit", (e) => this._evtSubmit(e));
     }
 
     clearMessages() {
@@ -39,16 +39,17 @@ class UserDeleteView extends events.EventTarget {
 
     _evtSubmit(e) {
         e.preventDefault();
-        this.dispatchEvent(new CustomEvent('submit', {
-            detail: {
-                user: this._user,
-            },
-        }));
+        this.dispatchEvent(
+            new CustomEvent("submit", {
+                detail: {
+                    user: this._user,
+                },
+            })
+        );
     }
 
     get _formNode() {
-        return this._hostNode.querySelector('form');
-
+        return this._hostNode.querySelector("form");
     }
 }
 

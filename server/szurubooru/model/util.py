@@ -1,17 +1,19 @@
-from typing import Tuple, Any, Dict, Callable, Union, Optional
+from typing import Any, Callable, Dict, Optional, Tuple, Union
+
 import sqlalchemy as sa
+
 from szurubooru.model.base import Base
 from szurubooru.model.user import User
 
 
 def get_resource_info(entity: Base) -> Tuple[Any, Any, Union[str, int]]:
     serializers = {
-        'tag': lambda tag: tag.first_name,
-        'tag_category': lambda category: category.name,
-        'comment': lambda comment: comment.comment_id,
-        'post': lambda post: post.post_id,
-        'pool': lambda pool: pool.pool_id,
-        'pool_category': lambda category: category.name,
+        "tag": lambda tag: tag.first_name,
+        "tag_category": lambda category: category.name,
+        "comment": lambda comment: comment.comment_id,
+        "post": lambda post: post.post_id,
+        "pool": lambda pool: pool.pool_id,
+        "pool_category": lambda category: category.name,
     }  # type: Dict[str, Callable[[Base], Any]]
 
     resource_type = entity.__table__.name
@@ -31,14 +33,15 @@ def get_resource_info(entity: Base) -> Tuple[Any, Any, Union[str, int]]:
 
 
 def get_aux_entity(
-        session: Any,
-        get_table_info: Callable[[Base], Tuple[Base, Callable[[Base], Any]]],
-        entity: Base,
-        user: User) -> Optional[Base]:
+    session: Any,
+    get_table_info: Callable[[Base], Tuple[Base, Callable[[Base], Any]]],
+    entity: Base,
+    user: User,
+) -> Optional[Base]:
     table, get_column = get_table_info(entity)
     return (
-        session
-        .query(table)
+        session.query(table)
         .filter(get_column(table) == get_column(entity))
         .filter(table.user_id == user.user_id)
-        .one_or_none())
+        .one_or_none()
+    )

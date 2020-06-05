@@ -1,17 +1,17 @@
-'use strict';
+"use strict";
 
-const events = require('../events.js');
-const views = require('../util/views.js');
-const TagCategory = require('../models/tag_category.js');
+const events = require("../events.js");
+const views = require("../util/views.js");
+const TagCategory = require("../models/tag_category.js");
 
-const template = views.getTemplate('tag-categories');
-const rowTemplate = views.getTemplate('tag-category-row');
+const template = views.getTemplate("tag-categories");
+const rowTemplate = views.getTemplate("tag-category-row");
 
 class TagCategoriesView extends events.EventTarget {
     constructor(ctx) {
         super();
         this._ctx = ctx;
-        this._hostNode = document.getElementById('content-holder');
+        this._hostNode = document.getElementById("content-holder");
 
         views.replaceContent(this._hostNode, template(ctx));
         views.syncScrollPosition();
@@ -31,18 +31,22 @@ class TagCategoriesView extends events.EventTarget {
         }
 
         if (this._addLinkNode) {
-            this._addLinkNode.addEventListener(
-                'click', e => this._evtAddButtonClick(e));
+            this._addLinkNode.addEventListener("click", (e) =>
+                this._evtAddButtonClick(e)
+            );
         }
 
-        ctx.tagCategories.addEventListener(
-            'add', e => this._evtTagCategoryAdded(e));
+        ctx.tagCategories.addEventListener("add", (e) =>
+            this._evtTagCategoryAdded(e)
+        );
 
-        ctx.tagCategories.addEventListener(
-            'remove', e => this._evtTagCategoryDeleted(e));
+        ctx.tagCategories.addEventListener("remove", (e) =>
+            this._evtTagCategoryDeleted(e)
+        );
 
-        this._formNode.addEventListener(
-            'submit', e => this._evtSaveButtonClick(e, ctx));
+        this._formNode.addEventListener("submit", (e) =>
+            this._evtSaveButtonClick(e, ctx)
+        );
     }
 
     enableForm() {
@@ -66,44 +70,48 @@ class TagCategoriesView extends events.EventTarget {
     }
 
     get _formNode() {
-        return this._hostNode.querySelector('form');
+        return this._hostNode.querySelector("form");
     }
 
     get _tableBodyNode() {
-        return this._hostNode.querySelector('tbody');
+        return this._hostNode.querySelector("tbody");
     }
 
     get _addLinkNode() {
-        return this._hostNode.querySelector('a.add');
+        return this._hostNode.querySelector("a.add");
     }
 
     _addTagCategoryRowNode(tagCategory) {
         const rowNode = rowTemplate(
-            Object.assign(
-                {}, this._ctx, {tagCategory: tagCategory}));
+            Object.assign({}, this._ctx, { tagCategory: tagCategory })
+        );
 
-        const nameInput = rowNode.querySelector('.name input');
+        const nameInput = rowNode.querySelector(".name input");
         if (nameInput) {
-            nameInput.addEventListener(
-                'change', e => this._evtNameChange(e, rowNode));
+            nameInput.addEventListener("change", (e) =>
+                this._evtNameChange(e, rowNode)
+            );
         }
 
-        const colorInput = rowNode.querySelector('.color input');
+        const colorInput = rowNode.querySelector(".color input");
         if (colorInput) {
-            colorInput.addEventListener(
-                'change', e => this._evtColorChange(e, rowNode));
+            colorInput.addEventListener("change", (e) =>
+                this._evtColorChange(e, rowNode)
+            );
         }
 
-        const removeLinkNode = rowNode.querySelector('.remove a');
+        const removeLinkNode = rowNode.querySelector(".remove a");
         if (removeLinkNode) {
-            removeLinkNode.addEventListener(
-                'click', e => this._evtDeleteButtonClick(e, rowNode));
+            removeLinkNode.addEventListener("click", (e) =>
+                this._evtDeleteButtonClick(e, rowNode)
+            );
         }
 
-        const defaultLinkNode = rowNode.querySelector('.set-default a');
+        const defaultLinkNode = rowNode.querySelector(".set-default a");
         if (defaultLinkNode) {
-            defaultLinkNode.addEventListener(
-                'click', e => this._evtSetDefaultButtonClick(e, rowNode));
+            defaultLinkNode.addEventListener("click", (e) =>
+                this._evtSetDefaultButtonClick(e, rowNode)
+            );
         }
 
         this._tableBodyNode.appendChild(rowNode);
@@ -141,7 +149,7 @@ class TagCategoriesView extends events.EventTarget {
 
     _evtDeleteButtonClick(e, rowNode, link) {
         e.preventDefault();
-        if (e.target.classList.contains('inactive')) {
+        if (e.target.classList.contains("inactive")) {
             return;
         }
         this._ctx.tagCategories.remove(rowNode._tagCategory);
@@ -150,16 +158,16 @@ class TagCategoriesView extends events.EventTarget {
     _evtSetDefaultButtonClick(e, rowNode) {
         e.preventDefault();
         this._ctx.tagCategories.defaultCategory = rowNode._tagCategory;
-        const oldRowNode = rowNode.parentNode.querySelector('tr.default');
+        const oldRowNode = rowNode.parentNode.querySelector("tr.default");
         if (oldRowNode) {
-            oldRowNode.classList.remove('default');
+            oldRowNode.classList.remove("default");
         }
-        rowNode.classList.add('default');
+        rowNode.classList.add("default");
     }
 
     _evtSaveButtonClick(e, ctx) {
         e.preventDefault();
-        this.dispatchEvent(new CustomEvent('submit'));
+        this.dispatchEvent(new CustomEvent("submit"));
     }
 }
 

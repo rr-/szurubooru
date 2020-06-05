@@ -1,11 +1,12 @@
 import re
-from typing import Any, Optional, Dict, List, Callable
+from typing import Any, Callable, Dict, List, Optional
+
 import sqlalchemy as sa
-from szurubooru import config, db, model, errors, rest
-from szurubooru.func import util, serialization, cache
 
+from szurubooru import config, db, errors, model, rest
+from szurubooru.func import cache, serialization, util
 
-DEFAULT_CATEGORY_NAME_CACHE_KEY = 'default-tag-category'
+DEFAULT_CATEGORY_NAME_CACHE_KEY = "default-tag-category"
 
 
 class TagCategoryNotFoundError(errors.NotFoundError):
@@ -29,10 +30,11 @@ class InvalidTagCategoryColorError(errors.ValidationError):
 
 
 def _verify_name_validity(name: str) -> None:
-    name_regex = config.config['tag_category_name_regex']
+    name_regex = config.config["tag_category_name_regex"]
     if not re.match(name_regex, name):
         raise InvalidTagCategoryNameError(
-            'Name must satisfy regex %r.' % name_regex)
+            "Name must satisfy regex %r." % name_regex
+        )
 
 
 class TagCategorySerializer(serialization.BaseSerializer):
@@ -41,11 +43,11 @@ class TagCategorySerializer(serialization.BaseSerializer):
 
     def _serializers(self) -> Dict[str, Callable[[], Any]]:
         return {
-            'name': self.serialize_name,
-            'version': self.serialize_version,
-            'color': self.serialize_color,
-            'usages': self.serialize_usages,
-            'default': self.serialize_default,
+            "name": self.serialize_name,
+            "version": self.serialize_version,
+            "color": self.serialize_color,
+            "usages": self.serialize_usages,
+            "default": self.serialize_default,
         }
 
     def serialize_name(self) -> Any:
@@ -65,8 +67,8 @@ class TagCategorySerializer(serialization.BaseSerializer):
 
 
 def serialize_category(
-        category: Optional[model.TagCategory],
-        options: List[str] = []) -> Optional[rest.Response]:
+    category: Optional[model.TagCategory], options: List[str] = []
+) -> Optional[rest.Response]:
     if not category:
         return None
     return TagCategorySerializer(category).serialize(options)
@@ -84,18 +86,21 @@ def create_category(name: str, color: str) -> model.TagCategory:
 def update_category_name(category: model.TagCategory, name: str) -> None:
     assert category
     if not name:
-        raise InvalidTagCategoryNameError('Name cannot be empty.')
+        raise InvalidTagCategoryNameError("Name cannot be empty.")
     expr = sa.func.lower(model.TagCategory.name) == name.lower()
     if category.tag_category_id:
         expr = expr & (
-            model.TagCategory.tag_category_id != category.tag_category_id)
+            model.TagCategory.tag_category_id != category.tag_category_id
+        )
     already_exists = (
-        db.session.query(model.TagCategory).filter(expr).count() > 0)
+        db.session.query(model.TagCategory).filter(expr).count() > 0
+    )
     if already_exists:
         raise TagCategoryAlreadyExistsError(
-            'A category with this name already exists.')
+            "A category with this name already exists."
+        )
     if util.value_exceeds_column_size(name, model.TagCategory.name):
-        raise InvalidTagCategoryNameError('Name is too long.')
+        raise InvalidTagCategoryNameError("Name is too long.")
     _verify_name_validity(name)
     category.name = name
     cache.remove(DEFAULT_CATEGORY_NAME_CACHE_KEY)
@@ -104,20 +109,20 @@ def update_category_name(category: model.TagCategory, name: str) -> None:
 def update_category_color(category: model.TagCategory, color: str) -> None:
     assert category
     if not color:
-        raise InvalidTagCategoryColorError('Color cannot be empty.')
-    if not re.match(r'^#?[0-9a-z]+$', color):
-        raise InvalidTagCategoryColorError('Invalid color.')
+        raise InvalidTagCategoryColorError("Color cannot be empty.")
+    if not re.match(r"^#?[0-9a-z]+$", color):
+        raise InvalidTagCategoryColorError("Invalid color.")
     if util.value_exceeds_column_size(color, model.TagCategory.color):
-        raise InvalidTagCategoryColorError('Color is too long.')
+        raise InvalidTagCategoryColorError("Color is too long.")
     category.color = color
 
 
 def try_get_category_by_name(
-        name: str, lock: bool = False) -> Optional[model.TagCategory]:
-    query = (
-        db.session
-        .query(model.TagCategory)
-        .filter(sa.func.lower(model.TagCategory.name) == name.lower()))
+    name: str, lock: bool = False
+) -> Optional[model.TagCategory]:
+    query = db.session.query(model.TagCategory).filter(
+        sa.func.lower(model.TagCategory.name) == name.lower()
+    )
     if lock:
         query = query.with_for_update()
     return query.one_or_none()
@@ -126,7 +131,7 @@ def try_get_category_by_name(
 def get_category_by_name(name: str, lock: bool = False) -> model.TagCategory:
     category = try_get_category_by_name(name, lock)
     if not category:
-        raise TagCategoryNotFoundError('Tag category %r not found.' % name)
+        raise TagCategoryNotFoundError("Tag category %r not found." % name)
     return category
 
 
@@ -135,26 +140,28 @@ def get_all_category_names() -> List[str]:
 
 
 def get_all_categories() -> List[model.TagCategory]:
-    return db.session.query(model.TagCategory).order_by(
-        model.TagCategory.name.asc()).all()
+    return (
+        db.session.query(model.TagCategory)
+        .order_by(model.TagCategory.name.asc())
+        .all()
+    )
 
 
 def try_get_default_category(
-        lock: bool = False) -> Optional[model.TagCategory]:
-    query = (
-        db.session
-        .query(model.TagCategory)
-        .filter(model.TagCategory.default))
+    lock: bool = False,
+) -> Optional[model.TagCategory]:
+    query = db.session.query(model.TagCategory).filter(
+        model.TagCategory.default
+    )
     if lock:
         query = query.with_for_update()
     category = query.first()
     # if for some reason (e.g. as a result of migration) there's no default
     # category, get the first record available.
     if not category:
-        query = (
-            db.session
-            .query(model.TagCategory)
-            .order_by(model.TagCategory.tag_category_id.asc()))
+        query = db.session.query(model.TagCategory).order_by(
+            model.TagCategory.tag_category_id.asc()
+        )
         if lock:
             query = query.with_for_update()
         category = query.first()
@@ -164,7 +171,7 @@ def try_get_default_category(
 def get_default_category(lock: bool = False) -> model.TagCategory:
     category = try_get_default_category(lock)
     if not category:
-        raise TagCategoryNotFoundError('No tag category created yet.')
+        raise TagCategoryNotFoundError("No tag category created yet.")
     return category
 
 
@@ -191,9 +198,10 @@ def set_default_category(category: model.TagCategory) -> None:
 def delete_category(category: model.TagCategory) -> None:
     assert category
     if len(get_all_category_names()) == 1:
-        raise TagCategoryIsInUseError('Cannot delete the last category.')
+        raise TagCategoryIsInUseError("Cannot delete the last category.")
     if (category.tag_count or 0) > 0:
         raise TagCategoryIsInUseError(
-            'Tag category has some usages and cannot be deleted. ' +
-            'Please remove this category from relevant tags first..')
+            "Tag category has some usages and cannot be deleted. "
+            + "Please remove this category from relevant tags first.."
+        )
     db.session.delete(category)

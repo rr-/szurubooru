@@ -1,8 +1,8 @@
-'use strict';
+"use strict";
 
-const views = require('../util/views.js');
+const views = require("../util/views.js");
 
-const template = views.getTemplate('pools-page');
+const template = views.getTemplate("pools-page");
 
 class PoolsPageView {
     constructor(ctx) {

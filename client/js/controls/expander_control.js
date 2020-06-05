@@ -1,26 +1,28 @@
-'use strict';
+"use strict";
 
-const ICON_CLASS_OPENED = 'fa-chevron-down';
-const ICON_CLASS_CLOSED = 'fa-chevron-up';
+const ICON_CLASS_OPENED = "fa-chevron-down";
+const ICON_CLASS_CLOSED = "fa-chevron-up";
 
-const views = require('../util/views.js');
+const views = require("../util/views.js");
 
-const template = views.getTemplate('expander');
+const template = views.getTemplate("expander");
 
 class ExpanderControl {
     constructor(name, title, nodes) {
         this._name = name;
 
-        nodes = Array.from(nodes).filter(n => n);
+        nodes = Array.from(nodes).filter((n) => n);
         if (!nodes.length) {
             return;
         }
 
-        const expanderNode = template({title: title});
-        const toggleLinkNode = expanderNode.querySelector('a');
-        const toggleIconNode = expanderNode.querySelector('i');
-        const expanderContentNode = expanderNode.querySelector('div');
-        toggleLinkNode.addEventListener('click', e => this._evtToggleClick(e));
+        const expanderNode = template({ title: title });
+        const toggleLinkNode = expanderNode.querySelector("a");
+        const toggleIconNode = expanderNode.querySelector("i");
+        const expanderContentNode = expanderNode.querySelector("div");
+        toggleLinkNode.addEventListener("click", (e) =>
+            this._evtToggleClick(e)
+        );
 
         nodes[0].parentNode.insertBefore(expanderNode, nodes[0]);
 
@@ -32,29 +34,30 @@ class ExpanderControl {
         this._toggleIconNode = toggleIconNode;
 
         expanderNode.classList.toggle(
-            'collapsed',
-            this._allStates[this._name] === undefined ?
-                false :
-                !this._allStates[this._name]);
+            "collapsed",
+            this._allStates[this._name] === undefined
+                ? false
+                : !this._allStates[this._name]
+        );
         this._syncIcon();
     }
 
     // eslint-disable-next-line accessor-pairs
     set title(newTitle) {
         if (this._expanderNode) {
-            this._expanderNode
-                .querySelector('header span')
-                .textContent = newTitle;
+            this._expanderNode.querySelector(
+                "header span"
+            ).textContent = newTitle;
         }
     }
 
     get _isOpened() {
-        return !this._expanderNode.classList.contains('collapsed');
+        return !this._expanderNode.classList.contains("collapsed");
     }
 
     get _allStates() {
         try {
-            return JSON.parse(localStorage.getItem('expander')) || {};
+            return JSON.parse(localStorage.getItem("expander")) || {};
         } catch (e) {
             return {};
         }
@@ -63,12 +66,12 @@ class ExpanderControl {
     _save() {
         const newStates = Object.assign({}, this._allStates);
         newStates[this._name] = this._isOpened;
-        localStorage.setItem('expander', JSON.stringify(newStates));
+        localStorage.setItem("expander", JSON.stringify(newStates));
     }
 
     _evtToggleClick(e) {
         e.preventDefault();
-        this._expanderNode.classList.toggle('collapsed');
+        this._expanderNode.classList.toggle("collapsed");
         this._save();
         this._syncIcon();
     }

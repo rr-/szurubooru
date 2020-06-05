@@ -1,13 +1,13 @@
-'use strict';
+"use strict";
 
-const api = require('../api.js');
-const uri = require('../util/uri.js');
-const events = require('../events.js');
-const misc = require('../util/misc.js');
+const api = require("../api.js");
+const uri = require("../util/uri.js");
+const events = require("../events.js");
+const misc = require("../util/misc.js");
 
 class Tag extends events.EventTarget {
     constructor() {
-        const TagList = require('./tag_list.js');
+        const TagList = require("./tag_list.js");
 
         super();
         this._orig = {};
@@ -71,14 +71,13 @@ class Tag extends events.EventTarget {
     }
 
     static get(name) {
-        return api.get(uri.formatApiLink('tag', name))
-            .then(response => {
-                return Promise.resolve(Tag.fromResponse(response));
-            });
+        return api.get(uri.formatApiLink("tag", name)).then((response) => {
+            return Promise.resolve(Tag.fromResponse(response));
+        });
     }
 
     save() {
-        const detail = {version: this._version};
+        const detail = { version: this._version };
 
         // send only changed fields to avoid user privilege violation
         if (misc.arraysDiffer(this._names, this._orig._names, true)) {
@@ -92,66 +91,77 @@ class Tag extends events.EventTarget {
         }
         if (misc.arraysDiffer(this._implications, this._orig._implications)) {
             detail.implications = this._implications.map(
-                relation => relation.names[0]);
+                (relation) => relation.names[0]
+            );
         }
         if (misc.arraysDiffer(this._suggestions, this._orig._suggestions)) {
             detail.suggestions = this._suggestions.map(
-                relation => relation.names[0]);
+                (relation) => relation.names[0]
+            );
         }
 
-        let promise = this._origName ?
-            api.put(uri.formatApiLink('tag', this._origName), detail) :
-            api.post(uri.formatApiLink('tags'), detail);
-        return promise
-            .then(response => {
-                this._updateFromResponse(response);
-                this.dispatchEvent(new CustomEvent('change', {
+        let promise = this._origName
+            ? api.put(uri.formatApiLink("tag", this._origName), detail)
+            : api.post(uri.formatApiLink("tags"), detail);
+        return promise.then((response) => {
+            this._updateFromResponse(response);
+            this.dispatchEvent(
+                new CustomEvent("change", {
                     detail: {
                         tag: this,
                     },
-                }));
-                return Promise.resolve();
-            });
+                })
+            );
+            return Promise.resolve();
+        });
     }
 
     merge(targetName, addAlias) {
-        return api.get(uri.formatApiLink('tag', targetName))
-            .then(response => {
-                return api.post(uri.formatApiLink('tag-merge'), {
+        return api
+            .get(uri.formatApiLink("tag", targetName))
+            .then((response) => {
+                return api.post(uri.formatApiLink("tag-merge"), {
                     removeVersion: this._version,
                     remove: this._origName,
                     mergeToVersion: response.version,
                     mergeTo: targetName,
                 });
-            }).then(response => {
+            })
+            .then((response) => {
                 if (!addAlias) {
                     return Promise.resolve(response);
                 }
-                return api.put(uri.formatApiLink('tag', targetName), {
+                return api.put(uri.formatApiLink("tag", targetName), {
                     version: response.version,
                     names: response.names.concat(this._names),
                 });
-            }).then(response => {
+            })
+            .then((response) => {
                 this._updateFromResponse(response);
-                this.dispatchEvent(new CustomEvent('change', {
-                    detail: {
-                        tag: this,
-                    },
-                }));
+                this.dispatchEvent(
+                    new CustomEvent("change", {
+                        detail: {
+                            tag: this,
+                        },
+                    })
+                );
                 return Promise.resolve();
             });
     }
 
     delete() {
-        return api.delete(
-            uri.formatApiLink('tag', this._origName),
-            {version: this._version})
-            .then(response => {
-                this.dispatchEvent(new CustomEvent('delete', {
-                    detail: {
-                        tag: this,
-                    },
-                }));
+        return api
+            .delete(uri.formatApiLink("tag", this._origName), {
+                version: this._version,
+            })
+            .then((response) => {
+                this.dispatchEvent(
+                    new CustomEvent("delete", {
+                        detail: {
+                            tag: this,
+                        },
+                    })
+                );
                 return Promise.resolve();
             });
     }

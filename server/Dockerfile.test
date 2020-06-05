@@ -47,4 +47,4 @@ ENV POSTGRES_HOST=x \
 COPY --chown=app:app ./ /opt/app/
 
 ENTRYPOINT ["pytest", "--tb=short"]
-CMD ["--cov-report=term-missing:skip-covered", "--cov=szurubooru", "szurubooru/"]
+CMD ["szurubooru/"]

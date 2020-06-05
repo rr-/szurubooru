@@ -1,5 +1,6 @@
-from typing import Optional, Tuple, Dict, Callable
-from szurubooru.search import tokens, criteria
+from typing import Callable, Dict, Optional, Tuple
+
+from szurubooru.search import criteria, tokens
 from szurubooru.search.query import SearchQuery
 from szurubooru.search.typing import SaColumn, SaQuery
 

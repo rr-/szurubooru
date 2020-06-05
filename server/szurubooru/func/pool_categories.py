@@ -1,11 +1,12 @@
 import re
-from typing import Any, Optional, Dict, List, Callable
+from typing import Any, Callable, Dict, List, Optional
+
 import sqlalchemy as sa
-from szurubooru import config, db, model, errors, rest
-from szurubooru.func import util, serialization, cache
 
+from szurubooru import config, db, errors, model, rest
+from szurubooru.func import cache, serialization, util
 
-DEFAULT_CATEGORY_NAME_CACHE_KEY = 'default-pool-category'
+DEFAULT_CATEGORY_NAME_CACHE_KEY = "default-pool-category"
 
 
 class PoolCategoryNotFoundError(errors.NotFoundError):
@@ -29,10 +30,11 @@ class InvalidPoolCategoryColorError(errors.ValidationError):
 
 
 def _verify_name_validity(name: str) -> None:
-    name_regex = config.config['pool_category_name_regex']
+    name_regex = config.config["pool_category_name_regex"]
     if not re.match(name_regex, name):
         raise InvalidPoolCategoryNameError(
-            'Name must satisfy regex %r.' % name_regex)
+            "Name must satisfy regex %r." % name_regex
+        )
 
 
 class PoolCategorySerializer(serialization.BaseSerializer):
@@ -41,11 +43,11 @@ class PoolCategorySerializer(serialization.BaseSerializer):
 
     def _serializers(self) -> Dict[str, Callable[[], Any]]:
         return {
-            'name': self.serialize_name,
-            'version': self.serialize_version,
-            'color': self.serialize_color,
-            'usages': self.serialize_usages,
-            'default': self.serialize_default,
+            "name": self.serialize_name,
+            "version": self.serialize_version,
+            "color": self.serialize_color,
+            "usages": self.serialize_usages,
+            "default": self.serialize_default,
         }
 
     def serialize_name(self) -> Any:
@@ -65,8 +67,8 @@ class PoolCategorySerializer(serialization.BaseSerializer):
 
 
 def serialize_category(
-        category: Optional[model.PoolCategory],
-        options: List[str] = []) -> Optional[rest.Response]:
+    category: Optional[model.PoolCategory], options: List[str] = []
+) -> Optional[rest.Response]:
     if not category:
         return None
     return PoolCategorySerializer(category).serialize(options)
@@ -84,18 +86,21 @@ def create_category(name: str, color: str) -> model.PoolCategory:
 def update_category_name(category: model.PoolCategory, name: str) -> None:
     assert category
     if not name:
-        raise InvalidPoolCategoryNameError('Name cannot be empty.')
+        raise InvalidPoolCategoryNameError("Name cannot be empty.")
     expr = sa.func.lower(model.PoolCategory.name) == name.lower()
     if category.pool_category_id:
         expr = expr & (
-            model.PoolCategory.pool_category_id != category.pool_category_id)
+            model.PoolCategory.pool_category_id != category.pool_category_id
+        )
     already_exists = (
-        db.session.query(model.PoolCategory).filter(expr).count() > 0)
+        db.session.query(model.PoolCategory).filter(expr).count() > 0
+    )
     if already_exists:
         raise PoolCategoryAlreadyExistsError(
-            'A category with this name already exists.')
+            "A category with this name already exists."
+        )
     if util.value_exceeds_column_size(name, model.PoolCategory.name):
-        raise InvalidPoolCategoryNameError('Name is too long.')
+        raise InvalidPoolCategoryNameError("Name is too long.")
     _verify_name_validity(name)
     category.name = name
     cache.remove(DEFAULT_CATEGORY_NAME_CACHE_KEY)
@@ -104,20 +109,20 @@ def update_category_name(category: model.PoolCategory, name: str) -> None:
 def update_category_color(category: model.PoolCategory, color: str) -> None:
     assert category
     if not color:
-        raise InvalidPoolCategoryColorError('Color cannot be empty.')
-    if not re.match(r'^#?[0-9a-z]+$', color):
-        raise InvalidPoolCategoryColorError('Invalid color.')
+        raise InvalidPoolCategoryColorError("Color cannot be empty.")
+    if not re.match(r"^#?[0-9a-z]+$", color):
+        raise InvalidPoolCategoryColorError("Invalid color.")
     if util.value_exceeds_column_size(color, model.PoolCategory.color):
-        raise InvalidPoolCategoryColorError('Color is too long.')
+        raise InvalidPoolCategoryColorError("Color is too long.")
     category.color = color
 
 
 def try_get_category_by_name(
-        name: str, lock: bool = False) -> Optional[model.PoolCategory]:
-    query = (
-        db.session
-        .query(model.PoolCategory)
-        .filter(sa.func.lower(model.PoolCategory.name) == name.lower()))
+    name: str, lock: bool = False
+) -> Optional[model.PoolCategory]:
+    query = db.session.query(model.PoolCategory).filter(
+        sa.func.lower(model.PoolCategory.name) == name.lower()
+    )
     if lock:
         query = query.with_for_update()
     return query.one_or_none()
@@ -126,7 +131,7 @@ def try_get_category_by_name(
 def get_category_by_name(name: str, lock: bool = False) -> model.PoolCategory:
     category = try_get_category_by_name(name, lock)
     if not category:
-        raise PoolCategoryNotFoundError('Pool category %r not found.' % name)
+        raise PoolCategoryNotFoundError("Pool category %r not found." % name)
     return category
 
 
@@ -135,26 +140,28 @@ def get_all_category_names() -> List[str]:
 
 
 def get_all_categories() -> List[model.PoolCategory]:
-    return db.session.query(model.PoolCategory).order_by(
-        model.PoolCategory.name.asc()).all()
+    return (
+        db.session.query(model.PoolCategory)
+        .order_by(model.PoolCategory.name.asc())
+        .all()
+    )
 
 
 def try_get_default_category(
-        lock: bool = False) -> Optional[model.PoolCategory]:
-    query = (
-        db.session
-        .query(model.PoolCategory)
-        .filter(model.PoolCategory.default))
+    lock: bool = False,
+) -> Optional[model.PoolCategory]:
+    query = db.session.query(model.PoolCategory).filter(
+        model.PoolCategory.default
+    )
     if lock:
         query = query.with_for_update()
     category = query.first()
     # if for some reason (e.g. as a result of migration) there's no default
     # category, get the first record available.
     if not category:
-        query = (
-            db.session
-            .query(model.PoolCategory)
-            .order_by(model.PoolCategory.pool_category_id.asc()))
+        query = db.session.query(model.PoolCategory).order_by(
+            model.PoolCategory.pool_category_id.asc()
+        )
         if lock:
             query = query.with_for_update()
         category = query.first()
@@ -164,7 +171,7 @@ def try_get_default_category(
 def get_default_category(lock: bool = False) -> model.PoolCategory:
     category = try_get_default_category(lock)
     if not category:
-        raise PoolCategoryNotFoundError('No pool category created yet.')
+        raise PoolCategoryNotFoundError("No pool category created yet.")
     return category
 
 
@@ -191,9 +198,10 @@ def set_default_category(category: model.PoolCategory) -> None:
 def delete_category(category: model.PoolCategory) -> None:
     assert category
     if len(get_all_category_names()) == 1:
-        raise PoolCategoryIsInUseError('Cannot delete the last category.')
+        raise PoolCategoryIsInUseError("Cannot delete the last category.")
     if (category.pool_count or 0) > 0:
         raise PoolCategoryIsInUseError(
-            'Pool category has some usages and cannot be deleted. ' +
-            'Please remove this category from relevant pools first.')
+            "Pool category has some usages and cannot be deleted. "
+            + "Please remove this category from relevant pools first."
+        )
     db.session.delete(category)

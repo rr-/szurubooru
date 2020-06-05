@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 // modified page.js by visionmedia
 // - changed regexes to components
@@ -10,13 +10,17 @@
 // - rename .save() to .replaceState()
 // - offer .url
 
-const clickEvent = document.ontouchstart ? 'touchstart' : 'click';
-const uri = require('./util/uri.js');
+const clickEvent = document.ontouchstart ? "touchstart" : "click";
+const uri = require("./util/uri.js");
 let location = window.history.location || window.location;
 
 function _getOrigin() {
-    return location.protocol + '//' + location.hostname
-        + (location.port ? (':' + location.port) : '');
+    return (
+        location.protocol +
+        "//" +
+        location.hostname +
+        (location.port ? ":" + location.port : "")
+    );
 }
 
 function _isSameOrigin(href) {
@@ -24,15 +28,16 @@ function _isSameOrigin(href) {
 }
 
 function _getBaseHref() {
-    const bases = document.getElementsByTagName('base');
-    return bases.length > 0 ?
-        bases[0].href.replace(_getOrigin(), '').replace(/\/+$/, '') : '';
+    const bases = document.getElementsByTagName("base");
+    return bases.length > 0
+        ? bases[0].href.replace(_getOrigin(), "").replace(/\/+$/, "")
+        : "";
 }
 
 class Context {
     constructor(path, state) {
         const base = _getBaseHref();
-        path = path.indexOf('/') !== 0 ? '/' + path : path;
+        path = path.indexOf("/") !== 0 ? "/" + path : path;
         path = path.indexOf(base) !== 0 ? base + path : path;
 
         this.canonicalPath = path;
@@ -55,7 +60,7 @@ class Context {
 
 class Route {
     constructor(path) {
-        this.method = 'GET';
+        this.method = "GET";
         this.path = path;
 
         this.parameterNames = [];
@@ -64,16 +69,17 @@ class Route {
         } else {
             let parts = [];
             for (let component of this.path) {
-                if (component[0] === ':') {
-                    parts.push('([^/]+)');
+                if (component[0] === ":") {
+                    parts.push("([^/]+)");
                     this.parameterNames.push(component.substr(1));
-                } else { // assert [a-z]+
+                } else {
+                    // assert [a-z]+
                     parts.push(component);
                 }
             }
-            let regexString = '^/' + parts.join('/');
-            regexString += '(?:/*|/((?:(?:[a-z]+=[^/]+);)*(?:[a-z]+=[^/]+)))$';
-            this.parameterNames.push('variable');
+            let regexString = "^/" + parts.join("/");
+            regexString += "(?:/*|/((?:(?:[a-z]+=[^/]+);)*(?:[a-z]+=[^/]+)))$";
+            this.parameterNames.push("variable");
             this.regex = new RegExp(regexString);
         }
     }
@@ -88,7 +94,7 @@ class Route {
     }
 
     match(path, parameters) {
-        const qsIndex = path.indexOf('?');
+        const qsIndex = path.indexOf("?");
         const pathname = ~qsIndex ? path.slice(0, qsIndex) : path;
         const match = this.regex.exec(pathname);
 
@@ -104,8 +110,8 @@ class Route {
                     continue;
                 }
 
-                if (name === 'variable') {
-                    for (let word of (value || '').split(/;/)) {
+                if (name === "variable") {
+                    for (let word of (value || "").split(/;/)) {
                         const [key, subvalue] = word.split(/=/, 2);
                         parameters[key] = uri.unescapeParam(subvalue);
                     }
@@ -148,7 +154,7 @@ class Router {
         this._running = true;
         this._onPopState = _onPopState(this);
         this._onClick = _onClick(this);
-        window.addEventListener('popstate', this._onPopState, false);
+        window.addEventListener("popstate", this._onPopState, false);
         document.addEventListener(clickEvent, this._onClick, false);
         const url = location.pathname + location.search + location.hash;
         return this.replace(url, history.state, true);
@@ -160,7 +166,7 @@ class Router {
         }
         this._running = false;
         document.removeEventListener(clickEvent, this._onClick, false);
-        window.removeEventListener('popstate', this._onPopState, false);
+        window.removeEventListener("popstate", this._onPopState, false);
     }
 
     showNoDispatch(path, state) {
@@ -199,11 +205,11 @@ class Router {
             middle();
             next();
         };
-        const callChain = (this.ctx ? this._exits : [])
-            .concat(
-                [swap],
-                this._callbacks,
-                [this._unhandled, (ctx, next) => {}]);
+        const callChain = (this.ctx ? this._exits : []).concat(
+            [swap],
+            this._callbacks,
+            [this._unhandled, (ctx, next) => {}]
+        );
 
         let i = 0;
         let fn = () => {
@@ -226,20 +232,18 @@ class Router {
     }
 }
 
-const _onPopState = router => {
+const _onPopState = (router) => {
     let loaded = false;
-    if (document.readyState === 'complete') {
+    if (document.readyState === "complete") {
         loaded = true;
     } else {
-        window.addEventListener(
-            'load',
-            () => {
-                setTimeout(() => {
-                    loaded = true;
-                }, 0);
-            });
+        window.addEventListener("load", () => {
+            setTimeout(() => {
+                loaded = true;
+            }, 0);
+        });
     }
-    return e => {
+    return (e) => {
         if (!loaded) {
             return;
         }
@@ -247,16 +251,13 @@ const _onPopState = router => {
             const path = e.state.path;
             router.replace(path, e.state, true);
         } else {
-            router.show(
-                location.pathname + location.hash,
-                undefined,
-                false);
+            router.show(location.pathname + location.hash, undefined, false);
         }
     };
 };
 
-const _onClick = router => {
-    return e => {
+const _onClick = (router) => {
+    return (e) => {
         if (1 !== _which(e)) {
             return;
         }
@@ -268,23 +269,25 @@ const _onClick = router => {
         }
 
         let el = e.path ? e.path[0] : e.target;
-        while (el && el.nodeName !== 'A') {
+        while (el && el.nodeName !== "A") {
             el = el.parentNode;
         }
-        if (!el || el.nodeName !== 'A') {
+        if (!el || el.nodeName !== "A") {
             return;
         }
 
-        if (el.hasAttribute('download') ||
-                el.getAttribute('rel') === 'external') {
+        if (
+            el.hasAttribute("download") ||
+            el.getAttribute("rel") === "external"
+        ) {
             return;
         }
 
-        const link = el.getAttribute('href');
-        if (el.pathname === location.pathname && (el.hash || '#' === link)) {
+        const link = el.getAttribute("href");
+        if (el.pathname === location.pathname && (el.hash || "#" === link)) {
             return;
         }
-        if (link && link.indexOf('mailto:') > -1) {
+        if (link && link.indexOf("mailto:") > -1) {
             return;
         }
         if (el.target) {
@@ -295,7 +298,7 @@ const _onClick = router => {
         }
 
         const base = _getBaseHref();
-        const orig = el.pathname + el.search + (el.hash || '');
+        const orig = el.pathname + el.search + (el.hash || "");
         const path = !orig.indexOf(base) ? orig.slice(base.length) : orig;
 
         if (base && orig === path) {

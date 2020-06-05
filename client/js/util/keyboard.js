@@ -1,12 +1,12 @@
-'use strict';
+"use strict";
 
-const mousetrap = require('mousetrap');
-const settings = require('../models/settings.js');
+const mousetrap = require("mousetrap");
+const settings = require("../models/settings.js");
 
 let paused = false;
 const _originalStopCallback = mousetrap.prototype.stopCallback;
 // eslint-disable-next-line func-names
-mousetrap.prototype.stopCallback = function(...args) {
+mousetrap.prototype.stopCallback = function (...args) {
     var self = this;
     if (paused) {
         return true;

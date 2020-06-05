@@ -1,6 +1,6 @@
-'use strict';
+"use strict";
 
-const events = require('../events.js');
+const events = require("../events.js");
 
 const defaultSettings = {
     listPosts: {
@@ -12,7 +12,7 @@ const defaultSettings = {
     endlessScroll: false,
     keyboardShortcuts: true,
     transparencyGrid: true,
-    fitMode: 'fit-both',
+    fitMode: "fit-both",
     tagSuggestions: true,
     autoplayVideos: false,
     postsPerPage: 42,
@@ -28,7 +28,7 @@ class Settings extends events.EventTarget {
     _getFromLocalStorage() {
         let ret = Object.assign({}, defaultSettings);
         try {
-            Object.assign(ret, JSON.parse(localStorage.getItem('settings')));
+            Object.assign(ret, JSON.parse(localStorage.getItem("settings")));
         } catch (e) {
             // continue regardless of error
         }
@@ -37,14 +37,16 @@ class Settings extends events.EventTarget {
 
     save(newSettings, silent) {
         newSettings = Object.assign(this.cache, newSettings);
-        localStorage.setItem('settings', JSON.stringify(newSettings));
+        localStorage.setItem("settings", JSON.stringify(newSettings));
         this.cache = this._getFromLocalStorage();
         if (silent !== true) {
-            this.dispatchEvent(new CustomEvent('change', {
-                detail: {
-                    settings: this.cache,
-                },
-            }));
+            this.dispatchEvent(
+                new CustomEvent("change", {
+                    detail: {
+                        settings: this.cache,
+                    },
+                })
+            );
         }
     }
 

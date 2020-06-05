@@ -1,6 +1,6 @@
-'use strict';
+"use strict";
 
-const marked = require('marked');
+const marked = require("marked");
 
 class BaseMarkdownWrapper {
     preprocess(text) {
@@ -20,42 +20,44 @@ class SjisWrapper extends BaseMarkdownWrapper {
 
     preprocess(text) {
         return text.replace(
-            /\[sjis\]((?:[^\[]|\[(?!\/?sjis\]))+)\[\/sjis\]/ig,
+            /\[sjis\]((?:[^\[]|\[(?!\/?sjis\]))+)\[\/sjis\]/gi,
             (match, capture) => {
-                var ret = '%%%SJIS' + this.buf.length;
+                var ret = "%%%SJIS" + this.buf.length;
                 this.buf.push(capture);
                 return ret;
-            });
+            }
+        );
     }
 
     postprocess(text) {
         return text.replace(
             /(?:<p>)?%%%SJIS(\d+)(?:<\/p>)?/,
             (match, capture) => {
-                return '<div class="sjis">' + this.buf[capture] + '</div>';
-            });
+                return '<div class="sjis">' + this.buf[capture] + "</div>";
+            }
+        );
     }
 }
 
 // fix \ before ~ being stripped away
 class TildeWrapper extends BaseMarkdownWrapper {
     preprocess(text) {
-        return text.replace(/\\~/g, '%%%T');
+        return text.replace(/\\~/g, "%%%T");
     }
 
     postprocess(text) {
-        return text.replace(/%%%T/g, '\\~');
+        return text.replace(/%%%T/g, "\\~");
     }
 }
 
 // prevent ^#... from being treated as headers, due to tag permalinks
 class TagPermalinkFixWrapper extends BaseMarkdownWrapper {
     preprocess(text) {
-        return text.replace(/^#/g, '%%%#');
+        return text.replace(/^#/g, "%%%#");
     }
 
     postprocess(text) {
-        return text.replace(/%%%#/g, '#');
+        return text.replace(/%%%#/g, "#");
     }
 }
 
@@ -63,19 +65,23 @@ class TagPermalinkFixWrapper extends BaseMarkdownWrapper {
 class EntityPermalinkWrapper extends BaseMarkdownWrapper {
     preprocess(text) {
         // URL-based permalinks
+        text = text.replace(new RegExp("\\b/post/(\\d+)/?\\b", "g"), "@$1");
         text = text.replace(
-            new RegExp('\\b/post/(\\d+)/?\\b', 'g'), '@$1');
+            new RegExp("\\b/tag/([a-zA-Z0-9_-]+?)/?", "g"),
+            "#$1"
+        );
         text = text.replace(
-            new RegExp('\\b/tag/([a-zA-Z0-9_-]+?)/?', 'g'), '#$1');
-        text = text.replace(
-            new RegExp('\\b/user/([a-zA-Z0-9_-]+?)/?', 'g'), '+$1');
+            new RegExp("\\b/user/([a-zA-Z0-9_-]+?)/?", "g"),
+            "+$1"
+        );
 
         text = text.replace(
             /(^|^\(|(?:[^\]])\(|[\s<>\[\]\)])([+#@][a-zA-Z0-9_-]+)/g,
-            '$1[$2]($2)');
-        text = text.replace(/\]\(@(\d+)\)/g, '](/post/$1)');
-        text = text.replace(/\]\(\+([a-zA-Z0-9_-]+)\)/g, '](/user/$1)');
-        text = text.replace(/\]\(#([a-zA-Z0-9_-]+)\)/g, '](/posts/query=$1)');
+            "$1[$2]($2)"
+        );
+        text = text.replace(/\]\(@(\d+)\)/g, "](/post/$1)");
+        text = text.replace(/\]\(\+([a-zA-Z0-9_-]+)\)/g, "](/user/$1)");
+        text = text.replace(/\]\(#([a-zA-Z0-9_-]+)\)/g, "](/posts/query=$1)");
         return text;
     }
 }
@@ -83,51 +89,58 @@ class EntityPermalinkWrapper extends BaseMarkdownWrapper {
 class SearchPermalinkWrapper extends BaseMarkdownWrapper {
     postprocess(text) {
         return text.replace(
-            /\[search\]((?:[^\[]|\[(?!\/?search\]))+)\[\/search\]/ig,
-            '<a href="/posts/query=$1"><code>$1</code></a>');
+            /\[search\]((?:[^\[]|\[(?!\/?search\]))+)\[\/search\]/gi,
+            '<a href="/posts/query=$1"><code>$1</code></a>'
+        );
     }
 }
 
 class SpoilersWrapper extends BaseMarkdownWrapper {
     postprocess(text) {
         return text.replace(
-            /\[spoiler\]((?:[^\[]|\[(?!\/?spoiler\]))+)\[\/spoiler\]/ig,
-            '<span class="spoiler">$1</span>');
+            /\[spoiler\]((?:[^\[]|\[(?!\/?spoiler\]))+)\[\/spoiler\]/gi,
+            '<span class="spoiler">$1</span>'
+        );
     }
 }
 
 class SmallWrapper extends BaseMarkdownWrapper {
     postprocess(text) {
         return text.replace(
-            /\[small\]((?:[^\[]|\[(?!\/?small\]))+)\[\/small\]/ig,
-            '<small>$1</small>');
+            /\[small\]((?:[^\[]|\[(?!\/?small\]))+)\[\/small\]/gi,
+            "<small>$1</small>"
+        );
     }
 }
 
 class StrikeThroughWrapper extends BaseMarkdownWrapper {
     postprocess(text) {
-        text = text.replace(/(^|[^\\])(~~|~)([^~]+)\2/g, '$1<del>$3</del>');
-        return text.replace(/\\~/g, '~');
+        text = text.replace(/(^|[^\\])(~~|~)([^~]+)\2/g, "$1<del>$3</del>");
+        return text.replace(/\\~/g, "~");
     }
 }
 
 function createRenderer() {
     function sanitize(str) {
-        return str.replace(/&<"/g, m => {
-            if (m === '&') {
-                return '&amp;';
+        return str.replace(/&<"/g, (m) => {
+            if (m === "&") {
+                return "&amp;";
             }
-            if (m === '<') {
-                return '&lt;';
+            if (m === "<") {
+                return "&lt;";
             }
-            return '&quot;';
+            return "&quot;";
         });
     }
 
     const renderer = new marked.Renderer();
     renderer.image = (href, title, alt) => {
-        let [_, url, width, height] =
-            (/^(.+?)(?:\s=\s*(\d*)\s*x\s*(\d*)\s*)?$/).exec(href);
+        let [
+            _,
+            url,
+            width,
+            height,
+        ] = /^(.+?)(?:\s=\s*(\d*)\s*x\s*(\d*)\s*)?$/.exec(href);
         let res = '<img src="' + sanitize(url) + '" alt="' + sanitize(alt);
         if (width) {
             res += '" width="' + width;

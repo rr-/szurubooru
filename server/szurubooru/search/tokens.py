@@ -12,7 +12,8 @@ class AnonymousToken:
 
 class NamedToken(AnonymousToken):
     def __init__(
-            self, name: str, criterion: BaseCriterion, negated: bool) -> None:
+        self, name: str, criterion: BaseCriterion, negated: bool
+    ) -> None:
         super().__init__(criterion, negated)
         self.name = name
 
@@ -21,11 +22,11 @@ class NamedToken(AnonymousToken):
 
 
 class SortToken:
-    SORT_DESC = 'desc'
-    SORT_ASC = 'asc'
-    SORT_NONE = ''
-    SORT_DEFAULT = 'default'
-    SORT_NEGATED_DEFAULT = 'negated default'
+    SORT_DESC = "desc"
+    SORT_ASC = "asc"
+    SORT_NONE = ""
+    SORT_DEFAULT = "default"
+    SORT_NEGATED_DEFAULT = "negated default"
 
     def __init__(self, name: str, order: str) -> None:
         self.name = name

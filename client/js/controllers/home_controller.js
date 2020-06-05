@@ -1,26 +1,26 @@
-'use strict';
+"use strict";
 
-const api = require('../api.js');
-const config = require('../config.js');
-const Info = require('../models/info.js');
-const topNavigation = require('../models/top_navigation.js');
-const HomeView = require('../views/home_view.js');
+const api = require("../api.js");
+const config = require("../config.js");
+const Info = require("../models/info.js");
+const topNavigation = require("../models/top_navigation.js");
+const HomeView = require("../views/home_view.js");
 
 class HomeController {
     constructor() {
-        topNavigation.activate('home');
-        topNavigation.setTitle('Home');
+        topNavigation.activate("home");
+        topNavigation.setTitle("Home");
 
         this._homeView = new HomeView({
             name: api.getName(),
             version: config.meta.version,
             buildDate: config.meta.buildDate,
-            canListSnapshots: api.hasPrivilege('snapshots:list'),
-            canListPosts: api.hasPrivilege('posts:list'),
+            canListSnapshots: api.hasPrivilege("snapshots:list"),
+            canListPosts: api.hasPrivilege("posts:list"),
         });
 
-        Info.get()
-            .then(info => {
+        Info.get().then(
+            (info) => {
                 this._homeView.setStats({
                     diskUsage: info.diskUsage,
                     postCount: info.postCount,
@@ -31,7 +31,8 @@ class HomeController {
                     featuringTime: info.featuringTime,
                 });
             },
-            error => this._homeView.showError(error.message));
+            (error) => this._homeView.showError(error.message)
+        );
     }
 
     showSuccess(message) {
@@ -43,8 +44,8 @@ class HomeController {
     }
 }
 
-module.exports = router => {
+module.exports = (router) => {
     router.enter([], (ctx, next) => {
         ctx.controller = new HomeController();
     });
-}
+};

@@ -1,10 +1,10 @@
-'use strict';
+"use strict";
 
-const events = require('../events.js');
-const views = require('../util/views.js');
-const CommentControl = require('../controls/comment_control.js');
+const events = require("../events.js");
+const views = require("../util/views.js");
+const CommentControl = require("../controls/comment_control.js");
 
-const template = views.getTemplate('comment-list');
+const template = views.getTemplate("comment-list");
 
 class CommentListControl extends events.EventTarget {
     constructor(hostNode, comments, reversed) {
@@ -13,8 +13,8 @@ class CommentListControl extends events.EventTarget {
         this._comments = comments;
         this._commentIdToNode = {};
 
-        comments.addEventListener('add', e => this._evtAdd(e));
-        comments.addEventListener('remove', e => this._evtRemove(e));
+        comments.addEventListener("add", (e) => this._evtAdd(e));
+        comments.addEventListener("remove", (e) => this._evtRemove(e));
 
         views.replaceContent(this._hostNode, template());
 
@@ -28,16 +28,19 @@ class CommentListControl extends events.EventTarget {
     }
 
     get _commentListNode() {
-        return this._hostNode.querySelector('ul');
+        return this._hostNode.querySelector("ul");
     }
 
     _installCommentNode(comment) {
-        const commentListItemNode = document.createElement('li');
+        const commentListItemNode = document.createElement("li");
         const commentControl = new CommentControl(
-            commentListItemNode, comment, false);
-        events.proxyEvent(commentControl, this, 'submit');
-        events.proxyEvent(commentControl, this, 'score');
-        events.proxyEvent(commentControl, this, 'delete');
+            commentListItemNode,
+            comment,
+            false
+        );
+        events.proxyEvent(commentControl, this, "submit");
+        events.proxyEvent(commentControl, this, "score");
+        events.proxyEvent(commentControl, this, "delete");
         this._commentIdToNode[comment.id] = commentListItemNode;
         this._commentListNode.appendChild(commentListItemNode);
     }

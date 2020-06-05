@@ -1,9 +1,10 @@
-from typing import Dict
 import logging
 import os
-import yaml
-from szurubooru import errors
+from typing import Dict
 
+import yaml
+
+from szurubooru import errors
 
 logger = logging.getLogger(__name__)
 
@@ -21,21 +22,22 @@ def _merge(left: Dict, right: Dict) -> Dict:
 
 
 def _docker_config() -> Dict:
-    for key in ['POSTGRES_USER', 'POSTGRES_PASSWORD', 'POSTGRES_HOST']:
+    for key in ["POSTGRES_USER", "POSTGRES_PASSWORD", "POSTGRES_HOST"]:
         if not os.getenv(key, False):
             raise errors.ConfigError(f'Environment variable "{key}" not set')
     return {
-        'debug': True,
-        'show_sql': int(os.getenv('LOG_SQL', 0)),
-        'data_url': os.getenv('DATA_URL', 'data/'),
-        'data_dir': '/data/',
-        'database': 'postgres://%(user)s:%(pass)s@%(host)s:%(port)d/%(db)s' % {
-            'user': os.getenv('POSTGRES_USER'),
-            'pass': os.getenv('POSTGRES_PASSWORD'),
-            'host': os.getenv('POSTGRES_HOST'),
-            'port': int(os.getenv('POSTGRES_PORT', 5432)),
-            'db': os.getenv('POSTGRES_DB', os.getenv('POSTGRES_USER'))
-        }
+        "debug": True,
+        "show_sql": int(os.getenv("LOG_SQL", 0)),
+        "data_url": os.getenv("DATA_URL", "data/"),
+        "data_dir": "/data/",
+        "database": "postgres://%(user)s:%(pass)s@%(host)s:%(port)d/%(db)s"
+        % {
+            "user": os.getenv("POSTGRES_USER"),
+            "pass": os.getenv("POSTGRES_PASSWORD"),
+            "host": os.getenv("POSTGRES_HOST"),
+            "port": int(os.getenv("POSTGRES_PORT", 5432)),
+            "db": os.getenv("POSTGRES_DB", os.getenv("POSTGRES_USER")),
+        },
     }
 
 
@@ -45,13 +47,14 @@ def _file_config(filename: str) -> Dict:
 
 
 def _read_config() -> Dict:
-    ret = _file_config('config.yaml.dist')
-    if os.path.isfile('config.yaml'):
-        ret = _merge(ret, _file_config('config.yaml'))
-    elif os.path.isdir('config.yaml'):
+    ret = _file_config("config.yaml.dist")
+    if os.path.isfile("config.yaml"):
+        ret = _merge(ret, _file_config("config.yaml"))
+    elif os.path.isdir("config.yaml"):
         logger.warning(
-            '\'config.yaml\' should be a file, not a directory, skipping')
-    if os.path.exists('/.dockerenv'):
+            "'config.yaml' should be a file, not a directory, skipping"
+        )
+    if os.path.exists("/.dockerenv"):
         ret = _merge(ret, _docker_config())
     return ret
 

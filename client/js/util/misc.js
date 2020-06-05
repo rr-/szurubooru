@@ -1,18 +1,18 @@
-'use strict';
+"use strict";
 
-const markdown = require('./markdown.js');
-const uri = require('./uri.js');
-const settings = require('../models/settings.js');
+const markdown = require("./markdown.js");
+const uri = require("./uri.js");
+const settings = require("../models/settings.js");
 
 function decamelize(str, sep) {
-    sep = sep === undefined ? '-' : sep;
+    sep = sep === undefined ? "-" : sep;
     return str
-        .replace(/([a-z\d])([A-Z])/g, '$1' + sep + '$2')
-        .replace(/([A-Z]+)([A-Z][a-z\d]+)/g, '$1' + sep + '$2')
+        .replace(/([a-z\d])([A-Z])/g, "$1" + sep + "$2")
+        .replace(/([A-Z]+)([A-Z][a-z\d]+)/g, "$1" + sep + "$2")
         .toLowerCase();
 }
 
-function *range(start = 0, end = null, step = 1) {
+function* range(start = 0, end = null, step = 1) {
     if (end === null) {
         end = start;
         start = 0;
@@ -45,16 +45,17 @@ function formatFileSize(fileSize) {
     return _formatUnits(
         fileSize,
         1024,
-        ['B', 'K', 'M', 'G'],
+        ["B", "K", "M", "G"],
         (number, suffix) => {
-            const decimalPlaces = number < 20 && suffix !== 'B' ? 1 : 0;
+            const decimalPlaces = number < 20 && suffix !== "B" ? 1 : 0;
             return number.toFixed(decimalPlaces) + suffix;
-        });
+        }
+    );
 }
 
 function formatRelativeTime(timeString) {
     if (!timeString) {
-        return 'never';
+        return "never";
     }
 
     const then = Date.parse(timeString);
@@ -63,17 +64,17 @@ function formatRelativeTime(timeString) {
     const future = now < then;
 
     const descriptions = [
-        [60, 'a few seconds', null],
-        [60 * 2, 'a minute', null],
-        [60 * 60, '% minutes', 60],
-        [60 * 60 * 2, 'an hour', null],
-        [60 * 60 * 24, '% hours', 60 * 60],
-        [60 * 60 * 24 * 2, 'a day', null],
-        [60 * 60 * 24 * 30.42, '% days', 60 * 60 * 24],
-        [60 * 60 * 24 * 30.42 * 2, 'a month', null],
-        [60 * 60 * 24 * 30.42 * 12, '% months', 60 * 60 * 24 * 30.42],
-        [60 * 60 * 24 * 30.42 * 12 * 2, 'a year', null],
-        [8640000000000000 /* max*/, '% years', 60 * 60 * 24 * 30.42 * 12],
+        [60, "a few seconds", null],
+        [60 * 2, "a minute", null],
+        [60 * 60, "% minutes", 60],
+        [60 * 60 * 2, "an hour", null],
+        [60 * 60 * 24, "% hours", 60 * 60],
+        [60 * 60 * 24 * 2, "a day", null],
+        [60 * 60 * 24 * 30.42, "% days", 60 * 60 * 24],
+        [60 * 60 * 24 * 30.42 * 2, "a month", null],
+        [60 * 60 * 24 * 30.42 * 12, "% months", 60 * 60 * 24 * 30.42],
+        [60 * 60 * 24 * 30.42 * 12 * 2, "a year", null],
+        [8640000000000000 /* max*/, "% years", 60 * 60 * 24 * 30.42 * 12],
     ];
 
     let text = null;
@@ -87,10 +88,10 @@ function formatRelativeTime(timeString) {
         }
     }
 
-    if (text === 'a day') {
-        return future ? 'tomorrow' : 'yesterday';
+    if (text === "a day") {
+        return future ? "tomorrow" : "yesterday";
     }
-    return future ? 'in ' + text : text + ' ago';
+    return future ? "in " + text : text + " ago";
 }
 
 function formatMarkdown(text) {
@@ -102,7 +103,7 @@ function formatInlineMarkdown(text) {
 }
 
 function splitByWhitespace(str) {
-    return str.split(/\s+/).filter(s => s);
+    return str.split(/\s+/).filter((s) => s);
 }
 
 function unindent(callSite, ...args) {
@@ -110,28 +111,30 @@ function unindent(callSite, ...args) {
         let size = -1;
         return str.replace(/\n(\s+)/g, (m, m1) => {
             if (size < 0) {
-                size = m1.replace(/\t/g, '    ').length;
+                size = m1.replace(/\t/g, "    ").length;
             }
-            return '\n' + m1.slice(Math.min(m1.length, size));
+            return "\n" + m1.slice(Math.min(m1.length, size));
         });
     }
-    if (typeof callSite === 'string') {
+    if (typeof callSite === "string") {
         return format(callSite);
     }
-    if (typeof callSite === 'function') {
+    if (typeof callSite === "function") {
         return (...args) => format(callSite(...args));
     }
     let output = callSite
         .slice(0, args.length + 1)
-        .map((text, i) => (i === 0 ? '' : args[i - 1]) + text)
-        .join('');
+        .map((text, i) => (i === 0 ? "" : args[i - 1]) + text)
+        .join("");
     return format(output);
 }
 
 function enableExitConfirmation() {
-    window.onbeforeunload = e => {
-        return 'Are you sure you want to leave? ' +
-            'Data you have entered may not be saved.';
+    window.onbeforeunload = (e) => {
+        return (
+            "Are you sure you want to leave? " +
+            "Data you have entered may not be saved."
+        );
     };
 }
 
@@ -150,16 +153,17 @@ function confirmPageExit() {
 }
 
 function makeCssName(text, suffix) {
-    return suffix + '-' + text.replace(/[^a-z0-9]/g, '_');
+    return suffix + "-" + text.replace(/[^a-z0-9]/g, "_");
 }
 
 function escapeHtml(unsafe) {
-    return unsafe.toString()
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&apos;');
+    return unsafe
+        .toString()
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&apos;");
 }
 
 function arraysDiffer(source1, source2, orderImportant) {
@@ -177,25 +181,27 @@ function arraysDiffer(source1, source2, orderImportant) {
         return false;
     }
     return (
-        source1.filter(value => !source2.includes(value)).length > 0 ||
-        source2.filter(value => !source1.includes(value)).length > 0);
+        source1.filter((value) => !source2.includes(value)).length > 0 ||
+        source2.filter((value) => !source1.includes(value)).length > 0
+    );
 }
 
 function escapeSearchTerm(text) {
-    return text.replace(/([a-z_-]):/g, '$1\\:');
+    return text.replace(/([a-z_-]):/g, "$1\\:");
 }
 
 function dataURItoBlob(dataURI) {
-    const chunks = dataURI.split(',');
-    const byteString = chunks[0].indexOf('base64') >= 0 ?
-        window.atob(chunks[1]) :
-        unescape(chunks[1]);
-    const mimeString = chunks[0].split(':')[1].split(';')[0];
+    const chunks = dataURI.split(",");
+    const byteString =
+        chunks[0].indexOf("base64") >= 0
+            ? window.atob(chunks[1])
+            : unescape(chunks[1]);
+    const mimeString = chunks[0].split(":")[1].split(";")[0];
     const data = new Uint8Array(byteString.length);
     for (let i = 0; i < byteString.length; i++) {
         data[i] = byteString.charCodeAt(i);
     }
-    return new Blob([data], {type: mimeString});
+    return new Blob([data], { type: mimeString });
 }
 
 function getPrettyTagName(tag) {

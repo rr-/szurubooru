@@ -1,24 +1,24 @@
 from datetime import datetime
+
 import pytest
+
 from szurubooru import db, model
 
 
 @pytest.fixture(autouse=True)
 def inject_config(config_injector):
-    config_injector({
-        'delete_source_files': False,
-        'secret': 'secret',
-        'data_dir': ''
-    })
+    config_injector(
+        {"delete_source_files": False, "secret": "secret", "data_dir": ""}
+    )
 
 
 def test_saving_pool(pool_factory, post_factory):
     post1 = post_factory()
     post2 = post_factory()
     pool = model.Pool()
-    pool.names = [model.PoolName('alias1', 0), model.PoolName('alias2', 1)]
+    pool.names = [model.PoolName("alias1", 0), model.PoolName("alias2", 1)]
     pool.posts = []
-    pool.category = model.PoolCategory('category')
+    pool.category = model.PoolCategory("category")
     pool.creation_time = datetime(1997, 1, 1)
     pool.last_edit_time = datetime(1998, 1, 1)
     db.session.add_all([pool, post1, post2])
@@ -30,13 +30,13 @@ def test_saving_pool(pool_factory, post_factory):
     db.session.commit()
 
     pool = (
-        db.session
-        .query(model.Pool)
+        db.session.query(model.Pool)
         .join(model.PoolName)
-        .filter(model.PoolName.name == 'alias1')
-        .one())
-    assert [pool_name.name for pool_name in pool.names] == ['alias1', 'alias2']
-    assert pool.category.name == 'category'
+        .filter(model.PoolName.name == "alias1")
+        .one()
+    )
+    assert [pool_name.name for pool_name in pool.names] == ["alias1", "alias2"]
+    assert pool.category.name == "category"
     assert pool.creation_time == datetime(1997, 1, 1)
     assert pool.last_edit_time == datetime(1998, 1, 1)
     assert [post.post_id for post in pool.posts] == [1, 2]
@@ -46,9 +46,9 @@ def test_cascade_deletions(pool_factory, post_factory):
     post1 = post_factory()
     post2 = post_factory()
     pool = model.Pool()
-    pool.names = [model.PoolName('alias1', 0), model.PoolName('alias2', 1)]
+    pool.names = [model.PoolName("alias1", 0), model.PoolName("alias2", 1)]
     pool.posts = []
-    pool.category = model.PoolCategory('category')
+    pool.category = model.PoolCategory("category")
     pool.creation_time = datetime(1997, 1, 1)
     pool.last_edit_time = datetime(1998, 1, 1)
     db.session.add_all([pool, post1, post2])

@@ -1,6 +1,7 @@
-from typing import Any, Optional, Callable, Tuple
 from datetime import datetime
-from szurubooru import db, model, errors
+from typing import Any, Callable, Optional, Tuple
+
+from szurubooru import db, errors, model
 
 
 class InvalidFavoriteTargetError(errors.ValidationError):
@@ -8,10 +9,11 @@ class InvalidFavoriteTargetError(errors.ValidationError):
 
 
 def _get_table_info(
-        entity: model.Base) -> Tuple[model.Base, Callable[[model.Base], Any]]:
+    entity: model.Base,
+) -> Tuple[model.Base, Callable[[model.Base], Any]]:
     assert entity
     resource_type, _, _ = model.util.get_resource_info(entity)
-    if resource_type == 'post':
+    if resource_type == "post":
         return model.PostFavorite, lambda table: table.post_id
     raise InvalidFavoriteTargetError()
 
@@ -38,6 +40,7 @@ def unset_favorite(entity: model.Base, user: Optional[model.User]) -> None:
 
 def set_favorite(entity: model.Base, user: Optional[model.User]) -> None:
     from szurubooru.func import scores
+
     assert entity
     assert user
     try:

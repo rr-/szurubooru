@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 
-const AbstractList = require('./abstract_list.js');
-const Point = require('./point.js');
+const AbstractList = require("./abstract_list.js");
+const Point = require("./point.js");
 
 class PointList extends AbstractList {
     get firstPoint() {
@@ -18,6 +18,6 @@ class PointList extends AbstractList {
 }
 
 PointList._itemClass = Point;
-PointList._itemName = 'point';
+PointList._itemName = "point";
 
 module.exports = PointList;

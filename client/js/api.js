@@ -1,10 +1,10 @@
-'use strict';
+"use strict";
 
-const cookies = require('js-cookie');
-const request = require('superagent');
-const events = require('./events.js');
-const progress = require('./util/progress.js');
-const uri = require('./util/uri.js');
+const cookies = require("js-cookie");
+const request = require("superagent");
+const events = require("./events.js");
+const progress = require("./util/progress.js");
+const uri = require("./util/uri.js");
 
 let fileTokens = {};
 let remoteConfig = null;
@@ -18,22 +18,22 @@ class Api extends events.EventTarget {
         this.token = null;
         this.cache = {};
         this.allRanks = [
-            'anonymous',
-            'restricted',
-            'regular',
-            'power',
-            'moderator',
-            'administrator',
-            'nobody',
+            "anonymous",
+            "restricted",
+            "regular",
+            "power",
+            "moderator",
+            "administrator",
+            "nobody",
         ];
         this.rankNames = new Map([
-            ['anonymous', 'Anonymous'],
-            ['restricted', 'Restricted user'],
-            ['regular', 'Regular user'],
-            ['power', 'Power user'],
-            ['moderator', 'Moderator'],
-            ['administrator', 'Administrator'],
-            ['nobody', 'Nobody'],
+            ["anonymous", "Anonymous"],
+            ["restricted", "Restricted user"],
+            ["regular", "Regular user"],
+            ["power", "Power user"],
+            ["moderator", "Moderator"],
+            ["administrator", "Administrator"],
+            ["nobody", "Nobody"],
         ]);
     }
 
@@ -43,11 +43,12 @@ class Api extends events.EventTarget {
                 resolve(this.cache[url]);
             });
         }
-        return this._wrappedRequest(url, request.get, {}, {}, options)
-            .then(response => {
+        return this._wrappedRequest(url, request.get, {}, {}, options).then(
+            (response) => {
                 this.cache[url] = response;
                 return Promise.resolve(response);
-            });
+            }
+        );
     }
 
     post(url, data, files, options) {
@@ -67,10 +68,9 @@ class Api extends events.EventTarget {
 
     fetchConfig() {
         if (remoteConfig === null) {
-            return this.get(uri.formatApiLink('info'))
-                .then(response => {
-                    remoteConfig = response.config;
-                });
+            return this.get(uri.formatApiLink("info")).then((response) => {
+                remoteConfig = response.config;
+            });
         } else {
             return Promise.resolve();
         }
@@ -115,7 +115,8 @@ class Api extends events.EventTarget {
                 continue;
             }
             const rankIndex = this.allRanks.indexOf(
-                remoteConfig.privileges[p]);
+                remoteConfig.privileges[p]
+            );
             if (minViableRank === null || rankIndex < minViableRank) {
                 minViableRank = rankIndex;
             }
@@ -123,17 +124,16 @@ class Api extends events.EventTarget {
         if (minViableRank === null) {
             throw `Bad privilege name: ${lookup}`;
         }
-        let myRank = this.user !== null ?
-            this.allRanks.indexOf(this.user.rank) :
-            0;
+        let myRank =
+            this.user !== null ? this.allRanks.indexOf(this.user.rank) : 0;
         return myRank >= minViableRank;
     }
 
     loginFromCookies() {
-        const auth = cookies.getJSON('auth');
-        return auth && auth.user && auth.token ?
-            this.loginWithToken(auth.user, auth.token, true) :
-            Promise.resolve();
+        const auth = cookies.getJSON("auth");
+        return auth && auth.user && auth.token
+            ? this.loginWithToken(auth.user, auth.token, true)
+            : Promise.resolve();
     }
 
     loginWithToken(userName, token, doRemember) {
@@ -141,63 +141,74 @@ class Api extends events.EventTarget {
         return new Promise((resolve, reject) => {
             this.userName = userName;
             this.token = token;
-            this.get('/user/' + userName + '?bump-login=true')
-                .then(response => {
+            this.get("/user/" + userName + "?bump-login=true").then(
+                (response) => {
                     const options = {};
                     if (doRemember) {
                         options.expires = 365;
                     }
                     cookies.set(
-                        'auth',
-                        {'user': userName, 'token': token},
-                        options);
+                        "auth",
+                        { user: userName, token: token },
+                        options
+                    );
                     this.user = response;
                     resolve();
-                    this.dispatchEvent(new CustomEvent('login'));
-                }, error => {
+                    this.dispatchEvent(new CustomEvent("login"));
+                },
+                (error) => {
                     reject(error);
                     this.logout();
-                });
+                }
+            );
         });
     }
 
     createToken(userName, options) {
         let userTokenRequest = {
             enabled: true,
-            note: 'Web Login Token'
+            note: "Web Login Token",
         };
-        if (typeof options.expires !== 'undefined') {
-            userTokenRequest.expirationTime = new Date().addDays(options.expires).toISOString()
+        if (typeof options.expires !== "undefined") {
+            userTokenRequest.expirationTime = new Date()
+                .addDays(options.expires)
+                .toISOString();
         }
         return new Promise((resolve, reject) => {
-            this.post('/user-token/' + userName, userTokenRequest)
-                .then(response => {
+            this.post("/user-token/" + userName, userTokenRequest).then(
+                (response) => {
                     cookies.set(
-                        'auth',
-                        {'user': userName, 'token': response.token},
-                        options);
+                        "auth",
+                        { user: userName, token: response.token },
+                        options
+                    );
                     this.userName = userName;
                     this.token = response.token;
                     this.userPassword = null;
-                }, error => {
+                },
+                (error) => {
                     reject(error);
-                });
+                }
+            );
         });
     }
 
     deleteToken(userName, userToken) {
         return new Promise((resolve, reject) => {
-            this.delete('/user-token/' + userName + '/' + userToken, {})
-                .then(response => {
+            this.delete("/user-token/" + userName + "/" + userToken, {}).then(
+                (response) => {
                     const options = {};
                     cookies.set(
-                        'auth',
-                        {'user': userName, 'token': null},
-                        options);
+                        "auth",
+                        { user: userName, token: null },
+                        options
+                    );
                     resolve();
-                }, error => {
+                },
+                (error) => {
                     reject(error);
-                });
+                }
+            );
         });
     }
 
@@ -206,8 +217,8 @@ class Api extends events.EventTarget {
         return new Promise((resolve, reject) => {
             this.userName = userName;
             this.userPassword = userPassword;
-            this.get('/user/' + userName + '?bump-login=true')
-                .then(response => {
+            this.get("/user/" + userName + "?bump-login=true").then(
+                (response) => {
                     const options = {};
                     if (doRemember) {
                         options.expires = 365;
@@ -215,22 +226,26 @@ class Api extends events.EventTarget {
                     this.createToken(this.userName, options);
                     this.user = response;
                     resolve();
-                    this.dispatchEvent(new CustomEvent('login'));
-                }, error => {
+                    this.dispatchEvent(new CustomEvent("login"));
+                },
+                (error) => {
                     reject(error);
                     this.logout();
-                });
+                }
+            );
         });
     }
 
     logout() {
         let self = this;
-        this.deleteToken(this.userName, this.token)
-            .then(response => {
+        this.deleteToken(this.userName, this.token).then(
+            (response) => {
                 self._logout();
-            }, error => {
+            },
+            (error) => {
                 self._logout();
-            });
+            }
+        );
     }
 
     _logout() {
@@ -238,17 +253,19 @@ class Api extends events.EventTarget {
         this.userName = null;
         this.userPassword = null;
         this.token = null;
-        this.dispatchEvent(new CustomEvent('logout'));
+        this.dispatchEvent(new CustomEvent("logout"));
     }
 
     forget() {
-        cookies.remove('auth');
+        cookies.remove("auth");
     }
 
     isLoggedIn(user) {
         if (user) {
-            return this.userName !== null &&
-                this.userName.toLowerCase() === user.name.toLowerCase();
+            return (
+                this.userName !== null &&
+                this.userName.toLowerCase() === user.name.toLowerCase()
+            );
         } else {
             return this.userName !== null;
         }
@@ -259,8 +276,7 @@ class Api extends events.EventTarget {
     }
 
     _getFullUrl(url) {
-        const fullUrl =
-            ('api/' + url).replace(/([^:])\/+/g, '$1/');
+        const fullUrl = ("api/" + url).replace(/([^:])\/+/g, "$1/");
         const matches = fullUrl.match(/^([^?]*)\??(.*)$/);
         const baseUrl = matches[1];
         const request = matches[2];
@@ -285,7 +301,7 @@ class Api extends events.EventTarget {
                 const file = files[key];
                 const fileId = this._getFileId(file);
                 if (fileTokens[fileId]) {
-                    data[key + 'Token'] = fileTokens[fileId];
+                    data[key + "Token"] = fileTokens[fileId];
                 } else {
                     promise = promise
                         .then(() => {
@@ -293,33 +309,40 @@ class Api extends events.EventTarget {
                             abortFunction = () => uploadPromise.abort();
                             return uploadPromise;
                         })
-                        .then(token => {
+                        .then((token) => {
                             abortFunction = () => {};
                             fileTokens[fileId] = token;
-                            data[key + 'Token'] = token;
+                            data[key + "Token"] = token;
                             return Promise.resolve();
                         });
                 }
             }
         }
-        promise = promise.then(
-            () => {
+        promise = promise
+            .then(() => {
                 let requestPromise = this._rawRequest(
-                    url, requestFactory, data, {}, options);
+                    url,
+                    requestFactory,
+                    data,
+                    {},
+                    options
+                );
                 abortFunction = () => requestPromise.abort();
                 return requestPromise;
             })
-            .catch(error => {
-                if (error.response && error.response.name ===
-                        'MissingOrExpiredRequiredFileError') {
+            .catch((error) => {
+                if (
+                    error.response &&
+                    error.response.name === "MissingOrExpiredRequiredFileError"
+                ) {
                     for (let key of Object.keys(files)) {
                         const file = files[key];
                         const fileId = this._getFileId(file);
                         fileTokens[fileId] = null;
                     }
                     error.message =
-                        'The uploaded file has expired; ' +
-                        'please resend the form to reupload.';
+                        "The uploaded file has expired; " +
+                        "please resend the form to reupload.";
                 }
                 return Promise.reject(error);
             });
@@ -331,13 +354,17 @@ class Api extends events.EventTarget {
         let abortFunction = () => {};
         let returnedPromise = new Promise((resolve, reject) => {
             let uploadPromise = this._rawRequest(
-                'uploads', request.post, {}, {content: file}, options);
+                "uploads",
+                request.post,
+                {},
+                { content: file },
+                options
+            );
             abortFunction = () => uploadPromise.abort();
-            return uploadPromise.then(
-                response => {
-                    abortFunction = () => {};
-                    return resolve(response.token);
-                }, reject);
+            return uploadPromise.then((response) => {
+                abortFunction = () => {};
+                return resolve(response.token);
+            }, reject);
         });
         returnedPromise.abort = () => abortFunction();
         return returnedPromise;
@@ -352,7 +379,7 @@ class Api extends events.EventTarget {
         let returnedPromise = new Promise((resolve, reject) => {
             let req = requestFactory(fullUrl);
 
-            req.set('Accept', 'application/json');
+            req.set("Accept", "application/json");
 
             if (query) {
                 req.query(query);
@@ -362,7 +389,7 @@ class Api extends events.EventTarget {
                 for (let key of Object.keys(files)) {
                     const value = files[key];
                     if (value.constructor === String) {
-                        data[key + 'Url'] = value;
+                        data[key + "Url"] = value;
                     } else {
                         req.attach(key, value || new Blob());
                     }
@@ -371,9 +398,9 @@ class Api extends events.EventTarget {
 
             if (data) {
                 if (files && Object.keys(files).length) {
-                    req.attach('metadata', new Blob([JSON.stringify(data)]));
+                    req.attach("metadata", new Blob([JSON.stringify(data)]));
                 } else {
-                    req.set('Content-Type', 'application/json');
+                    req.set("Content-Type", "application/json");
                     req.send(data);
                 }
             }
@@ -382,19 +409,28 @@ class Api extends events.EventTarget {
                 if (this.userName && this.token) {
                     req.auth = null;
                     // eslint-disable-next-line no-undef
-                    req.set('Authorization', 'Token ' + new Buffer(
-                        this.userName + ":" + this.token).toString('base64'))
+                    req.set(
+                        "Authorization",
+                        "Token " +
+                            new Buffer(
+                                this.userName + ":" + this.token
+                            ).toString("base64")
+                    );
                 } else if (this.userName && this.userPassword) {
                     req.auth(
                         this.userName,
-                        encodeURIComponent(this.userPassword)
-                            .replace(/%([0-9A-F]{2})/g, (match, p1) => {
-                                return String.fromCharCode('0x' + p1);
-                            }));
+                        encodeURIComponent(this.userPassword).replace(
+                            /%([0-9A-F]{2})/g,
+                            (match, p1) => {
+                                return String.fromCharCode("0x" + p1);
+                            }
+                        )
+                    );
                 }
             } catch (e) {
                 reject(
-                    new Error('Authentication error (malformed credentials)'));
+                    new Error("Authentication error (malformed credentials)")
+                );
             }
 
             if (!options.noProgress) {
@@ -402,10 +438,11 @@ class Api extends events.EventTarget {
             }
 
             abortFunction = () => {
-                req.abort();  // does *NOT* call the callback passed in .end()
+                req.abort(); // does *NOT* call the callback passed in .end()
                 progress.done();
                 reject(
-                    new Error('The request was aborted due to user cancel.'));
+                    new Error("The request was aborted due to user cancel.")
+                );
             };
 
             req.end((error, response) => {
@@ -414,7 +451,8 @@ class Api extends events.EventTarget {
                 if (error) {
                     if (response && response.body) {
                         error = new Error(
-                            response.body.description || 'Unknown error');
+                            response.body.description || "Unknown error"
+                        );
                         error.response = response.body;
                     }
                     reject(error);

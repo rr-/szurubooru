@@ -1,13 +1,13 @@
-'use strict';
+"use strict";
 
-const events = require('../events.js');
-const Point = require('./point.js');
-const PointList = require('./point_list.js');
+const events = require("../events.js");
+const Point = require("./point.js");
+const PointList = require("./point_list.js");
 
 class Note extends events.EventTarget {
     constructor() {
         super();
-        this._text = '…';
+        this._text = "…";
         this._polygon = new PointList();
     }
 

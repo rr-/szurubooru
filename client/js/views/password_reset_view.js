@@ -1,30 +1,35 @@
-'use strict';
+"use strict";
 
-const events = require('../events.js');
-const api = require('../api.js');
-const views = require('../util/views.js');
+const events = require("../events.js");
+const api = require("../api.js");
+const views = require("../util/views.js");
 
-const template = views.getTemplate('password-reset');
+const template = views.getTemplate("password-reset");
 
 class PasswordResetView extends events.EventTarget {
     constructor() {
         super();
-        this._hostNode = document.getElementById('content-holder');
+        this._hostNode = document.getElementById("content-holder");
 
-        views.replaceContent(this._hostNode, template({
-            canSendMails: api.canSendMails(),
-            contactEmail: api.getContactEmail(),
-        }));
+        views.replaceContent(
+            this._hostNode,
+            template({
+                canSendMails: api.canSendMails(),
+                contactEmail: api.getContactEmail(),
+            })
+        );
         views.syncScrollPosition();
 
         views.decorateValidator(this._formNode);
-        this._formNode.addEventListener('submit', e => {
+        this._formNode.addEventListener("submit", (e) => {
             e.preventDefault();
-            this.dispatchEvent(new CustomEvent('submit', {
-                detail: {
-                    userNameOrEmail: this._userNameOrEmailFieldNode.value,
-                },
-            }));
+            this.dispatchEvent(
+                new CustomEvent("submit", {
+                    detail: {
+                        userNameOrEmail: this._userNameOrEmailFieldNode.value,
+                    },
+                })
+            );
         });
     }
 
@@ -49,11 +54,11 @@ class PasswordResetView extends events.EventTarget {
     }
 
     get _formNode() {
-        return this._hostNode.querySelector('form');
+        return this._hostNode.querySelector("form");
     }
 
     get _userNameOrEmailFieldNode() {
-        return this._formNode.querySelector('[name=user-name]');
+        return this._formNode.querySelector("[name=user-name]");
     }
 }
 
