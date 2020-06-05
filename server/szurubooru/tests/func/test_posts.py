@@ -79,6 +79,8 @@ def test_serialize_post(
         comment_factory,
         tag_factory,
         tag_category_factory,
+        pool_factory,
+        pool_category_factory,
         config_injector):
     config_injector({'data_url': 'http://example.com/', 'secret': 'test'})
     with patch('szurubooru.func.comments.serialize_comment'), \
@@ -150,6 +152,23 @@ def test_serialize_post(
                 time=datetime(1800, 1, 1))])
         db.session.flush()
 
+        pool1 = pool_factory(id=1,
+                             names=['pool1', 'pool2'],
+                             description='desc',
+                             category=pool_category_factory('test-cat1'))
+        pool1.last_edit_time = datetime(1998, 1, 1)
+        pool1.posts.append(post)
+
+        pool2 = pool_factory(id=2,
+                             names=['pool3'],
+                             description='desc2',
+                             category=pool_category_factory('test-cat2'))
+        pool2.last_edit_time = datetime(1998, 1, 1)
+        pool2.posts.append(post)
+
+        db.session.add_all([pool1, pool2])
+        db.session.flush()
+
         result = posts.serialize_post(post, auth_user)
         result['tags'].sort(key=lambda tag: tag['names'][0])
 
@@ -183,6 +202,44 @@ def test_serialize_post(
             ],
             'relations': [],
             'notes': [],
+            'pools': [
+                {
+                    'id': 1,
+                    'names': ['pool1', 'pool2'],
+                    'description': 'desc',
+                    'category': 'test-cat1',
+                    'postCount': 1,
+                    'posts': [
+                        {
+                            'id': 1,
+                            'thumbnailUrl':
+                                'http://example.com/'
+                                'generated-thumbnails/1_244c8840887984c4.jpg',
+                        }
+                    ],
+                    'version': 1,
+                    'creationTime': datetime(1996, 1, 1),
+                    'lastEditTime': datetime(1998, 1, 1),
+                },
+                {
+                    'id': 2,
+                    'names': ['pool3'],
+                    'description': 'desc2',
+                    'category': 'test-cat2',
+                    'postCount': 1,
+                    'posts': [
+                        {
+                            'id': 1,
+                            'thumbnailUrl':
+                                'http://example.com/'
+                                'generated-thumbnails/1_244c8840887984c4.jpg',
+                        }
+                    ],
+                    'version': 1,
+                    'creationTime': datetime(1996, 1, 1),
+                    'lastEditTime': datetime(1998, 1, 1),
+                }
+            ],
             'user': 'post author',
             'score': 1,
             'ownFavorite': False,

@@ -49,6 +49,9 @@ enable_safety: yes
 tag_name_regex: ^\S+$
 tag_category_name_regex: ^[^\s%+#/]+$
 
+pool_name_regex: ^\S+$
+pool_category_name_regex: ^[^\s%+#/]+$
+
 # don't make these more restrictive unless you want to annoy people; if you do
 # customize them, make sure to update the instructions in the registration form
 # template as well.
@@ -124,6 +127,24 @@ privileges:
     'tag_categories:view':          anonymous
     'tag_categories:delete':        moderator
     'tag_categories:set_default':   moderator
+
+    'pools:create':                 regular
+    'pools:edit:names':             power
+    'pools:edit:category':          power
+    'pools:edit:description':       power
+    'pools:edit:posts':             power
+    'pools:list':                   regular
+    'pools:view':                   anonymous
+    'pools:merge':                  moderator
+    'pools:delete':                 moderator
+
+    'pool_categories:create':       moderator
+    'pool_categories:edit:name':    moderator
+    'pool_categories:edit:color':   moderator
+    'pool_categories:list':         anonymous
+    'pool_categories:view':         anonymous
+    'pool_categories:delete':       moderator
+    'pool_categories:set_default':  moderator
 
     'comments:create':              regular
     'comments:delete:any':          moderator

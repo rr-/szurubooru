@@ -73,6 +73,12 @@
             </section>
         <% } %>
 
+        <% if (ctx.canEditPoolPosts) { %>
+            <section class='pools'>
+                <%= ctx.makeTextInput({}) %>
+            </section>
+        <% } %>
+
         <% if (ctx.canEditPostNotes) { %>
             <section class='notes'>
                 <a href class='add'>Add a note</a>

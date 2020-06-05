@@ -215,6 +215,29 @@ function makeTagLink(name, includeHash, includeCount, tag) {
             misc.escapeHtml(text));
 }
 
+function makePoolLink(id, includeHash, includeCount, pool, name) {
+    const category = pool ? pool.category : 'unknown';
+    let text = name ? name : pool.names[0];
+    if (includeHash === true) {
+        text = '#' + text;
+    }
+    if (includeCount === true) {
+        text += ' (' + (pool ? pool.postCount : 0) + ')';
+    }
+    return api.hasPrivilege('pools:view') ?
+        makeElement(
+            'a',
+            {
+                href: uri.formatClientLink('pool', id),
+                class: misc.makeCssName(category, 'pool'),
+            },
+            misc.escapeHtml(text)) :
+        makeElement(
+            'span',
+            {class: misc.makeCssName(category, 'pool')},
+            misc.escapeHtml(text));
+}
+
 function makeUserLink(user) {
     let text = makeThumbnail(user ? user.avatarUrl : null);
     text += user && user.name ? misc.escapeHtml(user.name) : 'Anonymous';
@@ -393,6 +416,7 @@ function getTemplate(templatePath) {
             makeDateInput: makeDateInput,
             makePostLink: makePostLink,
             makeTagLink: makeTagLink,
+            makePoolLink: makePoolLink,
             makeUserLink: makeUserLink,
             makeFlexboxAlign: makeFlexboxAlign,
             makeAccessKey: makeAccessKey,
@@ -522,6 +546,7 @@ module.exports = {
     decorateValidator: decorateValidator,
     makeTagLink: makeTagLink,
     makePostLink: makePostLink,
+    makePoolLink: makePoolLink,
     makeCheckbox: makeCheckbox,
     makeRadio: makeRadio,
     syncScrollPosition: syncScrollPosition,

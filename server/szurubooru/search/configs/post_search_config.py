@@ -104,6 +104,18 @@ def _note_filter(
         search_util.create_str_filter)(query, criterion, negated)
 
 
+def _pool_filter(
+        query: SaQuery,
+        criterion: Optional[criteria.BaseCriterion],
+        negated: bool) -> SaQuery:
+    assert criterion
+    return search_util.create_subquery_filter(
+        model.Post.post_id,
+        model.PoolPost.post_id,
+        model.PoolPost.pool_id,
+        search_util.create_num_filter)(query, criterion, negated)
+
+
 class PostSearchConfig(BaseSearchConfig):
     def __init__(self) -> None:
         self.user = None  # type: Optional[model.User]
@@ -349,6 +361,11 @@ class PostSearchConfig(BaseSearchConfig):
                 ['flag'],
                 search_util.create_str_filter(
                     model.Post.flags_string, _flag_transformer)
+            ),
+
+            (
+                ['pool'],
+                _pool_filter
             ),
         ])
 

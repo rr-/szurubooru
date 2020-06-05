@@ -36,6 +36,8 @@ function _makeResourceLink(type, id) {
         return views.makeTagLink(id, true);
     } else if (type === 'tag_category') {
         return 'category "' + id + '"';
+    } else if (type === 'pool') {
+        return views.makePoolLink(id, true);
     }
 }
 
@@ -112,6 +114,19 @@ function _makeItemModification(type, data) {
         }
         if (diff.flags) {
             _extend(lines, ['Changed flags']);
+        }
+
+    } else if (type === 'pool') {
+        if (diff.names) {
+            _extend(lines, _formatBasicChange(diff.names, 'names'));
+        }
+        if (diff.category) {
+            _extend(
+                lines, _formatBasicChange(diff.category, 'category'));
+        }
+        if (diff.posts) {
+            _extend(
+                lines, _formatBasicChange(diff.posts, 'posts'));
         }
     }
 

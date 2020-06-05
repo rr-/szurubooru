@@ -24,6 +24,24 @@ def get_tag_snapshot(tag: model.Tag) -> Dict[str, Any]:
     }
 
 
+def get_pool_category_snapshot(category: model.PoolCategory) -> Dict[str, Any]:
+    assert category
+    return {
+        'name': category.name,
+        'color': category.color,
+        'default': True if category.default else False,
+    }
+
+
+def get_pool_snapshot(pool: model.Pool) -> Dict[str, Any]:
+    assert pool
+    return {
+        'names': [pool_name.name for pool_name in pool.names],
+        'category': pool.category.name,
+        'posts': [post.post_id for post in pool.posts]
+    }
+
+
 def get_post_snapshot(post: model.Post) -> Dict[str, Any]:
     assert post
     return {
@@ -47,6 +65,8 @@ _snapshot_factories = {
     'tag_category': lambda entity: get_tag_category_snapshot(entity),
     'tag': lambda entity: get_tag_snapshot(entity),
     'post': lambda entity: get_post_snapshot(entity),
+    'pool_category': lambda entity: get_pool_category_snapshot(entity),
+    'pool': lambda entity: get_pool_snapshot(entity),
 }  # type: Dict[model.Base, Callable[[model.Base], Dict[str ,Any]]]
 
 

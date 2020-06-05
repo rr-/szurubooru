@@ -1,0 +1,52 @@
+@import colors
+
+.pool-list
+    table
+        width: 100%
+        border-spacing: 0
+        text-align: left
+        line-height: 1.3em
+        tr:hover td
+            background: $top-navigation-color
+        th, td
+            padding: 0.1em 0.5em
+        th
+            white-space: nowrap
+            background: $top-navigation-color
+        .names
+            width: 84%
+        .post-count
+            text-align: center
+            width: 8%
+        .creation-time
+            text-align: center
+            width: 8%
+            white-space: pre
+        ul
+            list-style-type: none
+            margin: 0
+            padding: 0
+            display: inline
+            li
+                padding: 0
+                display: inline
+                &:not(:last-child):after
+                    content: ', '
+        @media (max-width: 800px)
+            .posts
+                display: none
+
+.pool-list-header
+    label
+        display: none !important
+    text-align: left
+    form
+        width: auto
+    input[name=search-text]
+        width: 25em
+        @media (max-width: 1000px)
+            width: 100%
+    .append
+        vertical-align: middle
+        font-size: 0.95em
+        color: $inactive-link-color

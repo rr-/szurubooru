@@ -7,6 +7,8 @@ const events = require('../events.js');
 const TagList = require('./tag_list.js');
 const NoteList = require('./note_list.js');
 const CommentList = require('./comment_list.js');
+const PoolList = require('./pool_list.js');
+const Pool = require('./pool.js');
 const misc = require('../util/misc.js');
 
 class Post extends events.EventTarget {
@@ -18,6 +20,7 @@ class Post extends events.EventTarget {
             obj._tags = new TagList();
             obj._notes = new NoteList();
             obj._comments = new CommentList();
+            obj._pools = new PoolList();
         }
 
         this._updateFromResponse({});
@@ -111,6 +114,10 @@ class Post extends events.EventTarget {
         return this._relations;
     }
 
+    get pools() {
+        return this._pools;
+    }
+
     get score() {
         return this._score;
     }
@@ -191,6 +198,43 @@ class Post extends events.EventTarget {
             });
     }
 
+    _savePoolPosts() {
+        const difference = (a, b) => a.filter(post => !b.hasPoolId(post.id));
+
+        // find the pools where the post was added or removed
+        const added = difference(this.pools, this._orig._pools);
+        const removed = difference(this._orig._pools, this.pools);
+
+        let ops = [];
+
+        // update each pool's list of posts
+        for (let pool of added) {
+            let op = Pool.get(pool.id).then(response => {
+                if (!response.posts.hasPostId(this._id)) {
+                    response.posts.addById(this._id);
+                    return response.save();
+                } else {
+                    return Promise.resolve(response);
+                }
+            });
+            ops.push(op);
+        }
+
+        for (let pool of removed) {
+            let op = Pool.get(pool.id).then(response => {
+                if (response.posts.hasPostId(this._id)) {
+                    response.posts.removeById(this._id);
+                    return response.save();
+                } else {
+                    return Promise.resolve(response);
+                }
+            });
+            ops.push(op);
+        }
+
+        return Promise.all(ops);
+    }
+
     save(anonymous) {
         const files = {};
         const detail = {version: this._version};
@@ -232,6 +276,12 @@ class Post extends events.EventTarget {
             api.post(uri.formatApiLink('posts'), detail, files);
 
         return apiPromise.then(response => {
+            if (misc.arraysDiffer(this._pools, this._orig._pools)) {
+                return this._savePoolPosts()
+                    .then(() => Promise.resolve(response));
+            }
+            return Promise.resolve(response);
+        }).then(response => {
             this._updateFromResponse(response);
             this.dispatchEvent(
                 new CustomEvent('change', {detail: {post: this}}));
@@ -243,12 +293,13 @@ class Post extends events.EventTarget {
                 this.dispatchEvent(
                     new CustomEvent('changeThumbnail', {detail: {post: this}}));
             }
+
             return Promise.resolve();
         }, error => {
             if (error.response &&
-                    error.response.name === 'PostAlreadyUploadedError') {
+                error.response.name === 'PostAlreadyUploadedError') {
                 error.message =
-                    `Post already uploaded (@${error.response.otherPostId})`;
+                  `Post already uploaded (@${error.response.otherPostId})`;
             }
             return Promise.reject(error);
         });
@@ -365,9 +416,9 @@ class Post extends events.EventTarget {
 
     mutateContentUrl() {
         this._contentUrl =
-            this._orig._contentUrl +
-            '?bypass-cache=' +
-            Math.round(Math.random() * 1000);
+          this._orig._contentUrl +
+          '?bypass-cache=' +
+          Math.round(Math.random() * 1000);
     }
 
     _updateFromResponse(response) {
@@ -402,6 +453,7 @@ class Post extends events.EventTarget {
             obj._tags.sync(response.tags);
             obj._notes.sync(response.notes);
             obj._comments.sync(response.comments);
+            obj._pools.sync(response.pools);
         }
 
         Object.assign(this, map());

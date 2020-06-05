@@ -202,6 +202,53 @@ def post_favorite_factory(user_factory, post_factory):
 
 
 @pytest.fixture
+def pool_category_factory():
+    def factory(name=None, color='dummy', default=False):
+        category = model.PoolCategory()
+        category.name = name or get_unique_name()
+        category.color = color
+        category.default = default
+        return category
+    return factory
+
+
+@pytest.fixture
+def pool_factory():
+    def factory(
+            id=None, names=None, description=None, category=None, time=None):
+        if not category:
+            category = model.PoolCategory(get_unique_name())
+            db.session.add(category)
+        pool = model.Pool()
+        pool.pool_id = id
+        pool.names = []
+        for i, name in enumerate(names or [get_unique_name()]):
+            pool.names.append(model.PoolName(name, i))
+        pool.description = description
+        pool.category = category
+        pool.creation_time = time or datetime(1996, 1, 1)
+        return pool
+    return factory
+
+
+@pytest.fixture
+def pool_post_factory(pool_factory, post_factory):
+    def factory(pool=None, post=None, order=None):
+        if not pool:
+            pool = pool_factory()
+            db.session.add(pool)
+        if not post:
+            post = post_factory()
+            db.session.add(post)
+        pool_post = model.PoolPost(post)
+        pool_post.pool = pool
+        pool_post.post = post
+        pool_post.order = order or 0
+        return pool_post
+    return factory
+
+
+@pytest.fixture
 def read_asset():
     def get(path):
         path = os.path.join(os.path.dirname(__file__), 'assets', path)

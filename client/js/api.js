@@ -84,6 +84,10 @@ class Api extends events.EventTarget {
         return remoteConfig.tagNameRegex;
     }
 
+    getPoolNameRegex() {
+        return remoteConfig.poolNameRegex;
+    }
+
     getPasswordRegex() {
         return remoteConfig.passwordRegex;
     }

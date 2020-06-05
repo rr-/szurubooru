@@ -5,7 +5,7 @@ from datetime import datetime
 import sqlalchemy as sa
 from szurubooru import config, db, model, errors, rest
 from szurubooru.func import (
-    users, scores, comments, tags, util,
+    users, scores, comments, tags, pools, util,
     mime, images, files, image_hash, serialization, snapshots)
 
 
@@ -176,6 +176,7 @@ class PostSerializer(serialization.BaseSerializer):
             'hasCustomThumbnail': self.serialize_has_custom_thumbnail,
             'notes': self.serialize_notes,
             'comments': self.serialize_comments,
+            'pools': self.serialize_pools,
         }
 
     def serialize_id(self) -> Any:
@@ -299,6 +300,13 @@ class PostSerializer(serialization.BaseSerializer):
                 self.post.comments,
                 key=lambda comment: comment.creation_time)]
 
+    def serialize_pools(self) -> List[Any]:
+        return [
+            pools.serialize_pool(pool)
+            for pool in sorted(
+                self.post.pools,
+                key=lambda pool: pool.creation_time)]
+
 
 def serialize_post(
         post: Optional[model.Post],
@@ -332,6 +340,22 @@ def get_post_by_id(post_id: int) -> model.Post:
     if not post:
         raise PostNotFoundError('Post %r not found.' % post_id)
     return post
+
+
+def get_posts_by_ids(ids: List[int]) -> List[model.Post]:
+    if len(ids) == 0:
+        return []
+    posts = (
+        db.session.query(model.Post)
+        .filter(
+            sa.sql.or_(
+                model.Post.post_id == post_id
+                for post_id in ids))
+        .all())
+    id_order = {
+        v: k for k, v in enumerate(ids)
+    }
+    return sorted(posts, key=lambda post: id_order.get(post.post_id))
 
 
 def try_get_current_post_feature() -> Optional[model.PostFeature]:
