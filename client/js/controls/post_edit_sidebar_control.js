@@ -236,10 +236,12 @@ class PostEditSidebarControl extends events.EventTarget {
             );
         }
 
-        this._poolControl.addEventListener("change", (e) => {
-            this.dispatchEvent(new CustomEvent("change"));
-            this._syncExpanderTitles();
-        });
+        if (this._poolControl) {
+            this._poolControl.addEventListener("change", (e) => {
+                this.dispatchEvent(new CustomEvent("change"));
+                this._syncExpanderTitles();
+            });
+        }
     }
 
     _syncExpanderTitles() {
