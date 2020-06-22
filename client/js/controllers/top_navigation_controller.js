@@ -50,6 +50,9 @@ class TopNavigationController {
         if (!api.hasPrivilege("users:list")) {
             topNavigation.hide("users");
         }
+        if (!api.hasPrivilege("pools:list")) {
+            topNavigation.hide("pools");
+        }
         if (api.isLoggedIn()) {
             if (!api.hasPrivilege("users:create:any")) {
                 topNavigation.hide("register");
