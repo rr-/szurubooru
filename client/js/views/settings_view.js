@@ -42,9 +42,8 @@ class SettingsView extends events.EventTarget {
                     tagSuggestions: this._find("tag-suggestions").checked,
                     autoplayVideos: this._find("autoplay-videos").checked,
                     postsPerPage: this._find("posts-per-page").value,
-                    tagUnderscoresAsSpaces: this._find(
-                        "tag-underscores-as-spaces"
-                    ).checked,
+                    tagUnderscoresAsSpaces: this._find("underscores-as-spaces")
+                        .checked,
                 },
             })
         );

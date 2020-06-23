@@ -30,7 +30,7 @@ class PostReadonlySidebarControl extends events.EventTarget {
                 canViewTags: api.hasPrivilege("tags:view"),
                 escapeColons: uri.escapeColons,
                 extractRootDomain: uri.extractRootDomain,
-                getPrettyTagName: misc.getPrettyTagName,
+                getPrettyName: misc.getPrettyName,
             })
         );
 

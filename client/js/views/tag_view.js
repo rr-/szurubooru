@@ -18,7 +18,7 @@ class TagView extends events.EventTarget {
         this._ctx = ctx;
         ctx.tag.addEventListener("change", (e) => this._evtChange(e));
         ctx.section = ctx.section || "summary";
-        ctx.getPrettyTagName = misc.getPrettyTagName;
+        ctx.getPrettyName = misc.getPrettyName;
 
         this._hostNode = document.getElementById("content-holder");
         this._install();

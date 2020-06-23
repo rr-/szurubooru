@@ -93,7 +93,7 @@
                         --><% if (ctx.canListPosts) { %><!--
                             --><a href='<%- ctx.formatClientLink('posts', {query: ctx.escapeColons(tag.names[0])}) %>' class='<%= ctx.makeCssName(tag.category, 'tag') %>'><!--
                         --><% } %><!--
-                            --><%- ctx.getPrettyTagName(tag.names[0]) %>&#32;<!--
+                            --><%- ctx.getPrettyName(tag.names[0]) %>&#32;<!--
                         --><% if (ctx.canListPosts) { %><!--
                             --></a><!--
                         --><% } %><!--

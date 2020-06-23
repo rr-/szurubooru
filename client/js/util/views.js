@@ -210,7 +210,7 @@ function makePostLink(id, includeHash) {
 
 function makeTagLink(name, includeHash, includeCount, tag) {
     const category = tag ? tag.category : "unknown";
-    let text = misc.getPrettyTagName(name);
+    let text = misc.getPrettyName(name);
     if (includeHash === true) {
         text = "#" + text;
     }
@@ -235,7 +235,7 @@ function makeTagLink(name, includeHash, includeCount, tag) {
 
 function makePoolLink(id, includeHash, includeCount, pool, name) {
     const category = pool ? pool.category : "unknown";
-    let text = name ? name : pool.names[0];
+    let text = misc.getPrettyName(name ? name : pool.names[0]);
     if (includeHash === true) {
         text = "#" + text;
     }

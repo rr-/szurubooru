@@ -18,7 +18,7 @@ class PoolView extends events.EventTarget {
         this._ctx = ctx;
         ctx.pool.addEventListener("change", (e) => this._evtChange(e));
         ctx.section = ctx.section || "summary";
-        ctx.getPrettyPoolName = misc.getPrettyPoolName;
+        ctx.getPrettyName = misc.getPrettyName;
 
         this._hostNode = document.getElementById("content-holder");
         this._install();

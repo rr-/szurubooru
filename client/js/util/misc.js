@@ -204,7 +204,7 @@ function dataURItoBlob(dataURI) {
     return new Blob([data], { type: mimeString });
 }
 
-function getPrettyTagName(tag) {
+function getPrettyName(tag) {
     if (settings.get().tagUnderscoresAsSpaces) {
         return tag.replace(/_/g, " ");
     }
@@ -228,5 +228,5 @@ module.exports = {
     decamelize: decamelize,
     escapeSearchTerm: escapeSearchTerm,
     dataURItoBlob: dataURItoBlob,
-    getPrettyTagName: getPrettyTagName,
+    getPrettyName: getPrettyName,
 };

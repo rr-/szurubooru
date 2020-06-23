@@ -1,5 +1,5 @@
 <div class='content-wrapper' id='pool'>
-    <h1><%- ctx.pool.names[0] %></h1>
+    <h1><%- ctx.getPrettyName(ctx.pool.names[0]) %></h1>
     <nav class='buttons'><!--
         --><ul><!--
             --><li data-name='summary'><a href='<%- ctx.formatClientLink('pool', ctx.pool.id) %>'>Summary</a></li><!--

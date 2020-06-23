@@ -1,5 +1,5 @@
 <div class='content-wrapper' id='tag'>
-    <h1><%- ctx.getPrettyTagName(ctx.tag.names[0]) %></h1>
+    <h1><%- ctx.getPrettyName(ctx.tag.names[0]) %></h1>
     <nav class='buttons'><!--
         --><ul><!--
             --><li data-name='summary'><a href='<%- ctx.formatClientLink('tag', ctx.tag.names[0]) %>'>Summary</a></li><!--
