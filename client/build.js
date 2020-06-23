@@ -21,6 +21,7 @@ const webapp_splash_screens = [
 ];
 
 const external_js = [
+    'dompurify',
     'js-cookie',
     'marked',
     'mousetrap',

@@ -1,6 +1,7 @@
 "use strict";
 
 const marked = require("marked");
+const DOMPurify = require("dompurify");
 
 class BaseMarkdownWrapper {
     preprocess(text) {
@@ -158,7 +159,6 @@ function formatMarkdown(text) {
     const options = {
         renderer: renderer,
         breaks: true,
-        sanitize: true,
         smartypants: true,
     };
     let wrappers = [
@@ -179,7 +179,7 @@ function formatMarkdown(text) {
     for (let wrapper of wrappers) {
         text = wrapper.postprocess(text);
     }
-    return text;
+    return DOMPurify.sanitize(text);
 }
 
 function formatInlineMarkdown(text) {
@@ -187,7 +187,6 @@ function formatInlineMarkdown(text) {
     const options = {
         renderer: renderer,
         breaks: true,
-        sanitize: true,
         smartypants: true,
     };
     let wrappers = [
@@ -206,7 +205,7 @@ function formatInlineMarkdown(text) {
     for (let wrapper of wrappers) {
         text = wrapper.postprocess(text);
     }
-    return text;
+    return DOMPurify.sanitize(text);
 }
 
 module.exports = {
