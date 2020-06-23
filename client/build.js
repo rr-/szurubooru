@@ -21,11 +21,12 @@ const webapp_splash_screens = [
 ];
 
 const external_js = [
-    'underscore',
-    'superagent',
-    'mousetrap',
     'js-cookie',
+    'marked',
+    'mousetrap',
     'nprogress',
+    'superagent',
+    'underscore',
 ];
 
 const app_manifest = {

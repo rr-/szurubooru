@@ -23,7 +23,7 @@
     "csso": "^3.5.1",
     "glob": "^7.1.2",
     "html-minifier": "^3.5.18",
-    "jimp": "^0.3.5",
+    "jimp": "^0.13.0",
     "stylus": "^0.54.5",
     "terser": "^3.7.7",
     "underscore": "^1.9.1"
