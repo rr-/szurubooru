@@ -1,7 +1,16 @@
+@import colors
 $snapshot-created-background-color = #E0F5E0
 $snapshot-modified-background-color = #E0F5FF
 $snapshot-deleted-background-color = #FDE5E5
 $snapshot-merged-background-color = #FEC
+
+$is-dark = dark($window-color)
+
+if $is-dark
+  $snapshot-created-background-color = darken($snapshot-created-background-color, 80%)
+  $snapshot-modified-background-color = darken($snapshot-modified-background-color, 80%)
+  $snapshot-deleted-background-color = darken($snapshot-deleted-background-color, 80%)
+  $snapshot-merged-background-color = darken($snapshot-merged-background-color, 80%)
 
 .snapshot-list
     text-align: left
@@ -31,16 +40,16 @@ $snapshot-merged-background-color = #FEC
             div.operation-created
                 background: $snapshot-created-background-color
                 &+.details
-                    background: lighten($snapshot-created-background-color, 50%)
+                    background: alpha($snapshot-created-background-color, 50%)
             div.operation-modified
                 background: $snapshot-modified-background-color
                 &+.details
-                    background: lighten($snapshot-modified-background-color, 50%)
+                    background: alpha($snapshot-modified-background-color, 50%)
             div.operation-deleted
                 background: $snapshot-deleted-background-color
                 &+.details
-                    background: lighten($snapshot-deleted-background-color, 50%)
+                    background: alpha($snapshot-deleted-background-color, 50%)
             div.operation-merged
                 background: $snapshot-merged-background-color
                 &+.details
-                    background: lighten($snapshot-merged-background-color, 50%)
+                    background: alpha($snapshot-merged-background-color, 50%)
