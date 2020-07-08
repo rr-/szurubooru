@@ -38,6 +38,8 @@
 
         <div class='messages'></div>
         <div class='buttons'>
+            <div id="recaptcha"></div>
+            <br>
             <input type='submit' value='Create an account'/>
         </div>
     </form>

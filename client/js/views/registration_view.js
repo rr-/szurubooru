@@ -5,6 +5,7 @@ const api = require("../api.js");
 const views = require("../util/views.js");
 
 const template = views.getTemplate("user-registration");
+const RECAPTCHA_SITE_KEY = "site key";
 
 class RegistrationView extends events.EventTarget {
     constructor() {
@@ -20,6 +21,13 @@ class RegistrationView extends events.EventTarget {
         views.syncScrollPosition();
         views.decorateValidator(this._formNode);
         this._formNode.addEventListener("submit", (e) => this._evtSubmit(e));
+        this.renderRecaptcha();
+    }
+
+    renderRecaptcha() {
+        grecaptcha.render(this._recaptchaNode, {
+            "sitekey": RECAPTCHA_SITE_KEY
+        });
     }
 
     clearMessages() {
@@ -65,6 +73,10 @@ class RegistrationView extends events.EventTarget {
 
     get _emailFieldNode() {
         return this._formNode.querySelector("[name=email]");
+    }
+
+    get _recaptchaNode() {
+        return this._formNode.querySelector("#recaptcha");
     }
 }
 
