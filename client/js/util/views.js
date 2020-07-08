@@ -235,7 +235,9 @@ function makeTagLink(name, includeHash, includeCount, tag) {
 
 function makePoolLink(id, includeHash, includeCount, pool, name) {
     const category = pool ? pool.category : "unknown";
-    let text = misc.getPrettyName(name ? name : pool.names[0]);
+    let text = misc.getPrettyName(
+        name ? name : pool ? pool.names[0] : "unknown"
+    );
     if (includeHash === true) {
         text = "#" + text;
     }
