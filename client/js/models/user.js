@@ -107,7 +107,7 @@ class User extends events.EventTarget {
         });
     }
 
-    save() {
+    save(recaptchaToken) {
         const files = [];
         const detail = { version: this._version };
         const transient = this._orig._name;
@@ -131,13 +131,16 @@ class User extends events.EventTarget {
         if (this._password) {
             detail.password = this._password;
         }
+        if (!api.isLoggedIn()) {
+            detail.recaptchaToken = recaptchaToken;
+        }
 
         let promise = this._orig._name
             ? api.put(
-                  uri.formatApiLink("user", this._orig._name),
-                  detail,
-                  files
-              )
+                uri.formatApiLink("user", this._orig._name),
+                detail,
+                files
+            )
             : api.post(uri.formatApiLink("users"), detail, files);
 
         return promise.then((response) => {
