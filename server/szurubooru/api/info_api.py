@@ -49,6 +49,7 @@ def get_info(ctx: rest.Context, _params: Dict[str, str] = {}) -> rest.Response:
             "privileges": util.snake_case_to_lower_camel_case_keys(
                 config.config["privileges"]
             ),
+            "enableRecaptcha": config.config["enable_recaptcha"],
         },
     }
     if auth.has_privilege(ctx.user, "posts:view:featured"):

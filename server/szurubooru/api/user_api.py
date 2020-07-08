@@ -42,7 +42,7 @@ def create_user(
         auth.verify_privilege(ctx.user, "users:create:any")
 
     # Verify if the recaptcha was correct.
-    if expect_recaptcha:
+    if expect_recaptcha and config.config["enable_recaptcha"]:
         resp = requests.post("https://www.google.com/recaptcha/api/siteverify", data={
             "secret": config.config["recaptcha_secret"],
             "response": ctx.get_param_as_string("recaptchaToken", default=""),

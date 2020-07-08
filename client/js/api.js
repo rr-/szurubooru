@@ -108,6 +108,10 @@ class Api extends events.EventTarget {
         return !!remoteConfig.enableSafety;
     }
 
+    recaptchaEnabled() {
+        return !!remoteConfig.enableRecaptcha;
+    }
+
     hasPrivilege(lookup) {
         let minViableRank = null;
         for (let p of Object.keys(remoteConfig.privileges)) {

@@ -10,12 +10,17 @@ const RECAPTCHA_SITE_KEY = "site key";
 class RegistrationView extends events.EventTarget {
     constructor() {
         super();
+
+        // Show the recaptcha only for anonymous users.
+        const showRecaptcha = (!api.isLoggedIn() && api.recaptchaEnabled());
+
         this._hostNode = document.getElementById("content-holder");
         views.replaceContent(
             this._hostNode,
             template({
                 userNamePattern: api.getUserNameRegex(),
                 passwordPattern: api.getPasswordRegex(),
+                enableRecaptcha: showRecaptcha,
             })
         );
         views.syncScrollPosition();
@@ -23,8 +28,7 @@ class RegistrationView extends events.EventTarget {
         this._formNode.addEventListener("submit", (e) => this._evtSubmit(e));
         this.setRecaptchaToken = this.setRecaptchaToken.bind(this);
 
-        // Show the recaptcha for anonymous users.
-        if (!api.isLoggedIn())
+        if (showRecaptcha)
             this.renderRecaptcha();
     }
 
@@ -36,7 +40,6 @@ class RegistrationView extends events.EventTarget {
     }
 
     setRecaptchaToken(token) {
-        console.log("Recaptcha token:", token);
         this.recaptchaToken = token;
     }
 
