@@ -10,7 +10,8 @@ secret: change
 
 # Whether solving a captcha is required for registration for anonymous users.
 enable_recaptcha: no
-
+# The reCAPTCHA site key.
+recaptcha_site_key: change
 # A reCAPTCHA v2 secret token.
 # https://developers.google.com/recaptcha/intro
 # https://developers.google.com/recaptcha/docs/display

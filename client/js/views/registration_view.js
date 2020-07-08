@@ -5,7 +5,6 @@ const api = require("../api.js");
 const views = require("../util/views.js");
 
 const template = views.getTemplate("user-registration");
-const RECAPTCHA_SITE_KEY = "site key";
 
 class RegistrationView extends events.EventTarget {
     constructor() {
@@ -35,7 +34,7 @@ class RegistrationView extends events.EventTarget {
     renderRecaptcha() {
         grecaptcha.render(this._recaptchaNode, {
             "callback": this.setRecaptchaToken,
-            "sitekey": RECAPTCHA_SITE_KEY,
+            "sitekey": api.getRecaptchaSiteKey(),
         });
     }
 
