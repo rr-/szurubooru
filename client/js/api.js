@@ -113,7 +113,7 @@ class Api extends events.EventTarget {
     }
 
     recaptchaEnabled() {
-        return !!remoteConfig.enableRecaptcha;
+        return !this.isLoggedIn() && !!remoteConfig.enableRecaptcha;
     }
 
     hasPrivilege(lookup) {

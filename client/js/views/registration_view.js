@@ -9,17 +9,13 @@ const template = views.getTemplate("user-registration");
 class RegistrationView extends events.EventTarget {
     constructor() {
         super();
-
-        // Show the recaptcha only for anonymous users.
-        const showRecaptcha = (!api.isLoggedIn() && api.recaptchaEnabled());
-
         this._hostNode = document.getElementById("content-holder");
         views.replaceContent(
             this._hostNode,
             template({
                 userNamePattern: api.getUserNameRegex(),
                 passwordPattern: api.getPasswordRegex(),
-                enableRecaptcha: showRecaptcha,
+                enableRecaptcha: api.recaptchaEnabled(),
             })
         );
         views.syncScrollPosition();

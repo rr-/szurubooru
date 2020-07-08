@@ -131,7 +131,7 @@ class User extends events.EventTarget {
         if (this._password) {
             detail.password = this._password;
         }
-        if (!api.isLoggedIn()) {
+        if (api.recaptchaEnabled) {
             detail.recaptchaToken = recaptchaToken;
         }
 
