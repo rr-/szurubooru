@@ -23,7 +23,7 @@ class RegistrationView extends events.EventTarget {
         this._formNode.addEventListener("submit", (e) => this._evtSubmit(e));
         this.setRecaptchaToken = this.setRecaptchaToken.bind(this);
 
-        if (showRecaptcha)
+        if (api.recaptchaEnabled())
             this.renderRecaptcha();
     }
 
