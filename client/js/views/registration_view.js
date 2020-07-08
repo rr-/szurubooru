@@ -21,13 +21,20 @@ class RegistrationView extends events.EventTarget {
         views.syncScrollPosition();
         views.decorateValidator(this._formNode);
         this._formNode.addEventListener("submit", (e) => this._evtSubmit(e));
+        this.setRecaptchaToken = this.setRecaptchaToken.bind(this);
         this.renderRecaptcha();
     }
 
     renderRecaptcha() {
         grecaptcha.render(this._recaptchaNode, {
-            "sitekey": RECAPTCHA_SITE_KEY
+            "callback": this.setRecaptchaToken,
+            "sitekey": RECAPTCHA_SITE_KEY,
         });
+    }
+
+    setRecaptchaToken(token) {
+        console.log("Recaptcha token:", token);
+        this.recaptchaToken = token;
     }
 
     clearMessages() {
@@ -54,6 +61,7 @@ class RegistrationView extends events.EventTarget {
                     name: this._userNameFieldNode.value,
                     password: this._passwordFieldNode.value,
                     email: this._emailFieldNode.value,
+                    recaptchaToken: this.recaptchaToken,
                 },
             })
         );
