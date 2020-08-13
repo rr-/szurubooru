@@ -143,7 +143,9 @@ def test_anonymous_uploads(
 
     with patch("szurubooru.func.posts.serialize_post"), patch(
         "szurubooru.func.posts.create_post"
-    ), patch("szurubooru.func.posts.update_post_source"):
+    ), patch("szurubooru.func.posts.update_post_source"), patch(
+        "szurubooru.func.snapshots._post_to_webhooks"
+    ):
         config_injector(
             {
                 "privileges": {
@@ -181,6 +183,8 @@ def test_creating_from_url_saves_source(
         "szurubooru.func.posts.serialize_post"
     ), patch("szurubooru.func.posts.create_post"), patch(
         "szurubooru.func.posts.update_post_source"
+    ), patch(
+        "szurubooru.func.snapshots._post_to_webhooks"
     ):
         config_injector(
             {
@@ -223,6 +227,8 @@ def test_creating_from_url_with_source_specified(
         "szurubooru.func.posts.serialize_post"
     ), patch("szurubooru.func.posts.create_post"), patch(
         "szurubooru.func.posts.update_post_source"
+    ), patch(
+        "szurubooru.func.snapshots._post_to_webhooks"
     ):
         config_injector(
             {
@@ -334,7 +340,7 @@ def test_errors_not_spending_ids(
     # successful request
     with patch("szurubooru.func.posts.serialize_post"), patch(
         "szurubooru.func.posts.update_post_tags"
-    ):
+    ), patch("szurubooru.func.snapshots._post_to_webhooks"):
         posts.serialize_post.side_effect = lambda post, *_, **__: post.post_id
         post1_id = api.post_api.create_post(
             context_factory(
@@ -357,7 +363,7 @@ def test_errors_not_spending_ids(
     # successful request
     with patch("szurubooru.func.posts.serialize_post"), patch(
         "szurubooru.func.posts.update_post_tags"
-    ):
+    ), patch("szurubooru.func.snapshots._post_to_webhooks"):
         posts.serialize_post.side_effect = lambda post, *_, **__: post.post_id
         post2_id = api.post_api.create_post(
             context_factory(

@@ -34,17 +34,18 @@ def test_deleting_used(
     pool.posts.append(post)
     db.session.add_all([pool, post])
     db.session.commit()
-    api.pool_api.delete_pool(
-        context_factory(
-            params={"version": 1},
-            user=user_factory(rank=model.User.RANK_REGULAR),
-        ),
-        {"pool_id": 1},
-    )
-    db.session.refresh(post)
-    assert db.session.query(model.Pool).count() == 0
-    assert db.session.query(model.PoolPost).count() == 0
-    assert post.pools == []
+    with patch("szurubooru.func.snapshots._post_to_webhooks"):
+        api.pool_api.delete_pool(
+            context_factory(
+                params={"version": 1},
+                user=user_factory(rank=model.User.RANK_REGULAR),
+            ),
+            {"pool_id": 1},
+        )
+        db.session.refresh(post)
+        assert db.session.query(model.Pool).count() == 0
+        assert db.session.query(model.PoolPost).count() == 0
+        assert post.pools == []
 
 
 def test_trying_to_delete_non_existing(user_factory, context_factory):

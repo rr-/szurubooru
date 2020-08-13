@@ -132,7 +132,9 @@ def test_create(tag_factory, user_factory):
     tag = tag_factory(names=["dummy"])
     db.session.add(tag)
     db.session.flush()
-    with patch("szurubooru.func.snapshots.get_tag_snapshot"):
+    with patch("szurubooru.func.snapshots.get_tag_snapshot"), patch(
+        "szurubooru.func.snapshots._post_to_webhooks"
+    ):
         snapshots.get_tag_snapshot.return_value = "mocked"
         snapshots.create(tag, user_factory())
     db.session.flush()
@@ -156,29 +158,30 @@ def test_modify_saves_non_empty_diffs(post_factory, user_factory):
     post.source = "new source"
     post.notes = [model.PostNote(polygon=[(0, 0), (0, 1), (1, 1)], text="new")]
     db.session.flush()
-    snapshots.modify(post, user)
-    db.session.flush()
-    results = db.session.query(model.Snapshot).all()
-    assert len(results) == 1
-    assert results[0].data == {
-        "type": "object change",
-        "value": {
-            "source": {
-                "type": "primitive change",
-                "old-value": None,
-                "new-value": "new source",
+    with patch("szurubooru.func.snapshots._post_to_webhooks"):
+        snapshots.modify(post, user)
+        db.session.flush()
+        results = db.session.query(model.Snapshot).all()
+        assert len(results) == 1
+        assert results[0].data == {
+            "type": "object change",
+            "value": {
+                "source": {
+                    "type": "primitive change",
+                    "old-value": None,
+                    "new-value": "new source",
+                },
+                "notes": {
+                    "type": "list change",
+                    "removed": [
+                        {"polygon": [[0, 0], [0, 1], [1, 1]], "text": "old"}
+                    ],
+                    "added": [
+                        {"polygon": [[0, 0], [0, 1], [1, 1]], "text": "new"}
+                    ],
+                },
             },
-            "notes": {
-                "type": "list change",
-                "removed": [
-                    {"polygon": [[0, 0], [0, 1], [1, 1]], "text": "old"}
-                ],
-                "added": [
-                    {"polygon": [[0, 0], [0, 1], [1, 1]], "text": "new"}
-                ],
-            },
-        },
-    }
+        }
 
 
 def test_modify_doesnt_save_empty_diffs(tag_factory, user_factory):
@@ -195,7 +198,9 @@ def test_delete(tag_factory, user_factory):
     tag = tag_factory(names=["dummy"])
     db.session.add(tag)
     db.session.flush()
-    with patch("szurubooru.func.snapshots.get_tag_snapshot"):
+    with patch("szurubooru.func.snapshots.get_tag_snapshot"), patch(
+        "szurubooru.func.snapshots._post_to_webhooks"
+    ):
         snapshots.get_tag_snapshot.return_value = "mocked"
         snapshots.delete(tag, user_factory())
     db.session.flush()
@@ -210,8 +215,9 @@ def test_merge(tag_factory, user_factory):
     target_tag = tag_factory(names=["target"])
     db.session.add_all([source_tag, target_tag])
     db.session.flush()
-    snapshots.merge(source_tag, target_tag, user_factory())
-    db.session.flush()
-    result = db.session.query(model.Snapshot).one()
-    assert result.operation == model.Snapshot.OPERATION_MERGED
-    assert result.data == ["tag", "target"]
+    with patch("szurubooru.func.snapshots._post_to_webhooks"):
+        snapshots.merge(source_tag, target_tag, user_factory())
+        db.session.flush()
+        result = db.session.query(model.Snapshot).one()
+        assert result.operation == model.Snapshot.OPERATION_MERGED
+        assert result.data == ["tag", "target"]

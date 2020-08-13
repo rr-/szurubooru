@@ -34,16 +34,17 @@ def test_deleting_used(
     post.tags.append(tag)
     db.session.add_all([tag, post])
     db.session.commit()
-    api.tag_api.delete_tag(
-        context_factory(
-            params={"version": 1},
-            user=user_factory(rank=model.User.RANK_REGULAR),
-        ),
-        {"tag_name": "tag"},
-    )
-    db.session.refresh(post)
-    assert db.session.query(model.Tag).count() == 0
-    assert post.tags == []
+    with patch("szurubooru.func.snapshots._post_to_webhooks"):
+        api.tag_api.delete_tag(
+            context_factory(
+                params={"version": 1},
+                user=user_factory(rank=model.User.RANK_REGULAR),
+            ),
+            {"tag_name": "tag"},
+        )
+        db.session.refresh(post)
+        assert db.session.query(model.Tag).count() == 0
+        assert post.tags == []
 
 
 def test_trying_to_delete_non_existing(user_factory, context_factory):

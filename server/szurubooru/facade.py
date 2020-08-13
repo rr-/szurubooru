@@ -94,6 +94,11 @@ def validate_config() -> None:
     if not config.config["database"]:
         raise errors.ConfigError("Database is not configured")
 
+    if config.config["webhooks"] and not isinstance(
+        config.config["webhooks"], list
+    ):
+        raise errors.ConfigError("Webhooks must be provided as a list of URLs")
+
     if config.config["smtp"]["host"]:
         if not config.config["smtp"]["port"]:
             raise errors.ConfigError("SMTP host is set but port is not set")

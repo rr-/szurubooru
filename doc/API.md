@@ -13,6 +13,7 @@
    - [Error handling](#error-handling)
    - [Field selecting](#field-selecting)
    - [Versioning](#versioning)
+   - [Webhooks](#webhooks)
 
 2. [API reference](#api-reference)
 
@@ -274,6 +275,15 @@ fails to do so, the server will reject the request notifying about missing
 parameter. If someone has edited the post in the mean time, the server will
 reject the request as well, in which case the client is encouraged to notify
 the user about the situation.
+
+
+## Webhooks
+
+System administrators can choose to configure webhooks to track events.
+Webhook URIs can be configured in `config.yaml` (See `config.yaml.dist` for
+example). Upon any event, the API will send a `POST` request to the listed
+URIs with a [snapshot resource](#snapshot) generated with anonymous user
+privileges as the message body, in JSON format.
 
 
 # API reference

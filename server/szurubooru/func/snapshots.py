@@ -4,7 +4,7 @@ from typing import Any, Callable, Dict, Optional
 import sqlalchemy as sa
 
 from szurubooru import db, model
-from szurubooru.func import diff, users
+from szurubooru.func import diff, net, users
 
 
 def get_tag_category_snapshot(category: model.TagCategory) -> Dict[str, Any]:
@@ -93,6 +93,13 @@ def serialize_snapshot(
     }
 
 
+def _post_to_webhooks(snapshot: model.Snapshot) -> None:
+    webhook_user = model.User()
+    webhook_user.name = None
+    webhook_user.rank = "anonymous"
+    net.post_to_webhooks(serialize_snapshot(snapshot, webhook_user))
+
+
 def _create(
     operation: str, entity: model.Base, auth_user: Optional[model.User]
 ) -> model.Snapshot:
@@ -116,6 +123,7 @@ def create(entity: model.Base, auth_user: Optional[model.User]) -> None:
     snapshot_factory = _snapshot_factories[snapshot.resource_type]
     snapshot.data = snapshot_factory(entity)
     db.session.add(snapshot)
+    _post_to_webhooks(snapshot)
 
 
 def modify(entity: model.Base, auth_user: Optional[model.User]) -> None:
@@ -147,6 +155,7 @@ def modify(entity: model.Base, auth_user: Optional[model.User]) -> None:
     if not snapshot.data:
         return
     db.session.add(snapshot)
+    _post_to_webhooks(snapshot)
 
 
 def delete(entity: model.Base, auth_user: Optional[model.User]) -> None:
@@ -155,6 +164,7 @@ def delete(entity: model.Base, auth_user: Optional[model.User]) -> None:
     snapshot_factory = _snapshot_factories[snapshot.resource_type]
     snapshot.data = snapshot_factory(entity)
     db.session.add(snapshot)
+    _post_to_webhooks(snapshot)
 
 
 def merge(
@@ -174,3 +184,4 @@ def merge(
     ) = model.util.get_resource_info(target_entity)
     snapshot.data = [resource_type, resource_name]
     db.session.add(snapshot)
+    _post_to_webhooks(snapshot)
