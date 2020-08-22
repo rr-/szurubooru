@@ -82,6 +82,10 @@ class File extends Uploadable {
         return this.file.type;
     }
 
+    get fileLastModifiedTime() {
+        return this.file.fileLastModifiedTime;
+    }
+
     get previewUrl() {
         return this._previewUrl;
     }
@@ -216,6 +220,7 @@ class PostUploadView extends events.EventTarget {
                 duplicatesFound++;
                 continue;
             }
+            console.log(uploadable)
             this._uploadables.push(uploadable);
             this._emit("change");
             this._renderRowNode(uploadable);

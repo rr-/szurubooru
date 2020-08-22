@@ -42,6 +42,10 @@ class Post extends events.EventTarget {
         return this._creationTime;
     }
 
+    get fileLastModifiedTime() {
+        return this._fileLastModifiedTime;
+    }
+
     get user() {
         return this._user;
     }
@@ -269,6 +273,9 @@ class Post extends events.EventTarget {
         if (this._source !== this._orig._source) {
             detail.source = this._source;
         }
+        if (this._fileLastModifiedTime !== this._orig._fileLastModifiedTime) {
+            detail.fileLastModifiedTime = this._fileLastModifiedTime;
+        }
 
         let apiPromise = this._id
             ? api.put(uri.formatApiLink("post", this.id), detail, files)
@@ -460,6 +467,7 @@ class Post extends events.EventTarget {
             _type: response.type,
             _mimeType: response.mimeType,
             _creationTime: response.creationTime,
+            _fileLastModifiedTime: response.fileLastModifiedTime,
             _user: response.user,
             _safety: response.safety,
             _contentUrl: response.contentUrl,
