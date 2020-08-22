@@ -427,9 +427,10 @@ def create_post(
 
 
 def update_post_file_last_modified_time(post: model.Post, timestamp: int) -> None:
-    assert post    
-    file_last_modified_time = datetime.fromtimestamp(ctx.get_param_as_int("lastModified", default=time.time()))
-    post.file_last_modified_time = file_last_modified_time
+    assert post
+    
+    # Timestamp is in ms, so it must be divided by 1000 otherwise out of range
+    post.file_last_modified_time = datetime.fromtimestamp(timestamp / 1000)
 
 def update_post_safety(post: model.Post, safety: str) -> None:
     assert post
