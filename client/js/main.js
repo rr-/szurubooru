@@ -25,8 +25,10 @@ router.enter(null, (ctx, next) => {
 const tags = require("./tags.js");
 const pools = require("./pools.js");
 const api = require("./api.js");
+const settings = require("./models/settings.js");
 
-api.fetchConfig()
+Promise.resolve()
+    .then(() => api.fetchConfig())
     .then(
         () => {
             // register controller routes
@@ -79,23 +81,27 @@ api.fetchConfig()
         }
     )
     .then(() => {
-        api.loginFromCookies().then(
-            () => {
-                tags.refreshCategoryColorMap();
-                pools.refreshCategoryColorMap();
+        if (settings.get().darkTheme) {
+            document.body.classList.add("darktheme");
+        }
+    })
+    .then(() => api.loginFromCookies())
+    .then(
+        () => {
+            tags.refreshCategoryColorMap();
+            pools.refreshCategoryColorMap();
+            router.start();
+        },
+        (error) => {
+            if (window.location.href.indexOf("login") !== -1) {
+                api.forget();
                 router.start();
-            },
-            (error) => {
-                if (window.location.href.indexOf("login") !== -1) {
-                    api.forget();
-                    router.start();
-                } else {
-                    const ctx = router.start("/");
-                    ctx.controller.showError(
-                        "An error happened while trying to log you in: " +
-                            error.message
-                    );
-                }
+            } else {
+                const ctx = router.start("/");
+                ctx.controller.showError(
+                    "An error happened while trying to log you in: " +
+                        error.message
+                );
             }
-        );
-    });
+        }
+    );

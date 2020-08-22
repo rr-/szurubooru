@@ -40,6 +40,13 @@
             .implications, .suggestions
                 display: none
 
+.darktheme .tag-list
+    table
+        tr:hover td
+            background: $top-navigation-color-darktheme
+        th
+            background: $top-navigation-color-darktheme
+
 .tag-list-header
     label
         display: none !important
@@ -54,3 +61,7 @@
         vertical-align: middle
         font-size: 0.95em
         color: $inactive-link-color
+
+.darktheme .tag-list-header
+    .append
+        color: $inactive-link-color-darktheme

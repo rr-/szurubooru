@@ -1,5 +1,7 @@
 @import colors
 $comment-header-background-color = $top-navigation-color
+$comment-header-background-color-darktheme = $top-navigation-color-darktheme
+
 $comment-border-color = #DDD
 
 .comment-container
@@ -81,7 +83,7 @@ $comment-border-color = #DDD
 
             .edit, .delete, .score-container a, .nickname a
                 &:not(.inactive)
-                    color: mix($main-color, $inactive-tab-text-color)
+                    color: mix($main-color, $inactive-link-color)
 
             i
                 margin-right: 0.3em
@@ -112,6 +114,17 @@ $comment-border-color = #DDD
         .messages
             margin: 1em 0
 
+.darktheme .comment-container .comment header
+    background: $comment-header-background-color-darktheme
+    nav.edit
+        ul
+            li
+                &.active
+                    background: $window-color-darktheme
+                    border-bottom: 1px solid $window-color-darktheme
+    .edit, .delete, .score-container a, .nickname a
+        &:not(.inactive)
+            color: mix($main-color, $inactive-link-color-darktheme)
 
 .comment-content
     ul, ol

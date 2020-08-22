@@ -46,7 +46,7 @@ div.tag-input
 
         .wrapper
             margin-left: 0.5em
-            background: $tag-suggestions-background-color
+            background: $window-color
             border: 1px solid $tag-suggestions-border-color
             width: 15em
             word-break: break-all
@@ -62,7 +62,7 @@ div.tag-input
                 max-height: 20em
                 padding: 0.5em 1em 0 1em
                 li:last-child
-                    border-bottom: 0.5em solid alpha($tag-suggestions-background-color, 0)
+                    border-bottom: 0.5em solid alpha($window-color, 0)
                 li
                     margin: 0
                     font-size: 90%
@@ -125,3 +125,17 @@ div.tag-input, ul.compact-tags
         margin-left: 0.7em
     .remove-tag
         margin-right: 0.5em
+
+.darktheme
+    div.tag-input .tag-suggestions
+        .buttons a
+            color: $inactive-link-color-darktheme
+        .wrapper
+            background: $window-color-darktheme
+            ul li:last-child
+                border-bottom: 0.5em solid alpha($window-color-darktheme, 0)
+        .append
+            color: $inactive-link-color-darktheme
+    div.tag-input, ul.compact-tags
+        .tag-usages, .tag-weight, .remove-tag
+            color: $inactive-link-color-darktheme

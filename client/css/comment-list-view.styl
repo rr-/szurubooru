@@ -1,5 +1,6 @@
 @import colors
 $comment-border-color = $top-navigation-color
+$comment-border-color-darktheme = $top-navigation-color-darktheme
 
 .global-comment-list
     text-align: left
@@ -46,3 +47,8 @@ $comment-border-color = $top-navigation-color
 
         .comments-container
             width: 100%
+
+.darktheme .global-comment-list
+    &>ul
+        &>li
+            border-top: 3px solid $comment-border-color-darktheme

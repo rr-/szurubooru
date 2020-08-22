@@ -36,6 +36,13 @@
             .posts
                 display: none
 
+.darktheme .pool-list
+    table
+        tr:hover td
+            background: $top-navigation-color-darktheme
+        th
+            background: $top-navigation-color-darktheme
+
 .pool-list-header
     label
         display: none !important
@@ -50,3 +57,7 @@
         vertical-align: middle
         font-size: 0.95em
         color: $inactive-link-color
+
+.darktheme .pool-list-header
+    .append
+        color: $inactive-link-color-darktheme

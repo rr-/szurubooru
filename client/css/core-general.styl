@@ -1,6 +1,11 @@
 @import colors
 @import mixins
 
+$active-tab-text-color = $text-color
+$active-tab-text-color-darktheme = $text-color-darktheme
+$inactive-tab-text-color = $inactive-link-color
+$inactive-tab-text-color-darktheme = $inactive-link-color-darktheme
+
 /* latin */
 @font-face
     font-family: 'Open Sans';
@@ -27,6 +32,10 @@ body
         font-size: 0.875em
     @media (max-width: 1200px)
         font-size: 0.95em
+
+body.darktheme
+    color: $text-color-darktheme
+    background: $window-color-darktheme
 
 h1, h2, h3
     font-weight: normal
@@ -62,6 +71,11 @@ a
     .vim-nav-hint
         position: absolute
         visibility: hidden
+.darktheme a
+    &.inactive
+        color: $inactive-link-color-darktheme
+    &.icon
+        color: $inactive-link-color-darktheme
 
 a.append, span.append
     margin-left: 1em
@@ -102,11 +116,18 @@ form .fa-question-circle-o
             >*:last-child
                 margin-bottom: 0
 
+.darktheme #content-holder
+    >.content-wrapper:not(.transparent)
+        background: $top-navigation-color-darktheme
+
 hr
     border: 0
     border-top: 1px solid $line-color
     margin: 1em 0
     padding: 0
+
+.darktheme hr
+    border-top: 1px solid darken($line-color, 25%)
 
 nav
     ul
@@ -205,6 +226,21 @@ nav
             @media (max-width: 1000px)
                 display: none
 
+.darktheme nav
+    &.buttons
+        ul
+            li:not(.active) a
+                color: $inactive-tab-text-color-darktheme
+            li:hover:not(.active) a
+                color: $active-tab-text-color-darktheme
+            li.active a
+                background: $active-tab-background-color-darktheme
+                color: $active-tab-text-color-darktheme
+            :focus
+                background: $focused-tab-background-color-darktheme
+    &#top-navigation
+        background: $top-navigation-color-darktheme
+
 a .access-key
     text-decoration: underline
 
@@ -228,6 +264,18 @@ a .access-key
         &.success
             border: 1px solid $message-success-border-color
             background: $message-success-background-color
+
+.darktheme .messages
+    .message
+        &.info
+            border: 1px solid darken($message-info-border-color, 30%)
+            background: darken($message-info-background-color, 60%)
+        &.error
+            border: 1px solid darken($message-error-border-color, 30%)
+            background: darken($message-error-background-color, 60%)
+        &.success
+            border: 1px solid darken($message-success-border-color, 30%)
+            background: darken($message-success-background-color, 60%)
 
 .thumbnail
     /*background-image: attr(data-src url)*/ /* not available yet */
