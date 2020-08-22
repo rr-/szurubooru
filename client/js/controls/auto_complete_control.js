@@ -62,13 +62,16 @@ class AutoCompleteControl {
         let prefix = "";
         let suffix = this._sourceInputNode.value.substring(start);
         let middle = this._sourceInputNode.value.substring(0, start);
-        const index = middle.lastIndexOf(" ");
+        const spaceIndex = middle.lastIndexOf(" ");
+        const commaIndex = middle.lastIndexOf(",");
+        const index = spaceIndex < commaIndex ? commaIndex : spaceIndex;
+        const delimiter = spaceIndex < commaIndex ? "" : " ";
         if (index !== -1) {
             prefix = this._sourceInputNode.value.substring(0, index + 1);
             middle = this._sourceInputNode.value.substring(index + 1);
         }
         this._sourceInputNode.value =
-            prefix + result.toString() + " " + suffix.trimLeft();
+            prefix + result.toString() + delimiter + suffix.trimLeft();
         if (!addSpace) {
             this._sourceInputNode.value = this._sourceInputNode.value.trim();
         }
