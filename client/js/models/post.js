@@ -146,6 +146,10 @@ class Post extends events.EventTarget {
         return this._hasCustomThumbnail;
     }
 
+    set fileLastModifiedTime(value) {
+        this._fileLastModifiedTime = value; 
+    }
+
     set flags(value) {
         this._flags = value;
     }
