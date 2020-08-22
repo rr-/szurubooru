@@ -24,7 +24,7 @@ RUN \
         alembic \
         "coloredlogs==5.0" \
         youtube-dl \
-    && apk --no-cache del py3-pip
+        requests
 
 ARG PUID=1000
 ARG PGID=1000

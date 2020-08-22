@@ -1,6 +1,8 @@
 from typing import Any, Dict
 
-from szurubooru import model, rest, search
+import requests
+
+from szurubooru import config, model, rest, search
 from szurubooru.func import auth, serialization, users, versions
 
 _search_executor = search.Executor(search.configs.UserSearchConfig())
@@ -31,10 +33,27 @@ def get_users(
 def create_user(
     ctx: rest.Context, _params: Dict[str, str] = {}
 ) -> rest.Response:
+    expect_recaptcha = False
+
     if ctx.user.user_id is None:
+        expect_recaptcha = True
         auth.verify_privilege(ctx.user, "users:create:self")
     else:
         auth.verify_privilege(ctx.user, "users:create:any")
+
+    # Verify if the recaptcha was correct.
+    if expect_recaptcha and config.config["enable_recaptcha"]:
+        resp = requests.post("https://www.google.com/recaptcha/api/siteverify", data={
+            "secret": config.config["recaptcha_secret"],
+            "response": ctx.get_param_as_string("recaptchaToken", default=""),
+        })
+
+        # Raise a 400 error if the recaptcha wasn't OK.
+        if not resp.json()["success"]:
+            raise rest.errors.HttpBadRequest(
+                "ValidationError",
+                "Recaptcha response was invalid."
+            )
 
     name = ctx.get_param_as_string("name")
     password = ctx.get_param_as_string("password")

@@ -30,7 +30,7 @@ class UserRegistrationController {
         user.email = e.detail.email;
         user.password = e.detail.password;
         const isLoggedIn = api.isLoggedIn();
-        user.save()
+        user.save(e.detail.recaptchaToken)
             .then(() => {
                 if (isLoggedIn) {
                     return Promise.resolve();

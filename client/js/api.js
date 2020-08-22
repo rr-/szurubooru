@@ -100,12 +100,20 @@ class Api extends events.EventTarget {
         return remoteConfig.contactEmail;
     }
 
+    getRecaptchaSiteKey() {
+        return remoteConfig.recaptchaSiteKey;
+    }
+
     canSendMails() {
         return !!remoteConfig.canSendMails;
     }
 
     safetyEnabled() {
         return !!remoteConfig.enableSafety;
+    }
+
+    recaptchaEnabled() {
+        return !this.isLoggedIn() && !!remoteConfig.enableRecaptcha;
     }
 
     hasPrivilege(lookup) {
