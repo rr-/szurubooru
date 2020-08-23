@@ -75,6 +75,7 @@ repos:
         files: server/szurubooru/
         exclude: server/szurubooru/migrations/
         pass_filenames: false
+        stages: [push]
 
     -   id: pytest-cov
         name: pytest
