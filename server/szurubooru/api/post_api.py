@@ -89,7 +89,7 @@ def create_post(
     posts.update_post_flags(post, flags)
     if ctx.has_param("fileLastModifiedTime"):
         posts.update_post_file_last_modified_time(
-            post, ctx.get_as_param("file_last_modified_time")
+            post, ctx.get_param_as_int("fileLastModifiedTime")
         )
     if ctx.has_file("thumbnail"):
         posts.update_post_thumbnail(post, ctx.get_file("thumbnail"))
