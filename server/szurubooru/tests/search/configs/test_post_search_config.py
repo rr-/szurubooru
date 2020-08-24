@@ -557,6 +557,37 @@ def test_filter_by_creation_time(
 @pytest.mark.parametrize(
     "input,expected_post_ids",
     [
+        ("file-last-modified-time:2014", [1]),
+        ("file-last-modified-time:2016", [3]),
+        ("file-last-modified-time:2014,2016", [1, 3]),
+        ("file-modified:2014", [1]),
+        ("file-modified:2016", [3]),
+        ("file-modified:2014,2016", [1, 3]),
+        ("source-modified:2014", [1]),
+        ("source-modified:2016", [3]),
+        ("source-modified:2014,2016", [1, 3]),
+        ("flmt:2014", [1]),
+        ("flmt:2016", [3]),
+        ("flmt:2014,2016", [1, 3]),
+    ],
+)
+def test_filter_by_file_last_modified_time(
+    verify_unpaged, post_factory, input, expected_post_ids
+):
+    post1 = post_factory(id=1)
+    post2 = post_factory(id=2)
+    post3 = post_factory(id=3)
+    post1.file_last_modified_time = datetime(2014, 1, 1)
+    post2.file_last_modified_time = datetime(2015, 1, 1)
+    post3.file_last_modified_time = datetime(2016, 1, 1)
+    db.session.add_all([post1, post2, post3])
+    db.session.flush()
+    verify_unpaged(input, expected_post_ids)
+
+
+@pytest.mark.parametrize(
+    "input,expected_post_ids",
+    [
         ("last-edit-date:2014", [1]),
         ("last-edit-date:2016", [3]),
         ("last-edit-date:2014,2016", [1, 3]),
@@ -691,6 +722,10 @@ def test_filter_by_feature_date(
         "sort:creation-time",
         "sort:date",
         "sort:time",
+        "sort:file-last-modified-time",
+        "sort:file-modified",
+        "sort:source-modified",
+        "sort:flmt",
         "sort:last-edit-date",
         "sort:last-edit-time",
         "sort:edit-date",
