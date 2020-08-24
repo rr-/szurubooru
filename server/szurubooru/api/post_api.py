@@ -76,7 +76,6 @@ def create_post(
     flags = ctx.get_param_as_string_list(
         "flags", default=posts.get_default_flags(content)
     )
-    file_last_modified_time = ctx.get_param_as_int("fileLastModifiedTime")
 
     post, new_tags = posts.create_post(
         content, tag_names, None if anonymous else ctx.user
@@ -88,7 +87,10 @@ def create_post(
     posts.update_post_relations(post, relations)
     posts.update_post_notes(post, notes)
     posts.update_post_flags(post, flags)
-    posts.update_post_file_last_modified_time(post, file_last_modified_time)
+    if ctx.has_param("fileLastModifiedTime"):
+        posts.update_post_file_last_modified_time(
+            post, ctx.get_as_param("file_last_modified_time")
+        )
     if ctx.has_file("thumbnail"):
         posts.update_post_thumbnail(post, ctx.get_file("thumbnail"))
     ctx.session.add(post)

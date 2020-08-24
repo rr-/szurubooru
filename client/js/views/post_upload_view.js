@@ -220,7 +220,6 @@ class PostUploadView extends events.EventTarget {
                 duplicatesFound++;
                 continue;
             }
-            console.log(uploadable)
             this._uploadables.push(uploadable);
             this._emit("change");
             this._renderRowNode(uploadable);

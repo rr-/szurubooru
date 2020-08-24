@@ -147,7 +147,7 @@ class Post extends events.EventTarget {
     }
 
     set fileLastModifiedTime(value) {
-        this._fileLastModifiedTime = value; 
+        this._fileLastModifiedTime = value;
     }
 
     set flags(value) {

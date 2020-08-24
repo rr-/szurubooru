@@ -24,6 +24,7 @@ def test_saving_post(post_factory, user_factory, tag_factory):
     post.checksum = "deadbeef"
     post.creation_time = datetime(1997, 1, 1)
     post.last_edit_time = datetime(1998, 1, 1)
+    post.file_last_modified_time = datetime(1999, 1, 1)
     post.mime_type = "application/whatever"
     db.session.add_all([user, tag1, tag2, related_post1, related_post2, post])
 
@@ -44,6 +45,7 @@ def test_saving_post(post_factory, user_factory, tag_factory):
     assert post.checksum == "deadbeef"
     assert post.creation_time == datetime(1997, 1, 1)
     assert post.last_edit_time == datetime(1998, 1, 1)
+    assert post.file_last_modified_time == datetime(1999, 1, 1)
     assert len(post.relations) == 2
     # relation bidirectionality is realized on business level in func.posts
     assert len(related_post1.relations) == 0
