@@ -122,6 +122,7 @@ def test_serialize_post(
         post.post_id = 1
         post.creation_time = datetime(1997, 1, 1)
         post.last_edit_time = datetime(1998, 1, 1)
+        post.file_last_modified_time = datetime(1999, 1, 1)
         post.tags = [
             tag_factory(
                 names=["tag1", "tag2"],
@@ -215,6 +216,7 @@ def test_serialize_post(
             "version": 1,
             "creationTime": datetime(1997, 1, 1),
             "lastEditTime": datetime(1998, 1, 1),
+            "fileLastModifiedTime": datetime(1999, 1, 1),
             "safety": "safe",
             "source": "4gag",
             "type": "image",

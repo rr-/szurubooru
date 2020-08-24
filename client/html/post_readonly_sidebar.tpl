@@ -26,6 +26,11 @@
             <%= ctx.makeRelativeTime(ctx.post.creationTime) %>
         </section>
 
+        <section class='file-last-modified-time'>
+            <i class='fa fa-clock-o'></i>Source last modified
+            <%= ctx.makeRelativeTime(ctx.post.fileLastModifiedTime) %>
+        </section>
+
         <% if (ctx.enableSafety) { %>
             <section class='safety'>
                 <i class='fa fa-circle safety-<%- ctx.post.safety %>'></i><!--

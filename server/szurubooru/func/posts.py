@@ -169,6 +169,7 @@ class PostSerializer(serialization.BaseSerializer):
             "version": self.serialize_version,
             "creationTime": self.serialize_creation_time,
             "lastEditTime": self.serialize_last_edit_time,
+            "fileLastModifiedTime": self.serialize_file_last_modified_time,
             "safety": self.serialize_safety,
             "source": self.serialize_source,
             "type": self.serialize_type,
@@ -211,6 +212,9 @@ class PostSerializer(serialization.BaseSerializer):
 
     def serialize_last_edit_time(self) -> Any:
         return self.post.last_edit_time
+
+    def serialize_file_last_modified_time(self) -> Any:
+        return self.post.file_last_modified_time
 
     def serialize_safety(self) -> Any:
         return SAFETY_MAP[self.post.safety]
@@ -408,6 +412,7 @@ def create_post(
     post.safety = model.Post.SAFETY_SAFE
     post.user = user
     post.creation_time = datetime.utcnow()
+    post.file_last_modified_time = datetime.utcnow()
     post.flags = []
 
     post.type = ""
@@ -419,6 +424,15 @@ def create_post(
 
     db.session.add(post)
     return post, new_tags
+
+
+def update_post_file_last_modified_time(
+    post: model.Post, timestamp: int
+) -> None:
+    assert post
+
+    # Timestamp is in ms, so it must be divided by 1000 otherwise out of range
+    post.file_last_modified_time = datetime.fromtimestamp(timestamp / 1000)
 
 
 def update_post_safety(post: model.Post, safety: str) -> None:

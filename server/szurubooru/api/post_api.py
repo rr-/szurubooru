@@ -1,3 +1,4 @@
+import time
 from datetime import datetime
 from typing import Dict, List, Optional
 
@@ -86,6 +87,10 @@ def create_post(
     posts.update_post_relations(post, relations)
     posts.update_post_notes(post, notes)
     posts.update_post_flags(post, flags)
+    if ctx.has_param("fileLastModifiedTime"):
+        posts.update_post_file_last_modified_time(
+            post, ctx.get_as_param("file_last_modified_time")
+        )
     if ctx.has_file("thumbnail"):
         posts.update_post_thumbnail(post, ctx.get_file("thumbnail"))
     ctx.session.add(post)

@@ -210,6 +210,7 @@ class Post(Base):
     version = sa.Column("version", sa.Integer, default=1, nullable=False)
     creation_time = sa.Column("creation_time", sa.DateTime, nullable=False)
     last_edit_time = sa.Column("last_edit_time", sa.DateTime)
+    file_last_modified_time = sa.Column("file_last_modified_time", sa.DateTime, nullable=False)
     safety = sa.Column("safety", sa.Unicode(32), nullable=False)
     source = sa.Column("source", sa.Unicode(2048))
     flags_string = sa.Column("flags", sa.Unicode(32), default="")

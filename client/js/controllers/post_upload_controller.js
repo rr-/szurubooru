@@ -177,6 +177,7 @@ class PostUploadController {
         if (uploadable.url) {
             post.source = uploadable.url;
         }
+        post.fileLastModifiedTime = uploadable.file.lastModified; // The client already reads the data anyway, which is convenient
         return post;
     }
 }

@@ -168,6 +168,7 @@ def post_factory():
         post.flags = []
         post.mime_type = "application/octet-stream"
         post.creation_time = datetime(1996, 1, 1)
+        post.file_last_modified_time = datetime(1997, 1, 1)
         return post
 
     return factory
