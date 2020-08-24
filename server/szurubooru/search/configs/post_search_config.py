@@ -306,6 +306,17 @@ class PostSearchConfig(BaseSearchConfig):
                 ),
                 (
                     [
+                        "file-last-modified-time",
+                        "file-modified",
+                        "source-modified",
+                        "flmt",
+                    ],
+                    search_util.create_date_filter(
+                        model.Post.file_last_modified_time
+                    ),
+                ),
+                (
+                    [
                         "last-edit-date",
                         "last-edit-time",
                         "edit-date",
@@ -389,6 +400,15 @@ class PostSearchConfig(BaseSearchConfig):
                 (
                     ["creation-date", "creation-time", "date", "time"],
                     (model.Post.creation_time, self.SORT_DESC),
+                ),
+                (
+                    [
+                        "file-last-modified-time",
+                        "file-modified",
+                        "source-modified",
+                        "flmt",
+                    ],
+                    (model.Post.file_last_modified_time, self.SORT_DESC),
                 ),
                 (
                     [
