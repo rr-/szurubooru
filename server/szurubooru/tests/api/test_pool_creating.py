@@ -70,7 +70,7 @@ def test_omitting_optional_field(
     del params[field]
     with patch("szurubooru.func.pools.create_pool"), patch(
         "szurubooru.func.pools.serialize_pool"
-    ):
+    ), patch("szurubooru.func.snapshots._post_to_webhooks"):
         pools.create_pool.return_value = pool_factory()
         api.pool_api.create_pool(
             context_factory(

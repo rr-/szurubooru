@@ -65,7 +65,7 @@ def test_omitting_optional_field(
     del params[field]
     with patch("szurubooru.func.tag_categories.serialize_category"), patch(
         "szurubooru.func.tag_categories.update_category_name"
-    ):
+    ), patch("szurubooru.func.snapshots._post_to_webhooks"):
         api.tag_category_api.update_tag_category(
             context_factory(
                 params={**params, **{"version": 1}},

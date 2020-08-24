@@ -71,7 +71,7 @@ def test_omitting_optional_field(
     del params[field]
     with patch("szurubooru.func.tags.create_tag"), patch(
         "szurubooru.func.tags.serialize_tag"
-    ):
+    ), patch("szurubooru.func.snapshots._post_to_webhooks"):
         tags.create_tag.return_value = tag_factory()
         api.tag_api.create_tag(
             context_factory(

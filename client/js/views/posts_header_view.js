@@ -6,6 +6,7 @@ const keyboard = require("../util/keyboard.js");
 const misc = require("../util/misc.js");
 const search = require("../util/search.js");
 const views = require("../util/views.js");
+const TagList = require("../models/tag_list.js");
 const TagAutoCompleteControl = require("../controls/tag_auto_complete_control.js");
 
 const template = views.getTemplate("posts-header");
@@ -74,11 +75,27 @@ class BulkTagEditor extends BulkEditor {
         this._autoCompleteControl = new TagAutoCompleteControl(
             this._inputNode,
             {
-                confirm: (tag) =>
-                    this._autoCompleteControl.replaceSelectedText(
-                        tag.names[0],
-                        false
-                    ),
+                confirm: (tag) => {
+                    let tag_list = new TagList();
+                    tag_list
+                        .addByName(tag.names[0], true)
+                        .then(
+                            () => {
+                                return tag_list
+                                    .map((s) => s.names[0])
+                                    .join(" ");
+                            },
+                            (err) => {
+                                return tag.names[0];
+                            }
+                        )
+                        .then((tag_str) => {
+                            this._autoCompleteControl.replaceSelectedText(
+                                tag_str,
+                                false
+                            );
+                        });
+                },
             }
         );
         this._hostNode.addEventListener("submit", (e) =>

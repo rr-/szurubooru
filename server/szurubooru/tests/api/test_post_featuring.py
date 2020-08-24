@@ -55,7 +55,9 @@ def test_trying_to_feature_the_same_post_twice(
 ):
     db.session.add(post_factory(id=1))
     db.session.commit()
-    with patch("szurubooru.func.posts.serialize_post"):
+    with patch("szurubooru.func.posts.serialize_post"), patch(
+        "szurubooru.func.snapshots._post_to_webhooks"
+    ):
         api.post_api.set_featured_post(
             context_factory(
                 params={"id": 1},
@@ -80,7 +82,9 @@ def test_featuring_one_post_after_another(
     assert posts.try_get_featured_post() is None
     assert not posts.get_post_by_id(1).is_featured
     assert not posts.get_post_by_id(2).is_featured
-    with patch("szurubooru.func.posts.serialize_post"):
+    with patch("szurubooru.func.posts.serialize_post"), patch(
+        "szurubooru.func.snapshots._post_to_webhooks"
+    ):
         with fake_datetime("1997"):
             api.post_api.set_featured_post(
                 context_factory(

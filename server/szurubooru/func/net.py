@@ -1,7 +1,10 @@
+import json
 import logging
 import os
+import urllib.error
 import urllib.request
 from tempfile import NamedTemporaryFile
+from typing import Any, Dict, List
 
 from youtube_dl import YoutubeDL
 from youtube_dl.utils import YoutubeDLError
@@ -58,3 +61,24 @@ def _youtube_dl_wrapper(url: str) -> bytes:
         raise errors.ThirdPartyError(
             "Error downloading video %s (file could not be saved)" % (url)
         )
+
+
+def post_to_webhooks(payload: Dict[str, Any]) -> List[int]:
+    return_list = []
+    for webhook in config.config["webhooks"] or []:
+        req = urllib.request.Request(webhook)
+        req.data = json.dumps(
+            payload, default=lambda x: x.isoformat("T") + "Z",
+        ).encode("utf-8")
+        req.add_header("Content-Type", "application/json")
+        try:
+            res = urllib.request.urlopen(req)
+            if not 200 <= res.status <= 299:
+                logger.warning(
+                    f"Webhook {webhook} returned {res.status} {res.reason}"
+                )
+            return_list.append(res.status)
+        except urllib.error.URLError as e:
+            logger.error(f"Unable to call webhook {webhook}: {str(e)}")
+            return_list.append(400)
+    return return_list

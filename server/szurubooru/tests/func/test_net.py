@@ -1,3 +1,6 @@
+from datetime import datetime
+from unittest.mock import patch
+
 import pytest
 
 from szurubooru import errors
@@ -99,3 +102,45 @@ def test_video_download(url, expected_sha1):
 def test_failed_video_download(url):
     with pytest.raises(errors.ThirdPartyError):
         net.download(url, use_video_downloader=True)
+
+
+def test_no_webhooks(config_injector):
+    config_injector({"webhooks": []})
+    res = net.post_to_webhooks(None)
+    assert len(res) == 0
+
+
+@pytest.mark.parametrize(
+    "webhook,status_code",
+    [
+        ("https://postman-echo.com/post", 200),
+        ("http://localhost/", 400),
+        ("https://postman-echo.com/get", 400),
+    ],
+)
+def test_single_webhook(config_injector, webhook, status_code):
+    config_injector({"webhooks": [webhook]})
+    res = net.post_to_webhooks({"test_arg": "test_value"})
+    assert len(res) == 1
+    assert res[0] == status_code
+
+
+def test_multiple_webhooks(config_injector):
+    config_injector(
+        {
+            "webhooks": [
+                "https://postman-echo.com/post",
+                "https://postman-echo.com/post",
+            ]
+        }
+    )
+    res = net.post_to_webhooks({"test_arg": "test_value"})
+    assert len(res) == 2
+    assert res[0] == 200
+    assert res[1] == 200
+
+
+def test_malformed_webhooks(config_injector):
+    config_injector({"webhooks": ["malformed_url"]})
+    with pytest.raises(ValueError):
+        net.post_to_webhooks({"test_arg": "test_value"})
