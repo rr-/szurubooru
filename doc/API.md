@@ -337,9 +337,11 @@ data.
 
 - **Description**
 
-    Creates a new tag category using specified parameters. Name must match
-    `tag_category_name_regex` from server's configuration. First category
-    created becomes the default category.
+    Creates a new tag category using specified parameters.
+
+    * Name must match `tag_category_name_regex` from tje server's configuration.
+
+    * First category created becomes the default category.
 
 ## Updating tag category
 - **Request**
@@ -371,10 +373,12 @@ data.
 
 - **Description**
 
-    Updates an existing tag category using specified parameters. Name must
-    match `tag_category_name_regex` from server's configuration. All fields
-    except the [`version`](#versioning) are optional - update concerns only
-    provided fields.
+    Updates an existing tag category using specified parameters.
+
+    * Name must match `tag_category_name_regex` from server's configuration.
+
+    * All fields except the [`version`](#versioning) are optional - update
+    concerns only provided fields.
 
 ## Getting tag category
 - **Request**
@@ -547,15 +551,21 @@ data.
 
 - **Description**
 
-    Creates a new tag using specified parameters. Names, suggestions and
-    implications must match `tag_name_regex` from server's configuration.
-    Category must exist and is the same as `name` field within
-    [`<tag-category>` resource](#tag-category). Suggestions and implications
-    are optional. If specified implied tags or suggested tags do not exist yet,
-    they will be automatically created. Tags created automatically have no
-    implications, no suggestions, one name and their category is set to the
-    first tag category found. If there are no tag categories established yet,
-    an error will be thrown.
+    Creates a new tag using specified parameters.
+
+    * Names, suggestions and implications must match `tag_name_regex` from
+    the server's configuration.
+
+    * Category must exist and must be the same as `name` field within
+    [`<tag-category>` resource](#tag-category).
+
+    * Suggestions and implications are optional.
+
+    * If specified implied tags or suggested tags do not exist yet, they will
+    be automatically created. Tags created automatically have no implications,
+    no suggestions, one name and their category is set to the first tag
+    category found. If there are no tag categories established yet, an error
+    will be thrown.
 
 ## Updating tag
 - **Request**
@@ -592,15 +602,21 @@ data.
 
 - **Description**
 
-    Updates an existing tag using specified parameters. Names, suggestions and
-    implications must match `tag_name_regex` from server's configuration.
-    Category must exist and is the same as `name` field within
-    [`<tag-category>` resource](#tag-category). If specified implied tags or
-    suggested tags do not exist yet, they will be automatically created. Tags
-    created automatically have no implications, no suggestions, one name and
-    their category is set to the first tag category found. All fields except
-    the [`version`](#versioning) are optional - update concerns only provided
-    fields.
+    Updates an existing tag using specified parameters.
+
+    * Names, suggestions and implications must match `tag_name_regex` from
+    the server's configuration.
+
+    * Category must exist and must be the the same as `name` field within
+    [`<tag-category>` resource](#tag-category).
+
+    * If specified implied tags or suggested tags do not exist yet, they will
+    be automatically created. Tags created automatically have no implications,
+    no suggestions, one name and their category is set to the first tag
+    category found.
+
+    * All fields except the [`version`](#versioning) are optional - update
+    concerns only provided fields.
 
 ## Getting tag
 - **Request**
@@ -712,9 +728,12 @@ data.
 - **Description**
 
     Lists siblings of given tag, e.g. tags that were used in the same posts as
-    the given tag. `occurrences` field signifies how many times a given sibling
-    appears with given tag. Results are sorted by occurrences count and the
-    list is truncated to the first 50 elements. Doesn't use paging.
+    the given tag. `occurrences`
+
+    * Field signifies how many times a given sibling appears with given tag.
+
+    * Results are sorted by occurrences count and the list is truncated to the
+    first 50 elements. Doesn't use paging.
 
 ## Listing posts
 - **Request**
@@ -740,88 +759,96 @@ data.
 
     **Named tokens**
 
-    | `<key>`              | Description                                                                                                                             |
-    | -------------------- | ----------------------------------------------------------                                                                              |
-    | `id`                 | having given post number                                                                                                                |
-    | `tag`                | having given tag (accepts wildcards)                                                                                                    |
-    | `score`              | having given score                                                                                                                      |
-    | `uploader`           | uploaded by given user (accepts wildcards)                                                                                              |
-    | `upload`             | alias of upload                                                                                                                         |
-    | `submit`             | alias of upload                                                                                                                         |
-    | `comment`            | commented by given user (accepts wildcards)                                                                                             |
-    | `fav`                | favorited by given user (accepts wildcards)                                                                                             |
-    | `pool`               | belonging to the pool with the given ID                                                                                                 |
-    | `tag-count`          | having given number of tags                                                                                                             |
-    | `comment-count`      | having given number of comments                                                                                                         |
-    | `fav-count`          | favorited by given number of users                                                                                                      |
-    | `note-count`         | having given number of annotations                                                                                                      |
-    | `note-text`          | having given note text (accepts wildcards)                                                                                              |
-    | `relation-count`     | having given number of relations                                                                                                        |
-    | `feature-count`      | having been featured given number of times                                                                                              |
-    | `type`               | given type of posts. `<value>` can be either `image`, `animation` (or `animated` or `anim`), `flash` (or `swf`) or `video` (or `webm`). |
-    | `content-checksum`   | having given SHA1 checksum                                                                                                              |
-    | `file-size`          | having given file size (in bytes)                                                                                                       |
-    | `image-width`        | having given image width (where applicable)                                                                                             |
-    | `image-height`       | having given image height (where applicable)                                                                                            |
-    | `image-area`         | having given number of pixels (image width * image height)                                                                              |
-    | `image-aspect-ratio` | having given aspect ratio (image width / image height)                                                                                  |
-    | `image-ar`           | alias of `image-aspect-ratio`                                                                                                           |
-    | `width`              | alias of `image-width`                                                                                                                  |
-    | `height`             | alias of `image-height`                                                                                                                 |
-    | `area`               | alias of `image-area`                                                                                                                   |
-    | `ar`                 | alias of `image-aspect-ratio`                                                                                                           |
-    | `aspect-ratio`       | alias of `image-aspect-ratio`                                                                                                           |
-    | `creation-date`      | posted at given date                                                                                                                    |
-    | `creation-time`      | alias of `creation-date`                                                                                                                |
-    | `date`               | alias of `creation-date`                                                                                                                |
-    | `time`               | alias of `creation-date`                                                                                                                |
-    | `last-edit-date`     | edited at given date                                                                                                                    |
-    | `last-edit-time`     | alias of `last-edit-date`                                                                                                               |
-    | `edit-date`          | alias of `last-edit-date`                                                                                                               |
-    | `edit-time`          | alias of `last-edit-date`                                                                                                               |
-    | `comment-date`       | commented at given date                                                                                                                 |
-    | `comment-time`       | alias of `comment-date`                                                                                                                 |
-    | `fav-date`           | last favorited at given date                                                                                                            |
-    | `fav-time`           | alias of `fav-date`                                                                                                                     |
-    | `feature-date`       | featured at given date                                                                                                                  |
-    | `feature-time`       | alias of `feature-time`                                                                                                                 |
-    | `safety`             | having given safety. `<value>` can be either `safe`, `sketchy` (or `questionable`) or `unsafe`.                                         |
-    | `rating`             | alias of `safety`                                                                                                                       |
+    | `<key>`                   | Description                                                                                                                             |
+    | ------------------------- | ----------------------------------------------------------                                                                              |
+    | `id`                      | having given post number                                                                                                                |
+    | `tag`                     | having given tag (accepts wildcards)                                                                                                    |
+    | `score`                   | having given score                                                                                                                      |
+    | `uploader`                | uploaded by given user (accepts wildcards)                                                                                              |
+    | `upload`                  | alias of upload                                                                                                                         |
+    | `submit`                  | alias of upload                                                                                                                         |
+    | `comment`                 | commented by given user (accepts wildcards)                                                                                             |
+    | `fav`                     | favorited by given user (accepts wildcards)                                                                                             |
+    | `pool`                    | belonging to the pool with the given ID                                                                                                 |
+    | `tag-count`               | having given number of tags                                                                                                             |
+    | `comment-count`           | having given number of comments                                                                                                         |
+    | `fav-count`               | favorited by given number of users                                                                                                      |
+    | `note-count`              | having given number of annotations                                                                                                      |
+    | `note-text`               | having given note text (accepts wildcards)                                                                                              |
+    | `relation-count`          | having given number of relations                                                                                                        |
+    | `feature-count`           | having been featured given number of times                                                                                              |
+    | `type`                    | given type of posts. `<value>` can be either `image`, `animation` (or `animated` or `anim`), `flash` (or `swf`) or `video` (or `webm`). |
+    | `content-checksum`        | having given SHA1 checksum                                                                                                              |
+    | `file-size`               | having given file size (in bytes)                                                                                                       |
+    | `image-width`             | having given image width (where applicable)                                                                                             |
+    | `image-height`            | having given image height (where applicable)                                                                                            |
+    | `image-area`              | having given number of pixels (image width * image height)                                                                              |
+    | `image-aspect-ratio`      | having given aspect ratio (image width / image height)                                                                                  |
+    | `image-ar`                | alias of `image-aspect-ratio`                                                                                                           |
+    | `width`                   | alias of `image-width`                                                                                                                  |
+    | `height`                  | alias of `image-height`                                                                                                                 |
+    | `area`                    | alias of `image-area`                                                                                                                   |
+    | `ar`                      | alias of `image-aspect-ratio`                                                                                                           |
+    | `aspect-ratio`            | alias of `image-aspect-ratio`                                                                                                           |
+    | `creation-date`           | posted at given date                                                                                                                    |
+    | `creation-time`           | alias of `creation-date`                                                                                                                |
+    | `date`                    | alias of `creation-date`                                                                                                                |
+    | `time`                    | alias of `creation-date`                                                                                                                |
+    | `file-last-modified-time` | source file last modified at given date, based on file metadata                                                                         |
+    | `file-modified`           | alias of `file-last-modified-time`                                                                                                      |
+    | `source-modified`         | alias of `file-last-modified-time`                                                                                                      |
+    | `flmt`                    | alias of `file-last-modified-time`                                                                                                      |
+    | `last-edit-date`          | edited at given date                                                                                                                    |
+    | `last-edit-time`          | alias of `last-edit-date`                                                                                                               |
+    | `edit-date`               | alias of `last-edit-date`                                                                                                               |
+    | `edit-time`               | alias of `last-edit-date`                                                                                                               |
+    | `comment-date`            | commented at given date                                                                                                                 |
+    | `comment-time`            | alias of `comment-date`                                                                                                                 |
+    | `fav-date`                | last favorited at given date                                                                                                            |
+    | `fav-time`                | alias of `fav-date`                                                                                                                     |
+    | `feature-date`            | featured at given date                                                                                                                  |
+    | `feature-time`            | alias of `feature-time`                                                                                                                 |
+    | `safety`                  | having given safety. `<value>` can be either `safe`, `sketchy` (or `questionable`) or `unsafe`.                                         |
+    | `rating`                  | alias of `safety`                                                                                                                       |
 
     **Sort style tokens**
 
-    | `<value>`        | Description                                      |
-    | ---------------- | ------------------------------------------------ |
-    | `random`         | as random as it can get                          |
-    | `id`             | highest to lowest post number                    |
-    | `score`          | highest scored                                   |
-    | `tag-count`      | with most tags                                   |
-    | `comment-count`  | most commented first                             |
-    | `fav-count`      | loved by most                                    |
-    | `note-count`     | with most annotations                            |
-    | `relation-count` | with most relations                              |
-    | `feature-count`  | most often featured                              |
-    | `file-size`      | largest files first                              |
-    | `image-width`    | widest images first                              |
-    | `image-height`   | tallest images first                             |
-    | `image-area`     | largest images first                             |
-    | `width`          | alias of `image-width`                           |
-    | `height`         | alias of `image-height`                          |
-    | `area`           | alias of `image-area`                            |
-    | `creation-date`  | newest to oldest (pretty much same as id)        |
-    | `creation-time`  | alias of `creation-date`                         |
-    | `date`           | alias of `creation-date`                         |
-    | `time`           | alias of `creation-date`                         |
-    | `last-edit-date` | like creation-date, only looks at last edit time |
-    | `last-edit-time` | alias of `last-edit-date`                        |
-    | `edit-date`      | alias of `last-edit-date`                        |
-    | `edit-time`      | alias of `last-edit-date`                        |
-    | `comment-date`   | recently commented by anyone                     |
-    | `comment-time`   | alias of `comment-date`                          |
-    | `fav-date`       | recently added to favorites by anyone            |
-    | `fav-time`       | alias of `fav-date`                              |
-    | `feature-date`   | recently featured                                |
-    | `feature-time`   | alias of `feature-time`                          |
+    | `<value>`                 | Description                                                |
+    | ------------------------- | ---------------------------------------------------------- |
+    | `random`                  | as random as it can get                                    |
+    | `id`                      | highest to lowest post number                              |
+    | `score`                   | highest scored                                             |
+    | `tag-count`               | with most tags                                             |
+    | `comment-count`           | most commented first                                       |
+    | `fav-count`               | loved by most                                              |
+    | `note-count`              | with most annotations                                      |
+    | `relation-count`          | with most relations                                        |
+    | `feature-count`           | most often featured                                        |
+    | `file-size`               | largest files first                                        |
+    | `image-width`             | widest images first                                        |
+    | `image-height`            | tallest images first                                       |
+    | `image-area`              | largest images first                                       |
+    | `width`                   | alias of `image-width`                                     |
+    | `height`                  | alias of `image-height`                                    |
+    | `area`                    | alias of `image-area`                                      |
+    | `creation-date`           | newest to oldest (pretty much same as id)                  |
+    | `creation-time`           | alias of `creation-date`                                   |
+    | `date`                    | alias of `creation-date`                                   |
+    | `time`                    | alias of `creation-date`                                   |
+    | `file-last-modified-time` | newest to oldest based on source file's last modified time |
+    | `file-modified`           | alias of `file-last-modified-time`                         |
+    | `source-modified`         | alias of `file-last-modified-time`                         |
+    | `flmt`                    | alias of `file-last-modified-time`                         |
+    | `last-edit-date`          | like creation-date, only looks at last edit time           |
+    | `last-edit-time`          | alias of `last-edit-date`                                  |
+    | `edit-date`               | alias of `last-edit-date`                                  |
+    | `edit-time`               | alias of `last-edit-date`                                  |
+    | `comment-date`            | recently commented by anyone                               |
+    | `comment-time`            | alias of `comment-date`                                    |
+    | `fav-date`                | recently added to favorites by anyone                      |
+    | `fav-time`                | alias of `fav-date`                                        |
+    | `feature-date`            | recently featured                                          |
+    | `feature-time`            | alias of `feature-time`                                    |
 
     **Special tokens**
 
@@ -841,13 +868,14 @@ data.
 
     ```json5
     {
-        "tags":      [<tag1>, <tag2>, <tag3>],
-        "safety":    <safety>,
-        "source":    <source>,                    // optional
-        "relations": [<post1>, <post2>, <post3>], // optional
-        "notes":     [<note1>, <note2>, <note3>], // optional
-        "flags":     [<flag1>, <flag2>],          // optional
-        "anonymous": <anonymous>                  // optional
+        "tags":                 [<tag1>, <tag2>, <tag3>],
+        "safety":               <safety>,
+        "source":               <source>,                    // optional
+        "relations":            [<post1>, <post2>, <post3>], // optional
+        "notes":                [<note1>, <note2>, <note3>], // optional
+        "flags":                [<flag1>, <flag2>],          // optional
+        "anonymous":            <anonymous>,                 // optional
+        "fileLastModifiedTime": <timestamp>                  // optional
     }
     ```
 
@@ -869,17 +897,33 @@ data.
 
 - **Description**
 
-    Creates a new post. If specified tags do not exist yet, they will be
-    automatically created. Tags created automatically have no implications, no
-    suggestions, one name and their category is set to the first tag category
-    found. Safety must be any of `"safe"`, `"sketchy"` or `"unsafe"`. Relations
-    must contain valid post IDs. If `<flag>` is omitted, they will be defined
-    by default (`"loop"` will be set for all video posts, and `"sound"` will be
-    auto-detected). Sending empty `thumbnail` will cause the post to use default
-    thumbnail. If `anonymous` is set to truthy value, the uploader name won't be
+    Creates a new post.
+
+    * If specified tags do not exist yet, they will be automatically created.
+    Tags created automatically have no implications, no suggestions, one name
+    and their category is set to the first tag category found.
+
+    * Safety must be any of `"safe"`, `"sketchy"` or `"unsafe"`.
+
+    * Relations must contain valid post IDs.
+
+    * If `<flag>` is omitted, they will be defined by default. (`"loop"` will
+    be set for all video posts, and `"sound"` will be auto-detected).
+
+    * Sending empty `thumbnail` will cause the post to use default thumbnail.
+
+    * If `anonymous` is `true`, the uploader name won't be
     recorded (privilege verification still applies; it's possible to disallow
-    anonymous uploads completely from config.) For details on how to pass `content`
-    and `thumbnail`, see [file uploads](#file-uploads).
+    anonymous uploads completely from config.)
+
+    * If `file-last-modified-time` is omitted, the time the post is updated
+    will be used instead. Its value must be a UNIX timestamp **in
+    milliseconds**. This parameter is made available to the client to allow for
+    placing custom times. **Note that this parameter cannot be changed until
+    the next time the content of the post is updated.**
+
+    *For details on how to pass `content` and `thumbnail`, see
+    [file uploads](#file-uploads).*
 
 ## Updating post
 - **Request**
@@ -890,13 +934,14 @@ data.
 
     ```json5
     {
-        "version":   <version>,
-        "tags":      [<tag1>, <tag2>, <tag3>],    // optional
-        "safety":    <safety>,                    // optional
-        "source":    <source>,                    // optional
-        "relations": [<post1>, <post2>, <post3>], // optional
-        "notes":     [<note1>, <note2>, <note3>], // optional
-        "flags":     [<flag1>, <flag2>]           // optional
+        "version":              <version>,
+        "tags":                 [<tag1>, <tag2>, <tag3>],    // optional
+        "safety":               <safety>,                    // optional
+        "source":               <source>,                    // optional
+        "relations":            [<post1>, <post2>, <post3>], // optional
+        "notes":                [<note1>, <note2>, <note3>], // optional
+        "flags":                [<flag1>, <flag2>],          // optional
+        "fileLastModifiedTime": <file-last-modified-time>    // optional
     }
     ```
 
@@ -919,16 +964,36 @@ data.
 
 - **Description**
 
-    Updates existing post. If specified tags do not exist yet, they will be
-    automatically created. Tags created automatically have no implications, no
-    suggestions, one name and their category is set to the first tag category
-    found. Safety must be any of `"safe"`, `"sketchy"` or `"unsafe"`. Relations
-    must contain valid post IDs. `<flag>` can be either `"loop"` to enable looping
-    for video posts or `"sound"` to indicate sound. Sending empty `thumbnail` will
-    reset the post thumbnail to default. For details how to pass `content` and
-    `thumbnail`, see [file uploads](#file-uploads). All fields except the
-    [`version`](#versioning) are optional - update concerns only provided
-    fields.
+    Updates an existing post.
+
+    * If specified tags do not exist yet, they will be automatically created.
+    Tags created automatically have no implications, no suggestions, one name
+    and their category is set to the first tag category found.
+
+    * Safety must be any of `"safe"`, `"sketchy"` or `"unsafe"`.
+
+    * Relations must contain valid post IDs.
+
+    * If `<flag>` is omitted, they will be defined by default. (`"loop"` will
+    be set for all video posts, and `"sound"` will be auto-detected).
+
+    * Sending empty `thumbnail` will cause the post to use default thumbnail.
+
+    * If `anonymous` is `true`, the uploader name won't be
+    recorded (privilege verification still applies; it's possible to disallow
+    anonymous uploads completely from config.)
+
+    * If `file-last-modified-time` is omitted, the time the post is created
+    will be used instead. Its value must be a UNIX timestamp **in
+    milliseconds**. This parameter is made available to the client to allow for
+    placing custom times. **Note that this parameter cannot be changed until
+    the next time the content of the post is updated.**
+
+    * All fields except the [`version`](#versioning) are optional - update
+    concerns only provided fields.
+
+    *For details on how to pass `content` and `thumbnail`, see
+    [file uploads](#file-uploads).*
 
 ## Getting post
 - **Request**
@@ -1008,11 +1073,13 @@ data.
 - **Description**
 
     Removes source post and merges all of its tags, relations, scores,
-    favorites and comments to the target post. If `replaceContent` is set to
-    true, content of the target post is replaced using the content of the
-    source post; otherwise it remains unchanged. Source post properties such as
-    its safety, source, whether to loop the video and other scalar values do
-    not get transferred and are discarded.
+    favorites and comments to the target post.
+
+    * If `replaceContent` is set to true, content of the target post is
+    replaced using the content of the *source post*; otherwise it remains
+    unchanged. Source post properties such as its safety, source, whether to
+    loop the video and other scalar values do not get transferred and are
+    discarded.
 
 ## Rating post
 - **Request**
@@ -1094,9 +1161,11 @@ data.
 - **Description**
 
     Retrieves the post that is currently featured on the main page in web
-    client. If no post is featured, `<post>` is null. Note that this method
-    exists mostly for compatibility with setting featured post - most of times,
-    you'd want to use query global info which contains more information.
+    client.
+
+    * If no post is featured, `<post>` is null. Note that this method
+    exists mostly for compatibility with setting featured post - most of the
+    time, you'd want to query global info which contains more information.
 
 ## Featuring post
 - **Request**
@@ -1190,9 +1259,11 @@ data.
 
 - **Description**
 
-    Creates a new pool category using specified parameters. Name must match
-    `pool_category_name_regex` from server's configuration. First category
-    created becomes the default category.
+    Creates a new pool category using specified parameters.
+
+    * Name must match `pool_category_name_regex` from server's configuration.
+
+    * First category created becomes the default category.
 
 ## Updating pool category
 - **Request**
@@ -1224,10 +1295,12 @@ data.
 
 - **Description**
 
-    Updates an existing pool category using specified parameters. Name must
-    match `pool_category_name_regex` from server's configuration. All fields
-    except the [`version`](#versioning) are optional - update concerns only
-    provided fields.
+    Updates an existing pool category using specified parameters.
+
+    * Name must match `pool_category_name_regex` from server's configuration.
+
+    * All fields except the [`version`](#versioning) are optional - update
+    concerns only provided fields.
 
 ## Getting pool category
 - **Request**
@@ -1390,12 +1463,16 @@ data.
 
 - **Description**
 
-    Creates a new pool using specified parameters. Names, suggestions and
-    implications must match `pool_name_regex` from server's configuration.
-    Category must exist and is the same as `name` field within
-    [`<pool-category>` resource](#pool-category). `posts` is an optional list of
-    integer post IDs. If the specified posts do not exist, an error will be
-    thrown.
+    Creates a new pool using specified parameters.
+
+    * Names, suggestions and implications must match `pool_name_regex` from
+    server's configuration.
+
+    * Category must exist and is the same as `name` field within
+    [`<pool-category>` resource](#pool-category).
+
+    * `posts` is an optional list of integer post IDs. If the specified posts
+    do not exist, an error will be thrown.
 
 ## Updating pool
 - **Request**
@@ -1431,14 +1508,20 @@ data.
 
 - **Description**
 
-    Updates an existing pool using specified parameters. Names, suggestions and
-    implications must match `pool_name_regex` from server's configuration.
-    Category must exist and is the same as `name` field within
-    [`<pool-category>` resource](#pool-category). `posts` is an optional list of
-    integer post IDs. If the specified posts do not exist yet, an error will be
-    thrown. The full list of post IDs must be provided if they are being
-    updated, and the previous list of posts will be replaced with the new one.
-    All fields except the [`version`](#versioning) are optional - update
+    Updates an existing pool using specified parameters.
+
+    * Names, suggestions and implications must match `pool_name_regex` from
+    server's configuration.
+
+    * Category must exist and is the same as `name` field within
+    [`<pool-category>` resource](#pool-category).
+
+    * `posts` is an optional list of integer post IDs. If the specified posts
+    do not exist yet, an error will be thrown. The full list of post IDs must
+    be provided if they are being updated, and the previous list of posts will
+    be replaced with the new one.
+
+    * All fields except the [`version`](#versioning) are optional - update
     concerns only provided fields.
 
 ## Getting pool
@@ -1798,12 +1881,16 @@ data.
 
 - **Description**
 
-    Creates a new user using specified parameters. Names and passwords must
-    match `user_name_regex` and `password_regex` from server's configuration,
-    respectively. Email address, rank and avatar fields are optional. Avatar
-    style can be either `gravatar` or `manual`. `manual` avatar style requires
-    client to pass also `avatar` file - see [file uploads](#file-uploads) for
-    details. If the rank is empty and the user happens to be the first user
+    Creates a new user using specified parameters.
+
+    * Names and passwords must match `user_name_regex` and `password_regex`
+    from server's configuration, respectively.
+
+    * Email address, rank and avatar fields are optional. Avatar style can be
+    either `gravatar` or `manual`. `manual` avatar style also requires client
+    to pass `avatar` file - see [file uploads](#file-uploads) for details.
+
+    * If the rank is empty and the user happens to be the first user
     ever created, become an administrator, whereas subsequent users will be
     given the rank indicated by `default_rank` in the server's configuration.
 
@@ -1846,15 +1933,19 @@ data.
 
 - **Description**
 
-    Updates an existing user using specified parameters. Names and passwords
-    must match `user_name_regex` and `password_regex` from server's
-    configuration, respectively. All fields are optional - update concerns only
-    provided fields. To update last login time, see
-    [authentication](#authentication). Avatar style can be either `gravatar` or
-    `manual`. `manual` avatar style requires client to pass also `avatar`
-    file - see [file uploads](#file-uploads) for details. All fields except the
-    [`version`](#versioning) are optional - update concerns only provided
-    fields.
+    Updates an existing user using specified parameters.
+
+    * All fields except the [`version`](#versioning) are optional - update
+    concerns only provided fields.
+
+    * Names and passwords must match `user_name_regex` and `password_regex`
+    from server's configuration, respectively.
+
+    * To update last login time, see [authentication](#authentication).
+
+    * Avatar style can be either `gravatar` or `manual`. `manual` avatar style
+    also requires client to pass `avatar` file - see
+    [file uploads](#file-uploads) for details.
 
 ## Getting user
 - **Request**
@@ -2027,11 +2118,12 @@ data.
 
 - **Description**
 
-    Sends a confirmation email to given user. The email contains link
-    containing a token. The token cannot be guessed, thus using such link
-    proves that the person who requested to reset the password also owns the
-    mailbox, which is a strong indication they are the rightful owner of the
-    account.
+    Sends a confirmation email to given user.
+
+    * The email contains link containing a token. The token cannot be guessed,
+    thus using such link proves that the person who requested to reset the
+    password also owns the mailbox, which is a strong indication they are the
+    rightful owner of the account.
 
 ## Password reset - step 2: confirmation
 - **Request**
@@ -2134,12 +2226,16 @@ data.
 
 - **Description**
 
-    Retrieves simple statistics. `<featured-post>` is null if there is no
-    featured post yet. `<server-time>` is pretty much the same as the `Date`
-    HTTP field, only formatted in a manner consistent with other dates. Values
-    in `config` key are taken directly from the server config, with the
-    exception of privilege array keys being converted to lower camel case to
-    match the API convention.
+    Retrieves simple statistics.
+
+    * `<featured-post>` is null if there is no featured post yet.
+
+    * `<server-time>` is pretty much the same as the `Date` HTTP field, only
+    formatted in a manner consistent with other dates.
+
+    * Values in `config` key are taken directly from the server config, with
+    the exception of privilege array keys being converted to lower camel case
+    to match the API convention.
 
 ## Uploading temporary file
 
@@ -2353,36 +2449,37 @@ One file together with its metadata posted to the site.
 
 ```json5
 {
-    "version":            <version>,
-    "id":                 <id>,
-    "creationTime":       <creation-time>,
-    "lastEditTime":       <last-edit-time>,
-    "safety":             <safety>,
-    "source":             <source>,
-    "type":               <type>,
-    "checksum":           <checksum>,
-    "canvasWidth":        <canvas-width>,
-    "canvasHeight":       <canvas-height>,
-    "contentUrl":         <content-url>,
-    "thumbnailUrl":       <thumbnail-url>,
-    "flags":              <flags>,
-    "tags":               <tags>,
-    "relations":          <relations>,
-    "notes":              <notes>,
-    "user":               <user>,
-    "score":              <score>,
-    "ownScore":           <own-score>,
-    "ownFavorite":        <own-favorite>,
-    "tagCount":           <tag-count>,
-    "favoriteCount":      <favorite-count>,
-    "commentCount":       <comment-count>,
-    "noteCount":          <note-count>,
-    "featureCount":       <feature-count>,
-    "relationCount":      <relation-count>,
-    "lastFeatureTime":    <last-feature-time>,
-    "favoritedBy":        <favorited-by>,
-    "hasCustomThumbnail": <has-custom-thumbnail>,
-    "mimeType":           <mime-type>,
+    "version":               <version>,
+    "id":                    <id>,
+    "creationTime":          <creation-time>,
+    "fileLastModifiedTime":  <file-last-modified-time>,
+    "lastEditTime":          <last-edit-time>,
+    "safety":                <safety>,
+    "source":                <source>,
+    "type":                  <type>,
+    "checksum":              <checksum>,
+    "canvasWidth":           <canvas-width>,
+    "canvasHeight":          <canvas-height>,
+    "contentUrl":            <content-url>,
+    "thumbnailUrl":          <thumbnail-url>,
+    "flags":                 <flags>,
+    "tags":                  <tags>,
+    "relations":             <relations>,
+    "notes":                 <notes>,
+    "user":                  <user>,
+    "score":                 <score>,
+    "ownScore":              <own-score>,
+    "ownFavorite":           <own-favorite>,
+    "tagCount":              <tag-count>,
+    "favoriteCount":         <favorite-count>,
+    "commentCount":          <comment-count>,
+    "noteCount":             <note-count>,
+    "featureCount":          <feature-count>,
+    "relationCount":         <relation-count>,
+    "lastFeatureTime":       <last-feature-time>,
+    "favoritedBy":           <favorited-by>,
+    "hasCustomThumbnail":    <has-custom-thumbnail>,
+    "mimeType":              <mime-type>,
     "comments": [
         <comment>,
         <comment>,
@@ -2396,6 +2493,10 @@ One file together with its metadata posted to the site.
 - `<version>`: resource version. See [versioning](#versioning).
 - `<id>`: the post identifier.
 - `<creation-time>`: time the tag was created, formatted as per RFC 3339.
+- `<file-last-modified-time>`: in uploading, this is a UNIX timestamp in
+  milliseconds. After the post has been created, this represents the last time
+  the source file was modified based on file metadata, formatted as per RFC
+  3339.
 - `<last-edit-time>`: time the tag was edited, formatted as per RFC 3339.
 - `<safety>`: whether the post is safe for work.
 

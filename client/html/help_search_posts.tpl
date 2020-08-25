@@ -23,12 +23,12 @@
             <td>uploaded by given user (accepts wildcards)</td>
         </tr>
         <tr>
-            <td><code>upload</code></td>
-            <td>alias of <code>upload</code></td>
+            <td><code> upload</code></td>
+            <td>alias of <code>uploader</code></td>
         </tr>
         <tr>
-            <td><code>submit</code></td>
-            <td>alias of <code>upload</code></td>
+            <td><code> submit</code></td>
+            <td>alias of <code>uploader</code></td>
         </tr>
         <tr>
             <td><code>comment</code></td>
@@ -107,27 +107,27 @@
             <td>having given aspect ratio (image width / image height)</td>
         </tr>
         <tr>
-            <td><code>image-ar</code></td>
+            <td><code>  image-ar</code></td>
             <td>alias of <code>image-aspect-ratio</code></td>
         </tr>
         <tr>
-            <td><code>width</code></td>
+            <td><code>  width</code></td>
             <td>alias of <code>image-width</code></td>
         </tr>
         <tr>
-            <td><code>height</code></td>
+            <td><code>  height</code></td>
             <td>alias of <code>image-height</code></td>
         </tr>
         <tr>
-            <td><code>area</code></td>
+            <td><code>  area</code></td>
             <td>alias of <code>image-area</code></td>
         </tr>
         <tr>
-            <td><code>aspect-ratio</code></td>
+            <td><code>  aspect-ratio</code></td>
             <td>alias of <code>image-aspect-ratio</code></td>
         </tr>
         <tr>
-            <td><code>ar</code></td>
+            <td><code>  ar</code></td>
             <td>alias of <code>image-aspect-ratio</code></td>
         </tr>
         <tr>
@@ -135,31 +135,47 @@
             <td>posted at given date</td>
         </tr>
         <tr>
-            <td><code>creation-time</code></td>
+            <td><code>  creation-time</code></td>
             <td>alias of <code>creation-date</code></td>
         </tr>
         <tr>
-            <td><code>date</code></td>
+            <td><code>  date</code></td>
             <td>alias of <code>creation-date</code></td>
         </tr>
         <tr>
-            <td><code>time</code></td>
+            <td><code>  time</code></td>
             <td>alias of <code>creation-date</code></td>
+        </tr>
+        <tr>
+            <td><code>file-last-modified-time</code></td>
+            <td>source file last modified at a given date</td>
+        </tr>
+        <tr>
+            <td><code>  file-modified</code></td>
+            <td>alias of <code>file-last-modified-time</code></td>
+        </tr>
+        <tr>
+            <td><code>  source-modified</code></td>
+            <td>alias of <code>file-last-modified-time</code></td>
+        </tr>
+        <tr>
+            <td><code>  flmt</code></td>
+            <td>alias of <code>file-last-modified-time</code></td>
         </tr>
         <tr>
             <td><code>last-edit-date</code></td>
             <td>edited at given date</td>
         </tr>
         <tr>
-            <td><code>last-edit-time</code></td>
+            <td><code>  last-edit-time</code></td>
             <td>alias of <code>last-edit-date</code></td>
         </tr>
         <tr>
-            <td><code>edit-date</code></td>
+            <td><code>  edit-date</code></td>
             <td>alias of <code>last-edit-date</code></td>
         </tr>
         <tr>
-            <td><code>edit-time</code></td>
+            <td><code>  edit-time</code></td>
             <td>alias of <code>last-edit-date</code></td>
         </tr>
         <tr>
@@ -167,7 +183,7 @@
             <td>commented at given date</td>
         </tr>
         <tr>
-            <td><code>comment-time</code></td>
+            <td><code>  comment-time</code></td>
             <td>alias of <code>comment-date</code></td>
         </tr>
         <tr>
@@ -175,7 +191,7 @@
             <td>last favorited at given date</td>
         </tr>
         <tr>
-            <td><code>fav-time</code></td>
+            <td><code>  fav-time</code></td>
             <td>alias of <code>fav-date</code></td>
         </tr>
         <tr>
@@ -183,7 +199,7 @@
             <td>featured at given date</td>
         </tr>
         <tr>
-            <td><code>feature-time</code></td>
+            <td><code>  feature-time</code></td>
             <td>alias of <code>feature-time</code></td>
         </tr>
         <tr>
@@ -191,7 +207,7 @@
             <td>having given safety</td>
         </tr>
         <tr>
-            <td><code>rating</code></td>
+            <td><code>  rating</code></td>
             <td>alias of <code>safety</code></td>
         </tr>
     </tbody>
@@ -254,15 +270,15 @@
             <td>largest images first</td>
         </tr>
         <tr>
-            <td><code>width</code></td>
+            <td><code>  width</code></td>
             <td>alias of <code>image-width</code></td>
         </tr>
         <tr>
-            <td><code>height</code></td>
+            <td><code>  height</code></td>
             <td>alias of <code>image-height</code></td>
         </tr>
         <tr>
-            <td><code>area</code></td>
+            <td><code>  area</code></td>
             <td>alias of <code>image-area</code></td>
         </tr>
         <tr>
@@ -274,27 +290,43 @@
             <td>alias of <code>creation-date</code></td>
         </tr>
         <tr>
-            <td><code>date</code></td>
+            <td><code>  date</code></td>
             <td>alias of <code>creation-date</code></td>
         </tr>
         <tr>
-            <td><code>time</code></td>
+            <td><code>  time</code></td>
             <td>alias of <code>creation-date</code></td>
+        </tr>
+        <tr>
+            <td><code>file-last-modified-time</code></td>
+            <td>newest to oldest based on source file's last modified time</td>
+        </tr>
+        <tr>
+            <td><code>  file-modified</code></td>
+            <td>alias of <code>file-last-modified-time</code></td>
+        </tr>
+        <tr>
+            <td><code>  source-modified</code></td>
+            <td>alias of <code>file-last-modified-time</code></td>
+        </tr>
+        <tr>
+            <td><code>  flmt</code></td>
+            <td>alias of <code>file-last-modified-time</code></td>
         </tr>
         <tr>
             <td><code>last-edit-date</code></td>
             <td>like <code>creation-date</code>, only looks at last edit time</td>
         </tr>
         <tr>
-            <td><code>last-edit-time</code></td>
+            <td><code>  last-edit-time</code></td>
             <td>alias of <code>last-edit-date</code></td>
         </tr>
         <tr>
-            <td><code>edit-date</code></td>
+            <td><code>  edit-date</code></td>
             <td>alias of <code>last-edit-date</code></td>
         </tr>
         <tr>
-            <td><code>edit-time</code></td>
+            <td><code>  edit-time</code></td>
             <td>alias of <code>last-edit-date</code></td>
         </tr>
         <tr>
@@ -302,7 +334,7 @@
             <td>recently commented by anyone</td>
         </tr>
         <tr>
-            <td><code>comment-time</code></td>
+            <td><code>  comment-time</code></td>
             <td>alias of <code>comment-date</code></td>
         </tr>
         <tr>
@@ -310,7 +342,7 @@
             <td>recently added to favorites by anyone</td>
         </tr>
         <tr>
-            <td><code>fav-time</code></td>
+            <td><code>  fav-time</code></td>
             <td>alias of <code>fav-date</code></td>
         </tr>
         <tr>
@@ -318,7 +350,7 @@
             <td>recently featured</td>
         </tr>
         <tr>
-            <td><code>feature-time</code></td>
+            <td><code>  feature-time</code></td>
             <td>alias of <code>feature-time</code></td>
         </tr>
     </tbody>
