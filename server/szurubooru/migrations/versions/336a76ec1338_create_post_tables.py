@@ -20,7 +20,6 @@ def upgrade():
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("user_id", sa.Integer(), nullable=True),
         sa.Column("creation_time", sa.DateTime(), nullable=False),
-        sa.Column("file_last_modified_time", sa.DateTime(), nullable=False),
         sa.Column("last_edit_time", sa.DateTime(), nullable=True),
         sa.Column("safety", sa.Unicode(length=32), nullable=False),
         sa.Column("type", sa.Unicode(length=32), nullable=False),
