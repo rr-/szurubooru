@@ -2,7 +2,7 @@
 set -e
 
 docker run --rm \
-	-t $(docker build -f ${DOCKERFILE_PATH:-Dockerfile}.test -q .) \
+	-t $(docker build --target testing -q .) \
 	--color=no szurubooru/
 
 exit $?

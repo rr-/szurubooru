@@ -22,9 +22,12 @@ def _merge(left: Dict, right: Dict) -> Dict:
 
 
 def _docker_config() -> Dict:
-    for key in ["POSTGRES_USER", "POSTGRES_PASSWORD", "POSTGRES_HOST"]:
-        if not os.getenv(key, False):
-            raise errors.ConfigError(f'Environment variable "{key}" not set')
+    if "TEST_ENVIRONMENT" not in os.environ:
+        for key in ["POSTGRES_USER", "POSTGRES_PASSWORD", "POSTGRES_HOST"]:
+            if key not in os.environ:
+                raise errors.ConfigError(
+                    f'Environment variable "{key}" not set'
+                )
     return {
         "debug": True,
         "show_sql": int(os.getenv("LOG_SQL", 0)),

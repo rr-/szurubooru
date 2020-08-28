@@ -1,13 +1,12 @@
-FROM alpine:3.12
+ARG ALPINE_VERSION=3.12
+
+
+FROM alpine:$ALPINE_VERSION as prereqs
 WORKDIR /opt/app
 
-RUN \
-    apk --no-cache add \
+RUN apk --no-cache add \
         python3 \
-        dumb-init \
         ffmpeg \
-        py3-waitress \
-        py3-setuptools \
         py3-pip \
         # from requirements.txt:
         py3-yaml \
@@ -19,30 +18,63 @@ RUN \
         py3-pynacl \
         py3-tz \
         py3-pyrfc3339 \
-    && \
-    pip3 install --no-cache-dir --disable-pip-version-check \
+ && pip3 install --no-cache-dir --disable-pip-version-check \
         alembic \
         "coloredlogs==5.0" \
         youtube-dl \
-    && apk --no-cache del py3-pip
+ && apk --no-cache del py3-pip
+
+COPY ./ /opt/app/
+RUN rm -rf /opt/app/szurubooru/tests
+
+
+FROM prereqs as testing
+WORKDIR /opt/app
+
+RUN apk --no-cache add \
+		py3-pip \
+		py3-pytest \
+        py3-pytest-cov \
+        postgresql \
+ && pip3 install --no-cache-dir --disable-pip-version-check \
+    	pytest-pgsql \
+    	freezegun \
+ && apk --no-cache del py3-pip \
+ && addgroup app \
+ && adduser -SDH -h /opt/app -g '' -G app app \
+ && chown app:app /opt/app
+
+COPY --chown=app:app ./szurubooru/tests /opt/app/szurubooru/tests/
+
+ENV TEST_ENVIRONMENT="true"
+USER app
+ENTRYPOINT ["pytest", "--tb=short"]
+CMD ["szurubooru/"]
+
+
+FROM prereqs as release
+WORKDIR /opt/app
 
 ARG PUID=1000
 ARG PGID=1000
-RUN \
-    # Set users
-    mkdir -p /opt/app /data && \
-    addgroup -g ${PGID} app && \
-    adduser -SDH -h /opt/app -g '' -G app -u ${PUID} app && \
-    chown -R app:app /opt/app /data
-USER app
 
-COPY --chown=app:app ./ /opt/app/
+RUN apk --no-cache add \
+		dumb-init \
+		py3-setuptools \
+		py3-waitress \
+ && mkdir -p /opt/app /data \
+ && addgroup -g ${PGID} app \
+ && adduser -SDH -h /opt/app -g '' -G app -u ${PUID} app \
+ && chown -R app:app /opt/app /data
+
+USER app
+CMD ["/opt/app/docker-start.sh"]
 
 ARG PORT=6666
 ENV PORT=${PORT}
 EXPOSE ${PORT}
+
 VOLUME ["/data/"]
-CMD ["/opt/app/docker-start.sh"]
 
 ARG DOCKER_REPO
 ARG BUILD_DATE

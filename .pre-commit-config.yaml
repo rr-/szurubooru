@@ -1,21 +1,21 @@
 repos:
 
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v2.4.0
+    rev: v3.2.0
     hooks:
     -   id: trailing-whitespace
     -   id: end-of-file-fixer
     -   id: check-yaml
 
 -   repo: https://github.com/psf/black
-    rev: stable
+    rev: 20.8b1
     hooks:
       - id: black
         files: server/szurubooru/
         language_version: python3.8
 
 -   repo: https://github.com/timothycrosley/isort
-    rev: '4.3.21-2'
+    rev: '5.4.2'
     hooks:
     -   id: isort
         files: server/szurubooru/
@@ -24,7 +24,7 @@ repos:
         -   toml
 
 -   repo: https://github.com/prettier/prettier
-    rev: '2.0.5'
+    rev: '2.1.1'
     hooks:
     -   id: prettier
         files: client/js/
@@ -32,7 +32,7 @@ repos:
         args: ['--config', 'client/.prettierrc.yml']
 
 -   repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v7.1.0
+    rev: v7.7.0
     hooks:
     -   id: eslint
         files: client/js/
@@ -41,7 +41,7 @@ repos:
         -   eslint-config-prettier
 
 -   repo: https://gitlab.com/pycqa/flake8
-    rev: '3.8.2'
+    rev: '3.8.3'
     hooks:
     -   id: flake8
         files: server/szurubooru/
@@ -69,7 +69,7 @@ repos:
 
     -   id: pytest
         name: pytest
-        entry: bash -c 'docker run --rm -t $(docker build -f server/Dockerfile.test -q server/) szurubooru/'
+        entry: bash -c 'docker run --rm -t $(docker build --target testing -q server/) szurubooru/'
         language: system
         types: [python]
         files: server/szurubooru/
@@ -79,7 +79,7 @@ repos:
 
     -   id: pytest-cov
         name: pytest
-        entry: bash -c 'docker run --rm -t $(docker build -f server/Dockerfile.test -q server/) --cov-report=term-missing:skip-covered --cov=szurubooru szurubooru/'
+        entry: bash -c 'docker run --rm -t $(docker build --target testing -q server/) --cov-report=term-missing:skip-covered --cov=szurubooru szurubooru/'
         language: system
         types: [python]
         files: server/szurubooru/
