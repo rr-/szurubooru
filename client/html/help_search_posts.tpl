@@ -24,11 +24,11 @@
         </tr>
         <tr>
             <td><code>upload</code></td>
-            <td>alias of <code>upload</code></td>
+            <td>alias of <code>uploader</code></td>
         </tr>
         <tr>
             <td><code>submit</code></td>
-            <td>alias of <code>upload</code></td>
+            <td>alias of <code>uploader</code></td>
         </tr>
         <tr>
             <td><code>comment</code></td>
