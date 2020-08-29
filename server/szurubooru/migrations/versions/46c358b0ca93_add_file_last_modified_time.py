@@ -15,38 +15,25 @@ depends_on = None
 
 
 def upgrade():
+    conn = op.get_bind()
     op.add_column(
         "post",
         sa.Column("file_last_modified_time", sa.DateTime(), nullable=True),
     )
-
-    op.execute(
-        """
-        DO
-        $do$
-        DECLARE creation_time_candidate TIMESTAMP;
-        BEGIN
-        WHILE EXISTS (
-            SELECT creation_time from "post"
-            WHERE file_last_modified_time IS NULL
-        ) LOOP
-            FOR creation_time_candidate IN (
-                SELECT creation_time FROM "post"
-                WHERE file_last_modified_time IS NULL
-            ) LOOP
-                UPDATE "post"
-                SET file_last_modified_time = creation_time
-                WHERE
-                    NOT EXISTS (
-                        SELECT creation_time FROM "post"
-                        WHERE file_last_modified_time = creation_time_candidate
-                );
-            END LOOP;
-        END LOOP;
-        END
-        $do$
-        """
+    posts = sa.Table(
+        "post",
+        sa.MetaData(),
+        sa.Column("id", sa.Integer, primary_key=True),
+        sa.Column("creation_time", sa.DateTime(), nullable=False),
+        sa.Column("file_last_modified_time", sa.DateTime(), nullable=True),
     )
+    for row in conn.execute(posts.select()):
+        if row.file_last_modified_time is None:
+            conn.execute(
+                posts.update()
+                .where(posts.c.id == row.id)
+                .values(file_last_modified_time=row.creation_time)
+            )
 
     op.alter_column("post", "file_last_modified_time", nullable=False)
 
