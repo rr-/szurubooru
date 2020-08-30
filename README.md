@@ -23,7 +23,6 @@ scrubbing](http://sjp.pwn.pl/sjp/;2527372). It is pronounced as *shoorubooru*.
 - Pools and pool categories
 - Duplicate detection
 - Post rating and favoriting; comment rating
-- Sorting by true chronological order (through source file's last modified time)
 - Polished UI
 - Browser configurable endless paging
 - Browser configurable backdrop grid for transparent images

@@ -27,7 +27,7 @@
         </section>
 
         <section class='file-last-modified-time'>
-            <i class='fa fa-clock-o'></i>Source last modified
+            <i class='fa fa-clock-o'></i>File last modified
             <%= ctx.makeRelativeTime(ctx.post.fileLastModifiedTime) %>
         </section>
 
