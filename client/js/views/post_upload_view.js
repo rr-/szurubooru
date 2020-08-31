@@ -82,10 +82,6 @@ class File extends Uploadable {
         return this.file.type;
     }
 
-    get fileLastModifiedTime() {
-        return this.file.fileLastModifiedTime;
-    }
-
     get previewUrl() {
         return this._previewUrl;
     }

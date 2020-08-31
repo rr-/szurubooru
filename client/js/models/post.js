@@ -42,10 +42,6 @@ class Post extends events.EventTarget {
         return this._creationTime;
     }
 
-    get fileLastModifiedTime() {
-        return this._fileLastModifiedTime;
-    }
-
     get user() {
         return this._user;
     }

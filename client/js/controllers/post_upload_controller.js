@@ -174,12 +174,6 @@ class PostUploadController {
         post.newContent = uploadable.url || uploadable.file;
         // if uploadable.source is ever going to be a valid field (e.g when setting source directly in the upload window)
         // you'll need to change the line below to `post.source = uploadable.source || uploadable.url;`
-        if (uploadable.url) {
-            // For now, if the input is a URL, flmt will be same as creation date
-            post.source = uploadable.url;
-        } else {
-            post.fileLastModifiedTime = uploadable.file.lastModified;
-        }
         return post;
     }
 }
