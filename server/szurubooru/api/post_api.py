@@ -301,7 +301,10 @@ def get_posts_by_image(
             ctx, posts.search_by_image_exact(content)
         ),
         "similarPosts": [
-            {"distance": distance, "post": _serialize_post(ctx, post),}
+            {
+                "distance": distance,
+                "post": _serialize_post(ctx, post),
+            }
             for distance, post in lookalikes
         ],
     }

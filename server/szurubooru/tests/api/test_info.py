@@ -31,7 +31,9 @@ def test_info_api(
                 "test_key2": "test_value2",
                 "posts:view:featured": "regular",
             },
-            "smtp": {"host": "example.com",},
+            "smtp": {
+                "host": "example.com",
+            },
         }
     )
     db.session.add_all([post_factory(), post_factory()])

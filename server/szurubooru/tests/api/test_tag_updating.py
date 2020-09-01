@@ -75,7 +75,13 @@ def test_simple_updating(user_factory, tag_factory, context_factory):
 
 @pytest.mark.parametrize(
     "field",
-    ["names", "category", "description", "implications", "suggestions",],
+    [
+        "names",
+        "category",
+        "description",
+        "implications",
+        "suggestions",
+    ],
 )
 def test_omitting_optional_field(
     user_factory, tag_factory, context_factory, field

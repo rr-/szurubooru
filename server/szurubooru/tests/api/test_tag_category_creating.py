@@ -13,7 +13,9 @@ def _update_category_name(category, name):
 @pytest.fixture(autouse=True)
 def inject_config(config_injector):
     config_injector(
-        {"privileges": {"tag_categories:create": model.User.RANK_REGULAR},}
+        {
+            "privileges": {"tag_categories:create": model.User.RANK_REGULAR},
+        }
     )
 
 

@@ -29,7 +29,10 @@ def test_edit_user_token(user_token_factory, context_factory, fake_datetime):
         user_tokens.get_by_user_and_token.return_value = user_token
         result = api.user_token_api.update_user_token(
             context_factory(
-                params={"version": user_token.version, "enabled": False,},
+                params={
+                    "version": user_token.version,
+                    "enabled": False,
+                },
                 user=user_token.user,
             ),
             {

@@ -9,7 +9,9 @@ from szurubooru.func import snapshots, tag_categories, tags
 @pytest.fixture(autouse=True)
 def inject_config(config_injector):
     config_injector(
-        {"privileges": {"tag_categories:delete": model.User.RANK_REGULAR},}
+        {
+            "privileges": {"tag_categories:delete": model.User.RANK_REGULAR},
+        }
     )
 
 

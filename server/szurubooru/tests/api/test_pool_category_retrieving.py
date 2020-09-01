@@ -20,7 +20,10 @@ def test_retrieving_multiple(
     user_factory, pool_category_factory, context_factory
 ):
     db.session.add_all(
-        [pool_category_factory(name="c1"), pool_category_factory(name="c2"),]
+        [
+            pool_category_factory(name="c1"),
+            pool_category_factory(name="c2"),
+        ]
     )
     db.session.flush()
     result = api.pool_category_api.get_pool_categories(

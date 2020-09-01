@@ -19,7 +19,9 @@ def snapshot_factory():
 @pytest.fixture(autouse=True)
 def inject_config(config_injector):
     config_injector(
-        {"privileges": {"snapshots:list": model.User.RANK_REGULAR},}
+        {
+            "privileges": {"snapshots:list": model.User.RANK_REGULAR},
+        }
     )
 
 

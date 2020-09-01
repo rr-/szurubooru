@@ -13,7 +13,9 @@ def inject_config(config_injector):
             "secret": "x",
             "domain": "http://example.com",
             "name": "Test instance",
-            "smtp": {"from": "noreply@example.com",},
+            "smtp": {
+                "from": "noreply@example.com",
+            },
         }
     )
 

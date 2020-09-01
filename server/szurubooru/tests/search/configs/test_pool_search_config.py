@@ -58,13 +58,33 @@ def test_filter_anonymous(
         (
             None,
             "--",
-            ["t1", "t2", "*", "*asd*", ":", "asd:asd", "\\", "\\asd", "-asd",],
+            [
+                "t1",
+                "t2",
+                "*",
+                "*asd*",
+                ":",
+                "asd:asd",
+                "\\",
+                "\\asd",
+                "-asd",
+            ],
         ),
         (None, "\\--", []),
         (
             None,
             "-\\-",
-            ["t1", "t2", "*", "*asd*", ":", "asd:asd", "\\", "\\asd", "-asd",],
+            [
+                "t1",
+                "t2",
+                "*",
+                "*asd*",
+                ":",
+                "asd:asd",
+                "\\",
+                "\\asd",
+                "-asd",
+            ],
         ),
         (None, "-*", []),
         (None, "\\-*", ["-", "-asd"]),
@@ -370,7 +390,10 @@ def test_sort_by_last_edit_time(
 
 
 @pytest.mark.parametrize(
-    "input,expected_pool_names", [("sort:post-count", ["t2", "t1"]),]
+    "input,expected_pool_names",
+    [
+        ("sort:post-count", ["t2", "t1"]),
+    ],
 )
 def test_sort_by_post_count(
     verify_unpaged, pool_factory, post_factory, input, expected_pool_names
@@ -388,7 +411,10 @@ def test_sort_by_post_count(
 
 
 @pytest.mark.parametrize(
-    "input,expected_pool_names", [("sort:category", ["t3", "t1", "t2"]),]
+    "input,expected_pool_names",
+    [
+        ("sort:category", ["t3", "t1", "t2"]),
+    ],
 )
 def test_sort_by_category(
     verify_unpaged,

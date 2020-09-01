@@ -66,7 +66,10 @@ def test_download():
 
 
 @pytest.mark.parametrize(
-    "url", ["https://samples.ffmpeg.org/MPEG-4/video.mp4",]
+    "url",
+    [
+        "https://samples.ffmpeg.org/MPEG-4/video.mp4",
+    ],
 )
 def test_too_large_download(url):
     pytest.xfail("Download limit not implemented yet")

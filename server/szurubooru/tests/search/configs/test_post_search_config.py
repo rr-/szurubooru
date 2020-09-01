@@ -83,7 +83,11 @@ def verify_unpaged(executor):
 
 @pytest.mark.parametrize(
     "input,expected_post_ids",
-    [("id:1", [1]), ("id:3", [3]), ("id:1,3", [1, 3]),],
+    [
+        ("id:1", [1]),
+        ("id:3", [3]),
+        ("id:1,3", [1, 3]),
+    ],
 )
 def test_filter_by_id(verify_unpaged, post_factory, input, expected_post_ids):
     post1 = post_factory(id=1)
@@ -122,7 +126,11 @@ def test_filter_by_tag(
 
 @pytest.mark.parametrize(
     "input,expected_post_ids",
-    [("score:1", [1]), ("score:3", [3]), ("score:1,3", [1, 3]),],
+    [
+        ("score:1", [1]),
+        ("score:3", [3]),
+        ("score:1,3", [1, 3]),
+    ],
 )
 def test_filter_by_score(
     verify_unpaged, post_factory, user_factory, input, expected_post_ids
@@ -178,7 +186,11 @@ def test_filter_by_uploader(
 
 @pytest.mark.parametrize(
     "input,expected_post_ids",
-    [("comment:u1", [1]), ("comment:u3", [3]), ("comment:u1,u3", [1, 3]),],
+    [
+        ("comment:u1", [1]),
+        ("comment:u3", [3]),
+        ("comment:u1,u3", [1, 3]),
+    ],
 )
 def test_filter_by_commenter(
     verify_unpaged,
@@ -207,7 +219,11 @@ def test_filter_by_commenter(
 
 @pytest.mark.parametrize(
     "input,expected_post_ids",
-    [("fav:u1", [1]), ("fav:u3", [3]), ("fav:u1,u3", [1, 3]),],
+    [
+        ("fav:u1", [1]),
+        ("fav:u3", [3]),
+        ("fav:u1,u3", [1, 3]),
+    ],
 )
 def test_filter_by_favorite(
     verify_unpaged,
@@ -236,7 +252,11 @@ def test_filter_by_favorite(
 
 @pytest.mark.parametrize(
     "input,expected_post_ids",
-    [("tag-count:1", [1]), ("tag-count:3", [3]), ("tag-count:1,3", [1, 3]),],
+    [
+        ("tag-count:1", [1]),
+        ("tag-count:3", [3]),
+        ("tag-count:1,3", [1, 3]),
+    ],
 )
 def test_filter_by_tag_count(
     verify_unpaged, post_factory, tag_factory, input, expected_post_ids
@@ -285,7 +305,11 @@ def test_filter_by_comment_count(
 
 @pytest.mark.parametrize(
     "input,expected_post_ids",
-    [("fav-count:1", [1]), ("fav-count:3", [3]), ("fav-count:1,3", [1, 3]),],
+    [
+        ("fav-count:1", [1]),
+        ("fav-count:3", [3]),
+        ("fav-count:1,3", [1, 3]),
+    ],
 )
 def test_filter_by_favorite_count(
     verify_unpaged, post_factory, fav_factory, input, expected_post_ids
@@ -787,7 +811,13 @@ def test_own_disliked(
     verify_unpaged("-special:disliked", [2, 3])
 
 
-@pytest.mark.parametrize("input", ["liked:x", "disliked:x",])
+@pytest.mark.parametrize(
+    "input",
+    [
+        "liked:x",
+        "disliked:x",
+    ],
+)
 def test_someones_score(executor, input):
     with pytest.raises(errors.SearchError):
         executor.execute(input, offset=0, limit=100)

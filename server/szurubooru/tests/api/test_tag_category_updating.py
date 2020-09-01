@@ -87,7 +87,11 @@ def test_trying_to_update_non_existing(user_factory, context_factory):
 
 
 @pytest.mark.parametrize(
-    "params", [{"name": "whatever"}, {"color": "whatever"},]
+    "params",
+    [
+        {"name": "whatever"},
+        {"color": "whatever"},
+    ],
 )
 def test_trying_to_update_without_privileges(
     user_factory, tag_category_factory, context_factory, params
@@ -115,7 +119,11 @@ def test_set_as_default(user_factory, tag_category_factory, context_factory):
         tag_categories.serialize_category.return_value = "serialized category"
         result = api.tag_category_api.set_tag_category_as_default(
             context_factory(
-                params={"name": "changed", "color": "white", "version": 1,},
+                params={
+                    "name": "changed",
+                    "color": "white",
+                    "version": 1,
+                },
                 user=user_factory(rank=model.User.RANK_REGULAR),
             ),
             {"category_name": "name"},

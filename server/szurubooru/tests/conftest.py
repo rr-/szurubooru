@@ -33,6 +33,7 @@ def fake_datetime():
 def query_logger(pytestconfig):
     if pytestconfig.option.verbose > 0:
         import logging
+
         import coloredlogs
 
         coloredlogs.install(

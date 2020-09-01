@@ -40,7 +40,13 @@ def test_creating_comment(
 
 
 @pytest.mark.parametrize(
-    "params", [{"text": None}, {"text": ""}, {"text": [None]}, {"text": [""]},]
+    "params",
+    [
+        {"text": None},
+        {"text": ""},
+        {"text": [None]},
+        {"text": [""]},
+    ],
 )
 def test_trying_to_pass_invalid_params(
     user_factory, post_factory, context_factory, params

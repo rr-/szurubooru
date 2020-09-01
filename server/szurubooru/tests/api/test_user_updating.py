@@ -55,7 +55,9 @@ def test_updating_user(context_factory, user_factory):
                     "rank": "moderator",
                     "avatarStyle": "manual",
                 },
-                files={"avatar": b"...",},
+                files={
+                    "avatar": b"...",
+                },
                 user=auth_user,
             ),
             {"user_name": "u1"},

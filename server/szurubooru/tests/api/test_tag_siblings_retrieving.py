@@ -31,8 +31,14 @@ def test_get_tag_siblings(user_factory, tag_factory, context_factory):
         )
         assert result == {
             "results": [
-                {"tag": "serialized tag sib1", "occurrences": 1,},
-                {"tag": "serialized tag sib2", "occurrences": 3,},
+                {
+                    "tag": "serialized tag sib1",
+                    "occurrences": 1,
+                },
+                {
+                    "tag": "serialized tag sib2",
+                    "occurrences": 3,
+                },
             ],
         }
 

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-'''
+"""
 Collection of CLI commands for an administrator to use
-'''
+"""
 
 import logging
 import os
@@ -21,43 +21,46 @@ from szurubooru.func import users as userfuncs
 def reset_password(username: str) -> None:
     user = userfuncs.get_user_by_name_or_email(username)
 
-    new_password = getpass('Enter new password for \'%s\': ' % user.name)
-    check_password = getpass('Re-enter password: ')
+    new_password = getpass("Enter new password for '%s': " % user.name)
+    check_password = getpass("Re-enter password: ")
 
     if check_password != new_password:
-        raise errors.ValidationError('Passwords do not match')
+        raise errors.ValidationError("Passwords do not match")
 
     userfuncs.update_user_password(user, new_password)
     db.get_session().commit()
-    print('Sucessfully changed password for \'%s\'' % user.name)
+    print("Sucessfully changed password for '%s'" % user.name)
 
 
 def check_audio() -> None:
-    post_list = (db.session
-                 .query(model.Post)
-                 .filter(model.Post.type == model.Post.TYPE_VIDEO)
-                 .order_by(model.Post.post_id)
-                 .all())
+    post_list = (
+        db.session.query(model.Post)
+        .filter(model.Post.type == model.Post.TYPE_VIDEO)
+        .order_by(model.Post.post_id)
+        .all()
+    )
 
     for post in post_list:
-        print('Checking post %d ...' % post.post_id, end='\r')
+        print("Checking post %d ..." % post.post_id, end="\r", file=stderr)
         content = files.get(postfuncs.get_post_content_path(post))
 
         has_existing_flag = model.Post.FLAG_SOUND in post.flags
         try:
             has_sound_data = images.Image(content).check_for_sound()
         except errors.ProcessingError:
-            print('Post %d caused an error when checking for sound' %
-                  post.post_id)
+            print(
+                "Post %d caused an error when checking for sound"
+                % post.post_id
+            )
 
         if has_sound_data and not has_existing_flag:
-            print('Post %d has sound data but is not flagged' % post.post_id)
+            print("Post %d has sound data but is not flagged" % post.post_id)
         if not has_sound_data and has_existing_flag:
-            print('Post %d has no sound data but is flagged' % post.post_id)
+            print("Post %d has no sound data but is flagged" % post.post_id)
 
 
 def reset_filenames() -> None:
-    regex = re.compile(r'(\d+)_[0-9a-f]{16}\.(\S+)')
+    regex = re.compile(r"(\d+)_[0-9a-f]{16}\.(\S+)")
 
     def convert_to_new_filename(old_name: str) -> str:
         matches = regex.match(old_name)
@@ -65,37 +68,52 @@ def reset_filenames() -> None:
             return None
         post_id = int(matches.group(1))
         post_ext = matches.group(2)
-        return '%d_%s.%s' % \
-            (post_id, postfuncs.get_post_security_hash(post_id), post_ext)
+        return "%d_%s.%s" % (
+            post_id,
+            postfuncs.get_post_security_hash(post_id),
+            post_ext,
+        )
 
     def rename_in_dir(dir: str) -> None:
-        for old_path in os.listdir(config.config['data_dir'] + dir):
+        for old_path in os.listdir(config.config["data_dir"] + dir):
             new_path = convert_to_new_filename(old_path)
             if not new_path:
                 continue
             if old_path != new_path:
-                print('%s -> %s' % (dir + old_path, dir + new_path))
-                os.rename(config.config['data_dir'] + dir + old_path,
-                          config.config['data_dir'] + dir + new_path)
+                print("%s -> %s" % (dir + old_path, dir + new_path))
+                os.rename(
+                    config.config["data_dir"] + dir + old_path,
+                    config.config["data_dir"] + dir + new_path,
+                )
 
-    rename_in_dir('posts/')
-    rename_in_dir('generated-thumbnails/')
-    rename_in_dir('posts/custom-thumbnails/')
+    rename_in_dir("posts/")
+    rename_in_dir("generated-thumbnails/")
+    rename_in_dir("posts/custom-thumbnails/")
 
 
 def main() -> None:
     parser_top = ArgumentParser(
-        description='Collection of CLI commands for an administrator to use',
-        epilog='Look at README.md for more info')
+        description="Collection of CLI commands for an administrator to use",
+        epilog="Look at README.md for more info",
+    )
     parser = parser_top.add_mutually_exclusive_group(required=True)
-    parser.add_argument('--change-password', metavar='<username>',
-                        help='change the password of specified user')
-    parser.add_argument('--check-all-audio', action='store_true',
-                        help='check the audio flags of all posts, '
-                        'noting discrepancies, without modifying posts')
-    parser.add_argument('--reset-filenames', action='store_true',
-                        help='reset and rename the content and thumbnail '
-                        'filenames in case of a lost/changed secret key')
+    parser.add_argument(
+        "--change-password",
+        metavar="<username>",
+        help="change the password of specified user",
+    )
+    parser.add_argument(
+        "--check-all-audio",
+        action="store_true",
+        help="check the audio flags of all posts, "
+        "noting discrepancies, without modifying posts",
+    )
+    parser.add_argument(
+        "--reset-filenames",
+        action="store_true",
+        help="reset and rename the content and thumbnail "
+        "filenames in case of a lost/changed secret key",
+    )
     command = parser_top.parse_args()
 
     try:
@@ -109,5 +127,5 @@ def main() -> None:
         print(e, file=stderr)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

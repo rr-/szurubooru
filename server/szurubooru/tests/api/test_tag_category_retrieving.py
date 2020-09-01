@@ -20,7 +20,10 @@ def test_retrieving_multiple(
     user_factory, tag_category_factory, context_factory
 ):
     db.session.add_all(
-        [tag_category_factory(name="c1"), tag_category_factory(name="c2"),]
+        [
+            tag_category_factory(name="c1"),
+            tag_category_factory(name="c2"),
+        ]
     )
     db.session.flush()
     result = api.tag_category_api.get_tag_categories(

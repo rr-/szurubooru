@@ -14,15 +14,15 @@ CONTAINER=$(docker run -d ${IMAGE} tail -f /dev/null)
 
 # Create the migration script
 docker exec -i \
-	-e PYTHONPATH='/opt/app' \
-	-e POSTGRES_HOST='x' \
-	-e POSTGRES_USER='x' \
-	-e POSTGRES_PASSWORD='x' \
-	${CONTAINER} alembic revision -m "$1"
+    -e PYTHONPATH='/opt/app' \
+    -e POSTGRES_HOST='x' \
+    -e POSTGRES_USER='x' \
+    -e POSTGRES_PASSWORD='x' \
+    ${CONTAINER} alembic revision -m "$1"
 
 # Copy the file over from the container
 docker cp ${CONTAINER}:/opt/app/szurubooru/migrations/versions/ \
-	"${WORKDIR}/szurubooru/migrations/"
+    "${WORKDIR}/szurubooru/migrations/"
 
 # Destroy the dummy container
 docker rm -f ${CONTAINER} > /dev/null

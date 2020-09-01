@@ -88,7 +88,10 @@ def test_is_image(input_mime_type, expected_state):
 
 @pytest.mark.parametrize(
     "input_path,expected_state",
-    [("gif.gif", False), ("gif-animated.gif", True),],
+    [
+        ("gif.gif", False),
+        ("gif-animated.gif", True),
+    ],
 )
 def test_is_animated_gif(read_asset, input_path, expected_state):
     assert mime.is_animated_gif(read_asset(input_path)) == expected_state

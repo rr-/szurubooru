@@ -58,13 +58,33 @@ def test_filter_anonymous(
         (
             None,
             "--",
-            ["t1", "t2", "*", "*asd*", ":", "asd:asd", "\\", "\\asd", "-asd",],
+            [
+                "t1",
+                "t2",
+                "*",
+                "*asd*",
+                ":",
+                "asd:asd",
+                "\\",
+                "\\asd",
+                "-asd",
+            ],
         ),
         (None, "\\--", []),
         (
             None,
             "-\\-",
-            ["t1", "t2", "*", "*asd*", ":", "asd:asd", "\\", "\\asd", "-asd",],
+            [
+                "t1",
+                "t2",
+                "*",
+                "*asd*",
+                ":",
+                "asd:asd",
+                "\\",
+                "\\asd",
+                "-asd",
+            ],
         ),
         (None, "-*", []),
         (None, "\\-*", ["-", "-asd"]),
@@ -442,7 +462,9 @@ def test_sort_by_post_count(
 
 @pytest.mark.parametrize(
     "input,expected_tag_names",
-    [("sort:suggestion-count", ["t1", "t2", "sug1", "sug2", "sug3"]),],
+    [
+        ("sort:suggestion-count", ["t1", "t2", "sug1", "sug2", "sug3"]),
+    ],
 )
 def test_sort_by_suggestion_count(
     verify_unpaged, tag_factory, input, expected_tag_names
@@ -462,7 +484,9 @@ def test_sort_by_suggestion_count(
 
 @pytest.mark.parametrize(
     "input,expected_tag_names",
-    [("sort:implication-count", ["t1", "t2", "sug1", "sug2", "sug3"]),],
+    [
+        ("sort:implication-count", ["t1", "t2", "sug1", "sug2", "sug3"]),
+    ],
 )
 def test_sort_by_implication_count(
     verify_unpaged, tag_factory, input, expected_tag_names
@@ -481,7 +505,10 @@ def test_sort_by_implication_count(
 
 
 @pytest.mark.parametrize(
-    "input,expected_tag_names", [("sort:category", ["t3", "t1", "t2"]),]
+    "input,expected_tag_names",
+    [
+        ("sort:category", ["t3", "t1", "t2"]),
+    ],
 )
 def test_sort_by_category(
     verify_unpaged,

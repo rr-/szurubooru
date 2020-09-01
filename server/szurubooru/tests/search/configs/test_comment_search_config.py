@@ -65,7 +65,11 @@ def test_filter_by_text(
 
 @pytest.mark.parametrize(
     "input,expected_comment_text",
-    [("user:u1", ["t1"]), ("user:u2", ["t2"]), ("user:u1,u2", ["t2", "t1"]),],
+    [
+        ("user:u1", ["t1"]),
+        ("user:u2", ["t2"]),
+        ("user:u1,u2", ["t2", "t1"]),
+    ],
 )
 def test_filter_by_user(
     verify_unpaged, comment_factory, user_factory, input, expected_comment_text
@@ -78,7 +82,11 @@ def test_filter_by_user(
 
 @pytest.mark.parametrize(
     "input,expected_comment_text",
-    [("post:1", ["t1"]), ("post:2", ["t2"]), ("post:1,2", ["t1", "t2"]),],
+    [
+        ("post:1", ["t1"]),
+        ("post:2", ["t2"]),
+        ("post:1,2", ["t1", "t2"]),
+    ],
 )
 def test_filter_by_post(
     verify_unpaged, comment_factory, post_factory, input, expected_comment_text
@@ -108,7 +116,10 @@ def test_anonymous(
 
 
 @pytest.mark.parametrize(
-    "input,expected_comment_text", [("sort:user", ["t1", "t2"]),]
+    "input,expected_comment_text",
+    [
+        ("sort:user", ["t1", "t2"]),
+    ],
 )
 def test_sort_by_user(
     verify_unpaged, comment_factory, user_factory, input, expected_comment_text
@@ -120,7 +131,10 @@ def test_sort_by_user(
 
 
 @pytest.mark.parametrize(
-    "input,expected_comment_text", [("sort:post", ["t2", "t1"]),]
+    "input,expected_comment_text",
+    [
+        ("sort:post", ["t2", "t1"]),
+    ],
 )
 def test_sort_by_post(
     verify_unpaged, comment_factory, post_factory, input, expected_comment_text

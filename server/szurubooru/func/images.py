@@ -54,7 +54,10 @@ class Image:
         ):
             duration = float(self.info["format"]["duration"])
             if duration > 3:
-                cli = ["-ss", "%d" % math.floor(duration * 0.3),] + cli
+                cli = [
+                    "-ss",
+                    "%d" % math.floor(duration * 0.3),
+                ] + cli
         content = self._execute(cli, ignore_error_if_data=True)
         if not content:
             raise errors.ProcessingError("Error while resizing image.")

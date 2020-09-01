@@ -47,7 +47,10 @@ def test_creating_minimal_posts(context_factory, post_factory, user_factory):
 
         result = api.post_api.create_post(
             context_factory(
-                params={"safety": "safe", "tags": ["tag1", "tag2"],},
+                params={
+                    "safety": "safe",
+                    "tags": ["tag1", "tag2"],
+                },
                 files={
                     "content": "post-content",
                     "thumbnail": "post-thumbnail",
@@ -109,7 +112,9 @@ def test_creating_full_posts(context_factory, post_factory, user_factory):
                     "notes": ["note1", "note2"],
                     "flags": ["flag1", "flag2"],
                 },
-                files={"content": "post-content",},
+                files={
+                    "content": "post-content",
+                },
                 user=auth_user,
             )
         )
@@ -162,7 +167,9 @@ def test_anonymous_uploads(
                     "tags": ["tag1", "tag2"],
                     "anonymous": "True",
                 },
-                files={"content": "post-content",},
+                files={
+                    "content": "post-content",
+                },
                 user=auth_user,
             )
         )
@@ -327,7 +334,10 @@ def test_errors_not_spending_ids(
         {
             "data_dir": str(tmpdir.mkdir("data")),
             "data_url": "example.com",
-            "thumbnails": {"post_width": 300, "post_height": 300,},
+            "thumbnails": {
+                "post_width": 300,
+                "post_height": 300,
+            },
             "privileges": {
                 "posts:create:identified": model.User.RANK_REGULAR,
                 "uploads:use_downloader": model.User.RANK_POWER,
@@ -382,7 +392,10 @@ def test_trying_to_omit_content(context_factory, user_factory):
     with pytest.raises(errors.MissingRequiredFileError):
         api.post_api.create_post(
             context_factory(
-                params={"safety": "safe", "tags": ["tag1", "tag2"],},
+                params={
+                    "safety": "safe",
+                    "tags": ["tag1", "tag2"],
+                },
                 user=user_factory(rank=model.User.RANK_REGULAR),
             )
         )
@@ -419,8 +432,13 @@ def test_trying_to_create_tags_without_privileges(
         posts.update_post_tags.return_value = ["new-tag"]
         api.post_api.create_post(
             context_factory(
-                params={"safety": "safe", "tags": ["tag1", "tag2"],},
-                files={"content": posts.EMPTY_PIXEL,},
+                params={
+                    "safety": "safe",
+                    "tags": ["tag1", "tag2"],
+                },
+                files={
+                    "content": posts.EMPTY_PIXEL,
+                },
                 user=user_factory(rank=model.User.RANK_REGULAR),
             )
         )

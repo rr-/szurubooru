@@ -45,7 +45,10 @@ def test_comment_count(user_factory, comment_factory):
     db.session.flush()
     assert user.comment_count == 0
     db.session.add_all(
-        [comment_factory(user=user), comment_factory(),]
+        [
+            comment_factory(user=user),
+            comment_factory(),
+        ]
     )
     db.session.flush()
     db.session.refresh(user)

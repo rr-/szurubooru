@@ -9,7 +9,9 @@ from szurubooru.func import pool_categories, snapshots
 @pytest.fixture(autouse=True)
 def inject_config(config_injector):
     config_injector(
-        {"privileges": {"pool_categories:delete": model.User.RANK_REGULAR},}
+        {
+            "privileges": {"pool_categories:delete": model.User.RANK_REGULAR},
+        }
     )
 
 

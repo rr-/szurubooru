@@ -232,7 +232,11 @@ def test_serialize_post(
                     "category": "test-cat1",
                     "usages": 1,
                 },
-                {"names": ["tag3"], "category": "test-cat2", "usages": 1,},
+                {
+                    "names": ["tag3"],
+                    "category": "test-cat2",
+                    "usages": 1,
+                },
             ],
             "relations": [],
             "notes": [],
@@ -452,7 +456,10 @@ def test_update_post_content_for_new_post(
         config_injector(
             {
                 "data_dir": str(tmpdir.mkdir("data")),
-                "thumbnails": {"post_width": 300, "post_height": 300,},
+                "thumbnails": {
+                    "post_width": 300,
+                    "post_height": 300,
+                },
                 "secret": "test",
                 "allow_broken_uploads": False,
             }
@@ -485,7 +492,10 @@ def test_update_post_content_to_existing_content(
         {
             "data_dir": str(tmpdir.mkdir("data")),
             "data_url": "example.com",
-            "thumbnails": {"post_width": 300, "post_height": 300,},
+            "thumbnails": {
+                "post_width": 300,
+                "post_height": 300,
+            },
             "secret": "test",
             "allow_broken_uploads": False,
         }
@@ -509,7 +519,10 @@ def test_update_post_content_with_broken_content(
     config_injector(
         {
             "data_dir": str(tmpdir.mkdir("data")),
-            "thumbnails": {"post_width": 300, "post_height": 300,},
+            "thumbnails": {
+                "post_width": 300,
+                "post_height": 300,
+            },
             "secret": "test",
             "allow_broken_uploads": allow_broken_uploads,
         }
@@ -533,7 +546,9 @@ def test_update_post_content_with_invalid_content(
     config_injector, input_content
 ):
     config_injector(
-        {"allow_broken_uploads": True,}
+        {
+            "allow_broken_uploads": True,
+        }
     )
     post = model.Post()
     with pytest.raises(posts.InvalidPostContentError):
@@ -547,7 +562,10 @@ def test_update_post_thumbnail_to_new_one(
     config_injector(
         {
             "data_dir": str(tmpdir.mkdir("data")),
-            "thumbnails": {"post_width": 300, "post_height": 300,},
+            "thumbnails": {
+                "post_width": 300,
+                "post_height": 300,
+            },
             "secret": "test",
             "allow_broken_uploads": False,
         }
@@ -585,7 +603,10 @@ def test_update_post_thumbnail_to_default(
     config_injector(
         {
             "data_dir": str(tmpdir.mkdir("data")),
-            "thumbnails": {"post_width": 300, "post_height": 300,},
+            "thumbnails": {
+                "post_width": 300,
+                "post_height": 300,
+            },
             "secret": "test",
             "allow_broken_uploads": False,
         }
@@ -622,7 +643,10 @@ def test_update_post_thumbnail_with_broken_thumbnail(
     config_injector(
         {
             "data_dir": str(tmpdir.mkdir("data")),
-            "thumbnails": {"post_width": 300, "post_height": 300,},
+            "thumbnails": {
+                "post_width": 300,
+                "post_height": 300,
+            },
             "secret": "test",
             "allow_broken_uploads": False,
         }
@@ -663,7 +687,10 @@ def test_update_post_content_leaving_custom_thumbnail(
     config_injector(
         {
             "data_dir": str(tmpdir.mkdir("data")),
-            "thumbnails": {"post_width": 300, "post_height": 300,},
+            "thumbnails": {
+                "post_width": 300,
+                "post_height": 300,
+            },
             "secret": "test",
             "allow_broken_uploads": False,
         }
@@ -1084,7 +1111,10 @@ def test_merge_posts_replaces_content(
             "data_dir": str(tmpdir.mkdir("data")),
             "data_url": "example.com",
             "delete_source_files": False,
-            "thumbnails": {"post_width": 300, "post_height": 300,},
+            "thumbnails": {
+                "post_width": 300,
+                "post_height": 300,
+            },
             "secret": "test",
         }
     )

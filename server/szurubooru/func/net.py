@@ -68,7 +68,8 @@ def post_to_webhooks(payload: Dict[str, Any]) -> List[int]:
     for webhook in config.config["webhooks"] or []:
         req = urllib.request.Request(webhook)
         req.data = json.dumps(
-            payload, default=lambda x: x.isoformat("T") + "Z",
+            payload,
+            default=lambda x: x.isoformat("T") + "Z",
         ).encode("utf-8")
         req.add_header("Content-Type", "application/json")
         try:

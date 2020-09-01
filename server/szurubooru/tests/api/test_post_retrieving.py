@@ -72,7 +72,9 @@ def test_trying_to_use_special_tokens_without_logging_in(
     user_factory, context_factory, config_injector
 ):
     config_injector(
-        {"privileges": {"posts:list": "anonymous"},}
+        {
+            "privileges": {"posts:list": "anonymous"},
+        }
     )
     with pytest.raises(errors.SearchError):
         api.post_api.get_posts(

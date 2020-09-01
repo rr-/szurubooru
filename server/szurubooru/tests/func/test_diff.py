@@ -6,7 +6,11 @@ from szurubooru.func import diff
 @pytest.mark.parametrize(
     "old,new,expected",
     [
-        ([], [], None,),
+        (
+            [],
+            [],
+            None,
+        ),
         (
             [],
             ["added"],
@@ -17,7 +21,11 @@ from szurubooru.func import diff
             [],
             {"type": "list change", "added": [], "removed": ["removed"]},
         ),
-        (["untouched"], ["untouched"], None,),
+        (
+            ["untouched"],
+            ["untouched"],
+            None,
+        ),
         (
             ["untouched"],
             ["untouched", "added"],
@@ -37,7 +45,11 @@ def test_get_list_diff(old, new, expected):
 @pytest.mark.parametrize(
     "old,new,expected",
     [
-        ({}, {}, None,),
+        (
+            {},
+            {},
+            None,
+        ),
         (
             {"removed key": "removed value"},
             {},
@@ -78,7 +90,11 @@ def test_get_list_diff(old, new, expected):
                 },
             },
         ),
-        ({"key": "untouched"}, {"key": "untouched"}, None,),
+        (
+            {"key": "untouched"},
+            {"key": "untouched"},
+            None,
+        ),
         (
             {"key": "untouched", "removed key": "removed value"},
             {"key": "untouched"},

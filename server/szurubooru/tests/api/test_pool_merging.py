@@ -52,7 +52,10 @@ def test_trying_to_omit_mandatory_field(
     user_factory, pool_factory, context_factory, field
 ):
     db.session.add_all(
-        [pool_factory(id=1), pool_factory(id=2),]
+        [
+            pool_factory(id=1),
+            pool_factory(id=2),
+        ]
     )
     db.session.commit()
     params = {
@@ -95,7 +98,10 @@ def test_trying_to_merge_without_privileges(
     user_factory, pool_factory, context_factory
 ):
     db.session.add_all(
-        [pool_factory(id=1), pool_factory(id=2),]
+        [
+            pool_factory(id=1),
+            pool_factory(id=2),
+        ]
     )
     db.session.commit()
     with pytest.raises(errors.AuthError):

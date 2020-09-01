@@ -32,13 +32,13 @@ FROM prereqs as testing
 WORKDIR /opt/app
 
 RUN apk --no-cache add \
-		py3-pip \
-		py3-pytest \
+        py3-pip \
+        py3-pytest \
         py3-pytest-cov \
         postgresql \
  && pip3 install --no-cache-dir --disable-pip-version-check \
-    	pytest-pgsql \
-    	freezegun \
+        pytest-pgsql \
+        freezegun \
  && apk --no-cache del py3-pip \
  && addgroup app \
  && adduser -SDH -h /opt/app -g '' -G app app \
@@ -59,9 +59,9 @@ ARG PUID=1000
 ARG PGID=1000
 
 RUN apk --no-cache add \
-		dumb-init \
-		py3-setuptools \
-		py3-waitress \
+        dumb-init \
+        py3-setuptools \
+        py3-waitress \
  && mkdir -p /opt/app /data \
  && addgroup -g ${PGID} app \
  && adduser -SDH -h /opt/app -g '' -G app -u ${PUID} app \

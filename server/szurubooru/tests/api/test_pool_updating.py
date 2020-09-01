@@ -65,7 +65,13 @@ def test_simple_updating(user_factory, pool_factory, context_factory):
 
 
 @pytest.mark.parametrize(
-    "field", ["names", "category", "description", "posts",]
+    "field",
+    [
+        "names",
+        "category",
+        "description",
+        "posts",
+    ],
 )
 def test_omitting_optional_field(
     user_factory, pool_factory, context_factory, field
@@ -106,7 +112,11 @@ def test_trying_to_update_non_existing(user_factory, context_factory):
 
 @pytest.mark.parametrize(
     "params",
-    [{"names": ["whatever"]}, {"category": "whatever"}, {"posts": [1]},],
+    [
+        {"names": ["whatever"]},
+        {"category": "whatever"},
+        {"posts": [1]},
+    ],
 )
 def test_trying_to_update_without_privileges(
     user_factory, pool_factory, context_factory, params
