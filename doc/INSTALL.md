@@ -71,7 +71,7 @@ user@host:szuru$ docker-compose down
     run from docker:
 
     ```console
-    user@host:szuru$ docker-compose run api ./szuru-admin --help
+    user@host:szuru$ docker-compose run server ./szuru-admin --help
     ```
 
     will give you a breakdown on all available commands.
