@@ -6,19 +6,27 @@ repos:
     -   id: trailing-whitespace
     -   id: end-of-file-fixer
     -   id: check-yaml
+    -   id: mixed-line-ending
+
+-   repo: https://github.com/Lucas-C/pre-commit-hooks
+    rev: v1.1.9
+    hooks:
+    -   id: remove-tabs
 
 -   repo: https://github.com/psf/black
     rev: 20.8b1
     hooks:
       - id: black
-        files: server/szurubooru/
+        files: 'server/'
+        types: [python]
         language_version: python3.8
 
 -   repo: https://github.com/timothycrosley/isort
     rev: '5.4.2'
     hooks:
     -   id: isort
-        files: server/szurubooru/
+        files: 'server/'
+        types: [python]
         exclude: server/szurubooru/migrations/env.py
         additional_dependencies:
         -   toml
@@ -32,7 +40,7 @@ repos:
         args: ['--config', 'client/.prettierrc.yml']
 
 -   repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v7.7.0
+    rev: v7.8.0
     hooks:
     -   id: eslint
         files: client/js/
