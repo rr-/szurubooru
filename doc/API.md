@@ -2387,6 +2387,11 @@ One file together with its metadata posted to the site.
         <comment>,
         <comment>,
         <comment>
+    ],
+    "pools": [
+        <pool>,
+        <pool>,
+        <pool>
     ]
 }
 ```
@@ -2450,6 +2455,7 @@ One file together with its metadata posted to the site.
 - `<mime-type>`: subsidiary to `<type>`, used to tell exact content format;
   useful for `<video>` tags for instance.
 - `<comment>`: a [comment resource](#comment) for given post.
+- `<pool>`: a [pool resource](#pool) for given post.
 
 ## Micro post
 **Description**
@@ -2514,7 +2520,7 @@ An ordered list of posts, with a description and category.
 ```json5
 {
     "version":      <version>,
-    "id":           <id>
+    "id":           <id>,
     "names":        <names>,
     "category":     <category>,
     "posts":        <suggestions>,
@@ -2551,7 +2557,7 @@ A comment under a post.
     "version":      <version>,
     "id":           <id>,
     "postId":       <post-id>,
-    "user":         <author>
+    "user":         <author>,
     "text":         <text>,
     "creationTime": <creation-time>,
     "lastEditTime": <last-edit-time>,
