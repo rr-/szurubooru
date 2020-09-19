@@ -152,6 +152,12 @@ def serialize_pool(
     return PoolSerializer(pool).serialize(options)
 
 
+def serialize_micro_pool(pool: model.Pool) -> Optional[rest.Response]:
+    return serialize_pool(
+        pool, options=["id", "names", "category", "description", "postCount"]
+    )
+
+
 def try_get_pool_by_id(pool_id: int) -> Optional[model.Pool]:
     return (
         db.session.query(model.Pool)

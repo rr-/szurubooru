@@ -334,7 +334,7 @@ class PostSerializer(serialization.BaseSerializer):
 
     def serialize_pools(self) -> List[Any]:
         return [
-            pools.serialize_pool(pool)
+            pools.serialize_micro_pool(pool)
             for pool in sorted(
                 self.post.pools, key=lambda pool: pool.creation_time
             )

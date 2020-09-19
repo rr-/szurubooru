@@ -99,6 +99,7 @@
    - [Micro post](#micro-post)
    - [Pool category](#pool-category)
    - [Pool](#pool)
+   - [Micro pool](#micro-pool)
    - [Note](#note)
    - [Comment](#comment)
    - [Snapshot](#snapshot)
@@ -2455,7 +2456,7 @@ One file together with its metadata posted to the site.
 - `<mime-type>`: subsidiary to `<type>`, used to tell exact content format;
   useful for `<video>` tags for instance.
 - `<comment>`: a [comment resource](#comment) for given post.
-- `<pool>`: a [pool resource](#pool) for given post.
+- `<pool>`: a [micro pool resource](#micro-pool) in which the post is a member of.
 
 ## Micro post
 **Description**
@@ -2544,6 +2545,12 @@ An ordered list of posts, with a description and category.
 - `<post-count>`: the number of posts the pool has.
 - `<description>`: the pool description (instructions how to use, history etc.)
   The client should render it as Markdown.
+
+## Micro pool
+**Description**
+
+A [pool resource](#pool) stripped down to `id`, `names`, `category`,
+`description` and `postCount` fields.
 
 ## Comment
 **Description**
