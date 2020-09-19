@@ -73,6 +73,11 @@ def update_tag_category(
         tag_categories.update_category_color(
             category, ctx.get_param_as_string("color")
         )
+    if ctx.has_param("order"):
+        auth.verify_privilege(ctx.user, "tag_categories:edit:order")
+        tag_categories.update_category_order(
+            category, ctx.get_param_as_int("order")
+        )
     ctx.session.flush()
     snapshots.modify(category, ctx.user)
     ctx.session.commit()

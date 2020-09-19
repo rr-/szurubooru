@@ -17,6 +17,7 @@ def inject_config(config_injector):
             "privileges": {
                 "tag_categories:edit:name": model.User.RANK_REGULAR,
                 "tag_categories:edit:color": model.User.RANK_REGULAR,
+                "tag_categories:edit:order": model.User.RANK_REGULAR,
                 "tag_categories:set_default": model.User.RANK_REGULAR,
             },
         }

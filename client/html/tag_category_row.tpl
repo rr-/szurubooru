@@ -17,6 +17,13 @@
             <%- ctx.tagCategory.color %>
         <% } %>
     </td>
+    <td class='order'>
+        <% if (ctx.canEditOrder) { %>
+            <%= ctx.makeNumericInput({value: ctx.tagCategory.order}) %>
+        <% } else { %>
+            <%- ctx.tagCategory.order %>
+        <% } %>
+    </td>
     <td class='usages'>
         <% if (ctx.tagCategory.name) { %>
             <a href='<%- ctx.formatClientLink('tags', {query: 'category:' + ctx.tagCategory.name}) %>'>

@@ -67,6 +67,7 @@ def sort_tags(tags: List[model.Tag]) -> List[model.Tag]:
     return sorted(
         tags,
         key=lambda tag: (
+            tag.category.order,
             default_category_name == tag.category.name,
             tag.category.name,
             tag.names[0].name,

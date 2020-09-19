@@ -100,6 +100,13 @@ class TagCategoriesView extends events.EventTarget {
             );
         }
 
+        const orderInput = rowNode.querySelector(".order input");
+        if (orderInput) {
+            orderInput.addEventListener("change", (e) =>
+                this._evtOrderChange(e, rowNode)
+            );
+        }
+
         const removeLinkNode = rowNode.querySelector(".remove a");
         if (removeLinkNode) {
             removeLinkNode.addEventListener("click", (e) =>
@@ -145,6 +152,10 @@ class TagCategoriesView extends events.EventTarget {
     _evtColorChange(e, rowNode) {
         e.target.value = e.target.value.toLowerCase();
         rowNode._tagCategory.color = e.target.value;
+    }
+
+    _evtOrderChange(e, rowNode) {
+        rowNode._tagCategory.order = e.target.value;
     }
 
     _evtDeleteButtonClick(e, rowNode, link) {
