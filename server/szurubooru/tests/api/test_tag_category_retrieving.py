@@ -46,6 +46,7 @@ def test_retrieving_single(
         "color": "dummy",
         "usages": 0,
         "default": False,
+        "order": 1,
         "version": 1,
     }
 

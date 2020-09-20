@@ -29,6 +29,7 @@ def test_serialize_category(tag_category_factory, tag_factory):
         "color": "color",
         "default": True,
         "version": 1,
+        "order": 1,
         "usages": 2,
     }
 
