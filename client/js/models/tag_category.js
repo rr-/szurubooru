@@ -78,9 +78,9 @@ class TagCategory extends events.EventTarget {
 
         let promise = this._origName
             ? api.put(
-                uri.formatApiLink("tag-category", this._origName),
-                detail
-            )
+                  uri.formatApiLink("tag-category", this._origName),
+                  detail
+              )
             : api.post(uri.formatApiLink("tag-categories"), detail);
 
         return promise.then((response) => {

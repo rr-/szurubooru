@@ -78,10 +78,11 @@ def serialize_category(
     return TagCategorySerializer(category).serialize(options)
 
 
-def create_category(name: str, color: str) -> model.TagCategory:
+def create_category(name: str, color: str, order: int) -> model.TagCategory:
     category = model.TagCategory()
     update_category_name(category, name)
     update_category_color(category, color)
+    update_category_order(category, order)
     if not get_all_categories():
         category.default = True
     return category
