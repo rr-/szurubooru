@@ -36,11 +36,14 @@ def test_creating_category(
         tag_categories.serialize_category.return_value = "serialized category"
         result = api.tag_category_api.create_tag_category(
             context_factory(
-                params={"name": "meta", "color": "black"}, user=auth_user
+                params={"name": "meta", "color": "black", "order": 0},
+                user=auth_user,
             )
         )
         assert result == "serialized category"
-        tag_categories.create_category.assert_called_once_with("meta", "black")
+        tag_categories.create_category.assert_called_once_with(
+            "meta", "black", 0
+        )
         snapshots.create.assert_called_once_with(category, auth_user)
 
 

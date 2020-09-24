@@ -37,14 +37,17 @@ def test_serialize_category(tag_category_factory, tag_factory):
 def test_create_category_when_first():
     with patch("szurubooru.func.tag_categories.update_category_name"), patch(
         "szurubooru.func.tag_categories.update_category_color"
-    ):
-        category = tag_categories.create_category("name", "color")
+    ), patch("szurubooru.func.tag_categories.update_category_order"):
+        category = tag_categories.create_category("name", "color", 7)
         assert category.default
         tag_categories.update_category_name.assert_called_once_with(
             category, "name"
         )
         tag_categories.update_category_color.assert_called_once_with(
             category, "color"
+        )
+        tag_categories.update_category_order.assert_called_once_with(
+            category, 7
         )
 
 
@@ -53,14 +56,17 @@ def test_create_category_when_subsequent(tag_category_factory):
     db.session.flush()
     with patch("szurubooru.func.tag_categories.update_category_name"), patch(
         "szurubooru.func.tag_categories.update_category_color"
-    ):
-        category = tag_categories.create_category("name", "color")
+    ), patch("szurubooru.func.tag_categories.update_category_order"):
+        category = tag_categories.create_category("name", "color", 7)
         assert not category.default
         tag_categories.update_category_name.assert_called_once_with(
             category, "name"
         )
         tag_categories.update_category_color.assert_called_once_with(
             category, "color"
+        )
+        tag_categories.update_category_order.assert_called_once_with(
+            category, 7
         )
 
 
