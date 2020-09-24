@@ -321,7 +321,8 @@ data.
     ```json5
     {
         "name":  <name>,
-        "color": <color>
+        "color": <color>,
+        "order": <order>  // optional
     }
     ```
 
@@ -354,6 +355,7 @@ data.
         "version": <version>,
         "name":    <name>,    // optional
         "color":   <color>,   // optional
+        "order":   <order>    // optional
     }
     ```
 
@@ -2288,7 +2290,8 @@ experience.
     "version": <version>,
     "name":    <name>,
     "color":   <color>,
-    "usages":  <usages>
+    "usages":  <usages>,
+    "order":   <order>,
     "default": <is-default>
 }
 ```
@@ -2299,6 +2302,7 @@ experience.
 - `<name>`: the category name.
 - `<color>`: the category color.
 - `<usages>`: how many tags is the given category used with.
+- `<order>`: the order in which tags with this category are displayed, ascending.
 - `<is-default>`: whether the tag category is the default one.
 
 ## Tag
@@ -2498,7 +2502,7 @@ experience.
     "version": <version>,
     "name":    <name>,
     "color":   <color>,
-    "usages":  <usages>
+    "usages":  <usages>,
     "default": <is-default>
 }
 ```
@@ -2712,7 +2716,7 @@ dictionaries as created by creation snapshots, which is described below.
         },
         "primitive-property":
         {
-            "type": "primitive change":
+            "type": "primitive change",
             "old-value": "<primitive>",
             "new-value": "<primitive>"
         },

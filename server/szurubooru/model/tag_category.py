@@ -16,6 +16,7 @@ class TagCategory(Base):
         "color", sa.Unicode(32), nullable=False, default="#000000"
     )
     default = sa.Column("default", sa.Boolean, nullable=False, default=False)
+    order = sa.Column("order", sa.Integer, nullable=False, default=1)
 
     def __init__(self, name: Optional[str] = None) -> None:
         self.name = name

@@ -37,7 +37,8 @@ def create_tag_category(
     auth.verify_privilege(ctx.user, "tag_categories:create")
     name = ctx.get_param_as_string("name")
     color = ctx.get_param_as_string("color")
-    category = tag_categories.create_category(name, color)
+    order = ctx.get_param_as_int("order")
+    category = tag_categories.create_category(name, color, order)
     ctx.session.add(category)
     ctx.session.flush()
     snapshots.create(category, ctx.user)
@@ -72,6 +73,11 @@ def update_tag_category(
         auth.verify_privilege(ctx.user, "tag_categories:edit:color")
         tag_categories.update_category_color(
             category, ctx.get_param_as_string("color")
+        )
+    if ctx.has_param("order"):
+        auth.verify_privilege(ctx.user, "tag_categories:edit:order")
+        tag_categories.update_category_order(
+            category, ctx.get_param_as_int("order")
         )
     ctx.session.flush()
     snapshots.modify(category, ctx.user)

@@ -126,10 +126,11 @@ def user_token_factory(user_factory):
 
 @pytest.fixture
 def tag_category_factory():
-    def factory(name=None, color="dummy", default=False):
+    def factory(name=None, color="dummy", order=1, default=False):
         category = model.TagCategory()
         category.name = name or get_unique_name()
         category.color = color
+        category.order = order
         category.default = default
         return category
 

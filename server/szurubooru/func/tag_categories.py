@@ -48,6 +48,7 @@ class TagCategorySerializer(serialization.BaseSerializer):
             "color": self.serialize_color,
             "usages": self.serialize_usages,
             "default": self.serialize_default,
+            "order": self.serialize_order,
         }
 
     def serialize_name(self) -> Any:
@@ -65,6 +66,9 @@ class TagCategorySerializer(serialization.BaseSerializer):
     def serialize_default(self) -> Any:
         return self.category.default
 
+    def serialize_order(self) -> Any:
+        return self.category.order
+
 
 def serialize_category(
     category: Optional[model.TagCategory], options: List[str] = []
@@ -74,10 +78,11 @@ def serialize_category(
     return TagCategorySerializer(category).serialize(options)
 
 
-def create_category(name: str, color: str) -> model.TagCategory:
+def create_category(name: str, color: str, order: int) -> model.TagCategory:
     category = model.TagCategory()
     update_category_name(category, name)
     update_category_color(category, color)
+    update_category_order(category, order)
     if not get_all_categories():
         category.default = True
     return category
@@ -115,6 +120,11 @@ def update_category_color(category: model.TagCategory, color: str) -> None:
     if util.value_exceeds_column_size(color, model.TagCategory.color):
         raise InvalidTagCategoryColorError("Color is too long.")
     category.color = color
+
+
+def update_category_order(category: model.TagCategory, order: int) -> None:
+    assert category
+    category.order = order
 
 
 def try_get_category_by_name(
