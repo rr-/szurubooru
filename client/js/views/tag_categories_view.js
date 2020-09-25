@@ -24,7 +24,9 @@ class TagCategoriesView extends events.EventTarget {
             } else if (a.isDefault) {
                 return -1;
             }
-            return a.name.localeCompare(b.name);
+            return a.order == b.order
+                ? a.name.localeCompare(b.name)
+                : a.order - b.order;
         });
         for (let tagCategory of categoriesToAdd) {
             this._addTagCategoryRowNode(tagCategory);
