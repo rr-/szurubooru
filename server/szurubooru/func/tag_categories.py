@@ -152,7 +152,7 @@ def get_all_category_names() -> List[str]:
 def get_all_categories() -> List[model.TagCategory]:
     return (
         db.session.query(model.TagCategory)
-        .order_by(model.TagCategory.name.asc())
+        .order_by(model.TagCategory.order.asc(), model.TagCategory.name.asc())
         .all()
     )
 
