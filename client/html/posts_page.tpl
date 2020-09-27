@@ -1,4 +1,4 @@
-<div class='post-list'>
+<% if (ctx.postFlow) { %><div class='post-list post-flow'><% } else { %><div class='post-list'><% } %>
     <% if (ctx.response.results.length) { %>
         <ul>
             <% for (let post of ctx.response.results) { %>

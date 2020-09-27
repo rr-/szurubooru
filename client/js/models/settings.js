@@ -18,6 +18,7 @@ const defaultSettings = {
     postsPerPage: 42,
     tagUnderscoresAsSpaces: false,
     darkTheme: false,
+    postFlow: false,
 };
 
 class Settings extends events.EventTarget {

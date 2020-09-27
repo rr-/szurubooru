@@ -120,6 +120,7 @@ class PostListController {
                     bulkEdit: {
                         tags: this._bulkEditTags,
                     },
+                    postFlow: settings.get().postFlow,
                 });
                 const view = new PostsPageView(pageCtx);
                 view.addEventListener("tag", (e) => this._evtTag(e));

@@ -134,6 +134,22 @@
                 .thumbnail
                     outline: 4px solid $main-color !important
 
+.post-flow
+    ul
+        li
+            min-width: inherit
+            width: inherit
+            &:not(.flexbox-dummy)
+                height: 14vw
+            .thumbnail
+                outline-offset: -1px
+            .thumbnail-wrapper.no-tags
+                .thumbnail
+                    outline: 2px solid $post-thumbnail-no-tags-border-color
+            &:hover a, a:active, a:focus
+                .thumbnail
+                    outline: 2px solid $main-color !important
+
 .post-list-header
     white-space: nowrap
     text-align: left

@@ -45,6 +45,7 @@ class SettingsView extends events.EventTarget {
                     tagUnderscoresAsSpaces: this._find("underscores-as-spaces")
                         .checked,
                     darkTheme: this._find("dark-theme").checked,
+                    postFlow: this._find("post-flow").checked,
                 },
             })
         );
