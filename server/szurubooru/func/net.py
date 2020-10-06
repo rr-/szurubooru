@@ -4,6 +4,7 @@ import os
 import urllib.error
 import urllib.request
 from tempfile import NamedTemporaryFile
+from threading import Thread
 from typing import Any, Dict, List
 
 from youtube_dl import YoutubeDL
@@ -63,23 +64,31 @@ def _youtube_dl_wrapper(url: str) -> bytes:
         )
 
 
-def post_to_webhooks(payload: Dict[str, Any]) -> List[int]:
-    return_list = []
-    for webhook in config.config["webhooks"] or []:
-        req = urllib.request.Request(webhook)
-        req.data = json.dumps(
-            payload,
-            default=lambda x: x.isoformat("T") + "Z",
-        ).encode("utf-8")
-        req.add_header("Content-Type", "application/json")
-        try:
-            res = urllib.request.urlopen(req)
-            if not 200 <= res.status <= 299:
-                logger.warning(
-                    f"Webhook {webhook} returned {res.status} {res.reason}"
-                )
-            return_list.append(res.status)
-        except urllib.error.URLError as e:
-            logger.error(f"Unable to call webhook {webhook}: {str(e)}")
-            return_list.append(400)
-    return return_list
+def post_to_webhooks(payload: Dict[str, Any]) -> List[Thread]:
+    threads = [
+        Thread(target=_post_to_webhook, args=(webhook, payload))
+        for webhook in (config.config["webhooks"] or [])
+    ]
+    for thread in threads:
+        thread.daemon = False
+        thread.start()
+    return threads
+
+
+def _post_to_webhook(webhook: str, payload: Dict[str, Any]) -> None:
+    req = urllib.request.Request(webhook)
+    req.data = json.dumps(
+        payload,
+        default=lambda x: x.isoformat("T") + "Z",
+    ).encode("utf-8")
+    req.add_header("Content-Type", "application/json")
+    try:
+        res = urllib.request.urlopen(req)
+        if not 200 <= res.status <= 299:
+            logger.warning(
+                f"Webhook {webhook} returned {res.status} {res.reason}"
+            )
+        return res.status
+    except urllib.error.URLError as e:
+        logger.warning(f"Unable to call webhook {webhook}: {str(e)}")
+        return 400

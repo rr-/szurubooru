@@ -122,10 +122,8 @@ def test_no_webhooks(config_injector):
     ],
 )
 def test_single_webhook(config_injector, webhook, status_code):
-    config_injector({"webhooks": [webhook]})
-    res = net.post_to_webhooks({"test_arg": "test_value"})
-    assert len(res) == 1
-    assert res[0] == status_code
+    ret = net._post_to_webhook(webhook, {"test_arg": "test_value"})
+    assert ret == status_code
 
 
 def test_multiple_webhooks(config_injector):
@@ -133,17 +131,14 @@ def test_multiple_webhooks(config_injector):
         {
             "webhooks": [
                 "https://postman-echo.com/post",
-                "https://postman-echo.com/post",
+                "https://postman-echo.com/get",
             ]
         }
     )
-    res = net.post_to_webhooks({"test_arg": "test_value"})
-    assert len(res) == 2
-    assert res[0] == 200
-    assert res[1] == 200
+    threads = net.post_to_webhooks({"test_arg": "test_value"})
+    assert len(threads) == 2
 
 
 def test_malformed_webhooks(config_injector):
-    config_injector({"webhooks": ["malformed_url"]})
     with pytest.raises(ValueError):
-        net.post_to_webhooks({"test_arg": "test_value"})
+        net._post_to_webhook("malformed_url", {"test_arg": "test_value"})
