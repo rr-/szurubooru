@@ -116,10 +116,11 @@
 
 
             .thumbnail
-                background-position: 50% 30%
                 width: 100%
                 height: 100%
                 outline-offset: -3px
+                &:not(.empty)
+                    background-position: 50% 30%
 
             .thumbnail-wrapper.no-tags
                 .thumbnail

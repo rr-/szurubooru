@@ -287,9 +287,14 @@ a .access-key
     width: 20px
     height: 20px
     &.empty
-        background-image: url('../img/transparency_grid.png')
+        background-image:
+            linear-gradient(45deg, $transparency-grid-square-color 25%, transparent 25%),
+            linear-gradient(-45deg, $transparency-grid-square-color 25%, transparent 25%),
+            linear-gradient(45deg, transparent 75%, $transparency-grid-square-color 75%),
+            linear-gradient(-45deg, transparent 75%, $transparency-grid-square-color 75%)
+        background-position: 0 0, 0 10px, 10px -10px, -10px 0px
         background-repeat: repeat
-        background-size: initial
+        background-size: 20px 20px
     img
         opacity: 0
         width: 100%
