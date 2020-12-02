@@ -12,7 +12,16 @@
 #   avoid the need for parallel maintenance of two files.
 #############################################################################################
 
-echo "Welcome to Szurubooru.  This install script will ask you to set a few config values, then get szurubooru up and running."
+# Check for root to ensure the accessibility of the Docker daemon, and to 
+# allow mount point permissions to be set after building.
+
+if [[ $EUID -ne 0 ]]; then
+    echo "Sorry, but this script needs root to properly function.  Please try again using sudo ./install.sh" 1>&2
+    exit 1
+fi
+
+echo "Welcome to Szurubooru.  This install script will ask you to set a few 
+echo "config values, then get szurubooru up and running."
 
 # Check to ensure Docker and Docker-Compose are both installed before proceeding
 if ! command -v docker &> /dev/null || ! command -v docker-compose &> /dev/null; then
@@ -33,9 +42,9 @@ if [[ "$(uname -m)" == 'a'* ]]; then
     sed -zi "s|image: szurubooru/server:latest|build:\n      context: ./server|; \     # Modify services/server to build locally instead of pulling from DockerHub
              s|image: szurubooru/client:latest|build:\n      context: ./client|; \     # Modify services/client to build locally instead of pulling from DockerHub
              s|depends_on:\n      - sql|depends_on:\n      - sql\n      - elasticsearch|; \ # Add dependency for alternate arm compatible elasticsearch defined below.
-             s|POSTGRES_HOST: sql|POSTGRES_HOST: sql\n      ESEARCH_HOST: elasticsearch'|" docker-compose.yml # Point Postgres to the alternate elasticsearch container
-
-    # Add a new section to define the alternate elasticsearch service
+             s|POSTGRES_HOST: sql|POSTGRES_HOST: sql\n      ESEARCH_HOST: elasticsearch|" \ # Point Postgres to the alternate elasticsearch container
+            docker-compose.yml
+    # "Add a new section to define the alternate elasticsearch service
     cat >> docker-compose.yml <<-ESS
 	  elasticsearch:
 	    image: ind3x/rpi-elasticsearch #recommended in the wiki, does get the job done.
@@ -60,7 +69,7 @@ function server_config () {
     ################################################################################################################
 
     cp server/config.yaml.dist server/config.yaml
-
+    echo ""
     echo "===[General Settings]==="
 
     # Prompt for Secret, proposing a randomly generated 32-character alphanumeric value as a default.
@@ -129,10 +138,20 @@ function set_env () {
             s|MOUNT_SQL=/var/local/szurubooru/sql|MOUNT_SQL=$MOUNT_SQL|" .env
 }
 
+function final_touches () {
+    docker-compose pull # Download containers
+    docker-compose up -d sql # Start SQL first
+    sleep 30 # Give the database time to become available
+    docker-compose up -d # Start remaining containers
+}
+
+
 server_config # Configuration via ./server/config.yaml
 set_env # Configuration via ./.env
-mount=$(grep "MOUNT_DATA" .env | sed 's/MOUNT_DATA=//'); chown 1000:1000 "$mount" # Ensures users can upload files
-docker-compose pull # Download containers
-docker-compose up -d sql # Start SQL first
-sleep 30 # Give the database time to become available
-docker-compose up -d # Start remaining containers
+final_touches # Start Szurubooru
+
+# Ensure files can be uploaded by setting ownership of the /data/ mount point
+puid=$(grep "PUID=" server/Dockerfile | sed "s/.*=//")
+guid=$(grep "GUID=" server/Dockerfile | sed "s/.*=//")
+mount=$(grep "MOUNT_DATA" .env | sed 's/MOUNT_DATA=//')
+chown -R $puid:$guid "$mount"
