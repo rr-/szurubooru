@@ -12,9 +12,6 @@
 #   avoid the need for parallel maintenance of two files.
 #############################################################################################
 
-# Check for root to ensure the accessibility of the Docker daemon, and to 
-# allow mount point permissions to be set after building.
-
 echo "Welcome to Szurubooru.  This install script will ask you to"
 echo "set a few config values, then get szurubooru up and running."
 
