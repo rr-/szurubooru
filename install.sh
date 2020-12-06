@@ -15,13 +15,8 @@
 # Check for root to ensure the accessibility of the Docker daemon, and to 
 # allow mount point permissions to be set after building.
 
-if [[ $EUID -ne 0 ]]; then
-    echo "Sorry, but this script needs root to properly function.  Please try again using sudo ./install.sh" 1>&2
-    exit 1
-fi
-
-echo "Welcome to Szurubooru.  This install script will ask you to set a few 
-echo "config values, then get szurubooru up and running."
+echo "Welcome to Szurubooru.  This install script will ask you to"
+echo "set a few config values, then get szurubooru up and running."
 
 # Check to ensure Docker and Docker-Compose are both installed before proceeding
 if ! command -v docker &> /dev/null || ! command -v docker-compose &> /dev/null; then
@@ -38,27 +33,10 @@ fi
 ########################################################################################
 
 if [[ "$(uname -m)" == 'a'* ]]; then
-    echo "ARM architecture detected.  Modfying docker-compose.yml accordingly."
-    sed -zi "s|image: szurubooru/server:latest|build:\n      context: ./server|; \     # Modify services/server to build locally instead of pulling from DockerHub
-             s|image: szurubooru/client:latest|build:\n      context: ./client|; \     # Modify services/client to build locally instead of pulling from DockerHub
-             s|depends_on:\n      - sql|depends_on:\n      - sql\n      - elasticsearch|; \ # Add dependency for alternate arm compatible elasticsearch defined below.
-             s|POSTGRES_HOST: sql|POSTGRES_HOST: sql\n      ESEARCH_HOST: elasticsearch|" \ # Point Postgres to the alternate elasticsearch container
-            docker-compose.yml
-    # "Add a new section to define the alternate elasticsearch service
-    cat >> docker-compose.yml <<-ESS
-	  elasticsearch:
-	    image: ind3x/rpi-elasticsearch #recommended in the wiki, does get the job done.
-	    environment:
-	      ## Specifies the Java heap size used
-	      ## Read
-	      ##  https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html
-	      ## for more info
-	      ES_JAVA_OPTS: -Xms512m -Xmx512m
-	    volumes:
-	      - index:/usr/share/elasticsearch/data
-	volumes:
-	  index: # Scratch space for ElasticSearch index, will be rebuilt if lost
-	ESS
+    echo "ARM architecture detected.  Modfying docker-compose.yml for local build."
+    # Modify docker-compose file to build locally instead of pulling from dockerhub
+    sed -zi "s|image: szurubooru/server:latest|build:\n      context: ./server|; \
+             s|image: szurubooru/client:latest|build:\n      context: ./client|" ./docker-compose.yml
 fi
 
 
@@ -69,21 +47,20 @@ function server_config () {
     ################################################################################################################
 
     cp server/config.yaml.dist server/config.yaml
-    echo ""
-    echo "===[General Settings]==="
+    echo -e "\n===[General Settings]==="
 
     # Prompt for Secret, proposing a randomly generated 32-character alphanumeric value as a default.
     default_secret="$(tr -dc '[:alnum:]' < /dev/urandom | dd bs=4 count=8 2>/dev/null)"
     echo "Enter your Secret (Used to salt the users' password hashes and generate filenames for static content)"; read -e -p "> " -i "$default_secret" SECRET
-    sed -i "s|secret: change|secret: $SECRET|" server/config.yaml
+    sed -i "s|secret: change|secret: $SECRET|" ./server/config.yaml
 
     # Other useful (but less important) settings
     echo "Enter the desired name for your server. (Shown in the website title and on the front page)"; read -e -p "> " -i "szurubooru" SERVERNAME
     echo "Enter the full url to the homepage of this szurubooru site, with no trailing slash."; read -e -p "> " URL
-    sed -i "s|name: szurubooru|name: $SERVERNAME|;s|domain: |domain: $URL|" server/config.yaml
+    sed -i "s|name: szurubooru|name: $SERVERNAME|;s|domain: |domain: $URL|" ./server/config.yaml
 
     # SMTP (email) settings
-    echo "===[SMTP (Email) Settings]==="
+    echo -e "\n===[SMTP (Email) Settings]==="
     echo "If host name is left blank, the password reset feature will be disabled."
     echo "Enter your email server's host address."
     read -e -p "> " SMTP_HOST
@@ -97,8 +74,7 @@ function server_config () {
                 s|port: |port: $SMTP_PORT|; \
                 s|user: |user: $SMTP_USER|; \
                 s|pass: |pass: $SMTP_PASS|; \
-                s|from: |from: $SMTP_FROM|" \
-                server/config.yaml
+                s|from: |from: $SMTP_FROM|" ./server/config.yaml
     else # Warn user that they should set a contact email if no smtp host is specified
         echo "WARNING:  No SMTP host specified!"
         echo "It is recommended you set a contact email in the next prompt for manual password reset requests."
@@ -106,7 +82,7 @@ function server_config () {
 
     echo "Enter your server's primary contact email address."
     read -e -p "> " CONTACT_ADDR
-    if [ -n "$CONTACT_ADDR" ]; then sed -i "s|contact_email: |contact_email: $CONTACT_ADDR|"; fi
+    if [ -n "$CONTACT_ADDR" ]; then sed -i "s|contact_email: |contact_email: $CONTACT_ADDR |" ./server/config.yaml; fi
 }
 
 function set_env () {
@@ -115,22 +91,21 @@ function set_env () {
     # https://github.com/rr-/szurubooru/blob/master/doc/INSTALL.md
     ############################################################################################################
     cp doc/example.env .env
-    echo "===[Environmental Variables]==="
-    echo "Enter your desired database username"; read -e -p "> " -i "szuru" DB_USER
-    while true; do
-        echo "Enter your desired database password"; read -e -p -s "> " DB_PASS
-        if [ -n $DB_PASS ]; break
-            else echo "ERROR: You must set a password!"
-        fi
+    echo -e "\n===[Environmental Variables]==="
+    echo "Enter your desired database username."; read -e -p "> " -i "szuru" DB_USER
+    while true; do # Ensures the user sets a database password for security reasons.
+	echo "Enter your desired database password. (Will not print to console)"; read -s -p "> " DB_PASS
+        if [ -z $DB_PASS ]; then echo -e "\nERROR: You must set a password!"; else break; fi
     done
-    echo "Enter the build info you'd like to display on the home screen"; read -e -p "> " -i "latest" BUILD_INFO
-    echo "Enter the port # to expose the HTTP service to. "
+    echo ""
+    echo "Enter the build info you'd like to display on the home screen."; read -e -p "> " -i "latest" BUILD_INFO
+    echo "Enter the port # to expose the HTTP service to."
     echo "Set to 127.0.0.1:8080 if you wish to reverse proxy the docker's port."; read -e -p "> " -i "8080" PORT
     echo "Enter the URL base to run szurubooru under"; read -e -p "> " -i "/" BASE_URL
-    echo "Enter the directory you wish to store image data in"; read -e -p "> " -i "/var/local/szurubooru/data" MOUNT_DATA
-    echo "Enter the directory in which you wish to store database files"; read -e -p "> " -i "/var/local/szurubooru/sql" MOUNT_SQL
+    echo "Enter the directory in which you wish to store image data."; read -e -p "> " -i "/var/local/szurubooru/data" MOUNT_DATA
+    echo "Enter the directory in which you wish to store database files."; read -e -p "> " -i "/var/local/szurubooru/sql" MOUNT_SQL
     sed -i "s|POSTGRES_USER=szuru|POSTGRES_USER=$DB_USER|; \
-            s|POSTGRES_PASSWORD=changeme| POSTGRES_PASSWORD=$DB_PASS|; \
+            s|POSTGRES_PASSWORD=changeme|POSTGRES_PASSWORD=$DB_PASS|; \
             s|BUILD_INFO=latest|BUILD_INFO=$BUILD_INFO|; \
             s|PORT=8080|PORT=$PORT|; \
             s|BASE_URL=/|BASE_URL=$URL|; \
@@ -138,20 +113,31 @@ function set_env () {
             s|MOUNT_SQL=/var/local/szurubooru/sql|MOUNT_SQL=$MOUNT_SQL|" .env
 }
 
-function final_touches () {
-    docker-compose pull # Download containers
-    docker-compose up -d sql # Start SQL first
-    sleep 30 # Give the database time to become available
-    docker-compose up -d # Start remaining containers
-}
-
-
+echo "Creating and setting up server configuration (server/config.yaml)..."
 server_config # Configuration via ./server/config.yaml
+
+echo -e "\nCreating and setting up environmental variables (.env)..."
 set_env # Configuration via ./.env
-final_touches # Start Szurubooru
+
+echo -e "\nConfig is all done!  Now pulling Docker containers..."
+docker-compose pull # Download containers
+
+echo "Starting SQL container..."
+docker-compose up -d sql # Start SQL first
+
+echo "Waiting 30s to ensure the database is ready for connection..."
+sleep 30 # Give the database time to become available
+
+echo "Starting Server and Client containers..."
+docker-compose up -d # Start remaining containers
 
 # Ensure files can be uploaded by setting ownership of the /data/ mount point
 puid=$(grep "PUID=" server/Dockerfile | sed "s/.*=//")
-guid=$(grep "GUID=" server/Dockerfile | sed "s/.*=//")
+guid=$(grep "PGID=" server/Dockerfile | sed "s/.*=//")
 mount=$(grep "MOUNT_DATA" .env | sed 's/MOUNT_DATA=//')
+echo "Performing a quick ownership change of $mount to make sure images can be submitted..."
 chown -R $puid:$guid "$mount"
+
+echo "All done!  You should now be able to access Szurubooru using the port number you set."
+exit 0
+
