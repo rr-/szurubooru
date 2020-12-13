@@ -11,17 +11,35 @@
 # * Modifies docker-compose.yml rather than relying on a static alternative file to hopefully
 #   avoid the need for parallel maintenance of two files.
 #############################################################################################
+ERROR="[\e[31mERROR\e[0m]"
+OK="[\e[32mOK\e[0m]"
+NOTICE="[\e[33mNOTICE\e[0m]"
 
-echo "Welcome to Szurubooru.  This install script will ask you to"
-echo "set a few config values, then get szurubooru up and running."
+echo 'Welcome to Szurubooru.  This install script will ask you to set a few basic'\
+     'config values, then get szurubooru up and running.'
 
-# Check to ensure Docker and Docker-Compose are both installed before proceeding
+echo "Checking a few things to ensure successful deployment..."
+
+# Check to ensure Docker and Docker-Compose are both installed and usable via standard commands
 if ! command -v docker &> /dev/null || ! command -v docker-compose &> /dev/null; then
-    echo "Both Docker and Docker-Compose must already be installed to use this script."
-    echo "Please ensure both are installed and accessible using commands 'docker' and 'docker-compose', then run this script again."
+    echo -e "${ERROR} Both Docker and Docker-Compose must already be installed to use this script."
+    echo "        Please ensure both are installed and available using commands docker and"
+    echo "        docker-compose, then run this script again."
     exit 1
-else echo "Docker and Docker-Compose verified.  Continuing installation..."
+else echo -e "${OK} Docker and Docker-Compose Installation verified"
 fi
+
+# Check to ensure the current user can access the Docker daemon
+# https://github.com/rr-/szurubooru/pull/366#discussion_r541795141
+if [[ "$(docker ps &> /dev/null | echo $?)" > 0 ]]; then
+    echo -e "${ERROR} Unable to verify Docker daemon access!  Please ensure the current user is"
+    echo "        authorized for Docker access."
+    echo "        For more info, see the official Docker documentation at"
+    echo "        https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user"
+    exit 1
+else echo "${OK} Docker Daemon accessible."
+fi
+
 
 ########################################################################################
 # Check CPU architectue and, if ARM (such as Raspberry Pi), modify docker-compose.yml
@@ -30,7 +48,7 @@ fi
 ########################################################################################
 
 if [[ "$(uname -m)" == 'a'* ]]; then
-    echo "ARM architecture detected.  Modfying docker-compose.yml for local build."
+    echo -e "${NOTICE} ARM architecture detected.  Modfying docker-compose.yml for local build."
     # Modify docker-compose file to build locally instead of pulling from dockerhub
     sed -zi "s|image: szurubooru/server:latest|build:\n      context: ./server|; \
              s|image: szurubooru/client:latest|build:\n      context: ./client|" ./docker-compose.yml
@@ -73,8 +91,8 @@ function server_config () {
                 s|pass: |pass: $SMTP_PASS|; \
                 s|from: |from: $SMTP_FROM|" ./server/config.yaml
     else # Warn user that they should set a contact email if no smtp host is specified
-        echo "WARNING:  No SMTP host specified!"
-        echo "It is recommended you set a contact email in the next prompt for manual password reset requests."
+        echo -e "${NOTICE} No SMTP host specified!  It is strongly recommended you set a contact email"
+	echo "          in the next prompt for manual password reset requests."
     fi
 
     echo "Enter your server's primary contact email address."
