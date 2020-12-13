@@ -11,6 +11,8 @@
 # * Modifies docker-compose.yml rather than relying on a static alternative file to hopefully
 #   avoid the need for parallel maintenance of two files.
 #############################################################################################
+
+# Colorized flags for check status output
 ERROR="[\e[31mERROR\e[0m]"
 OK="[\e[32mOK\e[0m]"
 NOTICE="[\e[33mNOTICE\e[0m]"
@@ -66,12 +68,15 @@ function server_config () {
 
     # Prompt for Secret, proposing a randomly generated 32-character alphanumeric value as a default.
     default_secret="$(tr -dc '[:alnum:]' < /dev/urandom | dd bs=4 count=8 2>/dev/null)"
-    echo "Enter your Secret (Used to salt the users' password hashes and generate filenames for static content)"; read -e -p "> " -i "$default_secret" SECRET
+    echo "Enter your Secret (Used to salt the users' password hashes and generate filenames for static content)"
+    read -e -p "> " -i "$default_secret" SECRET
     sed -i "s|secret: change|secret: $SECRET|" ./server/config.yaml
 
     # Other useful (but less important) settings
-    echo "Enter the desired name for your server. (Shown in the website title and on the front page)"; read -e -p "> " -i "szurubooru" SERVERNAME
-    echo "Enter the full url to the homepage of this szurubooru site, with no trailing slash."; read -e -p "> " URL
+    echo "Enter the desired name for your server. (Shown in the website title and on the front page)"
+    read -e -p "> " -i "szurubooru" SERVERNAME
+    echo "Enter the full url to the homepage of this szurubooru site, with no trailing slash."
+    read -e -p "> " URL
     sed -i "s|name: szurubooru|name: $SERVERNAME|;s|domain: |domain: $URL|" ./server/config.yaml
 
     # SMTP (email) settings
