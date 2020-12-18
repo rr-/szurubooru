@@ -6,7 +6,7 @@
     "watch": "c1=\"\";while :;do c2=$(find html js css img -type f -and -not -iname '*autogen*'|sort|xargs cat|md5sum);[[ $c1 != $c2 ]]&&npm run build -- --debug --no-vendor-js;c1=$c2;sleep 1;done"
   },
   "dependencies": {
-    "dompurify": "^2.0.11",
+    "dompurify": "^2.0.17",
     "font-awesome": "^4.7.0",
     "ios-inner-height": "^1.0.3",
     "js-cookie": "^2.2.0",
