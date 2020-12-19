@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# NOTE: This script is still a work in progress
+
 # This script is meant to automate the deployment of Szurubooru via Docker/Docker-Compose,
 # and to automatically take the necessary steps to allow Szurubooru to run on ARM devices
 # such as the Raspberry Pi.
@@ -97,7 +99,7 @@ function server_config () {
                 s|from: |from: $SMTP_FROM|" ./server/config.yaml
     else # Warn user that they should set a contact email if no smtp host is specified
         echo -e "${NOTICE} No SMTP host specified!  It is strongly recommended you set a contact email"
-	echo "          in the next prompt for manual password reset requests."
+    echo "          in the next prompt for manual password reset requests."
     fi
 
     echo "Enter your server's primary contact email address."
@@ -114,7 +116,7 @@ function set_env () {
     echo -e "\n===[Environmental Variables]==="
     echo "Enter your desired database username."; read -e -p "> " -i "szuru" DB_USER
     while true; do # Ensures the user sets a database password for security reasons.
-	echo "Enter your desired database password. (Will not print to console)"; read -s -p "> " DB_PASS
+    echo "Enter your desired database password. (Will not print to console)"; read -s -p "> " DB_PASS
         if [ -z $DB_PASS ]; then echo -e "\nERROR: You must set a password!"; else break; fi
     done
     echo ""
@@ -160,4 +162,3 @@ chown -R $puid:$guid "$mount"
 
 echo "All done!  You should now be able to access Szurubooru using the port number you set."
 exit 0
-
