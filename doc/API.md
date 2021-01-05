@@ -2366,6 +2366,7 @@ One file together with its metadata posted to the site.
     "source":             <source>,
     "type":               <type>,
     "checksum":           <checksum>,
+    "checksumMD5":        <checksum-MD5>,
     "canvasWidth":        <canvas-width>,
     "canvasHeight":       <canvas-height>,
     "contentUrl":         <content-url>,
@@ -2426,8 +2427,9 @@ One file together with its metadata posted to the site.
     - `"flash"` - Flash animation / game.
     - `"youtube"` - Youtube embed.
 
-- `<checksum>`: the file checksum. Used in snapshots to signify changes of the
+- `<checksum>`: the SHA1 file checksum. Used in snapshots to signify changes of the
   post content.
+- `<checksum-MD5>`: the MD5 file checksum.
 - `<canvas-width>` and `<canvas-height>`: the original width and height of the
   post content.
 - `<content-url>`: where the post content is located.

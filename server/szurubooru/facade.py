@@ -10,7 +10,10 @@ import sqlalchemy.orm.exc
 
 from szurubooru import api, config, db, errors, middleware, rest
 from szurubooru.func.file_uploads import purge_old_uploads
-from szurubooru.func.posts import update_all_post_signatures
+from szurubooru.func.posts import (
+    update_all_md5_checksums,
+    update_all_post_signatures,
+)
 
 
 def _map_error(
@@ -125,6 +128,12 @@ def purge_old_uploads_daemon() -> None:
         time.sleep(60 * 5)
 
 
+_live_migrations = (
+    update_all_post_signatures,
+    update_all_md5_checksums,
+)
+
+
 def create_app() -> Callable[[Any, Any], Any]:
     """ Create a WSGI compatible App object. """
     validate_config()
@@ -134,13 +143,10 @@ def create_app() -> Callable[[Any, Any], Any]:
     if config.config["show_sql"]:
         logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
 
-    purge_thread = threading.Thread(target=purge_old_uploads_daemon)
-    purge_thread.daemon = True
-    purge_thread.start()
+    threading.Thread(target=purge_old_uploads_daemon, daemon=True).start()
 
-    hashing_thread = threading.Thread(target=update_all_post_signatures)
-    hashing_thread.daemon = False
-    hashing_thread.start()
+    for migration in _live_migrations:
+        threading.Thread(target=migration, daemon=False).start()
 
     db.session.commit()
 

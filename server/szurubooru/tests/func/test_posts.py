@@ -135,6 +135,7 @@ def test_serialize_post(
         post.source = "4gag"
         post.type = model.Post.TYPE_IMAGE
         post.checksum = "deadbeef"
+        post.checksum_md5 = "deadbeef"
         post.mime_type = "image/jpeg"
         post.file_size = 100
         post.user = user_factory(name="post author")
@@ -219,6 +220,7 @@ def test_serialize_post(
             "source": "4gag",
             "type": "image",
             "checksum": "deadbeef",
+            "checksumMD5": "deadbeef",
             "fileSize": 100,
             "canvasWidth": 200,
             "canvasHeight": 300,
@@ -431,8 +433,11 @@ def test_update_post_content_for_new_post(
     expected_type,
     output_file_name,
 ):
-    with patch("szurubooru.func.util.get_sha1"):
+    with patch("szurubooru.func.util.get_sha1"), patch(
+        "szurubooru.func.util.get_md5"
+    ):
         util.get_sha1.return_value = "crc"
+        util.get_md5.return_value = "md5"
         config_injector(
             {
                 "data_dir": str(tmpdir.mkdir("data")),
@@ -458,6 +463,7 @@ def test_update_post_content_for_new_post(
         assert post.mime_type == expected_mime_type
         assert post.type == expected_type
         assert post.checksum == "crc"
+        assert post.checksum_md5 == "md5"
         assert os.path.exists(output_file_path)
         if post.type in (model.Post.TYPE_IMAGE, model.Post.TYPE_ANIMATION):
             assert db.session.query(model.PostSignature).count() == 1

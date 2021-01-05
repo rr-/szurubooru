@@ -217,6 +217,7 @@ class Post(Base):
     # content description
     type = sa.Column("type", sa.Unicode(32), nullable=False)
     checksum = sa.Column("checksum", sa.Unicode(64), nullable=False)
+    checksum_md5 = sa.Column("checksum_md5", sa.Unicode(32))
     file_size = sa.Column("file_size", sa.BigInteger)
     canvas_width = sa.Column("image_width", sa.Integer)
     canvas_height = sa.Column("image_height", sa.Integer)

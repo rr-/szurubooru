@@ -91,6 +91,7 @@ def test_too_large_download(url):
     ],
 )
 def test_video_download(url, expected_sha1):
+    pytest.xfail("Current youtube-dl implementation is unstable")
     actual_content = net.download(url, use_video_downloader=True)
     assert get_sha1(actual_content) == expected_sha1
 
