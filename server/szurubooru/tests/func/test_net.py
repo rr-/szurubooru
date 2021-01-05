@@ -1,6 +1,3 @@
-from datetime import datetime
-from unittest.mock import patch
-
 import pytest
 
 from szurubooru import errors
@@ -69,41 +66,34 @@ def test_download():
     "url",
     [
         "https://samples.ffmpeg.org/MPEG-4/video.mp4",
+        "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
     ],
 )
 def test_too_large_download(url):
-    pytest.xfail("Download limit not implemented yet")
-    with pytest.raises(errors.ProcessingError):
-        net.download(url)
+    with pytest.raises(net.DownloadTooLargeError):
+        net.download(url, use_video_downloader=True)
 
 
 @pytest.mark.parametrize(
     "url,expected_sha1",
     [
         (
-            "https://www.youtube.com/watch?v=C0DPdy98e4c",
-            "365af1c8f59c6865e1a84c6e13e3e25ff89e0ba1",
+            "https://gfycat.com/immaterialchillyiberianmole",
+            "0125976d2439e651b6863438db30de58f79f7754",
         ),
         (
-            "https://gfycat.com/immaterialchillyiberianmole",
-            "953000e81d7bd1da95ce264f872e7b6c4a6484be",
+            "https://upload.wikimedia.org/wikipedia/commons/a/ad/Utah_teapot.png",  # noqa: E501
+            "cfadcbdeda1204dc1363ee5c1969191f26be2e41",
         ),
     ],
 )
-def test_video_download(url, expected_sha1):
-    pytest.xfail("Current youtube-dl implementation is unstable")
+def test_content_download(url, expected_sha1):
     actual_content = net.download(url, use_video_downloader=True)
     assert get_sha1(actual_content) == expected_sha1
 
 
-@pytest.mark.parametrize(
-    "url",
-    [
-        "https://samples.ffmpeg.org/flac/short.flac",  # not a video
-        "https://www.youtube.com/watch?v=dQw4w9WgXcQ",  # video too large
-    ],
-)
-def test_failed_video_download(url):
+def test_bad_content_downlaod():
+    url = "http://info.cern.ch/hypertext/WWW/TheProject.html"
     with pytest.raises(errors.ThirdPartyError):
         net.download(url, use_video_downloader=True)
 

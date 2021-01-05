@@ -21,7 +21,7 @@ RUN apk --no-cache add \
  && pip3 install --no-cache-dir --disable-pip-version-check \
         alembic \
         "coloredlogs==5.0" \
-        youtube-dl \
+        youtube_dl \
  && apk --no-cache del py3-pip
 
 COPY ./ /opt/app/
