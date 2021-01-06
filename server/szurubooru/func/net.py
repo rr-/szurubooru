@@ -32,18 +32,15 @@ def download(url: str, use_video_downloader: bool = False) -> bytes:
 
     content_buffer = b""
     length_tally = 0
-    with urllib.request.urlopen(request) as handle:
-        while True:
-            try:
-                chunk = handle.read(_dl_chunk_size)
-            except Exception:
-                raise DownloadError(url) from None
-            if not chunk:
-                break
-            length_tally += len(chunk)
-            if length_tally > config.config["max_dl_filesize"]:
-                raise DownloadTooLargeError(url)
-            content_buffer += chunk
+    try:
+        with urllib.request.urlopen(request) as handle:
+            while (chunk := handle.read(_dl_chunk_size)) :
+                length_tally += len(chunk)
+                if length_tally > config.config["max_dl_filesize"]:
+                    raise DownloadTooLargeError(url)
+                content_buffer += chunk
+    except urllib.error.HTTPError as ex:
+        raise DownloadError(url) from ex
     return content_buffer
 
 
@@ -74,7 +71,7 @@ def post_to_webhooks(payload: Dict[str, Any]) -> List[Thread]:
     return threads
 
 
-def _post_to_webhook(webhook: str, payload: Dict[str, Any]) -> None:
+def _post_to_webhook(webhook: str, payload: Dict[str, Any]) -> int:
     req = urllib.request.Request(webhook)
     req.data = json.dumps(
         payload,
