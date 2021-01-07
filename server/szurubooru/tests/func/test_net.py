@@ -85,6 +85,10 @@ def test_too_large_download(url):
             "https://upload.wikimedia.org/wikipedia/commons/a/ad/Utah_teapot.png",  # noqa: E501
             "cfadcbdeda1204dc1363ee5c1969191f26be2e41",
         ),
+        (
+            "https://i.imgur.com/GPgh0AN.jpg",
+            "26861a4663fedae48e5beed3eec5156ded20640f",
+        ),
     ],
 )
 def test_content_download(url, expected_sha1):
