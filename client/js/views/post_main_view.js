@@ -61,13 +61,29 @@ class PostMainView {
 
         const showPreviousImage = () => {
             if (ctx.prevPostId) {
-                router.show(ctx.getPostUrl(ctx.prevPostId, ctx.parameters));
+                if (ctx.editMode) {
+                    router.show(
+                        ctx.getPostEditUrl(ctx.prevPostId, ctx.parameters)
+                    );
+                } else {
+                    router.show(
+                        ctx.getPostUrl(ctx.prevPostId, ctx.parameters)
+                    );
+                }
             }
         };
 
         const showNextImage = () => {
             if (ctx.nextPostId) {
-                router.show(ctx.getPostUrl(ctx.nextPostId, ctx.parameters));
+                if (ctx.editMode) {
+                    router.show(
+                        ctx.getPostEditUrl(ctx.nextPostId, ctx.parameters)
+                    );
+                } else {
+                    router.show(
+                        ctx.getPostUrl(ctx.nextPostId, ctx.parameters)
+                    );
+                }
             }
         };
 
