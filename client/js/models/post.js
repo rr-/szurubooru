@@ -102,6 +102,10 @@ class Post extends events.EventTarget {
         return this._flags;
     }
 
+    get description() {
+        return this._description;
+    }
+
     get tags() {
         return this._tags;
     }
@@ -152,6 +156,10 @@ class Post extends events.EventTarget {
 
     set flags(value) {
         this._flags = value;
+    }
+
+    set description(value) {
+        this._description = value;
     }
 
     set safety(value) {
@@ -276,6 +284,9 @@ class Post extends events.EventTarget {
         }
         if (this._source !== this._orig._source) {
             detail.source = this._source;
+        }
+        if (this._description !== this._orig._description) {
+            detail.description = this._description;
         }
 
         let apiPromise = this._id
@@ -484,6 +495,7 @@ class Post extends events.EventTarget {
             _fileSize: response.fileSize,
 
             _flags: [...(response.flags || [])],
+            _description: response.description,
             _relations: [...(response.relations || [])],
 
             _score: response.score,

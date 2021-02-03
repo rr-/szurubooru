@@ -78,6 +78,10 @@ class InvalidPostFlagError(errors.ValidationError):
     pass
 
 
+class InvalidPostDescriptionError(errors.ValidationError):
+    pass
+
+
 SAFETY_MAP = {
     model.Post.SAFETY_SAFE: "safe",
     model.Post.SAFETY_SKETCHY: "sketchy",
@@ -182,6 +186,7 @@ class PostSerializer(serialization.BaseSerializer):
             "thumbnailUrl": self.serialize_thumbnail_url,
             "flags": self.serialize_flags,
             "tags": self.serialize_tags,
+            "description": self.serialize_description,
             "relations": self.serialize_relations,
             "user": self.serialize_user,
             "score": self.serialize_score,
@@ -258,6 +263,9 @@ class PostSerializer(serialization.BaseSerializer):
             }
             for tag in tags.sort_tags(self.post.tags)
         ]
+
+    def serialize_description(self) -> Any:
+        return self.post.description
 
     def serialize_relations(self) -> Any:
         return sorted(
@@ -789,6 +797,13 @@ def update_post_flags(post: model.Post, flags: List[str]) -> None:
             )
         target_flags.append(flag)
     post.flags = target_flags
+
+
+def update_post_description(post: model.Post, description: str) -> None:
+    assert post
+    if util.value_exceeds_column_size(description, model.Post.description):
+        raise InvalidPostDescriptionError("Description is too long.")
+    post.description = description or None
 
 
 def feature_post(post: model.Post, user: Optional[model.User]) -> None:

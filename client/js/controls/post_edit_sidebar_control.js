@@ -435,6 +435,10 @@ class PostEditSidebarControl extends events.EventTarget {
                     source: this._sourceInputNode
                         ? this._sourceInputNode.value
                         : undefined,
+
+                    description: this._descriptionTextareaNode
+                        ? this._descriptionTextareaNode.value
+                        : undefined,
                 },
             })
         );
@@ -536,6 +540,10 @@ class PostEditSidebarControl extends events.EventTarget {
 
     get _noteTextareaNode() {
         return this._formNode.querySelector(".notes textarea");
+    }
+
+    get _descriptionTextareaNode() {
+        return document.querySelector("textarea#post-description");
     }
 
     enableForm() {

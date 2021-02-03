@@ -213,6 +213,7 @@ class Post(Base):
     safety = sa.Column("safety", sa.Unicode(32), nullable=False)
     source = sa.Column("source", sa.Unicode(2048))
     flags_string = sa.Column("flags", sa.Unicode(32), default="")
+    description = sa.Column("description", sa.UnicodeText(), nullable=True)
 
     # content description
     type = sa.Column("type", sa.Unicode(32), nullable=False)
