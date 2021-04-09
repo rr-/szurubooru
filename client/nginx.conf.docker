@@ -20,6 +20,7 @@ http {
     keepalive_timeout 65;
 
     upstream backend {
+        #Add more Container IPs/Aliases here.
         server __BACKEND__:6666;
     }
 
@@ -52,6 +53,9 @@ http {
 
             if ($request_uri ~* "/api/(.*)") {
                 proxy_pass http://backend/$1;
+                #Display which Docker Container IP was used, this is helpfull, if using multiple servercontainers, so you can see which one served the api.
+                #this further increases the speed of the page.
+                add_header X-Backend-Server $upstream_addr;
             }
 
             error_page 500 502 503 504 @badproxy;
