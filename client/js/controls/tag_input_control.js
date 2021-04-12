@@ -163,7 +163,8 @@ class TagInputControl extends events.EventTarget {
 
     addTagByName(name, source) {
         name = name.trim();
-        if (!name) {
+        // Tags `.` and `..` are not allowed, see https://github.com/rr-/szurubooru/pull/390
+        if (!name || name == "." || name == "..") {
             return;
         }
         return Tag.get(name).then(
