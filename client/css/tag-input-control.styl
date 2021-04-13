@@ -86,6 +86,18 @@ div.tag-input
             font-size: 90%
             unselectable()
 
+@keyframes tag-background-updated
+    from
+        background-position: 200% 0%
+    to
+        background-position: 0% 0%
+
+@keyframes new-tag-added
+    from
+        max-height: 0
+    to
+        max-height: 5em
+
 ul.compact-tags
     width: 100%
     margin: 0.5em 0 0 0
@@ -104,14 +116,23 @@ ul.compact-tags
             outline: 0
             box-shadow: inset 0 0 0 2px $main-color
         &.implication
-            background: $implied-tag-background-color
+            // background: $implied-tag-background-color
             color: $implied-tag-text-color
+            background: linear-gradient(90deg, transparent, transparent, $implied-tag-background-color)
+            background-size: 200%
+            animation: tag-background-updated 2s ease forwards
         &.new
-            background: $new-tag-background-color
+            // background: $new-tag-background-color
             color: $new-tag-text-color
+            background: linear-gradient(90deg, transparent, transparent, $new-tag-background-color)
+            background-size: 200%;
+            animation: new-tag-added 1s ease forwards, tag-background-updated 2s ease forwards
         &.duplicate
-            background: $duplicate-tag-background-color
+            // background: $duplicate-tag-background-color
             color: $duplicate-tag-text-color
+            background: linear-gradient(90deg, transparent, transparent, $duplicate-tag-background-color)
+            background-size: 200%
+            animation: tag-background-updated 2s ease forwards
     i
         padding-right: 0.4em
 
