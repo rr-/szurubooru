@@ -92,7 +92,7 @@ div.tag-input
     to
         background-position: 0% 0%
 
-@keyframes new-tag-added
+@keyframes tag-added-to-post
     from
         max-height: 0
     to
@@ -110,28 +110,27 @@ ul.compact-tags
         overflow: hidden
         text-overflow: ellipsis
         transition: background-color 0.5s linear
+        background-size: 200%
         a
             display: inline
         a:focus
             outline: 0
             box-shadow: inset 0 0 0 2px $main-color
+        // these 3 added when tag is added to ul
         &.implication
-            // background: $implied-tag-background-color
             color: $implied-tag-text-color
-            background: linear-gradient(90deg, transparent, transparent, $implied-tag-background-color)
-            background-size: 200%
-            animation: tag-background-updated 2s ease forwards
+            background-image: linear-gradient(90deg, transparent, transparent, $implied-tag-background-color)
+            animation: tag-added-to-post 1s ease forwards, tag-background-updated 2s ease forwards
         &.new
-            // background: $new-tag-background-color
             color: $new-tag-text-color
-            background: linear-gradient(90deg, transparent, transparent, $new-tag-background-color)
-            background-size: 200%;
-            animation: new-tag-added 1s ease forwards, tag-background-updated 2s ease forwards
+            background-image: linear-gradient(90deg, transparent, transparent, $new-tag-background-color)
+            animation: tag-added-to-post 1s ease forwards, tag-background-updated 2s ease forwards
+        &.added
+            animation: tag-added-to-post 1s ease forwards
+        // highlight when already in tag list
         &.duplicate
-            // background: $duplicate-tag-background-color
             color: $duplicate-tag-text-color
-            background: linear-gradient(90deg, transparent, transparent, $duplicate-tag-background-color)
-            background-size: 200%
+            background-image: linear-gradient(90deg, transparent, transparent, $duplicate-tag-background-color)
             animation: tag-background-updated 2s ease forwards
     i
         padding-right: 0.4em
