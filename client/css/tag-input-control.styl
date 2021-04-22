@@ -86,12 +86,6 @@ div.tag-input
             font-size: 90%
             unselectable()
 
-@keyframes tag-background-updated
-    from
-        background-position: 200% 0%
-    to
-        background-position: 0% 0%
-
 @keyframes tag-added-to-post
     from
         max-height: 0
@@ -110,30 +104,34 @@ ul.compact-tags
         overflow: hidden
         text-overflow: ellipsis
         transition: background-color 0.5s linear
-        background-size: 200%
         a
             display: inline
         a:focus
             outline: 0
             box-shadow: inset 0 0 0 2px $main-color
         // these 3 added when tag is added to ul
+        &.added, &.new, &.implication
+            animation: tag-added-to-post 1s ease forwards
         &.implication
             color: $implied-tag-text-color
-            background-image: linear-gradient(90deg, transparent, transparent, $implied-tag-background-color)
-            animation: tag-added-to-post 1s ease forwards, tag-background-updated 2s ease forwards
+            background-color: $implied-tag-background-color
         &.new
             color: $new-tag-text-color
-            background-image: linear-gradient(90deg, transparent, transparent, $new-tag-background-color)
-            animation: tag-added-to-post 1s ease forwards, tag-background-updated 2s ease forwards
-        &.added
-            animation: tag-added-to-post 1s ease forwards
-        // highlight when already in tag list
+            background-color: $new-tag-background-color
         &.duplicate
             color: $duplicate-tag-text-color
-            background-image: linear-gradient(90deg, transparent, transparent, $duplicate-tag-background-color)
-            animation: tag-background-updated 2s ease forwards
+            background-color: $duplicate-tag-background-color
     i
         padding-right: 0.4em
+
+.darktheme ul.compact-tags
+    li
+        &.new
+            background-color: darken($new-tag-background-color, 80%)
+        &.implication
+            background-color: darken($implied-tag-background-color, 85%)
+        &.duplicate
+            background-color: darken($duplicate-tag-background-color, 80%)
 
 div.tag-input, ul.compact-tags
     .tag-usages, .tag-weight, .remove-tag
