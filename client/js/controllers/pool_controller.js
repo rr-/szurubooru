@@ -52,7 +52,7 @@ class PoolController {
                     canMerge: api.hasPrivilege("pools:merge"),
                     canDelete: api.hasPrivilege("pools:delete"),
                     categories: categories,
-                    escapeColons: uri.escapeColons,
+                    escapeTagName: uri.escapeTagName,
                 });
 
                 this._view.addEventListener("change", (e) =>

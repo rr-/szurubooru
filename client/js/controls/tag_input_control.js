@@ -163,7 +163,8 @@ class TagInputControl extends events.EventTarget {
 
     addTagByName(name, source) {
         name = name.trim();
-        if (!name) {
+        // Tags `.` and `..` are not allowed, see https://github.com/rr-/szurubooru/pull/390
+        if (!name || name == "." || name == "..") {
             return;
         }
         return Tag.get(name).then(
@@ -305,7 +306,7 @@ class TagInputControl extends events.EventTarget {
         searchLinkNode.setAttribute(
             "href",
             uri.formatClientLink("posts", {
-                query: uri.escapeColons(tag.names[0]),
+                query: uri.escapeTagName(tag.names[0]),
             })
         );
         searchLinkNode.textContent = tag.names[0] + " ";

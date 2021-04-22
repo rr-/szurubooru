@@ -85,14 +85,14 @@ function extractRootDomain(url) {
     return domain;
 }
 
-function escapeColons(text) {
-    return text.replace(new RegExp(":", "g"), "\\:");
+function escapeTagName(text) {
+    return text.replace(/:/g, "\\:").replace(/\./g, "\\.");
 }
 
 module.exports = {
     formatClientLink: formatClientLink,
     formatApiLink: formatApiLink,
-    escapeColons: escapeColons,
+    escapeTagName: escapeTagName,
     escapeParam: escapeParam,
     unescapeParam: unescapeParam,
     extractHostname: extractHostname,

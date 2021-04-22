@@ -26,7 +26,7 @@ class PoolCreateController {
                 this._view = new PoolCreateView({
                     canCreate: api.hasPrivilege("pools:create"),
                     categories: categories,
-                    escapeColons: uri.escapeColons,
+                    escapeTagName: uri.escapeTagName,
                 });
 
                 this._view.addEventListener("submit", (e) =>

@@ -187,7 +187,7 @@ function arraysDiffer(source1, source2, orderImportant) {
 }
 
 function escapeSearchTerm(text) {
-    return text.replace(/([a-z_-]):/g, "$1\\:");
+    return text.replace(/([a-z_-]):/g, "$1\\:").replace(/\./g, "\\.");
 }
 
 function dataURItoBlob(dataURI) {
