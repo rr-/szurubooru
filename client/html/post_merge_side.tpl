@@ -36,6 +36,8 @@
                     'image/jpeg': 'JPEG',
                     'image/png': 'PNG',
                     'image/webp': 'WEBP',
+                    'image/avif': 'AVIF',
+                    'image/heic': 'HEIC',
                     'video/webm': 'WEBM',
                     'video/mp4': 'MPEG-4',
                     'application/x-shockwave-flash': 'SWF',

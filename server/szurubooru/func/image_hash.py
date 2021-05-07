@@ -6,6 +6,10 @@ from typing import Any, Callable, List, Optional, Set, Tuple
 
 import numpy as np
 from PIL import Image
+import pillow_avif
+import pyheif
+from pyheif_pillow_opener import register_heif_opener
+register_heif_opener()
 
 from szurubooru import config, errors
 

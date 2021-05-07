@@ -9,4 +9,6 @@ pillow>=4.3.0
 pynacl>=1.2.1
 pytz>=2018.3
 pyRFC3339>=1.0
+pillow-avif-plugin>=1.1.0
+pyheif-pillow-opener>=0.1.0
 youtube_dl
