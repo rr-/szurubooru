@@ -3,7 +3,6 @@
 .pool-list
     ul
         list-style-type: none
-        margin: 0
         padding: 0
         display: flex
         align-content: flex-end
@@ -13,7 +12,7 @@
         li
             position: relative
             flex-grow: 1
-            margin: 0 0.25em 0.5em 0.25em
+            margin: 2em 1.5em 2em 1.2em;
             display: inline-block
             text-align: left
             min-width: 10em
@@ -38,6 +37,23 @@
                 outline-offset: -3px
                 &:not(.empty)
                     background-position: 50% 30%
+                    position: absolute
+                    display: inline-block
+
+            .thumbnail-1
+                right: -0px;
+                top: -0px;
+                z-index: 30;
+
+            .thumbnail-2
+                right: -10px;
+                top: -10px;
+                z-index: 20;
+
+            .thumbnail-3
+                right: -20px;
+                top: -20px;
+                z-index: 10;
 
             .pool-name
                 color: black
@@ -80,9 +96,11 @@
         li
             min-width: inherit
             width: inherit
+            margin: 0 0.25em 0.5em 0.25em
             &:not(.flexbox-dummy)
                 height: 14vw
             .thumbnail
+                position: static
                 outline-offset: -1px
             .thumbnail-wrapper.no-tags
                 .thumbnail
