@@ -12,7 +12,7 @@ const PostUploadView = require("../views/post_upload_view.js");
 const EmptyView = require("../views/empty_view.js");
 
 const genericErrorMessage =
-    "One of the posts needs your attention; " +
+    "One or more posts needs your attention; " +
     'click "resume upload" when you\'re ready.';
 
 class PostUploadController {
@@ -55,6 +55,7 @@ class PostUploadController {
     _evtSubmit(e) {
         this._view.disableForm();
         this._view.clearMessages();
+        let anyFailures = false;
 
         e.detail.uploadables
             .reduce(
@@ -64,37 +65,43 @@ class PostUploadController {
                             uploadable,
                             e.detail.skipDuplicates
                         )
+                        .catch((error) => {
+                            anyFailures = true;
+                            if (error.uploadable) {
+                                if (error.similarPosts) {
+                                    error.uploadable.lookalikes = error.similarPosts;
+                                    this._view.updateUploadable(error.uploadable);
+                                    this._view.showInfo(
+                                        error.message,
+                                        error.uploadable
+                                    );
+                                } else {
+                                    this._view.showError(
+                                        error.message,
+                                        error.uploadable
+                                    );
+                                }
+                            } else {
+                                this._view.showError(
+                                    error.message,
+                                    error.uploadable
+                                );
+                            }
+                        })
                     ),
                 Promise.resolve()
             )
             .then(
                 () => {
-                    this._view.clearMessages();
-                    misc.disableExitConfirmation();
-                    const ctx = router.show(uri.formatClientLink("posts"));
-                    ctx.controller.showSuccess("Posts uploaded.");
-                },
-                (error) => {
-                    if (error.uploadable) {
-                        if (error.similarPosts) {
-                            error.uploadable.lookalikes = error.similarPosts;
-                            this._view.updateUploadable(error.uploadable);
-                            this._view.showInfo(genericErrorMessage);
-                            this._view.showInfo(
-                                error.message,
-                                error.uploadable
-                            );
-                        } else {
-                            this._view.showError(genericErrorMessage);
-                            this._view.showError(
-                                error.message,
-                                error.uploadable
-                            );
-                        }
+                    if (anyFailures) {
+                        this._view.showError(genericErrorMessage);
+                        this._view.enableForm();
                     } else {
-                        this._view.showError(error.message);
+                        this._view.clearMessages();
+                        misc.disableExitConfirmation();
+                        const ctx = router.show(uri.formatClientLink("posts"));
+                        ctx.controller.showSuccess("Posts uploaded.");
                     }
-                    this._view.enableForm();
                 }
             );
     }
