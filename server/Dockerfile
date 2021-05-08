@@ -6,6 +6,7 @@ WORKDIR /opt/app
 
 RUN apk --no-cache add \
         python3 \
+        python3-dev \
         ffmpeg \
         py3-pip \
         # from requirements.txt:
@@ -18,10 +19,18 @@ RUN apk --no-cache add \
         py3-pynacl \
         py3-tz \
         py3-pyrfc3339 \
+        build-base \
+ && apk --no-cache add --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community \
+        libheif \
+        libavif \
+        libheif-dev \
+        libavif-dev \
  && pip3 install --no-cache-dir --disable-pip-version-check \
         alembic \
         "coloredlogs==5.0" \
         youtube_dl \
+        pillow-avif-plugin \
+        pyheif-pillow-opener \
  && apk --no-cache del py3-pip
 
 COPY ./ /opt/app/
