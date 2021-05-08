@@ -63,7 +63,8 @@ class PostUploadController {
                     promise.then(() =>
                         this._uploadSinglePost(
                             uploadable,
-                            e.detail.skipDuplicates
+                            e.detail.skipDuplicates,
+                            e.detail.alwaysUploadSimilar
                         )
                         .catch((error) => {
                             anyFailures = true;
@@ -84,7 +85,7 @@ class PostUploadController {
                             } else {
                                 this._view.showError(
                                     error.message,
-                                    error.uploadable
+                                    uploadable
                                 );
                             }
                         })
@@ -106,7 +107,7 @@ class PostUploadController {
             );
     }
 
-    _uploadSinglePost(uploadable, skipDuplicates) {
+    _uploadSinglePost(uploadable, skipDuplicates, alwaysUploadSimilar) {
         progress.start();
         let reverseSearchPromise = Promise.resolve();
         if (!uploadable.lookalikesConfirmed) {
@@ -135,7 +136,7 @@ class PostUploadController {
                     }
 
                     // notify about similar posts
-                    if (searchResult.similarPosts.length) {
+                    if (searchResult.similarPosts.length && !alwaysUploadSimilar) {
                         let error = new Error(
                             `Found ${searchResult.similarPosts.length} similar ` +
                                 "posts.\nYou can resume or discard this upload."
