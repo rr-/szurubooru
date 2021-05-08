@@ -1,47 +1,60 @@
 @import colors
 
 .pool-list
-    table
-        width: 100%
-        border-spacing: 0
-        text-align: left
-        line-height: 1.3em
-        tr:hover td
-            background: $top-navigation-color
-        th, td
-            padding: 0.1em 0.5em
-        th
-            white-space: nowrap
-            background: $top-navigation-color
-        .names
-            width: 84%
-        .post-count
-            text-align: center
-            width: 8%
-        .creation-time
-            text-align: center
-            width: 8%
-            white-space: pre
-        ul
-            list-style-type: none
-            margin: 0
-            padding: 0
-            display: inline
-            li
-                padding: 0
-                display: inline
-                &:not(:last-child):after
-                    content: ', '
-        @media (max-width: 800px)
-            .posts
-                display: none
+    ul
+        list-style-type: none
+        margin: 0
+        padding: 0
+        display: flex
+        align-content: flex-end
+        flex-wrap: wrap
+        margin: 0 -0.25em
 
-.darktheme .pool-list
-    table
-        tr:hover td
-            background: $top-navigation-color-darktheme
-        th
-            background: $top-navigation-color-darktheme
+        li
+            position: relative
+            flex-grow: 1
+            margin: 0 0.25em 0.5em 0.25em
+            display: inline-block
+            text-align: left
+            min-width: 10em
+            width: 12vw
+            &:not(.flexbox-dummy)
+                min-height: 7.5em
+                height: 9vw
+
+            .thumbnail-wrapper
+                display: inline-block
+                width: 100%
+                height: 100%
+                line-height: 80%
+                font-size: 80%
+                color: white
+                outline-offset: -3px
+                box-shadow: 0 0 0 1px rgba(0,0,0,0.2)
+
+            .thumbnail
+                width: 100%
+                height: 100%
+                outline-offset: -3px
+                &:not(.empty)
+                    background-position: 50% 30%
+
+            .pool-name
+                color: black
+                font-size: 1em
+                text-align: center
+                a
+                    width: 100%
+                    display: inline-block
+
+            &:hover
+                background: $post-thumbnail-border-color
+                .thumbnail
+                    opacity: .9
+
+            &:hover a, a:active, a:focus
+                .thumbnail
+                    outline: 4px solid $main-color !important
 
 .pool-list-header
     label
@@ -61,3 +74,19 @@
 .darktheme .pool-list-header
     .append
         color: $inactive-link-color-darktheme
+
+.post-flow
+    ul
+        li
+            min-width: inherit
+            width: inherit
+            &:not(.flexbox-dummy)
+                height: 14vw
+            .thumbnail
+                outline-offset: -1px
+            .thumbnail-wrapper.no-tags
+                .thumbnail
+                    outline: 2px solid $post-thumbnail-no-tags-border-color
+            &:hover a, a:active, a:focus
+                .thumbnail
+                    outline: 2px solid $main-color !important
