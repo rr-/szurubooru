@@ -394,6 +394,41 @@ def test_update_post_source_with_too_long_string():
         ),
         (
             False,
+            "avif.avif",
+            "image/avif",
+            model.Post.TYPE_IMAGE,
+            "1_244c8840887984c4.avif",
+        ),
+        (
+            False,
+            "avif-avis.avif",
+            "image/avif",
+            model.Post.TYPE_IMAGE,
+            "1_244c8840887984c4.avif",
+        ),
+        (
+            False,
+            "heic.heic",
+            "image/heic",
+            model.Post.TYPE_IMAGE,
+            "1_244c8840887984c4.heic",
+        ),
+        (
+            False,
+            "heic-heix.heic",
+            "image/heic",
+            model.Post.TYPE_IMAGE,
+            "1_244c8840887984c4.heic",
+        ),
+        (
+            False,
+            "heif.heif",
+            "image/heif",
+            model.Post.TYPE_IMAGE,
+            "1_244c8840887984c4.heif",
+        ),
+        (
+            False,
             "gif-animated.gif",
             "image/gif",
             model.Post.TYPE_ANIMATION,
@@ -686,6 +721,38 @@ def test_update_post_content_leaving_custom_thumbnail(
     posts.update_post_content(post, read_asset("png.png"))
     posts.update_post_thumbnail(post, read_asset("jpeg.jpg"))
     posts.update_post_content(post, read_asset("png.png"))
+    db.session.flush()
+    generated_path = (
+        "{}/data/generated-thumbnails/".format(tmpdir)
+        + "1_244c8840887984c4.jpg"
+    )
+    source_path = (
+        "{}/data/posts/custom-thumbnails/".format(tmpdir)
+        + "1_244c8840887984c4.dat"
+    )
+    assert os.path.exists(source_path)
+    assert os.path.exists(generated_path)
+
+
+@pytest.mark.parametrize("filename", ("avif.avif", "heic.heic", "heif.heif"))
+def test_update_post_content_convert_heif_to_png_when_processing(
+    tmpdir, config_injector, read_asset, post_factory, filename
+):
+    config_injector(
+        {
+            "data_dir": str(tmpdir.mkdir("data")),
+            "thumbnails": {
+                "post_width": 300,
+                "post_height": 300,
+            },
+            "secret": "test",
+            "allow_broken_uploads": False,
+        }
+    )
+    post = post_factory(id=1)
+    db.session.add(post)
+    posts.update_post_content(post, read_asset(filename))
+    posts.update_post_thumbnail(post, read_asset(filename))
     db.session.flush()
     generated_path = (
         "{}/data/generated-thumbnails/".format(tmpdir)

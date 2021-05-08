@@ -4,12 +4,21 @@ import math
 import re
 import shlex
 import subprocess
+from io import BytesIO
 from typing import List
+from PIL import Image as PILImage
 
 from szurubooru import errors
 from szurubooru.func import mime, util
 
 logger = logging.getLogger(__name__)
+
+
+def convert_heif_to_png(content: bytes) -> bytes:
+    img = PILImage.open(BytesIO(content))
+    img_byte_arr = BytesIO()
+    img.save(img_byte_arr, format='PNG')
+    return img_byte_arr.getvalue()
 
 
 class Image:
@@ -252,7 +261,12 @@ class Image:
         ignore_error_if_data: bool = False,
         get_logs: bool = False,
     ) -> bytes:
-        extension = mime.get_extension(mime.get_mime_type(self.content))
+        mime_type = mime.get_mime_type(self.content)
+        if mime.is_heif(mime_type):
+            # FFmpeg does not support HEIF.
+            # https://trac.ffmpeg.org/ticket/6521
+            self.content = convert_heif_to_png(self.content)
+        extension = mime.get_extension(mime_type)
         assert extension
         with util.create_temp_file(suffix="." + extension) as handle:
             handle.write(self.content)

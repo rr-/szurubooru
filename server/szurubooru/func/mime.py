@@ -24,7 +24,10 @@ def get_mime_type(content: bytes) -> str:
     if content[4:12] in (b"ftypavif", b"ftypavis"):
         return "image/avif"
 
-    if content[4:12] in (b"ftypheic", b"ftypmif1"):
+    if content[4:12] == b"ftypmif1":
+        return "image/heif"
+
+    if content[4:12] in (b"ftypheic", b"ftypheix"):
         return "image/heic"
 
     if content[0:4] == b"\x1A\x45\xDF\xA3":
@@ -44,6 +47,7 @@ def get_extension(mime_type: str) -> Optional[str]:
         "image/png": "png",
         "image/webp": "webp",
         "image/avif": "avif",
+        "image/heif": "heif",
         "image/heic": "heic",
         "video/mp4": "mp4",
         "video/webm": "webm",
@@ -67,6 +71,7 @@ def is_image(mime_type: str) -> bool:
         "image/gif",
         "image/webp",
         "image/avif",
+        "image/heif",
         "image/heic",
     )
 
@@ -76,4 +81,11 @@ def is_animated_gif(content: bytes) -> bool:
     return (
         get_mime_type(content) == "image/gif"
         and len(re.findall(pattern, content)) > 1
+    )
+
+def is_heif(mime_type: str) -> bool:
+    return mime_type.lower() in (
+        "image/heif",
+        "image/heic",
+        "image/avif",
     )

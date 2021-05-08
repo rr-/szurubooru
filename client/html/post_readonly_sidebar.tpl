@@ -10,6 +10,7 @@
                     'image/png': 'PNG',
                     'image/webp': 'WEBP',
                     'image/avif': 'AVIF',
+                    'image/heif': 'HEIF',
                     'image/heic': 'HEIC',
                     'video/webm': 'WEBM',
                     'video/mp4': 'MPEG-4',

@@ -15,9 +15,9 @@ from szurubooru.func import mime
         ("webp.webp", "image/webp"),
         ("avif.avif", "image/avif"),
         ("avif-avis.avif", "image/avif"),
+        ("heif.heif", "image/heif"),
         ("heic.heic", "image/heic"),
-        ("heic-mif1.heic", "image/heic"),
-        ("heif.heif", "image/heic"),
+        ("heic-heix.heic", "image/heic"),
         ("text.txt", "application/octet-stream"),
     ],
 )
@@ -40,6 +40,7 @@ def test_get_mime_type_for_empty_file():
         ("image/gif", "gif"),
         ("image/webp", "webp"),
         ("image/avif", "avif"),
+        ("image/heif", "heif"),
         ("image/heic", "heic"),
         ("application/octet-stream", "dat"),
     ],
@@ -84,11 +85,13 @@ def test_is_video(input_mime_type, expected_state):
         ("image/jpeg", True),
         ("image/avif", True),
         ("image/heic", True),
+        ("image/heif", True),
         ("IMAGE/GIF", True),
         ("IMAGE/PNG", True),
         ("IMAGE/JPEG", True),
         ("IMAGE/AVIF", True),
         ("IMAGE/HEIC", True),
+        ("IMAGE/HEIF", True),
         ("image/anything_else", False),
         ("not an image", False),
     ],
@@ -106,3 +109,26 @@ def test_is_image(input_mime_type, expected_state):
 )
 def test_is_animated_gif(read_asset, input_path, expected_state):
     assert mime.is_animated_gif(read_asset(input_path)) == expected_state
+
+
+@pytest.mark.parametrize(
+    "input_mime_type,expected_state",
+    [
+        ("image/gif", False),
+        ("image/png", False),
+        ("image/jpeg", False),
+        ("image/avif", True),
+        ("image/heic", True),
+        ("image/heif", True),
+        ("IMAGE/GIF", False),
+        ("IMAGE/PNG", False),
+        ("IMAGE/JPEG", False),
+        ("IMAGE/AVIF", True),
+        ("IMAGE/HEIC", True),
+        ("IMAGE/HEIF", True),
+        ("image/anything_else", False),
+        ("not an image", False),
+    ],
+)
+def test_is_heif(input_mime_type, expected_state):
+    assert mime.is_heif(input_mime_type) == expected_state
