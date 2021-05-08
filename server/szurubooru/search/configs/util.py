@@ -205,6 +205,7 @@ def create_subquery_filter(
     filter_column: SaColumn,
     filter_factory: SaColumn,
     subquery_decorator: Callable[[SaQuery], None] = None,
+    order: SaQuery = None,
 ) -> Filter:
     filter_func = filter_factory(filter_column)
 
