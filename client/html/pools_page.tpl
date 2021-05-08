@@ -4,8 +4,8 @@
           <% for (let pool of ctx.response.results) { %>
             <li data-pool-id='<%= pool.id %>'>
                 <a class='thumbnail-wrapper' href='<%= ctx.canViewPools ? ctx.formatClientLink("pool", pool.id) : "" %>'>
-                    <% if (ctx.canViewPosts && pool.posts.length > 0) { %>
-                        <%= ctx.makeThumbnail(pool.posts.at(0).thumbnailUrl) %>
+                    <% if (ctx.canViewPosts) { %>
+                        <%= ctx.makePoolThumbnails(pool.posts, ctx.postFlow) %>
                     <% } %>
                 </a>
                 <div class='pool-name'>
