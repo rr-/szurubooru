@@ -793,38 +793,39 @@ data.
 
     **Sort style tokens**
 
-    | `<value>`        | Description                                      |
-    | ---------------- | ------------------------------------------------ |
-    | `random`         | as random as it can get                          |
-    | `id`             | highest to lowest post number                    |
-    | `score`          | highest scored                                   |
-    | `tag-count`      | with most tags                                   |
-    | `comment-count`  | most commented first                             |
-    | `fav-count`      | loved by most                                    |
-    | `note-count`     | with most annotations                            |
-    | `relation-count` | with most relations                              |
-    | `feature-count`  | most often featured                              |
-    | `file-size`      | largest files first                              |
-    | `image-width`    | widest images first                              |
-    | `image-height`   | tallest images first                             |
-    | `image-area`     | largest images first                             |
-    | `width`          | alias of `image-width`                           |
-    | `height`         | alias of `image-height`                          |
-    | `area`           | alias of `image-area`                            |
-    | `creation-date`  | newest to oldest (pretty much same as id)        |
-    | `creation-time`  | alias of `creation-date`                         |
-    | `date`           | alias of `creation-date`                         |
-    | `time`           | alias of `creation-date`                         |
-    | `last-edit-date` | like creation-date, only looks at last edit time |
-    | `last-edit-time` | alias of `last-edit-date`                        |
-    | `edit-date`      | alias of `last-edit-date`                        |
-    | `edit-time`      | alias of `last-edit-date`                        |
-    | `comment-date`   | recently commented by anyone                     |
-    | `comment-time`   | alias of `comment-date`                          |
-    | `fav-date`       | recently added to favorites by anyone            |
-    | `fav-time`       | alias of `fav-date`                              |
-    | `feature-date`   | recently featured                                |
-    | `feature-time`   | alias of `feature-time`                          |
+    | `<value>`        | Description                                                                           |
+    | ---------------- | ------------------------------------------------                                      |
+    | `random`         | as random as it can get                                                               |
+    | `id`             | highest to lowest post number                                                         |
+    | `score`          | highest scored                                                                        |
+    | `tag-count`      | with most tags                                                                        |
+    | `comment-count`  | most commented first                                                                  |
+    | `fav-count`      | loved by most                                                                         |
+    | `note-count`     | with most annotations                                                                 |
+    | `relation-count` | with most relations                                                                   |
+    | `feature-count`  | most often featured                                                                   |
+    | `file-size`      | largest files first                                                                   |
+    | `image-width`    | widest images first                                                                   |
+    | `image-height`   | tallest images first                                                                  |
+    | `image-area`     | largest images first                                                                  |
+    | `width`          | alias of `image-width`                                                                |
+    | `height`         | alias of `image-height`                                                               |
+    | `area`           | alias of `image-area`                                                                 |
+    | `creation-date`  | newest to oldest (pretty much same as id)                                             |
+    | `creation-time`  | alias of `creation-date`                                                              |
+    | `date`           | alias of `creation-date`                                                              |
+    | `time`           | alias of `creation-date`                                                              |
+    | `last-edit-date` | like creation-date, only looks at last edit time                                      |
+    | `last-edit-time` | alias of `last-edit-date`                                                             |
+    | `edit-date`      | alias of `last-edit-date`                                                             |
+    | `edit-time`      | alias of `last-edit-date`                                                             |
+    | `comment-date`   | recently commented by anyone                                                          |
+    | `comment-time`   | alias of `comment-date`                                                               |
+    | `fav-date`       | recently added to favorites by anyone                                                 |
+    | `fav-time`       | alias of `fav-date`                                                                   |
+    | `feature-date`   | recently featured                                                                     |
+    | `feature-time`   | alias of `feature-time`                                                               |
+    | `pool`           | post order of the pool referenced by the `pool:` named token in the same search query |
 
     **Special tokens**
 
@@ -1333,6 +1334,7 @@ data.
 
     | `<key>`             | Description                               |
     | ------------------- | ----------------------------------------- |
+    | `id`                | having given pool number                  |
     | `name`              | having given name (accepts wildcards)     |
     | `category`          | having given category (accepts wildcards) |
     | `creation-date`     | created at given date                     |
@@ -1345,18 +1347,19 @@ data.
 
     **Sort style tokens**
 
-    | `<value>`           | Description                  |
-    | ------------------- | ---------------------------- |
-    | `random`            | as random as it can get      |
-    | `name`              | A to Z                       |
-    | `category`          | category (A to Z)            |
-    | `creation-date`     | recently created first       |
-    | `creation-time`     | alias of `creation-date`     |
-    | `last-edit-date`    | recently edited first        |
-    | `last-edit-time`    | alias of `creation-time`     |
-    | `edit-date`         | alias of `creation-time`     |
-    | `edit-time`         | alias of `creation-time`     |
-    | `post-count`        | used in most posts first     |
+    | `<value>`           | Description                   |
+    | ------------------- | ----------------------------  |
+    | `random`            | as random as it can get       |
+    | `id`                | highest to lowest pool number |
+    | `name`              | A to Z                        |
+    | `category`          | category (A to Z)             |
+    | `creation-date`     | recently created first        |
+    | `creation-time`     | alias of `creation-date`      |
+    | `last-edit-date`    | recently edited first         |
+    | `last-edit-time`    | alias of `creation-time`      |
+    | `edit-date`         | alias of `creation-time`      |
+    | `edit-time`         | alias of `creation-time`      |
+    | `post-count`        | used in most posts first      |
 
     **Special tokens**
 
