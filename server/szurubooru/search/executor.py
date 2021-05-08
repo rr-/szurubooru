@@ -181,14 +181,18 @@ class Executor:
                             _format_dict_keys(self.config.sort_columns),
                         )
                     )
-                column, default_order = self.config.sort_columns[
+                entry = self.config.sort_columns[
                     sort_token.name
                 ]
-                order = _get_order(sort_token.order, default_order)
-                if order == sort_token.SORT_ASC:
-                    db_query = db_query.order_by(column.asc())
-                elif order == sort_token.SORT_DESC:
-                    db_query = db_query.order_by(column.desc())
+                if callable(entry):
+                    db_query = entry(db_query)
+                else:
+                    column, default_order = entry
+                    order = _get_order(sort_token.order, default_order)
+                    if order == sort_token.SORT_ASC:
+                        db_query = db_query.order_by(column.asc())
+                    elif order == sort_token.SORT_DESC:
+                        db_query = db_query.order_by(column.desc())
 
         db_query = self.config.finalize_query(db_query)
         return db_query
