@@ -47,18 +47,7 @@ class Executor:
         filter_query = self._prepare_db_query(
             filter_query, search_query, False
         )
-        prev_filter_query = (
-            filter_query.filter(self.config.id_column > entity_id)
-            .order_by(None)
-            .order_by(sa.func.abs(self.config.id_column - entity_id).asc())
-            .limit(1)
-        )
-        next_filter_query = (
-            filter_query.filter(self.config.id_column < entity_id)
-            .order_by(None)
-            .order_by(sa.func.abs(self.config.id_column - entity_id).asc())
-            .limit(1)
-        )
+        prev_filter_query, next_filter_query = self.config.create_around_filter_queries(filter_query, entity_id)
         return (
             prev_filter_query.one_or_none(),
             next_filter_query.one_or_none(),
