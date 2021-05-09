@@ -16,6 +16,15 @@ class PostList extends AbstractList {
         );
     }
 
+    static getPoolPostsAround(id, searchQuery) {
+        return api.get(
+            uri.formatApiLink("post", id, "pool-posts-around", {
+                query: PostList._decorateSearchQuery(searchQuery || ""),
+                fields: "id",
+            })
+        );
+    }
+
     static search(text, offset, limit, fields) {
         return api
             .get(

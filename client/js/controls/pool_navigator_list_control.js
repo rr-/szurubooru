@@ -7,7 +7,7 @@ const PoolNavigatorControl = require("../controls/pool_navigator_control.js");
 const template = views.getTemplate("pool-navigator-list");
 
 class PoolNavigatorListControl extends events.EventTarget {
-    constructor(hostNode, a) {
+    constructor(hostNode, pools) {
         super();
         this._hostNode = hostNode;
 

@@ -2,6 +2,7 @@ import hmac
 import logging
 from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional, Tuple
+from collections import namedtuple
 
 import sqlalchemy as sa
 
@@ -134,12 +135,16 @@ def get_post_content_path(post: model.Post) -> str:
     )
 
 
+def get_post_thumbnail_path_from_id(post_id: int) -> str:
+    return "generated-thumbnails/%d_%s.jpg" % (
+        post_id,
+        get_post_security_hash(post_id),
+    )
+
+
 def get_post_thumbnail_path(post: model.Post) -> str:
     assert post
-    return "generated-thumbnails/%d_%s.jpg" % (
-        post.post_id,
-        get_post_security_hash(post.post_id),
-    )
+    return get_post_thumbnail_path_from_id(post.post_id)
 
 
 def get_post_thumbnail_backup_path(post: model.Post) -> str:
@@ -967,3 +972,69 @@ def search_by_image(image_content: bytes) -> List[Tuple[float, model.Post]]:
         ]
     else:
         return []
+
+
+PoolPostsAround = namedtuple('PoolPostsAround', 'pool prev_post next_post')
+
+def get_pool_posts_around(post: model.Post) -> List[PoolPostsAround]:
+    around = dict()
+    pool_ids = set()
+    post_ids = set()
+
+    dbquery = """
+    SELECT around.ord, around.pool_id, around.post_id, around.delta
+    FROM pool_post pp,
+        LATERAL get_pool_posts_around(pp.pool_id, pp.post_id) around
+    WHERE pp.post_id = :post_id;
+    """
+
+    for order, pool_id, post_id, delta in db.session.execute(dbquery, {"post_id": post.post_id}):
+        if pool_id not in around:
+            around[pool_id] = [None, None]
+        if delta < 0:
+            around[pool_id][0] = post_id
+        elif delta > 0:
+            around[pool_id][1] = post_id
+        pool_ids.add(pool_id)
+        post_ids.add(post_id)
+
+    pools = dict()
+    posts = dict()
+
+    for pool in db.session.query(model.Pool).filter(model.Pool.pool_id.in_(pool_ids)).all():
+        pools[pool.pool_id] = pool
+
+    for result in db.session.query(model.Post.post_id).filter(model.Post.post_id.in_(post_ids)).all():
+        post_id = result[0]
+        posts[post_id] = { "id": post_id, "thumbnailUrl": get_post_thumbnail_path_from_id(post_id) }
+
+    results = []
+
+    for pool_id, entry in around.items():
+        prev_post = None
+        next_post = None
+        if entry[0] is not None:
+            prev_post = posts[entry[0]]
+        if entry[1] is not None:
+            next_post = posts[entry[1]]
+        results.append(PoolPostsAround(pools[pool_id], prev_post, next_post))
+
+    return results
+
+
+def sort_pool_posts_around(around: List[PoolPostsAround]) -> List[PoolPostsAround]:
+    return sorted(
+        around,
+        key=lambda entry: entry.pool.pool_id,
+    )
+
+
+def serialize_pool_posts_around(around: List[PoolPostsAround]) -> Optional[rest.Response]:
+    return [
+        {
+            "pool": pools.serialize_micro_pool(entry.pool),
+            "prev_post": entry.prev_post,
+            "next_post": entry.next_post
+        }
+        for entry in sort_pool_posts_around(around)
+    ]

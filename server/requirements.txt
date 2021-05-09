@@ -9,4 +9,5 @@ pillow>=4.3.0
 pynacl>=1.2.1
 pytz>=2018.3
 pyRFC3339>=1.0
+alembic_utils>=0.5.6
 youtube_dl

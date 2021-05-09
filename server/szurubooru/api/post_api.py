@@ -284,6 +284,19 @@ def get_posts_around(
     )
 
 
+@rest.routes.get("/post/(?P<post_id>[^/]+)/pool-posts-around/?")
+def get_pool_posts_around(
+    ctx: rest.Context, params: Dict[str, str]
+) -> rest.Response:
+    auth.verify_privilege(ctx.user, "posts:list")
+    auth.verify_privilege(ctx.user, "pools:list")
+    auth.verify_privilege(ctx.user, "pools:view")
+    _search_executor_config.user = ctx.user
+    post = _get_post(params)
+    results = posts.get_pool_posts_around(post)
+    return posts.serialize_pool_posts_around(results)
+
+
 @rest.routes.post("/posts/reverse-search/?")
 def get_posts_by_image(
     ctx: rest.Context, _params: Dict[str, str] = {}
