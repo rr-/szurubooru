@@ -2,6 +2,7 @@
 
 const router = require("../router.js");
 const api = require("../api.js");
+const settings = require("../models/settings.js");
 const uri = require("../util/uri.js");
 const PoolList = require("../models/pool_list.js");
 const topNavigation = require("../models/top_navigation.js");
@@ -42,7 +43,9 @@ class PoolListController {
         });
         this._headerView.addEventListener(
             "submit",
-            (e) => this._evtSubmit(e),
+            (e) => this._evtSubmit(e)
+        );
+        this._headerView.addEventListener(
             "navigate",
             (e) => this._evtNavigate(e)
         );
@@ -106,6 +109,11 @@ class PoolListController {
                 );
             },
             pageRenderer: (pageCtx) => {
+                Object.assign(pageCtx, {
+                    canViewPosts: api.hasPrivilege("posts:view"),
+                    canViewPools: api.hasPrivilege("pools:view"),
+                    postFlow: settings.get().postFlow,
+                });
                 return new PoolsPageView(pageCtx);
             },
         });

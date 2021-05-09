@@ -30,7 +30,7 @@ class PoolSearchConfig(BaseSearchConfig):
         raise NotImplementedError()
 
     def finalize_query(self, query: SaQuery) -> SaQuery:
-        return query.order_by(model.Pool.first_name.asc())
+        return query.order_by(model.Pool.pool_id.desc())
 
     @property
     def anonymous_filter(self) -> Filter:
@@ -45,6 +45,7 @@ class PoolSearchConfig(BaseSearchConfig):
     def named_filters(self) -> Dict[str, Filter]:
         return util.unalias_dict(
             [
+                (["id"], search_util.create_num_filter(model.Pool.pool_id)),
                 (
                     ["name"],
                     search_util.create_subquery_filter(
@@ -91,6 +92,7 @@ class PoolSearchConfig(BaseSearchConfig):
                     ["random"],
                     (sa.sql.expression.func.random(), self.SORT_NONE),
                 ),
+                (["id"], (model.Pool.pool_id, self.SORT_DESC)),
                 (["name"], (model.Pool.first_name, self.SORT_ASC)),
                 (["category"], (model.PoolCategory.name, self.SORT_ASC)),
                 (

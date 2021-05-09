@@ -725,6 +725,7 @@ def test_filter_by_feature_date(
         "sort:fav-time",
         "sort:feature-date",
         "sort:feature-time",
+        "sort:pool",
     ],
 )
 def test_sort_tokens(verify_unpaged, post_factory, input):
@@ -863,3 +864,42 @@ def test_tumbleweed(
     db.session.flush()
     verify_unpaged("special:tumbleweed", [4])
     verify_unpaged("-special:tumbleweed", [1, 2, 3])
+
+
+def test_sort_pool(
+    post_factory, pool_factory, pool_category_factory, verify_unpaged
+):
+    post1 = post_factory(id=1)
+    post2 = post_factory(id=2)
+    post3 = post_factory(id=3)
+    post4 = post_factory(id=4)
+    pool1 = pool_factory(
+        id=1,
+        names=["pool1"],
+        description="desc",
+        category=pool_category_factory("test-cat1"),
+    )
+    pool1.posts = [post1, post4, post3]
+    pool2 = pool_factory(
+        id=2,
+        names=["pool2"],
+        description="desc",
+        category=pool_category_factory("test-cat2"),
+    )
+    pool2.posts = [post3, post4, post2]
+    db.session.add_all(
+        [
+            post1,
+            post2,
+            post3,
+            post4,
+            pool1,
+            pool2
+        ]
+    )
+    db.session.flush()
+    verify_unpaged("pool:1 sort:pool", [1, 4, 3])
+    verify_unpaged("pool:2 sort:pool", [3, 4, 2])
+    verify_unpaged("pool:1 pool:2 sort:pool", [4, 3])
+    verify_unpaged("pool:2 pool:1 sort:pool", [3, 4])
+    verify_unpaged("sort:pool", [1, 2, 3, 4])

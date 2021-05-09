@@ -1147,3 +1147,30 @@ def test_search_by_image(post_factory, config_injector, read_asset):
 
     result2 = posts.search_by_image(read_asset("png.png"))
     assert not result2
+
+
+def test_get_pool_posts_around(post_factory, pool_factory, config_injector):
+    from szurubooru.migrations.functions import get_pool_posts_around
+    db.session.execute(get_pool_posts_around.to_sql_statement_create())
+    db.session.flush()
+
+    config_injector({"allow_broken_uploads": False, "secret": "test"})
+    post1 = post_factory(id=1)
+    post2 = post_factory(id=2)
+    post3 = post_factory(id=3)
+    post4 = post_factory(id=4)
+    pool1 = pool_factory(id=1)
+    pool2 = pool_factory(id=2)
+    pool1.posts = [post1, post2, post3, post4]
+    pool2.posts = [post3, post4, post2]
+    db.session.add_all([post1, post2, post3, post4, pool1, pool2])
+    db.session.flush()
+    around = posts.get_pool_posts_around(post2)
+    assert around[0].first_post["id"] == post1.post_id
+    assert around[0].prev_post["id"] == post1.post_id
+    assert around[0].next_post["id"] == post3.post_id
+    assert around[0].last_post["id"] == post4.post_id
+    assert around[1].first_post["id"] == post3.post_id
+    assert around[1].prev_post["id"] == post4.post_id
+    assert around[1].next_post == None
+    assert around[1].last_post == None

@@ -12,6 +12,7 @@ const PostReadonlySidebarControl = require("../controls/post_readonly_sidebar_co
 const PostEditSidebarControl = require("../controls/post_edit_sidebar_control.js");
 const CommentControl = require("../controls/comment_control.js");
 const CommentListControl = require("../controls/comment_list_control.js");
+const PoolNavigatorListControl = require("../controls/pool_navigator_list_control.js");
 
 const template = views.getTemplate("post-main");
 
@@ -58,6 +59,7 @@ class PostMainView {
         this._installSidebar(ctx);
         this._installCommentForm();
         this._installComments(ctx.post.comments);
+        this._installPoolNavigators(ctx.poolPostsAround, ctx.activePool);
 
         const showPreviousImage = () => {
             if (ctx.prevPostId) {
@@ -136,6 +138,21 @@ class PostMainView {
                 this._postContentControl
             );
         }
+    }
+
+    _installPoolNavigators(poolPostsAround, activePool) {
+        const poolNavigatorsContainerNode = document.querySelector(
+            "#content-holder .pool-navigators-container"
+        );
+        if (!poolNavigatorsContainerNode) {
+            return;
+        }
+
+        this.poolNavigatorsControl = new PoolNavigatorListControl(
+            poolNavigatorsContainerNode,
+            poolPostsAround,
+            activePool
+        );
     }
 
     _installCommentForm() {

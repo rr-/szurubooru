@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple, Callable, Union
 
 import sqlalchemy as sa
 
@@ -114,17 +114,55 @@ def _pool_filter(
     query: SaQuery, criterion: Optional[criteria.BaseCriterion], negated: bool
 ) -> SaQuery:
     assert criterion
-    return search_util.create_subquery_filter(
-        model.Post.post_id,
-        model.PoolPost.post_id,
-        model.PoolPost.pool_id,
-        search_util.create_num_filter,
-    )(query, criterion, negated)
+    from szurubooru.search.configs import util as search_util
+    subquery = db.session.query(model.PoolPost.post_id.label("foreign_id"))
+    subquery = subquery.options(sa.orm.lazyload("*"))
+    subquery = search_util.create_num_filter(model.PoolPost.pool_id)(subquery, criterion, False)
+    subquery = subquery.subquery("t")
+    expression = model.Post.post_id.in_(subquery)
+    if negated:
+        expression = ~expression
+    return query.filter(expression)
+
+
+def _pool_sort(
+    query: SaQuery, pool_id: Optional[int]
+) -> SaQuery:
+    if pool_id is None:
+        return query
+    return query.join(model.PoolPost, sa.and_(model.PoolPost.post_id == model.Post.post_id, model.PoolPost.pool_id == pool_id)) \
+                .order_by(model.PoolPost.order.desc())
+
+
+def _posts_around_pool(filter_query: SaQuery, post_id: int, pool_id: int) -> Tuple[SaQuery, SaQuery]:
+    this_order = db.session.query(model.PoolPost) \
+                 .filter(model.PoolPost.post_id == post_id) \
+                 .filter(model.PoolPost.pool_id == pool_id) \
+                 .one().order
+
+    filter_query = db.session.query(model.Post) \
+                             .join(model.PoolPost, model.PoolPost.pool_id == pool_id) \
+                             .filter(model.PoolPost.post_id == model.Post.post_id)
+
+    prev_filter_query = (
+        filter_query.filter(model.PoolPost.order > this_order)
+        .order_by(None)
+        .order_by(sa.func.abs(model.PoolPost.order - this_order).asc())
+        .limit(1)
+    )
+    next_filter_query = (
+        filter_query.filter(model.PoolPost.order < this_order)
+        .order_by(None)
+        .order_by(sa.func.abs(model.PoolPost.order - this_order).asc())
+        .limit(1)
+    )
+    return (prev_filter_query, next_filter_query)
 
 
 class PostSearchConfig(BaseSearchConfig):
     def __init__(self) -> None:
         self.user = None  # type: Optional[model.User]
+        self.pool_id = None  # type: Optional[int]
 
     def on_search_query_parsed(self, search_query: SearchQuery) -> SaQuery:
         new_special_tokens = []
@@ -149,9 +187,18 @@ class PostSearchConfig(BaseSearchConfig):
             else:
                 new_special_tokens.append(token)
         search_query.special_tokens = new_special_tokens
+        self.pool_id = None
+        for token in search_query.named_tokens:
+            if token.name == "pool" and isinstance(token.criterion, criteria.PlainCriterion):
+                self.pool_id = token.criterion.value
 
     def create_around_query(self) -> SaQuery:
         return db.session.query(model.Post).options(sa.orm.lazyload("*"))
+
+    def create_around_filter_queries(self, filter_query: SaQuery, entity_id: int) -> Tuple[SaQuery, SaQuery]:
+        if self.pool_id is not None:
+            return _posts_around_pool(filter_query, entity_id, self.pool_id)
+        return super(PostSearchConfig, self).create_around_filter_queries(filter_query, entity_id)
 
     def create_filter_query(self, disable_eager_loads: bool) -> SaQuery:
         strategy = (
@@ -353,7 +400,7 @@ class PostSearchConfig(BaseSearchConfig):
         )
 
     @property
-    def sort_columns(self) -> Dict[str, Tuple[SaColumn, str]]:
+    def sort_columns(self) -> Dict[str, Union[Tuple[SaColumn, str], Callable[[SaQuery], None]]]:
         return util.unalias_dict(
             [
                 (
@@ -415,6 +462,10 @@ class PostSearchConfig(BaseSearchConfig):
                     ["feature-date", "feature-time"],
                     (model.Post.last_feature_time, self.SORT_DESC),
                 ),
+                (
+                    ["pool"],
+                    lambda subquery: _pool_sort(subquery, self.pool_id)
+                )
             ]
         )
 
