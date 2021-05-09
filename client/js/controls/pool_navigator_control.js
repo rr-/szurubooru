@@ -8,19 +8,26 @@ const views = require("../util/views.js");
 const template = views.getTemplate("pool-navigator");
 
 class PoolNavigatorControl extends events.EventTarget {
-    constructor(hostNode, pool) {
+    constructor(hostNode, poolPostAround, isActivePool) {
         super();
         this._hostNode = hostNode;
-        this._pool = pool;
+        this._poolPostAround = poolPostAround;
+        this._isActivePool = isActivePool;
+
+        views.replaceContent(
+            this._hostNode,
+            template({
+                pool: poolPostAround.pool,
+                parameters: { query: `pool:${poolPostAround.pool.id}` },
+                linkClass: misc.makeCssName(poolPostAround.pool.category, "pool"),
+                canViewPosts: api.hasPrivilege("posts:view"),
+                canViewPools: api.hasPrivilege("pools:view"),
+                prevPost: poolPostAround.prevPost,
+                nextPost: poolPostAround.nextPost,
+                isActivePool: isActivePool
+            })
+        );
     }
-
-    // get _formNode() {
-    //     return this._hostNode.querySelector("form");
-    // }
-
-    // get _scoreContainerNode() {
-    //     return this._hostNode.querySelector(".score-container");
-    // }
 }
 
 module.exports = PoolNavigatorControl;

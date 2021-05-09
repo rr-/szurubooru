@@ -16,10 +16,10 @@ class PostMainController extends BasePostController {
     constructor(ctx, editMode) {
         super(ctx);
 
-        let poolPostsAround = Promise.resolve({results: [], activePool: null})
-        if (api.hasPrivilege("pools.list") && api.hasPrivilege("pools.view")) {
+        let poolPostsAround = Promise.resolve({results: [], activePool: null});
+        if (api.hasPrivilege("pools:list") && api.hasPrivilege("pools:view")) {
             poolPostsAround = PostList.getPoolPostsAround(
-                ctxt.parameters.id,
+                ctx.parameters.id,
                 parameters ? parameters.query : null
             );
         }
@@ -35,6 +35,7 @@ class PostMainController extends BasePostController {
         ]).then(
             (responses) => {
                 const [post, aroundResponse, poolPostsAroundResponse] = responses;
+                let activePool = null;
 
                 // remove junk from query, but save it into history so that it can
                 // be still accessed after history navigation / page refresh
@@ -48,13 +49,20 @@ class PostMainController extends BasePostController {
                           )
                         : uri.formatClientLink("post", ctx.parameters.id);
                     router.replace(url, ctx.state, false);
+                    console.log(parameters.query);
+                    parameters.query.split(" ").forEach((item) => {
+                        const found = item.match(/^pool:([0-9]+)/i);
+                        if (found) {
+                            activePool = parseInt(found[1]);
+                        }
+                    });
                 }
 
                 this._post = post;
                 this._view = new PostMainView({
                     post: post,
-                    poolPostsAround: poolPostsAroundResponse.results,
-                    activePool: poolPostsAroundResponse.activePool,
+                    poolPostsAround: poolPostsAroundResponse,
+                    activePool: activePool,
                     editMode: editMode,
                     prevPostId: aroundResponse.prev
                         ? aroundResponse.prev.id

@@ -1033,8 +1033,8 @@ def serialize_pool_posts_around(around: List[PoolPostsAround]) -> Optional[rest.
     return [
         {
             "pool": pools.serialize_micro_pool(entry.pool),
-            "prev_post": entry.prev_post,
-            "next_post": entry.next_post
+            "prevPost": entry.prev_post,
+            "nextPost": entry.next_post
         }
         for entry in sort_pool_posts_around(around)
     ]

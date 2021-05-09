@@ -7,44 +7,53 @@ const PoolNavigatorControl = require("../controls/pool_navigator_control.js");
 const template = views.getTemplate("pool-navigator-list");
 
 class PoolNavigatorListControl extends events.EventTarget {
-    constructor(hostNode, pools) {
+    constructor(hostNode, poolPostsAround, activePool) {
         super();
         this._hostNode = hostNode;
+        this._poolPostsAround = poolPostsAround;
+        this._activePool = activePool;
+        this._indexToNode = {};
 
-        const poolList = [];
-        for (let pool of poolList) {
-            this._installPoolNavigatorNode(pool);
+        for (let [i, entry] of this._poolPostsAround.entries()) {
+            this._installPoolNavigatorNode(entry, i);
         }
     }
 
     get _poolNavigatorListNode() {
-        return this._hostNode.querySelector("ul");
+        return this._hostNode;
     }
 
-    _installPoolNavigatorNode(pool) {
-        const poolListItemNode = document.createElement("li");
+    _installPoolNavigatorNode(poolPostAround, i) {
+        const isActivePool = poolPostAround.pool.id == this._activePool
+        const poolListItemNode = document.createElement("div");
         const poolControl = new PoolNavigatorControl(
-            pool
+            poolListItemNode,
+            poolPostAround,
+            isActivePool
         );
         // events.proxyEvent(commentControl, this, "submit");
         // events.proxyEvent(commentControl, this, "score");
         // events.proxyEvent(commentControl, this, "delete");
-        // this._commentIdToNode[comment.id] = commentListItemNode;
-        this._poolNavigatorListNode.appendChild(poolListItemNode);
+        this._indexToNode[poolPostAround.id] = poolListItemNode;
+        if (isActivePool) {
+            this._poolNavigatorListNode.insertBefore(poolListItemNode, this._poolNavigatorListNode.firstChild);
+        } else {
+            this._poolNavigatorListNode.appendChild(poolListItemNode);
+        }
     }
 
-    _uninstallCommentNode(pool) {
-        const poolListItemNode = this._commentIdToNode[pool.id];
+    _uninstallPoolNavigatorNode(index) {
+        const poolListItemNode = this._indexToNode[index];
         poolListItemNode.parentNode.removeChild(poolListItemNode);
     }
 
-    // _evtAdd(e) {
-    //     this._installPoolNode(e.detail.comment);
-    // }
+    _evtAdd(e) {
+        this._installPoolNavigatorNode(e.detail.index);
+    }
 
-    // _evtRemove(e) {
-    //     this._uninstallPoolNode(e.detail.comment);
-    // }
+    _evtRemove(e) {
+        this._uninstallPoolNavigatorNode(e.detail.index);
+    }
 }
 
 module.exports = PoolNavigatorListControl;
