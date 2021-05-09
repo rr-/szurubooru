@@ -39,8 +39,30 @@ BEGIN
           WHERE pool_post.ord < main.ord
             AND pool_post.pool_id = main.pool_id
           ORDER BY pool_post.ord DESC LIMIT 1)
+          UNION
+          (SELECT pool_post.ord,
+                  pool_post.pool_id,
+                  pool_post.post_id,
+                  2 as delta,
+                  main.ord AS target_ord,
+                  main.pool_id AS target_pool_id
+             FROM pool_post, main
+            WHERE pool_post.ord = (SELECT MAX(pool_post.ord) FROM pool_post)
+              AND pool_post.pool_id = main.pool_id
+            ORDER BY pool_post.ord DESC LIMIT 1)
+            UNION
+            (SELECT pool_post.ord,
+                    pool_post.pool_id,
+                    pool_post.post_id,
+                    -2 as delta,
+                    main.ord AS target_ord,
+                    main.pool_id AS target_pool_id
+               FROM pool_post, main
+              WHERE pool_post.ord = (SELECT MIN(pool_post.ord) FROM pool_post)
+                AND pool_post.pool_id = main.pool_id
+              ORDER BY pool_post.ord DESC LIMIT 1)
     )
-      SELECT around.ord, around.pool_id, around.post_id, around.delta FROM around;
+    SELECT around.ord, around.pool_id, around.post_id, around.delta FROM around;
 END
 $$
 """)

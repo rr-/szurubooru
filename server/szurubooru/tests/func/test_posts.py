@@ -1166,7 +1166,11 @@ def test_get_pool_posts_around(post_factory, pool_factory, config_injector):
     db.session.add_all([post1, post2, post3, post4, pool1, pool2])
     db.session.flush()
     around = posts.get_pool_posts_around(post2)
+    assert around[0].first_post["id"] == post1.post_id
     assert around[0].prev_post["id"] == post1.post_id
     assert around[0].next_post["id"] == post3.post_id
+    assert around[0].last_post["id"] == post4.post_id
+    assert around[1].first_post["id"] == post3.post_id
     assert around[1].prev_post["id"] == post4.post_id
     assert around[1].next_post == None
+    assert around[1].last_post == None

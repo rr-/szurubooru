@@ -1,7 +1,7 @@
 @import colors
 
 .pool-navigator-container
-    padding: 0 0.50em 0 0.50em
+    padding: 0
     margin: 0 auto
 
     .pool-info-wrapper
@@ -14,6 +14,8 @@
         background: $pool-navigator-background-color
         &.active
             font-weight: bold
+            font-size: 1.10em;
+            padding: 0.58em 1em
 
         .pool-name
             flex: 1 1;
@@ -23,7 +25,10 @@
             -o-text-overflow: ellipsis;
             text-overflow: ellipsis;
 
-        .prev, .next
+        .first, .last
+            flex-basis: 1em;
+
+        .first, .prev, .next, .last
             flex: 0 1;
             margin: 0 .25em;
             white-space: nowrap;

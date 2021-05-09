@@ -22,8 +22,10 @@ class PoolNavigatorControl extends events.EventTarget {
                 linkClass: misc.makeCssName(poolPostAround.pool.category, "pool"),
                 canViewPosts: api.hasPrivilege("posts:view"),
                 canViewPools: api.hasPrivilege("pools:view"),
+                firstPost: poolPostAround.firstPost,
                 prevPost: poolPostAround.prevPost,
                 nextPost: poolPostAround.nextPost,
+                lastPost: poolPostAround.lastPost,
                 isActivePool: isActivePool
             })
         );

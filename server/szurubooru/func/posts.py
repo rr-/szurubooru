@@ -974,7 +974,7 @@ def search_by_image(image_content: bytes) -> List[Tuple[float, model.Post]]:
         return []
 
 
-PoolPostsAround = namedtuple('PoolPostsAround', 'pool prev_post next_post')
+PoolPostsAround = namedtuple('PoolPostsAround', 'pool first_post prev_post next_post last_post')
 
 def get_pool_posts_around(post: model.Post) -> List[PoolPostsAround]:
     around = dict()
@@ -990,11 +990,15 @@ def get_pool_posts_around(post: model.Post) -> List[PoolPostsAround]:
 
     for order, pool_id, post_id, delta in db.session.execute(dbquery, {"post_id": post.post_id}):
         if pool_id not in around:
-            around[pool_id] = [None, None]
-        if delta < 0:
+            around[pool_id] = [None, None, None, None]
+        if delta == -2:
             around[pool_id][0] = post_id
-        elif delta > 0:
+        elif delta == -1:
             around[pool_id][1] = post_id
+        elif delta == 1:
+            around[pool_id][2] = post_id
+        elif delta == 2:
+            around[pool_id][3] = post_id
         pool_ids.add(pool_id)
         post_ids.add(post_id)
 
@@ -1011,13 +1015,19 @@ def get_pool_posts_around(post: model.Post) -> List[PoolPostsAround]:
     results = []
 
     for pool_id, entry in around.items():
+        first_post = None
         prev_post = None
         next_post = None
-        if entry[0] is not None:
-            prev_post = posts[entry[0]]
+        last_post = None
         if entry[1] is not None:
-            next_post = posts[entry[1]]
-        results.append(PoolPostsAround(pools[pool_id], prev_post, next_post))
+            prev_post = posts[entry[1]]
+            if entry[0] is not None:
+                first_post = posts[entry[0]]
+        if entry[2] is not None:
+            next_post = posts[entry[2]]
+            if entry[3] is not None:
+                last_post = posts[entry[3]]
+        results.append(PoolPostsAround(pools[pool_id], first_post, prev_post, next_post, last_post))
 
     return results
 
@@ -1033,8 +1043,10 @@ def serialize_pool_posts_around(around: List[PoolPostsAround]) -> Optional[rest.
     return [
         {
             "pool": pools.serialize_micro_pool(entry.pool),
+            "firstPost": entry.first_post,
             "prevPost": entry.prev_post,
-            "nextPost": entry.next_post
+            "nextPost": entry.next_post,
+            "lastPost": entry.last_post
         }
         for entry in sort_pool_posts_around(around)
     ]
