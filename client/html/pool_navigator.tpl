@@ -13,7 +13,7 @@
       <% if (ctx.canViewPools) { %>
         <a class='<%- ctx.linkClass %>' href='<%= ctx.formatClientLink("pool", ctx.pool.id) %>'>
       <% } %>
-        <%- ctx.pool.names[0] %>
+        Pool: <%- ctx.pool.names[0] %>
       <% if (ctx.canViewPools) { %>
         </a>
       <% } %>
