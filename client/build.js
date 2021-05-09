@@ -59,6 +59,9 @@ const util = require('util');
 const execSync = require('child_process').execSync;
 const browserify = require('browserify');
 const chokidar = require('chokidar');
+const WebSocket = require('ws');
+var PrettyError = require('pretty-error');
+var pe = new PrettyError();
 
 function readTextFile(path) {
     return fs.readFileSync(path, 'utf-8');
@@ -157,7 +160,7 @@ function minifyJs(path) {
 
 function writeJsBundle(b, path, compress, callback) {
     let outputFile = fs.createWriteStream(path);
-    b.bundle().on('error', console.error).pipe(outputFile);
+    b.bundle().on('error', (e) => console.error(pe.render(e))).pipe(outputFile);
     outputFile.on('finish', () => {
         if (compress) {
             fs.writeFileSync(path, minifyJs(path));
@@ -211,6 +214,8 @@ function bundleJs() {
     }
 }
 
+const environment = process.argv.includes('--watch') ? "development" : "production";
+
 function bundleConfig() {
     function getVersion() {
         let build_info = process.env.BUILD_INFO;
@@ -228,7 +233,8 @@ function bundleConfig() {
         meta: {
             version: getVersion(),
             buildDate: new Date().toUTCString()
-        }
+        },
+        environment: environment
     };
 
     fs.writeFileSync('./js/.config.autogen.json', JSON.stringify(config));
@@ -309,15 +315,58 @@ function makeOutputDirs() {
 }
 
 function watch() {
-    chokidar.watch('./fonts/**/*').on('change', bundleBinaryAssets);
-    chokidar.watch('./img/**/*').on('change', bundleWebAppFiles);
-    chokidar.watch('./html/**/*.tpl').on('change', bundleHtml);
-    chokidar.watch('./css/**/*.styl').on('change', bundleCss);
+    let wss = new WebSocket.Server({ port: 8080 });
+    const liveReload = !process.argv.includes('--no-live-reload');
+
+    function emitReload() {
+        if (liveReload) {
+            console.log("Requesting live reload.")
+            wss.clients.forEach((client) => {
+                if (client.readyState === WebSocket.OPEN) {
+                    client.send("reload");
+                }
+            });
+        }
+    }
+
+    chokidar.watch('./fonts/**/*').on('change', () => {
+        try {
+            bundleBinaryAssets();
+            emitReload();
+        } catch (e) {
+            console.error(pe.render(e));
+        }
+    });
+    chokidar.watch('./img/**/*').on('change', () => {
+        try {
+            bundleWebAppFiles();
+            emitReload();
+        } catch (e) {
+            console.error(pe.render(e));
+        }
+    });
+    chokidar.watch('./html/**/*.tpl').on('change', () => {
+        try {
+            bundleHtml();
+        } catch (e) {
+            console.error(pe.render(e));
+        }
+    });
+    chokidar.watch('./css/**/*.styl').on('change', () => {
+        try {
+            bundleCss()
+            emitReload();
+        } catch (e) {
+            console.error(pe.render(e));
+        }
+    });
 
     bundleBinaryAssets();
     bundleWebAppFiles();
     bundleCss();
     bundleHtml();
+
+    bundleVendorJs(true);
 
     let watchify = require('watchify');
     let b = browserify({
@@ -341,6 +390,7 @@ function watch() {
         bundleAppJs(b, compress, () => {
             let end = new Date() - start;
             console.info('Rebundled in %ds.', end / 1000)
+            emitReload();
         });
     }
 
@@ -350,6 +400,7 @@ function watch() {
 
 // -------------------------------------------------
 
+console.log("Building for '" + environment + "' environment.");
 makeOutputDirs();
 bundleConfig();
 if (process.argv.includes('--watch')) {

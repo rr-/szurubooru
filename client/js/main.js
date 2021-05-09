@@ -1,5 +1,20 @@
 "use strict";
 
+const config = require("./config.js");
+
+if (config.environment == "development") {
+    var ws = new WebSocket("ws://" + location.hostname + ":8080");
+    ws.addEventListener('open', function (event) {
+        console.log("Live-reloading websocket connected.");
+    });
+    ws.addEventListener('message', (event) => {
+        console.log(event);
+        if (event.data == 'reload'){
+            location.reload();
+        }
+    });
+}
+
 require("./util/polyfill.js");
 const misc = require("./util/misc.js");
 const views = require("./util/views.js");
