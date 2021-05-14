@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "build": "node build.js",
-    "watch": "c1=\"\";while :;do c2=$(find html js css img -type f -and -not -iname '*autogen*'|sort|xargs cat|md5sum);[[ $c1 != $c2 ]]&&npm run build -- --debug --no-vendor-js;c1=$c2;sleep 1;done"
+    "watch": "node build.js --watch"
   },
   "dependencies": {
     "dompurify": "^2.0.17",
@@ -21,12 +21,16 @@
     "babel-preset-env": "^1.7.0",
     "babelify": "^8.0.0",
     "browserify": "^16.2.2",
+    "chokidar": "^3.5.1",
     "csso": "^3.5.1",
     "glob": "^7.1.2",
     "html-minifier": "^3.5.18",
     "jimp": "^0.13.0",
+    "pretty-error": "^3.0.3",
     "stylus": "^0.54.5",
     "terser": "^3.7.7",
-    "underscore": "^1.9.1"
+    "underscore": "^1.9.1",
+    "watchify": "^4.0.0",
+    "ws": "^7.4.5"
   }
 }
