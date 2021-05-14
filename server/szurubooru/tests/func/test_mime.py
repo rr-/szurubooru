@@ -13,6 +13,7 @@ from szurubooru.func import mime
         ("jpeg.jpg", "image/jpeg"),
         ("gif.gif", "image/gif"),
         ("webp.webp", "image/webp"),
+        ("bmp.bmp", "image/bmp"),
         ("text.txt", "application/octet-stream"),
     ],
 )
@@ -34,6 +35,7 @@ def test_get_mime_type_for_empty_file():
         ("image/jpeg", "jpg"),
         ("image/gif", "gif"),
         ("image/webp", "webp"),
+        ("image/bmp", "bmp"),
         ("application/octet-stream", "dat"),
     ],
 )
@@ -75,9 +77,11 @@ def test_is_video(input_mime_type, expected_state):
         ("image/gif", True),
         ("image/png", True),
         ("image/jpeg", True),
+        ("image/bmp", True),
         ("IMAGE/GIF", True),
         ("IMAGE/PNG", True),
         ("IMAGE/JPEG", True),
+        ("IMAGE/BMP", True),
         ("image/anything_else", False),
         ("not an image", False),
     ],

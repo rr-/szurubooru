@@ -21,6 +21,9 @@ def get_mime_type(content: bytes) -> str:
     if content[8:12] == b"WEBP":
         return "image/webp"
 
+    if content[0:2] == b"BM":
+        return "image/bmp"
+
     if content[0:4] == b"\x1A\x45\xDF\xA3":
         return "video/webm"
 
@@ -37,6 +40,7 @@ def get_extension(mime_type: str) -> Optional[str]:
         "image/jpeg": "jpg",
         "image/png": "png",
         "image/webp": "webp",
+        "image/bmp": "bmp",
         "video/mp4": "mp4",
         "video/webm": "webm",
         "application/octet-stream": "dat",
@@ -58,6 +62,7 @@ def is_image(mime_type: str) -> bool:
         "image/png",
         "image/gif",
         "image/webp",
+        "image/bmp",
     )
 
 

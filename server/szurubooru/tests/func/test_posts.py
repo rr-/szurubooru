@@ -394,6 +394,13 @@ def test_update_post_source_with_too_long_string():
         ),
         (
             False,
+            "bmp.bmp",
+            "image/bmp",
+            model.Post.TYPE_IMAGE,
+            "1_244c8840887984c4.bmp",
+        ),
+        (
+            False,
             "gif-animated.gif",
             "image/gif",
             model.Post.TYPE_ANIMATION,
