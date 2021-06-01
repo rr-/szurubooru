@@ -1,4 +1,4 @@
-ARG ALPINE_VERSION=3.12
+ARG ALPINE_VERSION=3.13
 
 
 FROM alpine:$ALPINE_VERSION as prereqs
@@ -20,7 +20,7 @@ RUN apk --no-cache add \
         py3-tz \
         py3-pyrfc3339 \
         build-base \
- && apk --no-cache add --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community \
+ && apk --no-cache add \
         libheif \
         libavif \
         libheif-dev \
