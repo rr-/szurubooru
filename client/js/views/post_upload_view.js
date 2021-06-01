@@ -16,6 +16,9 @@ function _mimeTypeToPostType(mimeType) {
             "image/png": "image",
             "image/webp": "image",
             "image/bmp": "image",
+            "image/avif": "image",
+            "image/heif": "image",
+            "image/heic": "image",
             "video/mp4": "video",
             "video/webm": "video",
         }[mimeType] || "unknown"
@@ -111,6 +114,9 @@ class Url extends Uploadable {
             gif: "image/gif",
             webp: "image/webp",
             bmp: "image/bmp",
+            avif: "image/avif",
+            heif: "image/heif",
+            heic: "image/heic",
             mp4: "video/mp4",
             webm: "video/webm",
         };
@@ -155,7 +161,7 @@ class PostUploadView extends events.EventTarget {
             this._contentInputNode,
             {
                 extraText:
-                    "Allowed extensions: .jpg, .png, .gif, .webm, .mp4, .swf",
+                    "Allowed extensions: .jpg, .png, .gif, .webm, .mp4, .swf, .avif, .heif, .heic",
                 allowUrls: true,
                 allowMultiple: true,
                 lock: false,

@@ -650,7 +650,8 @@ def update_post_content(post: model.Post, content: Optional[bytes]) -> None:
         image = images.Image(content)
         post.canvas_width = image.width
         post.canvas_height = image.height
-    except errors.ProcessingError:
+    except errors.ProcessingError as ex:
+        logger.exception(ex)
         if not config.config["allow_broken_uploads"]:
             raise InvalidPostContentError("Unable to process image metadata")
         else:
