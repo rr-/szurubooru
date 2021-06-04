@@ -139,7 +139,7 @@ class FileDropperControl extends events.EventTarget {
 
         if (!this._options.allowMultiple && fileList.length > 1) {
             window.alert("Cannot select multiple files.");
-        } else {
+        } else if (fileList.length > 0) {
             this._emitFiles(fileList);
         }
     }
