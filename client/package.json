@@ -27,7 +27,7 @@
     "html-minifier": "^3.5.18",
     "jimp": "^0.13.0",
     "pretty-error": "^3.0.3",
-    "stylus": "^0.54.5",
+    "stylus": "^0.54.8",
     "terser": "^3.7.7",
     "underscore": "^1.12.1",
     "watchify": "^4.0.0",
