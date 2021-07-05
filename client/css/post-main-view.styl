@@ -27,7 +27,7 @@
                     padding: 0.3em 0
                     text-align: center
                     vertical-align: middle
-                    transition: background 0.2s linear
+                    transition: background 0.2s linear, box-shadow 0.2s linear
                     &:not(.inactive):hover
                         background: lighten($main-color, 90%)
                 i
@@ -44,6 +44,14 @@
 
         .post-content
             margin: 0
+
+.darktheme .post-view
+    >.sidebar
+        nav.buttons
+            article
+                a:not(.inactive):hover
+                    background: unset
+                    box-shadow: inset 0 0 0 0.3em $main-color
 
 @media (max-width: 800px)
     .post-view

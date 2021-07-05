@@ -197,8 +197,11 @@ class TagInputControl extends events.EventTarget {
                 if (!tag.category) {
                     listItemNode.classList.add("new");
                 }
-                if (source === SOURCE_IMPLICATION) {
+                else if (source === SOURCE_IMPLICATION) {
                     listItemNode.classList.add("implication");
+                }
+                else {
+                    listItemNode.classList.add("added");
                 }
                 this._tagListNode.prependChild(listItemNode);
                 _fadeOutListItemNodeStatus(listItemNode);
