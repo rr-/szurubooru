@@ -23,6 +23,10 @@ http {
         server __BACKEND__:6666;
     }
 
+    upstream frontend {
+        server __FRONTEND__:6667;
+    }
+
     server {
         listen 80 default_server;
 
@@ -71,7 +75,7 @@ http {
 
         location / {
             root /var/www;
-            try_files $uri /index.htm;
+            try_files $uri @frontend;
 
             sendfile on;
             tcp_nopush on;
@@ -79,6 +83,10 @@ http {
 
             gzip_static on;
             gzip_proxied expired no-cache no-store private auth;
+        }
+
+        location @frontend {
+            proxy_pass http://frontend;
         }
 
         location @unauthorized {
