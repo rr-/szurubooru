@@ -9,6 +9,12 @@ from pathlib import Path
 
 import requests
 
+class HttpStatus:
+	def __getattr__(self, name):
+		return str(int(getattr(HTTPStatus, name)))
+
+http_status = HttpStatus()
+
 FRONTEND_WEB_ROOT = Path(os.environ["SZURUBOORU_WEB_ROOT"])
 
 with open(FRONTEND_WEB_ROOT / "index.htm") as f:
@@ -105,7 +111,7 @@ def serve_twitter_video_player(start_response, post_id: int):
 
 def application(env: Dict[str, Any], start_response: Callable[[str, Any], Any]) -> Tuple[bytes]:
     def serve_file(path):
-        start_response(str(int(HTTPStatus.OK)), [("X-Accel-Redirect", path)])
+        start_response(http_status.OK, [("X-Accel-Redirect", path)])
         return ()
 
     def serve_without_embed():
@@ -113,7 +119,7 @@ def application(env: Dict[str, Any], start_response: Callable[[str, Any], Any]) 
 
     method = env["REQUEST_METHOD"]
     if method != "GET":
-        start_response(str(int(HTTPStatus.BAD_REQUEST)), [("Content-Type", "text/plain")])
+        start_response(http_status.BAD_REQUEST, [("Content-Type", "text/plain")])
         return (b"Bad request",)
 
     path = env["PATH_INFO"].lstrip("/")
@@ -162,5 +168,5 @@ def application(env: Dict[str, Any], start_response: Callable[[str, Any], Any]) 
 
     metadata = itertools.chain(general_embed(server_info), metadata)
     body = INDEX_HTML.replace("<!-- Embed Placeholder -->", render_embed(metadata)).encode("utf-8")
-    start_response(str(int(HTTPStatus.OK)), [("Content-Type", "text/html"), ("Content-Length", str(len(body)))])
+    start_response(http_status.OK, [("Content-Type", "text/html"), ("Content-Length", str(len(body)))])
     return (body,)
