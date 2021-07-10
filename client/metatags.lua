@@ -26,8 +26,13 @@ add_meta_tag("og:url", ngx.var.external_host_url .. ngx.var.request_uri)
 
 if ngx.var.request_uri_path:match('^/post') then
   local post_info = cjson.decode((ngx.location.capture("/_internal_api"..ngx.var.request_uri_path)).body)
-  add_meta_tag("og:image", ngx.var.external_host_url .. '/' .. post_info.contentUrl)
-  add_meta_tag("og:title", server_info.config.name .. " - Post " .. post_info.id)
+  -- If no permission to access, fields will be nil, thus cannot be concat'd
+  if post_info.contentUrl then
+    add_meta_tag("og:image", ngx.var.external_host_url .. '/' .. post_info.contentUrl)
+  end
+  if post_info.id then
+    add_meta_tag("og:title", server_info.config.name .. " - Post " .. post_info.id)
+  end
 end
 
 local final_response = page_html.body:gsub("{{ generated_head_tags }}", additional_tags)
