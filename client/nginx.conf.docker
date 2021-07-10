@@ -31,6 +31,7 @@ http {
 
     init_by_lua_block {
         cjson = require("cjson")
+        html_head_tag_replacement_str = "{{ generated_head_tags }}"
     }
 
     server {
