@@ -24,11 +24,9 @@ WORKDIR /var/www
 COPY --from=builder /opt/app/public/ .
 
 
-FROM openresty/openresty:alpine-fat as release
+FROM openresty/openresty:alpine as release
 
 RUN apk --no-cache add dumb-init
-RUN opm get bungle/lua-resty-template
-# RUN /usr/local/openresty/luajit/bin/luarocks install gumbo
 COPY --from=approot / /
 
 CMD ["/docker-start.sh"]
