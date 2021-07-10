@@ -17,11 +17,12 @@ local server_info = cjson.decode((ngx.location.capture("/_internal_api/info")).b
 local additional_tags = ""
 
 local function add_meta_tag (property, content)
-  additional_tags = additional_tags .. "<meta property=\"" .. property .. "\" content=\"" .. content:gsub('"', '\\"') .. "\" />"
+  additional_tags = additional_tags .. "<meta property=\"" .. property .. "\" content=\"" .. content:gsub('"', '\\"') .. "\"/>"
 end
 
 -- Add the site name tag
 add_meta_tag("og:site_name", server_info.config.name)
+add_meta_tag("og:url", ngx.var.scheme .. "://" .. ngx.var.http_host .. ngx.var.request_uri)
 
 local final_response = page_html.body:gsub("{{ generated_head_tags }}", additional_tags)
 

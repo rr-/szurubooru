@@ -81,7 +81,7 @@ http {
 
         location / {
             root /var/www;
-            try_files $uri /_og_tags_html;
+            try_files $uri /_meta_tags_html;
 
             sendfile on;
             tcp_nopush on;
@@ -104,7 +104,8 @@ http {
             proxy_pass http://backend/$1;
         }
 
-        location /_og_tags_html {
+        location /_meta_tags_html {
+            internal;
             root /var/www;
             content_by_lua_file /etc/nginx/metatags.lua;
         }
