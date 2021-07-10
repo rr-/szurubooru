@@ -1,5 +1,7 @@
 worker_processes 1;
-user nginx;
+user nobody;
+
+pcre_jit on;
 
 error_log /dev/stderr warn;
 pid /var/run/nginx.pid;
@@ -9,7 +11,7 @@ events {
 }
 
 http {
-    include /etc/nginx/mime.types;
+    include /usr/local/openresty/nginx/conf/mime.types;
     default_type application/octet-stream;
 
     log_format main '$remote_addr -> $request [$status] - '
@@ -21,6 +23,11 @@ http {
 
     upstream backend {
         server __BACKEND__:6666;
+    }
+
+    init_by_lua_block {
+        cjson = require("cjson")
+        gumbo = require("gumbo")
     }
 
     server {
@@ -82,6 +89,38 @@ http {
 
             gzip_static on;
             gzip_proxied expired no-cache no-store private auth;
+        }
+
+        location ~ ^/_internal_api/(.*)$ {
+            internal;
+            tcp_nodelay on;
+
+            add_header 'Access-Control-Allow-Origin' '*';
+
+            gzip off;
+            proxy_connect_timeout 10s;
+            proxy_send_timeout 10s;
+            proxy_read_timeout 10s;
+            proxy_pass http://backend/$1;
+        }
+
+        location ~ ^/_internal_tag_generator/(.*)$ {
+            content_by_lua_block {
+                ngx.say("")
+            }
+        }
+        location /_og_tags_html {
+            root /var/www;
+            content_by_lua_block {
+                ngx.req.read_body()
+
+                local page_html = ngx.location.capture("/index.htm")
+                ngx.say(page_html.body)
+
+                ngx.req.set_header("Accept", "application/json")
+                local server_info = cjson.decode((ngx.location.capture("/_internal_api/info")).body)
+                ngx.say(server_info.config.name)
+            }
         }
 
         location @unauthorized {
