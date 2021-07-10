@@ -42,6 +42,7 @@ add_meta_tag("og:site_name", server_info.config.name)
 add_meta_tag("og:url", ngx.var.external_host_url .. ngx.var.request_uri_path)
 
 if ngx.var.request_uri_path:match('^/$') then -- Site root
+  add_meta_tag("og:type", "website")
   add_meta_tag("og:title", server_info.config.name)
   add_meta_tag("twitter:title", server_info.config.name)
   -- if there's a featured post, let's use that as the image
@@ -98,9 +99,10 @@ elseif ngx.var.request_uri_path:match('^/user/([^/]+)/?$') then -- User metadata
   add_meta_tag("og:type", "profile")
   -- check for permission to access user profiles
   if server_info.config.privileges["users:view"] == "anonymous" then
-    local user_info = cjson.decode((ngx.location.capture("/_internal_api/"..username)).body)
+    local user_info = cjson.decode((ngx.location.capture("/_internal_api/user/"..username)).body)
     add_meta_tag("profile:username", user_info.name)
-    local avatar_url = user_info.avatarUrl
+    local avatar_url
+    avatar_url = user_info.avatarUrl
     if avatar_url:match("^https?://") then
       add_meta_tag("og:image", avatar_url)
     else
