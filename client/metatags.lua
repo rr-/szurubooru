@@ -33,27 +33,39 @@ local server_info = cjson.decode(server_info_resp.body)
 
 local additional_tags = ""
 local function add_meta_tag (property, content)
+  -- NOTE do not allow user-provided data in the property name, only the content has quotes escaped
   additional_tags = additional_tags .. "<meta property=\"" .. property .. "\" content=\"" .. tostring(content):gsub('"', '\\"') .. "\"/>"
 end
 
 -- Add the site name tag
 add_meta_tag("og:site_name", server_info.config.name)
-add_meta_tag("og:url", ngx.var.external_host_url .. ngx.var.request_uri)
+add_meta_tag("og:url", ngx.var.external_host_url .. ngx.var.request_uri_path)
 
 if ngx.var.request_uri_path:match('^/post') then -- Post metadata
   -- check if posts are accessible to anonymous users:
   if server_info.config.privileges["posts:view"] == "anonymous" then
+    add_meta_tag("og:type", "article")
     local post_info = cjson.decode((ngx.location.capture("/_internal_api"..ngx.var.request_uri_path)).body)
     add_meta_tag("og:title", server_info.config.name .. " - Post " .. post_info.id)
+    add_meta_tag("twitter:title", server_info.config.name .. " - Post " .. post_info.id)
+    add_meta_tag("article:published_time", post_info.creationTime)
     local og_media_prefix
     if post_info.type == "image" then
       og_media_prefix = "og:image"
+      add_meta_tag("twitter:card", "summary_large_image")
+      add_meta_tag("twitter:image", ngx.var.external_host_url .. '/' .. post_info.contentUrl)
     elseif post_info.type == "video" then
       og_media_prefix = "og:video"
+      -- some sites don't preview video, so at least provide a thumbnail
+      add_meta_tag("og:image", ngx.var.external_host_url .. '/' .. post_info.thumbnailUrl)
     end
     add_meta_tag(og_media_prefix..":url", ngx.var.external_host_url .. '/' .. post_info.contentUrl)
     add_meta_tag(og_media_prefix..":width", post_info.canvasWidth)
     add_meta_tag(og_media_prefix..":height", post_info.canvasHeight)
+    -- user is not present for anonymous uploads:
+    if post_info.user then
+      add_meta_tag("article:author", post_info.user.name)
+    end
   else
     -- no permission to retrieve post data
     add_meta_tag("og:title", server_info.config.name .. " - Login required")
