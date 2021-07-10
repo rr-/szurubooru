@@ -25,9 +25,12 @@ http {
         server __BACKEND__:6666;
     }
 
+    map $request_uri $request_uri_path {
+        "~^(?P<path>[^?]*)(\?.*)?$"  $path;
+    }
+
     init_by_lua_block {
         cjson = require("cjson")
-        -- gumbo = require("gumbo")
     }
 
     server {
@@ -107,6 +110,7 @@ http {
         location /_meta_tags_html {
             internal;
             root /var/www;
+            set $external_host_url "${scheme}://${http_host}";
             content_by_lua_file /etc/nginx/metatags.lua;
         }
 

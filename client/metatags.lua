@@ -22,7 +22,13 @@ end
 
 -- Add the site name tag
 add_meta_tag("og:site_name", server_info.config.name)
-add_meta_tag("og:url", ngx.var.scheme .. "://" .. ngx.var.http_host .. ngx.var.request_uri)
+add_meta_tag("og:url", ngx.var.external_host_url .. ngx.var.request_uri)
+
+if ngx.var.request_uri_path:match('^/post') then
+  local post_info = cjson.decode((ngx.location.capture("/_internal_api"..ngx.var.request_uri_path)).body)
+  add_meta_tag("og:image", ngx.var.external_host_url .. '/' .. post_info.contentUrl)
+  add_meta_tag("og:title", server_info.config.name .. " - Post " .. post_info.id)
+end
 
 local final_response = page_html.body:gsub("{{ generated_head_tags }}", additional_tags)
 
