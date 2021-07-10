@@ -18,6 +18,7 @@ COPY docker-start.sh /
 
 WORKDIR /etc/nginx
 COPY nginx.conf.docker ./nginx.conf
+COPY metatags.lua .
 
 WORKDIR /var/www
 COPY --from=builder /opt/app/public/ .
@@ -26,7 +27,8 @@ COPY --from=builder /opt/app/public/ .
 FROM openresty/openresty:alpine-fat as release
 
 RUN apk --no-cache add dumb-init
-RUN /usr/local/openresty/luajit/bin/luarocks install gumbo
+RUN opm get bungle/lua-resty-template
+# RUN /usr/local/openresty/luajit/bin/luarocks install gumbo
 COPY --from=approot / /
 
 CMD ["/docker-start.sh"]
