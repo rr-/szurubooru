@@ -79,6 +79,9 @@ elseif ngx.var.request_uri_path:match('^/post/([0-9]+)/?$') then -- Post metadat
       add_meta_tag("twitter:image", ngx.var.external_host_url .. '/' .. post_info.contentUrl)
     elseif post_info.type == "video" then
       og_media_prefix = "og:video"
+      add_meta_tag("twitter:card", "player")
+      add_meta_tag("twitter:player:width", post_info.canvasWidth)
+      add_meta_tag("twitter:player:height", post_info.canvasHeight)
       -- some sites don't preview video, so at least provide a thumbnail
       add_meta_tag("og:image", ngx.var.external_host_url .. '/' .. post_info.thumbnailUrl)
     end

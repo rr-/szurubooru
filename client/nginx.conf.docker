@@ -110,8 +110,12 @@ http {
 
         location /_meta_tags_html {
             internal;
+            set $original_scheme $scheme;
+            if ( $http_x_forwarded_proto = 'https' ) {
+                set $original_scheme "https";
+            }
             root /var/www;
-            set $external_host_url "${scheme}://${http_host}";
+            set $external_host_url "${original_scheme}://${http_host}";
             content_by_lua_file /etc/nginx/metatags.lua;
         }
 
