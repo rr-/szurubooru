@@ -99,18 +99,23 @@ local function generate_meta_tags ()
     end
   elseif ngx.var.request_uri_path:match('^/user/([^/]+)/?$') then -- User metadata
     local username = ngx.var.request_uri_path:match('^/user/([^/]+)/?$')
-    add_meta_tag("og:title", server_info.config.name .. " - " .. username)
-    add_meta_tag("og:type", "profile")
     -- check for permission to access user profiles
     if server_info.config.privileges["users:view"] == "anonymous" then
-      local user_info = cjson.decode((ngx.location.capture("/_internal_api/user/"..username)).body)
-      add_meta_tag("profile:username", user_info.name)
-      local avatar_url
-      avatar_url = user_info.avatarUrl
-      if avatar_url:match("^https?://") then
-        add_meta_tag("og:image", avatar_url)
+      local user_info_request = ngx.location.capture("/_internal_api/user/"..username)
+      add_meta_tag("og:type", "profile")
+      if user_info_request.status == 200 then
+        add_meta_tag("og:title", server_info.config.name .. " - " .. username)
+        local user_info = cjson.decode(user_info_request.body)
+        add_meta_tag("profile:username", user_info.name)
+        local avatar_url = user_info.avatarUrl
+        if avatar_url:match("^https?://") then
+          add_meta_tag("og:image", avatar_url)
+        else
+          add_meta_tag("og:image", ngx.var.external_host_url .. '/' .. avatar_url)
+        end
       else
-        add_meta_tag("og:image", ngx.var.external_host_url .. '/' .. avatar_url)
+        -- could not retrieve the user profile, show some defaults
+        add_meta_tag("og:title", server_info.config.name .. " - User not found")
       end
     else
       -- no permission to view user data
