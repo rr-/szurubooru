@@ -65,13 +65,15 @@ class PostUploadController {
                             uploadable,
                             e.detail.skipDuplicates,
                             e.detail.alwaysUploadSimilar
-                        )
-                        .catch((error) => {
+                        ).catch((error) => {
                             anyFailures = true;
                             if (error.uploadable) {
                                 if (error.similarPosts) {
-                                    error.uploadable.lookalikes = error.similarPosts;
-                                    this._view.updateUploadable(error.uploadable);
+                                    error.uploadable.lookalikes =
+                                        error.similarPosts;
+                                    this._view.updateUploadable(
+                                        error.uploadable
+                                    );
                                     this._view.showInfo(
                                         error.message,
                                         error.uploadable
@@ -92,19 +94,17 @@ class PostUploadController {
                     ),
                 Promise.resolve()
             )
-            .then(
-                () => {
-                    if (anyFailures) {
-                        this._view.showError(genericErrorMessage);
-                        this._view.enableForm();
-                    } else {
-                        this._view.clearMessages();
-                        misc.disableExitConfirmation();
-                        const ctx = router.show(uri.formatClientLink("posts"));
-                        ctx.controller.showSuccess("Posts uploaded.");
-                    }
+            .then(() => {
+                if (anyFailures) {
+                    this._view.showError(genericErrorMessage);
+                    this._view.enableForm();
+                } else {
+                    this._view.clearMessages();
+                    misc.disableExitConfirmation();
+                    const ctx = router.show(uri.formatClientLink("posts"));
+                    ctx.controller.showSuccess("Posts uploaded.");
                 }
-            );
+            });
     }
 
     _uploadSinglePost(uploadable, skipDuplicates, alwaysUploadSimilar) {
@@ -136,7 +136,10 @@ class PostUploadController {
                     }
 
                     // notify about similar posts
-                    if (searchResult.similarPosts.length && !alwaysUploadSimilar) {
+                    if (
+                        searchResult.similarPosts.length &&
+                        !alwaysUploadSimilar
+                    ) {
                         let error = new Error(
                             `Found ${searchResult.similarPosts.length} similar ` +
                                 "posts.\nYou can resume or discard this upload."
