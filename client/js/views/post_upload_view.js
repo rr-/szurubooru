@@ -1,6 +1,7 @@
 "use strict";
 
 const events = require("../events.js");
+const api = require("../api.js");
 const views = require("../util/views.js");
 const FileDropperControl = require("../controls/file_dropper_control.js");
 
@@ -34,7 +35,8 @@ class Uploadable extends events.EventTarget {
         this.flags = [];
         this.tags = [];
         this.relations = [];
-        this.anonymous = false;
+        this.anonymous = !api.isLoggedIn();
+        this.forceAnonymous = !api.isLoggedIn();
     }
 
     destroy() {}

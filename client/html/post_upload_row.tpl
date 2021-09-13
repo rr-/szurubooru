@@ -61,6 +61,7 @@
                             text: 'Upload anonymously',
                             name: 'anonymous',
                             checked: ctx.uploadable.anonymous,
+                            readonly: ctx.uploadable.forceAnonymous,
                         }) %>
                     </div>
                 <% } %>
