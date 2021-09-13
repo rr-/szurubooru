@@ -6,6 +6,7 @@ import shlex
 import subprocess
 from io import BytesIO
 from typing import List
+
 from PIL import Image as PILImage
 
 from szurubooru import errors
@@ -17,7 +18,7 @@ logger = logging.getLogger(__name__)
 def convert_heif_to_png(content: bytes) -> bytes:
     img = PILImage.open(BytesIO(content))
     img_byte_arr = BytesIO()
-    img.save(img_byte_arr, format='PNG')
+    img.save(img_byte_arr, format="PNG")
     return img_byte_arr.getvalue()
 
 

@@ -17,7 +17,7 @@ class HomeController {
             buildDate: config.meta.buildDate,
             canListSnapshots: api.hasPrivilege("snapshots:list"),
             canListPosts: api.hasPrivilege("posts:list"),
-            isDevelopmentMode: config.environment == "development"
+            isDevelopmentMode: config.environment == "development",
         });
 
         Info.get().then(

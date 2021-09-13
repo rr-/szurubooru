@@ -88,6 +88,7 @@ def is_animated_gif(content: bytes) -> bool:
         and len(re.findall(pattern, content)) > 1
     )
 
+
 def is_heif(mime_type: str) -> bool:
     return mime_type.lower() in (
         "image/heif",
