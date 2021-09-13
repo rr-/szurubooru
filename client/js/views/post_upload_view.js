@@ -358,6 +358,8 @@ class PostUploadView extends events.EventTarget {
                 detail: {
                     uploadables: this._uploadables,
                     skipDuplicates: this._skipDuplicatesCheckboxNode.checked,
+                    alwaysUploadSimilar: this._alwaysUploadSimilarCheckboxNode
+                        .checked,
                 },
             })
         );
@@ -419,6 +421,12 @@ class PostUploadView extends events.EventTarget {
 
     get _skipDuplicatesCheckboxNode() {
         return this._hostNode.querySelector("form [name=skip-duplicates]");
+    }
+
+    get _alwaysUploadSimilarCheckboxNode() {
+        return this._hostNode.querySelector(
+            "form [name=always-upload-similar]"
+        );
     }
 
     get _submitButtonNode() {
