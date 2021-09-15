@@ -1,0 +1,16 @@
+name: run-unit-tests
+on: [pull_request]
+jobs:
+  test-server:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Build test container
+        run: |
+          TAG=$(docker build --target testing -q ./server)
+          echo "image_tag=${TAG}" >> $GITHUB_ENV
+
+      - name: Run unit tests
+        run: docker run --rm -t ${{ env.image_tag }} --color=no szurubooru/
