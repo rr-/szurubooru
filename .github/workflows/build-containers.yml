@@ -4,6 +4,12 @@ jobs:
   build-client:
     runs-on: ubuntu-latest
     steps:
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
       - name: Checkout
         uses: actions/checkout@v2
         with:
@@ -26,9 +32,17 @@ jobs:
           echo "Build Info: ${BUILD_INFO}"
           echo "Build Date: ${BUILD_DATE}"
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+
       - name: Build container
         run: >
-          docker build
+          docker buildx build --push
+          --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6
           --build-arg BUILD_INFO=${{ env.build_info }}
           --build-arg BUILD_DATE=${{ env.build_date }}
           --build-arg SOURCE_COMMIT=$GITHUB_SHA
@@ -38,18 +52,15 @@ jobs:
           -t "szurubooru/client:${{ env.minor_tag }}"
           ./client
 
+  build-server:
+    runs-on: ubuntu-latest
+    steps:
       - name: Login to Docker Hub
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-      - name: Push containers
-        run: docker push -a szurubooru/client
-
-  build-server:
-    runs-on: ubuntu-latest
-    steps:
       - name: Checkout
         uses: actions/checkout@v2
         with:
@@ -72,9 +83,17 @@ jobs:
           echo "Build Info: ${BUILD_INFO}"
           echo "Build Date: ${BUILD_DATE}"
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+
       - name: Build container
         run: >
-          docker build
+          docker buildx build --push
+          --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6
           --build-arg BUILD_DATE=${{ env.build_date }}
           --build-arg SOURCE_COMMIT=$GITHUB_SHA
           --build-arg DOCKER_REPO=szurubooru/server
@@ -82,12 +101,3 @@ jobs:
           -t "szurubooru/server:${{ env.major_tag }}"
           -t "szurubooru/server:${{ env.minor_tag }}"
           ./server
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
-
-      - name: Push containers
-        run: docker push -a szurubooru/server
