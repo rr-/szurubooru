@@ -13,6 +13,14 @@
                 }) %>
             </span>
 
+            <span class='always-upload-similar'>
+                <%= ctx.makeCheckbox({
+                    text: 'Always upload similar',
+                    name: 'always-upload-similar',
+                    checked: false,
+                }) %>
+            </span>
+
             <input type='button' value='Cancel' class='cancel'/>
         </div>
 

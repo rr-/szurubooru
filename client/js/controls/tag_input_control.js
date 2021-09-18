@@ -196,11 +196,9 @@ class TagInputControl extends events.EventTarget {
                 const listItemNode = this._createListItemNode(tag);
                 if (!tag.category) {
                     listItemNode.classList.add("new");
-                }
-                else if (source === SOURCE_IMPLICATION) {
+                } else if (source === SOURCE_IMPLICATION) {
                     listItemNode.classList.add("implication");
-                }
-                else {
+                } else {
                     listItemNode.classList.add("added");
                 }
                 this._tagListNode.prependChild(listItemNode);
