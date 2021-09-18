@@ -65,11 +65,13 @@ local function generate_meta_tags ()
       add_meta_tag(og_media_prefix..":width", post_info.canvasWidth)
       add_meta_tag(og_media_prefix..":height", post_info.canvasHeight)
     end
-  elseif ngx.var.request_uri_path:match('^/post/([0-9]+)/?$') then -- Post metadata
+  elseif ngx.var.request_uri_path:match('^/post/([0-9]+)') then -- Post metadata
     -- check if posts are accessible to anonymous users:
     if server_info.config.privileges["posts:view"] == "anonymous" then
+      local match, err = ngx.re.match(ngx.var.request_uri_path, "^/post/(?<post_id>[0-9]+)")
+      local post_id = match["post_id"]
       add_meta_tag("og:type", "article")
-      local post_info = cjson.decode((ngx.location.capture("/_internal_api"..ngx.var.request_uri_path)).body)
+      local post_info = cjson.decode((ngx.location.capture("/_internal_api/post/"..post_id)).body)
       add_meta_tag("og:title", server_info.config.name .. " - Post " .. post_info.id)
       add_meta_tag("twitter:title", server_info.config.name .. " - Post " .. post_info.id)
       add_meta_tag("article:published_time", post_info.creationTime)
