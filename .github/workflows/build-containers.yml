@@ -42,7 +42,7 @@ jobs:
       - name: Build container
         run: >
           docker buildx build --push
-          --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6
+          --platform linux/amd64,linux/arm/v7,linux/arm64/v8
           --build-arg BUILD_INFO=${{ env.build_info }}
           --build-arg BUILD_DATE=${{ env.build_date }}
           --build-arg SOURCE_COMMIT=$GITHUB_SHA
@@ -93,7 +93,7 @@ jobs:
       - name: Build container
         run: >
           docker buildx build --push
-          --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6
+          --platform linux/amd64,linux/arm/v7,linux/arm64/v8
           --build-arg BUILD_DATE=${{ env.build_date }}
           --build-arg SOURCE_COMMIT=$GITHUB_SHA
           --build-arg DOCKER_REPO=szurubooru/server
