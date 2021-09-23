@@ -145,8 +145,9 @@ def test_trying_to_update_without_privileges(
         )
 
 
+@pytest.mark.parametrize("type", ["suggestions", "implications"])
 def test_trying_to_create_tags_without_privileges(
-    config_injector, context_factory, tag_factory, user_factory
+    config_injector, context_factory, tag_factory, user_factory, type
 ):
     tag = tag_factory(names=["tag"])
     db.session.add(tag)
@@ -165,16 +166,7 @@ def test_trying_to_create_tags_without_privileges(
         with pytest.raises(errors.AuthError):
             api.tag_api.update_tag(
                 context_factory(
-                    params={"suggestions": ["tag1", "tag2"], "version": 1},
-                    user=user_factory(rank=model.User.RANK_REGULAR),
-                ),
-                {"tag_name": "tag"},
-            )
-        db.session.rollback()
-        with pytest.raises(errors.AuthError):
-            api.tag_api.update_tag(
-                context_factory(
-                    params={"implications": ["tag1", "tag2"], "version": 1},
+                    params={type: ["tag1", "tag2"], "version": 1},
                     user=user_factory(rank=model.User.RANK_REGULAR),
                 ),
                 {"tag_name": "tag"},

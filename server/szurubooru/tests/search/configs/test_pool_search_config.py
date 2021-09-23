@@ -136,8 +136,6 @@ def test_escaping(
     )
     db.session.flush()
 
-    if db_driver and db.session.get_bind().driver != db_driver:
-        pytest.xfail()
     if expected_pool_names is None:
         with pytest.raises(errors.SearchError):
             executor.execute(input, offset=0, limit=100)

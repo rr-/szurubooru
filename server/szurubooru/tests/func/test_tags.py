@@ -513,15 +513,14 @@ def test_update_tag_names_trying_to_use_taken_name(
         tags.update_tag_names(tag, ["A"])
 
 
-def test_update_tag_names_reusing_own_name(config_injector, tag_factory):
+@pytest.mark.parametrize("name", list("aA"))
+def test_update_tag_names_reusing_own_name(config_injector, tag_factory, name):
     config_injector({"tag_name_regex": "^[a-zA-Z]*$"})
-    for name in list("aA"):
-        tag = tag_factory(names=["a"])
-        db.session.add(tag)
-        db.session.flush()
-        tags.update_tag_names(tag, [name])
-        assert [tag_name.name for tag_name in tag.names] == [name]
-        db.session.rollback()
+    tag = tag_factory(names=["a"])
+    db.session.add(tag)
+    db.session.flush()
+    tags.update_tag_names(tag, [name])
+    assert [tag_name.name for tag_name in tag.names] == [name]
 
 
 def test_update_tag_names_changing_primary_name(config_injector, tag_factory):
@@ -533,7 +532,6 @@ def test_update_tag_names_changing_primary_name(config_injector, tag_factory):
     db.session.flush()
     db.session.refresh(tag)
     assert [tag_name.name for tag_name in tag.names] == ["b", "a"]
-    db.session.rollback()
 
 
 @pytest.mark.parametrize("attempt", ["name", "NAME", "alias", "ALIAS"])
