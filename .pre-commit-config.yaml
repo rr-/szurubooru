@@ -83,17 +83,6 @@ repos:
         files: server/szurubooru/
         exclude: server/szurubooru/migrations/
         pass_filenames: false
-        stages: [push]
-
-    -   id: pytest-cov
-        name: pytest
-        entry: bash -c 'docker run --rm -t $(docker build --target testing -q server/) --cov-report=term-missing:skip-covered --cov=szurubooru szurubooru/'
-        language: system
-        types: [python]
-        files: server/szurubooru/
-        exclude: server/szurubooru/migrations/
-        pass_filenames: false
-        verbose: true
         stages: [manual]
 
 fail_fast: true

@@ -1,7 +1,8 @@
-name: build-containers
+name: Build Docker containers
 on: [push]
 jobs:
   build-client:
+    name: Build and push client/ Docker container
     runs-on: ubuntu-latest
     steps:
       - name: Login to Docker Hub
@@ -53,6 +54,7 @@ jobs:
           ./client
 
   build-server:
+    name: Build and push server/ Docker container
     runs-on: ubuntu-latest
     steps:
       - name: Login to Docker Hub
