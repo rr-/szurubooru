@@ -4,36 +4,47 @@ from typing import Callable, Dict
 from szurubooru.rest.context import Context, Response
 
 RouteHandler = Callable[[Context, Dict[str, str]], Response]
-routes = defaultdict(dict)  # type: Dict[str, Dict[str, RouteHandler]]
+routes = {  # type: Dict[Dict[str, Dict[str, RouteHandler]]]
+    "application/json": defaultdict(dict),
+    "text/html": defaultdict(dict),
+}
 
 
-def get(url: str) -> Callable[[RouteHandler], RouteHandler]:
+def get(
+    url: str, accept: str = "application/json"
+) -> Callable[[RouteHandler], RouteHandler]:
     def wrapper(handler: RouteHandler) -> RouteHandler:
-        routes[url]["GET"] = handler
+        routes[accept][url]["GET"] = handler
         return handler
 
     return wrapper
 
 
-def put(url: str) -> Callable[[RouteHandler], RouteHandler]:
+def put(
+    url: str, accept: str = "application/json"
+) -> Callable[[RouteHandler], RouteHandler]:
     def wrapper(handler: RouteHandler) -> RouteHandler:
-        routes[url]["PUT"] = handler
+        routes[accept][url]["PUT"] = handler
         return handler
 
     return wrapper
 
 
-def post(url: str) -> Callable[[RouteHandler], RouteHandler]:
+def post(
+    url: str, accept: str = "application/json"
+) -> Callable[[RouteHandler], RouteHandler]:
     def wrapper(handler: RouteHandler) -> RouteHandler:
-        routes[url]["POST"] = handler
+        routes[accept][url]["POST"] = handler
         return handler
 
     return wrapper
 
 
-def delete(url: str) -> Callable[[RouteHandler], RouteHandler]:
+def delete(
+    url: str, accept: str = "application/json"
+) -> Callable[[RouteHandler], RouteHandler]:
     def wrapper(handler: RouteHandler) -> RouteHandler:
-        routes[url]["DELETE"] = handler
+        routes[accept][url]["DELETE"] = handler
         return handler
 
     return wrapper

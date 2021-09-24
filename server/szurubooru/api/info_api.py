@@ -64,3 +64,31 @@ def get_info(ctx: rest.Context, _params: Dict[str, str] = {}) -> rest.Response:
         )
         ret["featuringTime"] = post_feature.time if post_feature else None
     return ret
+
+
+@rest.routes.get(r"/manifest\.json")
+def generate_manifest(
+    ctx: rest.Context, _params: Dict[str, str] = {}
+) -> rest.Response:
+    return {
+        "name": config.config["name"],
+        "icons": [
+            {
+                # TODO: Host Header and Proxy Prefix
+                "src": "img/android-chrome-192x192.png",
+                "type": "image/png",
+                "sizes": "192x192",
+            },
+            {
+                # TODO: Host Header and Proxy Prefix
+                "src": "img/android-chrome-512x512.png",
+                "type": "image/png",
+                "sizes": "512x512",
+            },
+        ],
+        # TODO: Host Header and Proxy Prefix
+        "start_url": "/",
+        "theme_color": "#24aadd",
+        "background_color": "#ffffff",
+        "display": "standalone",
+    }
