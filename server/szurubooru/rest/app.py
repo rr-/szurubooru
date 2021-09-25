@@ -5,7 +5,7 @@ import urllib.parse
 from datetime import datetime
 from typing import Any, Callable, Dict, Tuple
 
-from szurubooru import db
+from szurubooru import config, db
 from szurubooru.func import util
 from szurubooru.rest import context, errors, middleware, routes
 
@@ -40,6 +40,23 @@ def _create_context(env: Dict[str, Any]) -> context.Context:
     path = "/" + env["PATH_INFO"].lstrip("/")
     path = path.encode("latin-1").decode("utf-8")  # PEP-3333
     headers = _get_headers(env)
+    _raw_accept = headers.get("Accept", "text/html")
+
+    if "application/json" in _raw_accept:
+        accept = "application/json"
+    elif "text/html" in _raw_accept:
+        accept = "text/html"
+    else:
+        raise errors.HttpNotAcceptable(
+            "ValidationError",
+            "This API only supports the following response types: "
+            "application/json, text/html",
+        )
+
+    if config.config["domain"]:
+        url_prefix = config.config["domain"].rstrip("/")
+    else:
+        url_prefix = headers.get("X-Forwarded-Prefix", "")
 
     files = {}
     params = dict(urllib.parse.parse_qsl(env.get("QUERY_STRING", "")))
@@ -70,27 +87,17 @@ def _create_context(env: Dict[str, Any]) -> context.Context:
                 "was incorrect or was not encoded as UTF-8.",
             )
 
-    return context.Context(env, method, path, headers, params, files)
+    return context.Context(
+        env, method, path, headers, accept, url_prefix, params, files
+    )
 
 
 def application(
     env: Dict[str, Any], start_response: Callable[[str, Any], Any]
 ) -> Tuple[bytes]:
-    accept = None
     try:
         ctx = _create_context(env)
-        if "application/json" in ctx.get_header("Accept"):
-            accept = "application/json"
-        elif "text/html" in (ctx.get_header("Accept") or "text/html"):
-            accept = "text/html"
-        else:
-            raise errors.HttpNotAcceptable(
-                "ValidationError",
-                "This API only supports the following response types: "
-                ", ".join(routes.routes.keys()),
-            )
-
-        for url, allowed_methods in routes.routes[accept].items():
+        for url, allowed_methods in routes.routes[ctx.accept].items():
             match = re.fullmatch(url, ctx.url)
             if match:
                 if ctx.method not in allowed_methods:
@@ -122,9 +129,9 @@ def application(
             finally:
                 db.session.remove()
 
-            start_response("200", [("content-type", accept)])
+            start_response("200", [("content-type", ctx.accept)])
             return (
-                _serialize_response_body(response, accept).encode("utf-8"),
+                _serialize_response_body(response, ctx.accept).encode("utf-8"),
             )
 
         except Exception as ex:
@@ -136,7 +143,7 @@ def application(
     except errors.BaseHttpError as ex:
         start_response(
             "%d %s" % (ex.code, ex.reason),
-            [("content-type", accept or "application/json")],
+            [("content-type", "application/json")],
         )
         blob = {
             "name": ex.name,

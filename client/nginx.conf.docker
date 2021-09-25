@@ -19,6 +19,9 @@ http {
     server_tokens off;
     keepalive_timeout 65;
 
+    proxy_cache_path /tmp/nginx-cache
+        levels=1:2 keys_zone=spa_cache:1m max_size=50m inactive=60m use_temp_path=off;
+
     upstream backend {
         server __BACKEND__:6666;
     }
@@ -49,6 +52,14 @@ http {
             gzip_min_length 20;
             gzip_proxied expired no-cache no-store private auth;
             gzip_types text/plain application/json;
+
+            if ($http_x_forwarded_host = '') {
+                set $http_x_forwarded_host $host;
+            }
+
+            if ($http_x_forwarded_proto = '') {
+                set $http_x_forwarded_proto 'http';
+            }
 
             if ($request_uri ~* "/api/(.*)") {
                 proxy_pass http://backend/$1;
@@ -84,6 +95,29 @@ http {
 
         location / {
             tcp_nodelay on;
+
+            proxy_cache spa_cache;
+            proxy_cache_use_stale error timeout updating http_500 http_502 http_503 http_504;
+            proxy_cache_background_update on;
+            proxy_cache_lock on;
+
+            gzip on;
+            gzip_comp_level 3;
+            gzip_min_length 20;
+            gzip_proxied any;
+            gzip_types text/plain application/json;
+
+            if ( $http_accept ~ "application/json" ) {
+                return 406 "API requests should be sent to the /api prefix";
+            }
+
+            if ($http_x_forwarded_host = '') {
+                set $http_x_forwarded_host $host;
+            }
+
+            if ($http_x_forwarded_proto = '') {
+                set $http_x_forwarded_proto 'http';
+            }
 
             proxy_pass http://backend;
 

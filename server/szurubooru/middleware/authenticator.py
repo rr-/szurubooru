@@ -73,10 +73,11 @@ def _get_user(ctx: rest.Context, bump_login: bool) -> Optional[model.User]:
 
 def process_request(ctx: rest.Context) -> None:
     """ Bind the user to request. Update last login time if needed. """
-    bump_login = ctx.get_param_as_bool("bump-login", default=False)
-    auth_user = _get_user(ctx, bump_login)
-    if auth_user:
-        ctx.user = auth_user
+    if ctx.accept == "application/json":
+        bump_login = ctx.get_param_as_bool("bump-login", default=False)
+        auth_user = _get_user(ctx, bump_login)
+        if auth_user:
+            ctx.user = auth_user
 
 
 @rest.middleware.pre_hook

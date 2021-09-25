@@ -15,12 +15,16 @@ class Context:
         method: str,
         url: str,
         headers: Dict[str, str] = None,
+        accept: str = None,
+        url_prefix: str = None,
         params: Request = None,
         files: Dict[str, bytes] = None,
     ) -> None:
         self.env = env
         self.method = method
         self.url = url
+        self.accept = accept
+        self.url_prefix = url_prefix
         self._headers = headers or {}
         self._params = params or {}
         self._files = files or {}

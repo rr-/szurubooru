@@ -62,7 +62,7 @@ _apple_touch_startup_images = {
 
 
 def _get_html_template(
-    meta_tags: Dict = {}, title: str = config.config["name"]
+    meta_tags: Dict = {}, title: str = config.config["name"], prefix: str = ""
 ) -> Doc:
     doc = Doc()
     doc.asis("<!DOCTYPE html>")
@@ -73,18 +73,19 @@ def _get_html_template(
                 doc.stag("meta", name=name, content=content)
             with doc.tag("title"):
                 doc.text(title)
-            # TODO: Host Header and Proxy Prefix
-            doc.stag("base", href="/")
-            doc.stag("link", rel="manifest", href="/manifest.json")
+            doc.stag("base", href=f"{prefix}/")
+            doc.stag(
+                "link", rel="manifest", href=f"{prefix}/api/manifest.json"
+            )
             doc.stag(
                 "link",
-                href="css/app.min.css",
+                href=f"{prefix}/css/app.min.css",
                 rel="stylesheet",
                 type="text/css",
             )
             doc.stag(
                 "link",
-                href="css/vendor.min.css",
+                href=f"{prefix}/css/vendor.min.css",
                 rel="stylesheet",
                 type="text/css",
             )
@@ -92,19 +93,19 @@ def _get_html_template(
                 "link",
                 rel="shortcut icon",
                 type="image/png",
-                href="img/favicon.png",
+                href=f"{prefix}/img/favicon.png",
             )
             doc.stag(
                 "link",
                 rel="apple-touch-icon",
                 sizes="180x180",
-                href="img/apple-touch-icon.png",
+                href=f"{prefix}/img/apple-touch-icon.png",
             )
             for res, media in _apple_touch_startup_images.items():
                 doc.stag(
                     "link",
                     rel="apple-touch-startup-image",
-                    href=f"img/apple-touch-startup-image-{res}.png",
+                    href=f"{prefix}/img/apple-touch-startup-image-{res}.png",
                     media=" and ".join(
                         f"({k}: {v})" for k, v in media.items()
                     ),
@@ -148,21 +149,25 @@ def get_post_html(
     except posts.InvalidPostIdError:
         # Return the default template and let the browser JS handle the 404
         return _get_html_template()
+
     metadata = {
         "og:site_name": config.config["name"],
         "og:type": "image",
         "og:title": title,
-        # TODO: Host Header and Proxy Prefix
-        "og:url": f"{config.config['domain'] or ''}/post/{params['post_id']}",
+        "og:url": f"{ctx.url_prefix}/post/{params['post_id']}",
     }
+    # Note: ctx.user will always be the anonymous user
     if auth.has_privilege(ctx.user, "posts:view"):
         # TODO: Host Header and Proxy Prefix
         metadata["og:image"] = posts.get_post_content_url(post)
-    return _get_html_template(meta_tags=metadata, title=title)
+
+    return _get_html_template(
+        meta_tags=metadata, title=title, prefix=ctx.url_prefix
+    )
 
 
 @rest.routes.get("/.*", accept="text/html")
 def default_route(
     ctx: rest.Context, _params: Dict[str, str] = {}
 ) -> rest.Response:
-    return _get_html_template()
+    return _get_html_template(prefix=ctx.url_prefix)

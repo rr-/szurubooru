@@ -74,20 +74,17 @@ def generate_manifest(
         "name": config.config["name"],
         "icons": [
             {
-                # TODO: Host Header and Proxy Prefix
-                "src": "img/android-chrome-192x192.png",
+                "src": f"{ctx.url_prefix}/img/android-chrome-192x192.png",
                 "type": "image/png",
                 "sizes": "192x192",
             },
             {
-                # TODO: Host Header and Proxy Prefix
-                "src": "img/android-chrome-512x512.png",
+                "src": f"{ctx.url_prefix}/img/android-chrome-512x512.png",
                 "type": "image/png",
                 "sizes": "512x512",
             },
         ],
-        # TODO: Host Header and Proxy Prefix
-        "start_url": "/",
+        "start_url": f"{ctx.url_prefix}/",
         "theme_color": "#24aadd",
         "background_color": "#ffffff",
         "display": "standalone",
