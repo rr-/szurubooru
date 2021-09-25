@@ -53,14 +53,6 @@ http {
             gzip_proxied expired no-cache no-store private auth;
             gzip_types text/plain application/json;
 
-            if ($http_x_forwarded_host = '') {
-                set $http_x_forwarded_host $host;
-            }
-
-            if ($http_x_forwarded_proto = '') {
-                set $http_x_forwarded_proto 'http';
-            }
-
             if ($request_uri ~* "/api/(.*)") {
                 proxy_pass http://backend/$1;
             }
@@ -111,15 +103,9 @@ http {
                 return 406 "API requests should be sent to the /api prefix";
             }
 
-            if ($http_x_forwarded_host = '') {
-                set $http_x_forwarded_host $host;
+            if ($request_uri ~* "/(.*)") {
+                proxy_pass http://backend/html/$1;
             }
-
-            if ($http_x_forwarded_proto = '') {
-                set $http_x_forwarded_proto 'http';
-            }
-
-            proxy_pass http://backend;
 
             error_page 500 502 503 504 @badproxy;
         }

@@ -9,9 +9,24 @@ from szurubooru.rest import errors
 
 
 def test_process_request_no_header(context_factory):
-    ctx = context_factory()
+    ctx = context_factory(accept="application/json")
     authenticator.process_request(ctx)
     assert ctx.user.name is None
+
+
+def test_process_request_non_rest(context_factory, user_factory):
+    user = user_factory()
+    ctx = context_factory(
+        headers={"Authorization": "Basic dGVzdFVzZXI6dGVzdFBhc3N3b3Jk"},
+        accept="text/html",
+    )
+    with patch("szurubooru.func.auth.is_valid_password"), patch(
+        "szurubooru.func.users.get_user_by_name"
+    ):
+        users.get_user_by_name.return_value = user
+        auth.is_valid_password.return_value = True
+        authenticator.process_request(ctx)
+        assert ctx.user.name is None
 
 
 def test_process_request_bump_login(context_factory, user_factory):
@@ -21,6 +36,7 @@ def test_process_request_bump_login(context_factory, user_factory):
     ctx = context_factory(
         headers={"Authorization": "Basic dGVzdFVzZXI6dGVzdFRva2Vu"},
         params={"bump-login": "true"},
+        accept="application/json",
     )
     with patch("szurubooru.func.auth.is_valid_password"), patch(
         "szurubooru.func.users.get_user_by_name"
@@ -40,6 +56,7 @@ def test_process_request_bump_login_with_token(
     ctx = context_factory(
         headers={"Authorization": "Token dGVzdFVzZXI6dGVzdFRva2Vu"},
         params={"bump-login": "true"},
+        accept="application/json",
     )
     with patch("szurubooru.func.auth.is_valid_token"), patch(
         "szurubooru.func.users.get_user_by_name"
@@ -55,7 +72,8 @@ def test_process_request_bump_login_with_token(
 def test_process_request_basic_auth_valid(context_factory, user_factory):
     user = user_factory()
     ctx = context_factory(
-        headers={"Authorization": "Basic dGVzdFVzZXI6dGVzdFBhc3N3b3Jk"}
+        headers={"Authorization": "Basic dGVzdFVzZXI6dGVzdFBhc3N3b3Jk"},
+        accept="application/json",
     )
     with patch("szurubooru.func.auth.is_valid_password"), patch(
         "szurubooru.func.users.get_user_by_name"
@@ -69,7 +87,8 @@ def test_process_request_basic_auth_valid(context_factory, user_factory):
 def test_process_request_token_auth_valid(context_factory, user_token_factory):
     user_token = user_token_factory()
     ctx = context_factory(
-        headers={"Authorization": "Token dGVzdFVzZXI6dGVzdFRva2Vu"}
+        headers={"Authorization": "Token dGVzdFVzZXI6dGVzdFRva2Vu"},
+        accept="application/json",
     )
     with patch("szurubooru.func.auth.is_valid_token"), patch(
         "szurubooru.func.users.get_user_by_name"
@@ -82,6 +101,9 @@ def test_process_request_token_auth_valid(context_factory, user_token_factory):
 
 
 def test_process_request_bad_header(context_factory):
-    ctx = context_factory(headers={"Authorization": "Secret SuperSecretValue"})
+    ctx = context_factory(
+        headers={"Authorization": "Secret SuperSecretValue"},
+        accept="application/json",
+    )
     with pytest.raises(errors.HttpBadRequest):
         authenticator.process_request(ctx)

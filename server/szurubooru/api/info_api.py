@@ -66,7 +66,7 @@ def get_info(ctx: rest.Context, _params: Dict[str, str] = {}) -> rest.Response:
     return ret
 
 
-@rest.routes.get(r"/manifest\.json")
+@rest.routes.get(r"/manifest(?:\.json)?")
 def generate_manifest(
     ctx: rest.Context, _params: Dict[str, str] = {}
 ) -> rest.Response:

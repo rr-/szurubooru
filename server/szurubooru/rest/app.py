@@ -21,8 +21,8 @@ def _json_serializer(obj: Any) -> str:
 def _serialize_response_body(obj: Any, accept: str) -> str:
     if accept == "application/json":
         return json.dumps(obj, default=_json_serializer, indent=2)
-    if accept == "text/html":
-        return obj.getvalue()
+    if "text/" in accept:
+        return obj
     raise ValueError("Unhandled response type %s" % accept)
 
 
@@ -40,18 +40,6 @@ def _create_context(env: Dict[str, Any]) -> context.Context:
     path = "/" + env["PATH_INFO"].lstrip("/")
     path = path.encode("latin-1").decode("utf-8")  # PEP-3333
     headers = _get_headers(env)
-    _raw_accept = headers.get("Accept", "text/html")
-
-    if "application/json" in _raw_accept:
-        accept = "application/json"
-    elif "text/html" in _raw_accept:
-        accept = "text/html"
-    else:
-        raise errors.HttpNotAcceptable(
-            "ValidationError",
-            "This API only supports the following response types: "
-            "application/json, text/html",
-        )
 
     if config.config["domain"]:
         url_prefix = config.config["domain"].rstrip("/")
@@ -88,7 +76,13 @@ def _create_context(env: Dict[str, Any]) -> context.Context:
             )
 
     return context.Context(
-        env, method, path, headers, accept, url_prefix, params, files
+        env=env,
+        method=method,
+        url=path,
+        headers=headers,
+        url_prefix=url_prefix,
+        params=params,
+        files=files,
     )
 
 
@@ -97,15 +91,32 @@ def application(
 ) -> Tuple[bytes]:
     try:
         ctx = _create_context(env)
-        for url, allowed_methods in routes.routes[ctx.accept].items():
+        for url, allowed_methods in routes.routes.items():
             match = re.fullmatch(url, ctx.url)
             if match:
                 if ctx.method not in allowed_methods:
                     raise errors.HttpMethodNotAllowed(
                         "ValidationError",
-                        "Allowed methods: %r" % allowed_methods,
+                        "Allowed methods: %s"
+                        % ", ".join(allowed_methods.keys()),
                     )
-                handler = allowed_methods[ctx.method]
+                handler, allowed_accept = allowed_methods[ctx.method]
+                if not any(
+                    map(
+                        lambda a: a in ctx.get_header("Accept"),
+                        [
+                            allowed_accept,
+                            allowed_accept.split("/")[0] + "/*",
+                            "*/*",
+                        ],
+                    )
+                ):
+                    raise errors.HttpNotAcceptable(
+                        "ValidationError",
+                        "This route only supports %s responses."
+                        % allowed_accept,
+                    )
+                ctx.accept = allowed_accept
                 break
         else:
             raise errors.HttpNotFound(

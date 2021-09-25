@@ -67,12 +67,13 @@ def nontransacted_session(query_logger, postgresql_db):
 
 @pytest.fixture
 def context_factory(session):
-    def factory(params=None, files=None, user=None, headers=None):
+    def factory(params=None, files=None, user=None, headers=None, accept=None):
         ctx = rest.Context(
             env={"HTTP_ORIGIN": "http://example.com"},
             method=None,
             url=None,
             headers=headers or {},
+            accept=accept or None,
             params=params or {},
             files=files or {},
         )

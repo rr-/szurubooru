@@ -27,11 +27,13 @@ def test_reset_sending_email(context_factory, user_factory):
         )
     )
     db.session.flush()
+    ctx = context_factory()
+    ctx.url_prefix = "http://example.com"
     for initiating_user in ["u1", "user@example.com"]:
         with patch("szurubooru.func.mailer.send_mail"):
             assert (
                 api.password_reset_api.start_password_reset(
-                    context_factory(), {"user_name": initiating_user}
+                    ctx, {"user_name": initiating_user}
                 )
                 == {}
             )

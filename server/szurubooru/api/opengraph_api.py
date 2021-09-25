@@ -123,7 +123,7 @@ def _get_html_template(
                 "script", type="text/javascript", src="js/app.min.js"
             ):
                 pass
-    return doc
+    return doc.getvalue()
 
 
 def _get_post_id(params: Dict[str, str]) -> int:
@@ -139,7 +139,7 @@ def _get_post(params: Dict[str, str]) -> model.Post:
     return posts.get_post_by_id(_get_post_id(params))
 
 
-@rest.routes.get("/post/(?P<post_id>[^/]+)/?", accept="text/html")
+@rest.routes.get("/html/post/(?P<post_id>[^/]+)/?", accept="text/html")
 def get_post_html(
     ctx: rest.Context, params: Dict[str, str] = {}
 ) -> rest.Response:
@@ -166,7 +166,7 @@ def get_post_html(
     )
 
 
-@rest.routes.get("/.*", accept="text/html")
+@rest.routes.get("/html/.*", accept="text/html")
 def default_route(
     ctx: rest.Context, _params: Dict[str, str] = {}
 ) -> rest.Response:

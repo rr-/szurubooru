@@ -89,8 +89,12 @@ user@host:szuru$ docker-compose down
 
     Some users may wish to access the service at a different base URI, such
     as `http://example.com/szuru/`, commonly when sharing multiple HTTP
-    services on one domain using a reverse proxy. In this case, simply set
-    `BASE_URL="/szuru/"` in your `.env` file.
+    services on one domain using a reverse proxy. This can be configured in
+    either of the following ways:
+
+    - Set the 'domain' value in `config.yaml` to include the prefix, i.e.:
+      `domain: "http://example.com/szuru"  # omit trailing slash`
+    - Configure the reverse proxy to pass the `X-Forwarded-Prefix` header.
 
     Note that this will require a reverse proxy to function. You should set
     your reverse proxy to proxy `http(s)://example.com/szuru` to
@@ -102,14 +106,16 @@ user@host:szuru$ docker-compose down
         proxy_http_version 1.1;
         proxy_pass http://<internal IP or hostname of frontend container>/;
 
-        proxy_set_header Host              $http_host;
-        proxy_set_header Upgrade           $http_upgrade;
-        proxy_set_header Connection        "upgrade";
-        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
-        proxy_set_header X-Scheme          $scheme;
-        proxy_set_header X-Real-IP         $remote_addr;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header X-Script-Name     /szuru;
+        proxy_set_header Host               $http_host;
+        proxy_set_header Upgrade            $http_upgrade;
+        proxy_set_header Connection         "upgrade";
+        proxy_set_header X-Forwarded-Prefix /szuru;
+
+        // optional...
+        proxy_set_header X-Forwarded-For    $proxy_add_x_forwarded_for;
+        proxy_set_header X-Scheme           $scheme;
+        proxy_set_header X-Real-IP          $remote_addr;
+        proxy_set_header X-Forwarded-Proto  $scheme;
     }
     ```
 
