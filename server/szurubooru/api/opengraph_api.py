@@ -145,22 +145,44 @@ def get_post_html(
 ) -> rest.Response:
     try:
         post = _get_post(params)
-        title = f"Post {_get_post_id(params)} - {config.config['name']}"
+        title = f"{config.config['name']} - post {_get_post_id(params)}"
     except posts.InvalidPostIdError:
         # Return the default template and let the browser JS handle the 404
         return _get_html_template()
 
     metadata = {
         "og:site_name": config.config["name"],
-        "og:type": "image",
-        "og:title": title,
         "og:url": f"{ctx.url_prefix}/post/{params['post_id']}",
+        "og:title": title,
+        "twitter:title": title,
+        "og:type": "article",
     }
     # Note: ctx.user will always be the anonymous user
     if auth.has_privilege(ctx.user, "posts:view"):
-        # TODO: Host Header and Proxy Prefix
-        metadata["og:image"] = posts.get_post_content_url(post)
-
+        metadata["og:article:published_time"] = post.creation_time.isoformat()
+        if post.last_edit_time:
+            metadata[
+                "og:article:modified_time"
+            ] = post.last_edit_time.isoformat()
+        metadata["og:image:alt"] = " ".join(
+            tag.first_name for tag in post.tags
+        )
+        if post.type in (model.Post.TYPE_VIDEO):
+            metadata["twitter:card"] = "player"
+            metadata["og:video:url"] = posts.get_post_content_url(post)
+            metadata["twitter:player:stream"] = posts.get_post_content_url(
+                post
+            )
+            metadata["og:image:url"] = posts.get_post_thumbnail_url(post)
+            if post.canvas_width and post.canvas_height:
+                metadata["og:video:width"] = str(post.canvas_width)
+                metadata["og:video:height"] = str(post.canvas_height)
+                metadata["twitter:player:width"] = str(post.canvas_width)
+                metadata["twitter:player:height"] = str(post.canvas_height)
+        else:
+            metadata["twitter:card"] = "summary_large_image"
+            metadata["og:image:url"] = posts.get_post_content_url(post)
+            metadata["twitter:image"] = posts.get_post_content_url(post)
     return _get_html_template(
         meta_tags=metadata, title=title, prefix=ctx.url_prefix
     )
