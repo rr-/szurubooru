@@ -3,10 +3,27 @@
 
 # shown in the website title and on the front page
 name: szurubooru
-# full url to the homepage of this szurubooru site, with no trailing slash
-domain: # example: http://example.com
 # used to salt the users' password hashes and generate filenames for static content
 secret: change
+
+# set to the root web address for your instance
+# example values:
+# - `/` (default) is used when the domain is unknown
+# - `https://szuru.example.com/` if you know the specific domain
+#      and is required if you want email-based password reset
+# - `/baseprefix` if you want to host szurubooru on a specific
+#      prefix and share the domain with other applications
+# - `https://www.example.com/szuru` combines both of the above
+# also see: "Setting a specific base URI for proxying" in INSTALL.md
+base_url: /
+
+# !!should not be changed for the normal docker installation!!
+# set to the root web address for static image content
+# if it is a relative path with no leading `/`, then this will be
+# appended to the base url.
+# see: "Using a seperate domain to host static files" in INSTALL.md
+# for more info on when to modify
+data_url: data/
 
 # Delete thumbnails and source files on post delete
 # Original functionality is no, to mitigate the impacts of admins going
@@ -171,7 +188,6 @@ privileges:
 ## ONLY SET THESE IF DEPLOYING OUTSIDE OF DOCKER
 #debug: 0 # generate server logs?
 #show_sql: 0 # show sql in server logs?
-#data_url: /data/
 #data_dir: /var/www/data
 ## usage: schema://user:password@host:port/database_name
 ## example: postgres://szuru:dog@localhost:5432/szuru_test

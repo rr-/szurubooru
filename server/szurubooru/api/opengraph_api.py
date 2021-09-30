@@ -1,9 +1,9 @@
-from typing import Dict
+from typing import Callable, Dict
 
 from yattag import Doc
 
 from szurubooru import config, model, rest
-from szurubooru.func import auth, posts
+from szurubooru.func import auth, posts, util
 
 _default_meta_tags = {
     "viewport": "width=device-width, initial-scale=1, maximum-scale=1",
@@ -62,7 +62,8 @@ _apple_touch_startup_images = {
 
 
 def _get_html_template(
-    meta_tags: Dict = {}, title: str = config.config["name"], prefix: str = ""
+    title: str,
+    meta_tags: Dict = {},
 ) -> Doc:
     doc = Doc()
     doc.asis("<!DOCTYPE html>")
@@ -73,19 +74,21 @@ def _get_html_template(
                 doc.stag("meta", name=name, content=content)
             with doc.tag("title"):
                 doc.text(title)
-            doc.stag("base", href=f"{prefix}/")
+            doc.stag("base", href=util.add_url_prefix())
             doc.stag(
-                "link", rel="manifest", href=f"{prefix}/api/manifest.json"
+                "link",
+                rel="manifest",
+                href=util.add_url_prefix("/api/manifest.json"),
             )
             doc.stag(
                 "link",
-                href=f"{prefix}/css/app.min.css",
+                href=util.add_url_prefix("/css/app.min.css"),
                 rel="stylesheet",
                 type="text/css",
             )
             doc.stag(
                 "link",
-                href=f"{prefix}/css/vendor.min.css",
+                href=util.add_url_prefix("/css/vendor.min.css"),
                 rel="stylesheet",
                 type="text/css",
             )
@@ -93,19 +96,21 @@ def _get_html_template(
                 "link",
                 rel="shortcut icon",
                 type="image/png",
-                href=f"{prefix}/img/favicon.png",
+                href=util.add_url_prefix("/img/favicon.png"),
             )
             doc.stag(
                 "link",
                 rel="apple-touch-icon",
                 sizes="180x180",
-                href=f"{prefix}/img/apple-touch-icon.png",
+                href=util.add_url_prefix("/img/apple-touch-icon.png"),
             )
             for res, media in _apple_touch_startup_images.items():
                 doc.stag(
                     "link",
                     rel="apple-touch-startup-image",
-                    href=f"{prefix}/img/apple-touch-startup-image-{res}.png",
+                    href=util.add_url_prefix(
+                        f"/img/apple-touch-startup-image-{res}.png"
+                    ),
                     media=" and ".join(
                         f"({k}: {v})" for k, v in media.items()
                     ),
@@ -116,11 +121,15 @@ def _get_html_template(
             with doc.tag("div", id="content-holder"):
                 pass
             with doc.tag(
-                "script", type="text/javascript", src="js/vendor.min.js"
+                "script",
+                type="text/javascript",
+                src=util.add_url_prefix("js/vendor.min.js"),
             ):
                 pass
             with doc.tag(
-                "script", type="text/javascript", src="js/app.min.js"
+                "script",
+                type="text/javascript",
+                src=util.add_url_prefix("js/app.min.js"),
             ):
                 pass
     return doc.getvalue()
@@ -152,13 +161,17 @@ def get_post_html(
 
     metadata = {
         "og:site_name": config.config["name"],
-        "og:url": f"{ctx.url_prefix}/post/{params['post_id']}",
+        "og:url": util.add_url_prefix(f"post/{params['post_id']}"),
         "og:title": title,
         "twitter:title": title,
         "og:type": "article",
     }
     # Note: ctx.user will always be the anonymous user
     if auth.has_privilege(ctx.user, "posts:view"):
+        content_url = util.add_data_prefix(posts.get_post_content_path(post))
+        thumbnail_url = util.add_data_prefix(
+            posts.get_post_thumbnail_path(post)
+        )
         metadata["og:article:published_time"] = post.creation_time.isoformat()
         if post.last_edit_time:
             metadata[
@@ -169,11 +182,9 @@ def get_post_html(
         )
         if post.type in (model.Post.TYPE_VIDEO):
             metadata["twitter:card"] = "player"
-            metadata["og:video:url"] = posts.get_post_content_url(post)
-            metadata["twitter:player:stream"] = posts.get_post_content_url(
-                post
-            )
-            metadata["og:image:url"] = posts.get_post_thumbnail_url(post)
+            metadata["og:video:url"] = content_url
+            metadata["twitter:player:stream"] = content_url
+            metadata["og:image:url"] = thumbnail_url
             if post.canvas_width and post.canvas_height:
                 metadata["og:video:width"] = str(post.canvas_width)
                 metadata["og:video:height"] = str(post.canvas_height)
@@ -181,15 +192,13 @@ def get_post_html(
                 metadata["twitter:player:height"] = str(post.canvas_height)
         else:
             metadata["twitter:card"] = "summary_large_image"
-            metadata["og:image:url"] = posts.get_post_content_url(post)
-            metadata["twitter:image"] = posts.get_post_content_url(post)
-    return _get_html_template(
-        meta_tags=metadata, title=title, prefix=ctx.url_prefix
-    )
+            metadata["og:image:url"] = content_url
+            metadata["twitter:image"] = content_url
+    return _get_html_template(title=title, meta_tags=metadata)
 
 
 @rest.routes.get("/html/.*", accept="text/html")
 def default_route(
     ctx: rest.Context, _params: Dict[str, str] = {}
 ) -> rest.Response:
-    return _get_html_template(prefix=ctx.url_prefix)
+    return _get_html_template(title=config.config["name"])

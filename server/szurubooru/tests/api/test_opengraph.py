@@ -23,23 +23,24 @@ def test_get_post_html(
     config_injector(
         {
             "name": "test installation",
-            "data_url": "data/",
+            "base_url": "/someprefix",
+            "data_url": "data",
         }
     )
-    ctx = context_factory()
-    ctx.url_prefix = "/someprefix"
     post = post_factory(id=1, type=post_type)
     post.canvas_width = 1920
     post.canvas_height = 1080
     db.session.add(post)
     db.session.flush()
     with patch("szurubooru.func.auth.has_privilege"), patch(
-        "szurubooru.func.posts.get_post_content_url"
-    ), patch("szurubooru.func.posts.get_post_thumbnail_url"):
+        "szurubooru.func.posts.get_post_content_path"
+    ), patch("szurubooru.func.posts.get_post_thumbnail_path"):
         auth.has_privilege.return_value = view_priv
-        posts.get_post_content_url.return_value = "/content-url"
-        posts.get_post_thumbnail_url.return_value = "/thumbnail-url"
-        ret = api.opengraph_api.get_post_html(ctx, {"post_id": 1})
+        posts.get_post_content_path.return_value = "content-url"
+        posts.get_post_thumbnail_path.return_value = "thumbnail-url"
+        ret = api.opengraph_api.get_post_html(
+            context_factory(), {"post_id": 1}
+        )
 
     assert _make_meta_tag("og:site_name", "test installation") in ret
     assert _make_meta_tag("og:url", "/someprefix/post/1") in ret
@@ -59,16 +60,27 @@ def test_get_post_html(
         )
         assert (
             bool(
-                _make_meta_tag("twitter:player:stream", "/content-url") in ret
+                _make_meta_tag(
+                    "twitter:player:stream", "/someprefix/data/content-url"
+                )
+                in ret
             )
             == view_priv
         )
         assert (
-            bool(_make_meta_tag("og:video:url", "/content-url") in ret)
+            bool(
+                _make_meta_tag("og:video:url", "/someprefix/data/content-url")
+                in ret
+            )
             == view_priv
         )
         assert (
-            bool(_make_meta_tag("og:image:url", "/thumbnail-url") in ret)
+            bool(
+                _make_meta_tag(
+                    "og:image:url", "/someprefix/data/thumbnail-url"
+                )
+                in ret
+            )
             == view_priv
         )
         assert (
@@ -83,6 +95,9 @@ def test_get_post_html(
             == view_priv
         )
         assert (
-            bool(_make_meta_tag("twitter:image", "/content-url") in ret)
+            bool(
+                _make_meta_tag("twitter:image", "/someprefix/data/content-url")
+                in ret
+            )
             == view_priv
         )

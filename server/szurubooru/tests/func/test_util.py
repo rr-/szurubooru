@@ -45,3 +45,93 @@ def test_parsing_date_time(fake_datetime, input, output):
 )
 def test_icase_unique(input, output):
     assert util.icase_unique(input) == output
+
+
+def test_url_generation(config_injector):
+    config_injector(
+        {
+            "base_url": "https://www.example.com/",
+            "data_url": "data/",
+        }
+    )
+    assert util.add_url_prefix() == "https://www.example.com/"
+    assert util.add_url_prefix("/post/1") == "https://www.example.com/post/1"
+    assert util.add_url_prefix("post/1") == "https://www.example.com/post/1"
+    assert util.add_data_prefix() == "https://www.example.com/data/"
+    assert (
+        util.add_data_prefix("posts/1.jpg")
+        == "https://www.example.com/data/posts/1.jpg"
+    )
+    assert (
+        util.add_data_prefix("/posts/1.jpg")
+        == "https://www.example.com/data/posts/1.jpg"
+    )
+    config_injector(
+        {
+            "base_url": "https://www.example.com/szuru/",
+            "data_url": "data/",
+        }
+    )
+    assert util.add_url_prefix() == "https://www.example.com/szuru/"
+    assert (
+        util.add_url_prefix("/post/1")
+        == "https://www.example.com/szuru/post/1"
+    )
+    assert (
+        util.add_url_prefix("post/1") == "https://www.example.com/szuru/post/1"
+    )
+    assert util.add_data_prefix() == "https://www.example.com/szuru/data/"
+    assert (
+        util.add_data_prefix("posts/1.jpg")
+        == "https://www.example.com/szuru/data/posts/1.jpg"
+    )
+    assert (
+        util.add_data_prefix("/posts/1.jpg")
+        == "https://www.example.com/szuru/data/posts/1.jpg"
+    )
+    config_injector(
+        {
+            "base_url": "https://www.example.com/szuru/",
+            "data_url": "/data/",
+        }
+    )
+    assert util.add_url_prefix() == "https://www.example.com/szuru/"
+    assert (
+        util.add_url_prefix("/post/1")
+        == "https://www.example.com/szuru/post/1"
+    )
+    assert (
+        util.add_url_prefix("post/1") == "https://www.example.com/szuru/post/1"
+    )
+    assert util.add_data_prefix() == "https://www.example.com/data/"
+    assert (
+        util.add_data_prefix("posts/1.jpg")
+        == "https://www.example.com/data/posts/1.jpg"
+    )
+    assert (
+        util.add_data_prefix("/posts/1.jpg")
+        == "https://www.example.com/data/posts/1.jpg"
+    )
+    config_injector(
+        {
+            "base_url": "https://www.example.com/szuru",
+            "data_url": "https://static.example.com/",
+        }
+    )
+    assert util.add_url_prefix() == "https://www.example.com/szuru/"
+    assert (
+        util.add_url_prefix("/post/1")
+        == "https://www.example.com/szuru/post/1"
+    )
+    assert (
+        util.add_url_prefix("post/1") == "https://www.example.com/szuru/post/1"
+    )
+    assert util.add_data_prefix() == "https://static.example.com/"
+    assert (
+        util.add_data_prefix("posts/1.jpg")
+        == "https://static.example.com/posts/1.jpg"
+    )
+    assert (
+        util.add_data_prefix("/posts/1.jpg")
+        == "https://static.example.com/posts/1.jpg"
+    )

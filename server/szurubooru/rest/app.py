@@ -41,11 +41,6 @@ def _create_context(env: Dict[str, Any]) -> context.Context:
     path = path.encode("latin-1").decode("utf-8")  # PEP-3333
     headers = _get_headers(env)
 
-    if config.config["domain"]:
-        url_prefix = config.config["domain"].rstrip("/")
-    else:
-        url_prefix = headers.get("X-Forwarded-Prefix", "")
-
     files = {}
     params = dict(urllib.parse.parse_qsl(env.get("QUERY_STRING", "")))
 
@@ -80,7 +75,6 @@ def _create_context(env: Dict[str, Any]) -> context.Context:
         method=method,
         url=path,
         headers=headers,
-        url_prefix=url_prefix,
         params=params,
         files=files,
     )

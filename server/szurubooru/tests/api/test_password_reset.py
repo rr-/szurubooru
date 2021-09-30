@@ -11,7 +11,7 @@ def inject_config(config_injector):
     config_injector(
         {
             "secret": "x",
-            "domain": "http://example.com",
+            "base_url": "http://example.com",
             "name": "Test instance",
             "smtp": {
                 "from": "noreply@example.com",
@@ -27,13 +27,11 @@ def test_reset_sending_email(context_factory, user_factory):
         )
     )
     db.session.flush()
-    ctx = context_factory()
-    ctx.url_prefix = "http://example.com"
     for initiating_user in ["u1", "user@example.com"]:
         with patch("szurubooru.func.mailer.send_mail"):
             assert (
                 api.password_reset_api.start_password_reset(
-                    ctx, {"user_name": initiating_user}
+                    context_factory(), {"user_name": initiating_user}
                 )
                 == {}
             )

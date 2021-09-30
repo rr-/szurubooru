@@ -45,7 +45,7 @@ def get_info(ctx: rest.Context, _params: Dict[str, str] = {}) -> rest.Response:
             "defaultUserRank": config.config["default_rank"],
             "enableSafety": config.config["enable_safety"],
             "contactEmail": config.config["contact_email"],
-            "canSendMails": bool(config.config["smtp"]["host"]),
+            "canSendMails": util.can_send_mail(),
             "privileges": util.snake_case_to_lower_camel_case_keys(
                 config.config["privileges"]
             ),
@@ -74,17 +74,17 @@ def generate_manifest(
         "name": config.config["name"],
         "icons": [
             {
-                "src": f"{ctx.url_prefix}/img/android-chrome-192x192.png",
+                "src": util.add_url_prefix("/img/android-chrome-192x192.png"),
                 "type": "image/png",
                 "sizes": "192x192",
             },
             {
-                "src": f"{ctx.url_prefix}/img/android-chrome-512x512.png",
+                "src": util.add_url_prefix("/img/android-chrome-512x512.png"),
                 "type": "image/png",
                 "sizes": "512x512",
             },
         ],
-        "start_url": f"{ctx.url_prefix}/",
+        "start_url": util.add_url_prefix(),
         "theme_color": "#24aadd",
         "background_color": "#ffffff",
         "display": "standalone",

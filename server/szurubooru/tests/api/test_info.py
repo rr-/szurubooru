@@ -18,6 +18,7 @@ def test_info_api(
     config_injector(
         {
             "name": "test installation",
+            "base_url": "https://www.example.com",
             "contact_email": "test@example.com",
             "enable_safety": True,
             "data_dir": str(directory),
@@ -97,9 +98,13 @@ def test_info_api(
 
 
 def test_manifest(config_injector, context_factory):
-    config_injector({"name": "test installation"})
+    config_injector(
+        {
+            "name": "test installation",
+            "base_url": "/someprefix",
+        }
+    )
     ctx = context_factory()
-    ctx.url_prefix = "/someprefix"
     expected_manifest = {
         "name": "test installation",
         "icons": [

@@ -5,8 +5,9 @@ import tempfile
 from contextlib import contextmanager
 from datetime import datetime, timedelta
 from typing import Any, Dict, Generator, List, Optional, Tuple, TypeVar, Union
+from urllib.parse import urlparse, urlunparse
 
-from szurubooru import errors
+from szurubooru import config, errors
 
 T = TypeVar("T")
 
@@ -176,3 +177,34 @@ def get_column_size(column: Any) -> Optional[int]:
 def chunks(source_list: List[Any], part_size: int) -> Generator:
     for i in range(0, len(source_list), part_size):
         yield source_list[i : i + part_size]
+
+
+def _get_url_prefix_parts() -> str:
+    parsed_base_url = list(urlparse(config.config["base_url"]))
+    if not all(parsed_base_url[0:2]):
+        parsed_base_url[0:2] = ["", ""]
+    parsed_base_url[2] = parsed_base_url[2].rstrip("/")
+    return parsed_base_url[0:3] + ["", "", ""]
+
+
+def _get_data_prefix_parts() -> str:
+    parsed_base_url = _get_url_prefix_parts()
+    parsed_data_url = list(urlparse(config.config["data_url"]))
+    if not all(parsed_data_url[0:2]):
+        parsed_data_url[0:2] = parsed_base_url[0:2]
+        if not parsed_data_url[2].startswith("/"):
+            parsed_data_url[2] = parsed_base_url[2] + "/" + parsed_data_url[2]
+    parsed_data_url[2] = parsed_data_url[2].rstrip("/")
+    return parsed_data_url[0:3] + ["", "", ""]
+
+
+def add_url_prefix(url: str = "") -> str:
+    return urlunparse(_get_url_prefix_parts()) + "/" + url.lstrip("/")
+
+
+def add_data_prefix(url: str = "") -> str:
+    return urlunparse(_get_data_prefix_parts()) + "/" + url.lstrip("/")
+
+
+def can_send_mail() -> bool:
+    return bool(config.config["smtp"]["host"] and _get_url_prefix_parts()[1])

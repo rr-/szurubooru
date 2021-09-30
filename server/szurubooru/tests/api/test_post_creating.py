@@ -45,19 +45,18 @@ def test_creating_minimal_posts(context_factory, post_factory, user_factory):
         posts.create_post.return_value = (post, [])
         posts.serialize_post.return_value = "serialized post"
 
-        result = api.post_api.create_post(
-            context_factory(
-                params={
-                    "safety": "safe",
-                    "tags": ["tag1", "tag2"],
-                },
-                files={
-                    "content": "post-content",
-                    "thumbnail": "post-thumbnail",
-                },
-                user=auth_user,
-            )
+        ctx = context_factory(
+            params={
+                "safety": "safe",
+                "tags": ["tag1", "tag2"],
+            },
+            files={
+                "content": "post-content",
+                "thumbnail": "post-thumbnail",
+            },
+            user=auth_user,
         )
+        result = api.post_api.create_post(ctx)
 
         assert result == "serialized post"
         posts.create_post.assert_called_once_with(
@@ -102,22 +101,21 @@ def test_creating_full_posts(context_factory, post_factory, user_factory):
         posts.create_post.return_value = (post, [])
         posts.serialize_post.return_value = "serialized post"
 
-        result = api.post_api.create_post(
-            context_factory(
-                params={
-                    "safety": "safe",
-                    "tags": ["tag1", "tag2"],
-                    "relations": [1, 2],
-                    "source": "source",
-                    "notes": ["note1", "note2"],
-                    "flags": ["flag1", "flag2"],
-                },
-                files={
-                    "content": "post-content",
-                },
-                user=auth_user,
-            )
+        ctx = context_factory(
+            params={
+                "safety": "safe",
+                "tags": ["tag1", "tag2"],
+                "relations": [1, 2],
+                "source": "source",
+                "notes": ["note1", "note2"],
+                "flags": ["flag1", "flag2"],
+            },
+            files={
+                "content": "post-content",
+            },
+            user=auth_user,
         )
+        result = api.post_api.create_post(ctx)
 
         assert result == "serialized post"
         posts.create_post.assert_called_once_with(
@@ -333,7 +331,8 @@ def test_errors_not_spending_ids(
     config_injector(
         {
             "data_dir": str(tmpdir.mkdir("data")),
-            "data_url": "example.com",
+            "base_url": "https://example.com/",
+            "data_url": "https://example.com/data",
             "thumbnails": {
                 "post_width": 300,
                 "post_height": 300,

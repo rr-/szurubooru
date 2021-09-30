@@ -2,7 +2,7 @@ from hashlib import md5
 from typing import Dict
 
 from szurubooru import config, errors, rest
-from szurubooru.func import auth, mailer, users, versions
+from szurubooru.func import auth, mailer, users, util, versions
 
 MAIL_SUBJECT = "Password reset for {name}"
 MAIL_BODY = (
@@ -24,8 +24,7 @@ def start_password_reset(
             % (user_name)
         )
     token = auth.generate_authentication_token(user)
-
-    url = f"{ctx.url_prefix}/password-reset/{user.name}:{token}"
+    url = util.add_url_prefix(f"password-reset/{user.name}:{token}")
 
     mailer.send_mail(
         config.config["smtp"]["from"],
