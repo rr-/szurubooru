@@ -19,6 +19,7 @@ from szurubooru.func import mime
         ("heif.heif", "image/heif"),
         ("heic.heic", "image/heic"),
         ("heic-heix.heic", "image/heic"),
+        ("flv.flv", "video/x-flv"),
         ("text.txt", "application/octet-stream"),
     ],
 )
@@ -72,6 +73,8 @@ def test_is_flash(input_mime_type, expected_state):
         ("VIDEO/MP4", True),
         ("video/anything_else", False),
         ("application/ogg", True),
+        ("video/x-flv", True),
+        ("VIDEO/X-FLV", True),
         ("not a video", False),
     ],
 )
