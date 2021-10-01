@@ -1,5 +1,6 @@
 "use strict";
 
+const flvjs = require("flv.js");
 const iosCorrectedInnerHeight = require("ios-inner-height");
 const router = require("../router.js");
 const views = require("../util/views.js");
@@ -50,19 +51,15 @@ class PostMainView {
             postContainerNode.querySelector(".post-overlay"),
             ctx.post
         );
-        // suppurt flv play
-        if (ctx.post.mimeType === "video/x-flv") {
-            const flvjs = require("flv.js");
-            if (flvjs.isSupported()) {
-                const video = document.querySelector(".post-content video");
-                const src = video.querySelector("source").src
-                const player = flvjs.createPlayer({
-                    type: 'flv',
-                    url: src,
-                });
-                player.attachMediaElement(video);
-                player.load();
-            }
+        if (ctx.post.mimeType === "video/x-flv" && flvjs.isSupported()) {
+            const video = document.querySelector(".post-content video");
+            const src = video.querySelector("source").src
+            const player = flvjs.createPlayer({
+                type: 'flv',
+                url: src,
+            });
+            player.attachMediaElement(video);
+            player.load();
         }
 
         if (ctx.post.type === "video" || ctx.post.type === "flash") {

@@ -66,12 +66,8 @@ def get_extension(mime_type: str) -> Optional[str]:
 def is_flash(mime_type: str) -> bool:
     return mime_type.lower() == "application/x-shockwave-flash"
 
-def is_flv(mime_type: str) -> bool:
-    return mime_type.lower() == "video/x-flv"
-
-
 def is_video(mime_type: str) -> bool:
-    return mime_type.lower() in ("application/ogg", "video/mp4", "video/webm")
+    return mime_type.lower() in ("application/ogg", "video/mp4", "video/webm", "video/x-flv")
 
 
 def is_image(mime_type: str) -> bool:
