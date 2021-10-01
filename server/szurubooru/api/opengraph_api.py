@@ -63,18 +63,17 @@ _apple_touch_startup_images = {
 
 def _get_html_template(
     title: str,
-    meta_tags: Dict = {},
+    header_content: str = "",
 ) -> Doc:
     doc = Doc()
     doc.asis("<!DOCTYPE html>")
     with doc.tag("html"):
         with doc.tag("head"):
             doc.stag("meta", charset="utf-8")
-            for name, content in {**_default_meta_tags, **meta_tags}.items():
+            for name, content in _default_meta_tags.items():
                 doc.stag("meta", name=name, content=content)
             with doc.tag("title"):
                 doc.text(title)
-            doc.stag("base", href=util.add_url_prefix())
             doc.stag(
                 "link",
                 rel="manifest",
@@ -115,6 +114,8 @@ def _get_html_template(
                         f"({k}: {v})" for k, v in media.items()
                     ),
                 )
+            doc.stag("base", href=util.add_url_prefix())
+            doc.asis(header_content)
         with doc.tag("body"):
             with doc.tag("div", id="top-navigation-holder"):
                 pass
@@ -154,47 +155,73 @@ def get_post_html(
 ) -> rest.Response:
     try:
         post = _get_post(params)
-        title = f"{config.config['name']} - post {_get_post_id(params)}"
+        title = f"{config.config['name']} - Post #{_get_post_id(params)}"
     except posts.InvalidPostIdError:
         # Return the default template and let the browser JS handle the 404
         return _get_html_template()
 
-    metadata = {
-        "og:site_name": config.config["name"],
-        "og:url": util.add_url_prefix(f"post/{params['post_id']}"),
-        "og:title": title,
-        "twitter:title": title,
-        "og:type": "article",
-    }
-    # Note: ctx.user will always be the anonymous user
-    if auth.has_privilege(ctx.user, "posts:view"):
-        content_url = util.add_data_prefix(posts.get_post_content_path(post))
-        thumbnail_url = util.add_data_prefix(
-            posts.get_post_thumbnail_path(post)
+    doc = Doc()
+    doc.stag("meta", name="og:site_name", content=config.config["name"])
+    doc.stag(
+        "meta",
+        name="og:url",
+        content=util.add_url_prefix(f"post/{params['post_id']}"),
+    )
+    doc.stag("meta", name="og:title", content=title),
+    doc.stag("meta", name="twitter:title", content=title),
+    doc.stag("meta", name="og:type", content="article"),
+
+    if not auth.anon_has_privilege("posts:view"):
+        return _get_html_template(title=title, header_content=doc.getvalue())
+
+    content_url = util.add_data_prefix(posts.get_post_content_path(post))
+    thumbnail_url = util.add_data_prefix(posts.get_post_thumbnail_path(post))
+    tag_string = " ".join(tag.first_name for tag in post.tags)
+
+    doc.stag("meta", name="og:image:alt", content=tag_string)
+    doc.stag(
+        "meta",
+        name="og:article:published_time",
+        content=post.creation_time.isoformat(),
+    )
+    if post.last_edit_time:
+        doc.stag(
+            "meta",
+            name="og:article:modified_time",
+            content=post.last_edit_time.isoformat(),
         )
-        metadata["og:article:published_time"] = post.creation_time.isoformat()
-        if post.last_edit_time:
-            metadata[
-                "og:article:modified_time"
-            ] = post.last_edit_time.isoformat()
-        metadata["og:image:alt"] = " ".join(
-            tag.first_name for tag in post.tags
-        )
-        if post.type in (model.Post.TYPE_VIDEO):
-            metadata["twitter:card"] = "player"
-            metadata["og:video:url"] = content_url
-            metadata["twitter:player:stream"] = content_url
-            metadata["og:image:url"] = thumbnail_url
-            if post.canvas_width and post.canvas_height:
-                metadata["og:video:width"] = str(post.canvas_width)
-                metadata["og:video:height"] = str(post.canvas_height)
-                metadata["twitter:player:width"] = str(post.canvas_width)
-                metadata["twitter:player:height"] = str(post.canvas_height)
-        else:
-            metadata["twitter:card"] = "summary_large_image"
-            metadata["og:image:url"] = content_url
-            metadata["twitter:image"] = content_url
-    return _get_html_template(title=title, meta_tags=metadata)
+    for tag in post.tags:
+        doc.stag("meta", name="article:tag", content=tag.first_name)
+    if post.type in (model.Post.TYPE_VIDEO,):
+        doc.stag("meta", name="twitter:card", content="player")
+        doc.stag("meta", name="og:video:url", content=content_url)
+        doc.stag("meta", name="twitter:player:stream", content=content_url)
+        doc.stag("meta", name="og:image:url", content=thumbnail_url)
+        if post.canvas_width and post.canvas_height:
+            doc.stag(
+                "meta", name="og:video:width", content=str(post.canvas_width)
+            )
+            doc.stag(
+                "meta", name="og:video:height", content=str(post.canvas_height)
+            )
+            doc.stag(
+                "meta",
+                name="twitter:player:width",
+                content=str(post.canvas_width),
+            )
+            doc.stag(
+                "meta",
+                name="twitter:player:height",
+                content=str(post.canvas_height),
+            )
+        doc.stag("link", name="preload", href=content_url, **{"as": "video"})
+    else:
+        doc.stag("meta", name="twitter:card", content="summary_large_image")
+        doc.stag("meta", name="og:image:url", content=content_url)
+        doc.stag("meta", name="twitter:image", content=content_url)
+        doc.stag("link", name="preload", href=content_url, **{"as": "image"})
+
+    return _get_html_template(title=title, header_content=doc.getvalue())
 
 
 @rest.routes.get("/html/.*", accept="text/html")

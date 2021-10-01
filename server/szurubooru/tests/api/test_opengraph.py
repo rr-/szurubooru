@@ -22,7 +22,7 @@ def test_get_post_html(
 ):
     config_injector(
         {
-            "name": "test installation",
+            "name": "testing",
             "base_url": "/someprefix",
             "data_url": "data",
         }
@@ -32,20 +32,20 @@ def test_get_post_html(
     post.canvas_height = 1080
     db.session.add(post)
     db.session.flush()
-    with patch("szurubooru.func.auth.has_privilege"), patch(
+    with patch("szurubooru.func.auth.anon_has_privilege"), patch(
         "szurubooru.func.posts.get_post_content_path"
     ), patch("szurubooru.func.posts.get_post_thumbnail_path"):
-        auth.has_privilege.return_value = view_priv
+        auth.anon_has_privilege.return_value = view_priv
         posts.get_post_content_path.return_value = "content-url"
         posts.get_post_thumbnail_path.return_value = "thumbnail-url"
         ret = api.opengraph_api.get_post_html(
             context_factory(), {"post_id": 1}
         )
 
-    assert _make_meta_tag("og:site_name", "test installation") in ret
+    assert _make_meta_tag("og:site_name", "testing") in ret
     assert _make_meta_tag("og:url", "/someprefix/post/1") in ret
-    assert _make_meta_tag("og:title", "test installation - post 1") in ret
-    assert _make_meta_tag("twitter:title", "test installation - post 1") in ret
+    assert _make_meta_tag("og:title", "testing - Post #1") in ret
+    assert _make_meta_tag("twitter:title", "testing - Post #1") in ret
     assert _make_meta_tag("og:type", "article") in ret
     assert (
         bool(

@@ -14,21 +14,6 @@ def test_process_request_no_header(context_factory):
     assert ctx.user.name is None
 
 
-def test_process_request_non_rest(context_factory, user_factory):
-    user = user_factory()
-    ctx = context_factory(
-        headers={"Authorization": "Basic dGVzdFVzZXI6dGVzdFBhc3N3b3Jk"},
-        accept="text/html",
-    )
-    with patch("szurubooru.func.auth.is_valid_password"), patch(
-        "szurubooru.func.users.get_user_by_name"
-    ):
-        users.get_user_by_name.return_value = user
-        auth.is_valid_password.return_value = True
-        authenticator.process_request(ctx)
-        assert ctx.user.name is None
-
-
 def test_process_request_bump_login(context_factory, user_factory):
     user = user_factory()
     db.session.add(user)
