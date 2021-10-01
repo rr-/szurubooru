@@ -619,7 +619,7 @@ def update_post_content(post: model.Post, content: Optional[bytes]) -> None:
             post.type = model.Post.TYPE_ANIMATION
         else:
             post.type = model.Post.TYPE_IMAGE
-    elif mime.is_video(post.mime_type):
+    elif mime.is_video(post.mime_type) or mime.is_flv(post.mime_type):
         post.type = model.Post.TYPE_VIDEO
     else:
         raise InvalidPostContentError(

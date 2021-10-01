@@ -26,6 +26,7 @@ const external_js = [
     'marked',
     'mousetrap',
     'nprogress',
+    'flv.js',
     'superagent',
     'underscore',
 ];
