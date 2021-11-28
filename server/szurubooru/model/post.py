@@ -223,6 +223,9 @@ class Post(Base):
     canvas_height = sa.Column("image_height", sa.Integer)
     mime_type = sa.Column("mime-type", sa.Unicode(32), nullable=False)
 
+    # EXIF things
+    date_taken = sa.Column("date_taken", sa.DateTime, nullable=True)
+
     # foreign tables
     user = sa.orm.relationship("User")
     tags = sa.orm.relationship("Tag", backref="posts", secondary="post_tag")

@@ -11,6 +11,7 @@ from szurubooru.func import (
     files,
     image_hash,
     images,
+    metadata,
     mime,
     pools,
     scores,
@@ -199,6 +200,7 @@ class PostSerializer(serialization.BaseSerializer):
             "notes": self.serialize_notes,
             "comments": self.serialize_comments,
             "pools": self.serialize_pools,
+            "dateTaken": self.serialize_date_taken,
         }
 
     def serialize_id(self) -> Any:
@@ -343,6 +345,9 @@ class PostSerializer(serialization.BaseSerializer):
                 self.post.pools, key=lambda pool: pool.creation_time
             )
         ]
+
+    def serialize_date_taken(self) -> Any:
+        return self.post.date_taken
 
 
 def serialize_post(
@@ -668,6 +673,11 @@ def update_post_content(post: model.Post, content: Optional[bytes]) -> None:
             post.canvas_width = None
             post.canvas_height = None
     setattr(post, "__content", content)
+
+    if post.type in [model.Post.TYPE_IMAGE, model.Post.TYPE_VIDEO]:
+        post.date_taken = metadata.resolve_date_taken(content)
+    else:
+        post.date_taken = None
 
 
 def update_post_thumbnail(
