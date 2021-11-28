@@ -30,6 +30,11 @@
             <%= ctx.makeRelativeTime(ctx.post.creationTime) %>
         </section>
 
+        <section class='date-taken'>
+            <i class='fa fa-clock-o'></i>Taken on
+            <%= ctx.makeUserFriendlyTime(ctx.post.dateTaken) %>
+        </section>
+
         <% if (ctx.enableSafety) { %>
             <section class='safety'>
                 <i class='fa fa-circle safety-<%- ctx.post.safety %>'></i><!--

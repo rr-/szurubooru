@@ -40,6 +40,14 @@ function makeRelativeTime(time) {
     );
 }
 
+function makeUserFriendlyTime(time) {
+    return makeElement(
+        "time",
+        { datetime: time, title: time },
+        misc.formatUserFriendlyTime(time)
+    );
+}
+
 function makeThumbnail(url) {
     return makeElement(
         "span",
@@ -433,6 +441,7 @@ function getTemplate(templatePath) {
             getPostUrl: getPostUrl,
             getPostEditUrl: getPostEditUrl,
             makeRelativeTime: makeRelativeTime,
+            makeUserFriendlyTime: makeUserFriendlyTime,
             makeFileSize: makeFileSize,
             makeMarkdown: makeMarkdown,
             makeThumbnail: makeThumbnail,

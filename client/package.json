@@ -6,6 +6,7 @@
     "watch": "node build.js --watch"
   },
   "dependencies": {
+    "date-fns": "^2.26.0",
     "dompurify": "^2.0.17",
     "font-awesome": "^4.7.0",
     "ios-inner-height": "^1.0.3",

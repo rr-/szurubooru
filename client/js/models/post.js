@@ -150,6 +150,10 @@ class Post extends events.EventTarget {
         return this._hasCustomThumbnail;
     }
 
+    get dateTaken() {
+        return this._dateTaken;
+    }
+
     set flags(value) {
         this._flags = value;
     }
@@ -492,6 +496,7 @@ class Post extends events.EventTarget {
             _ownScore: response.ownScore,
             _ownFavorite: response.ownFavorite,
             _hasCustomThumbnail: response.hasCustomThumbnail,
+            _dateTaken: response.dateTaken,
         });
 
         for (let obj of [this, this._orig]) {

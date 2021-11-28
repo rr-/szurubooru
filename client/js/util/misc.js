@@ -4,6 +4,8 @@ const markdown = require("./markdown.js");
 const uri = require("./uri.js");
 const settings = require("../models/settings.js");
 
+const format = require("date-fns/format");
+
 function decamelize(str, sep) {
     sep = sep === undefined ? "-" : sep;
     return str
@@ -92,6 +94,14 @@ function formatRelativeTime(timeString) {
         return future ? "tomorrow" : "yesterday";
     }
     return future ? "in " + text : text + " ago";
+}
+
+function formatUserFriendlyTime(timeString) {
+    if (!timeString) {
+        return "an unknown date";
+    }
+
+    return format(Date.parse(timeString), "iii, LLLL dd yyyy 'at' HH:mm:ss");
 }
 
 function formatMarkdown(text) {
@@ -214,6 +224,7 @@ function getPrettyName(tag) {
 module.exports = {
     range: range,
     formatRelativeTime: formatRelativeTime,
+    formatUserFriendlyTime: formatUserFriendlyTime,
     formatFileSize: formatFileSize,
     formatMarkdown: formatMarkdown,
     formatInlineMarkdown: formatInlineMarkdown,
