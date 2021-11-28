@@ -11,4 +11,5 @@ pytz>=2018.3
 pyRFC3339>=1.0
 pillow-avif-plugin>=1.1.0
 pyheif-pillow-opener>=0.1.0
+exif>=1.3.3
 youtube_dl
