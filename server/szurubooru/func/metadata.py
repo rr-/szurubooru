@@ -9,9 +9,17 @@ from exif import Image
 def resolve_image_date_taken(content: bytes) -> Optional[datetime]:
     img = Image(content)
 
-    if img.has_exif and "datetime" in img.list_all():
-        return datetime.strptime(img.datetime, "%Y:%m:%d %H:%M:%S")
-    return None
+    if img.has_exif:
+        if "datetime" in img.list_all():
+            resolved = img.datetime
+        elif "datetime_original" in img.list_all():
+            resolved = img.datetime_original
+        else:
+            return None
+
+        return datetime.strptime(resolved, "%Y:%m:%d %H:%M:%S")
+    else:
+        return None
 
 
 def resolve_video_date_taken(content: bytes) -> Optional[datetime]:
