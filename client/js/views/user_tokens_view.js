@@ -72,9 +72,8 @@ class UserTokenView extends events.EventTarget {
 
     _evtDelete(e) {
         e.preventDefault();
-        const userToken = this._tokens[
-            parseInt(e.target.getAttribute("data-token-id"))
-        ];
+        const userToken =
+            this._tokens[parseInt(e.target.getAttribute("data-token-id"))];
         this.dispatchEvent(
             new CustomEvent("delete", {
                 detail: {
@@ -110,9 +109,8 @@ class UserTokenView extends events.EventTarget {
 
     _evtChangeNoteClick(e) {
         e.preventDefault();
-        const userToken = this._tokens[
-            parseInt(e.target.getAttribute("data-token-id"))
-        ];
+        const userToken =
+            this._tokens[parseInt(e.target.getAttribute("data-token-id"))];
         const text = window.prompt(
             "Please enter the new name:",
             userToken.note !== null ? userToken.note : undefined

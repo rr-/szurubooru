@@ -136,12 +136,8 @@ function createRenderer() {
 
     const renderer = new marked.Renderer();
     renderer.image = (href, title, alt) => {
-        let [
-            _,
-            url,
-            width,
-            height,
-        ] = /^(.+?)(?:\s=\s*(\d*)\s*x\s*(\d*)\s*)?$/.exec(href);
+        let [_, url, width, height] =
+            /^(.+?)(?:\s=\s*(\d*)\s*x\s*(\d*)\s*)?$/.exec(href);
         let res = '<img src="' + sanitize(url) + '" alt="' + sanitize(alt);
         if (width) {
             res += '" width="' + width;

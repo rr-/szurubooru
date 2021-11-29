@@ -727,9 +727,8 @@ class PostNotesOverlayControl extends events.EventTarget {
     }
 
     _showNoteText(note) {
-        this._textNode.querySelector(
-            ".wrapper"
-        ).innerHTML = misc.formatMarkdown(note.text);
+        this._textNode.querySelector(".wrapper").innerHTML =
+            misc.formatMarkdown(note.text);
         this._textNode.style.display = "block";
         const bodyRect = document.body.getBoundingClientRect();
         const noteRect = this._textNode.getBoundingClientRect();

@@ -253,9 +253,8 @@ class PostsHeaderView extends events.EventTarget {
         e.target.classList.toggle("disabled");
         const safety = e.target.getAttribute("data-safety");
         let browsingSettings = settings.get();
-        browsingSettings.listPosts[safety] = !browsingSettings.listPosts[
-            safety
-        ];
+        browsingSettings.listPosts[safety] =
+            !browsingSettings.listPosts[safety];
         settings.save(browsingSettings, true);
         this.dispatchEvent(
             new CustomEvent("navigate", {

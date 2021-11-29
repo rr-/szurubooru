@@ -360,8 +360,8 @@ class PostUploadView extends events.EventTarget {
                 detail: {
                     uploadables: this._uploadables,
                     skipDuplicates: this._skipDuplicatesCheckboxNode.checked,
-                    alwaysUploadSimilar: this._alwaysUploadSimilarCheckboxNode
-                        .checked,
+                    alwaysUploadSimilar:
+                        this._alwaysUploadSimilarCheckboxNode.checked,
                 },
             })
         );

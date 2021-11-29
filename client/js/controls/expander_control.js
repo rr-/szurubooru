@@ -45,9 +45,8 @@ class ExpanderControl {
     // eslint-disable-next-line accessor-pairs
     set title(newTitle) {
         if (this._expanderNode) {
-            this._expanderNode.querySelector(
-                "header span"
-            ).textContent = newTitle;
+            this._expanderNode.querySelector("header span").textContent =
+                newTitle;
         }
     }
 
