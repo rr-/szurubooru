@@ -31,8 +31,10 @@
         </section>
 
         <section class='date-taken'>
-            <i class='fa fa-clock-o'></i>Taken on
-            <%= ctx.makeUserFriendlyTime(ctx.post.dateTaken) %>
+            <% if (ctx.post.type == "image" || ctx.post.type == "video" ) { %>
+                <i class='fa fa-clock-o'></i>Taken on
+                <%= ctx.makeUserFriendlyTime(ctx.post.dateTaken) %>
+            <% } %>
         </section>
 
         <% if (ctx.enableSafety) { %>
