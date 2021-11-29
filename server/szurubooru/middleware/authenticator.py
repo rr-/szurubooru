@@ -7,7 +7,7 @@ from szurubooru.rest.errors import HttpBadRequest
 
 
 def _authenticate_basic_auth(username: str, password: str) -> model.User:
-    """ Try to authenticate user. Throw AuthError for invalid users. """
+    """Try to authenticate user. Throw AuthError for invalid users."""
     user = users.get_user_by_name(username)
     if not auth.is_valid_password(user, password):
         raise errors.AuthError("Invalid password.")
@@ -17,7 +17,7 @@ def _authenticate_basic_auth(username: str, password: str) -> model.User:
 def _authenticate_token(
     username: str, token: str
 ) -> Tuple[model.User, model.UserToken]:
-    """ Try to authenticate user. Throw AuthError for invalid users. """
+    """Try to authenticate user. Throw AuthError for invalid users."""
     user = users.get_user_by_name(username)
     user_token = user_tokens.get_by_user_and_token(user, token)
     if not auth.is_valid_token(user_token):
@@ -72,7 +72,7 @@ def _get_user(ctx: rest.Context, bump_login: bool) -> Optional[model.User]:
 
 
 def process_request(ctx: rest.Context) -> None:
-    """ Bind the user to request. Update last login time if needed. """
+    """Bind the user to request. Update last login time if needed."""
     bump_login = ctx.get_param_as_bool("bump-login", default=False)
     auth_user = _get_user(ctx, bump_login)
     if auth_user:

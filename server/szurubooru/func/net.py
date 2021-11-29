@@ -39,7 +39,7 @@ def download(url: str, use_video_downloader: bool = False) -> bytes:
     length_tally = 0
     try:
         with urllib.request.urlopen(request) as handle:
-            while (chunk := handle.read(_dl_chunk_size)) :
+            while chunk := handle.read(_dl_chunk_size):
                 length_tally += len(chunk)
                 if length_tally > config.config["max_dl_filesize"]:
                     raise DownloadTooLargeError(

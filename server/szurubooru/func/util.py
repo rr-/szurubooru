@@ -83,12 +83,12 @@ def flip(source: Dict[Any, Any]) -> Dict[Any, Any]:
 
 
 def is_valid_email(email: Optional[str]) -> bool:
-    """ Return whether given email address is valid or empty. """
+    """Return whether given email address is valid or empty."""
     return not email or re.match(r"^[^@]*@[^@]*\.[^@]*$", email) is not None
 
 
 class dotdict(dict):
-    """ dot.notation access to dictionary attributes. """
+    """dot.notation access to dictionary attributes."""
 
     def __getattr__(self, attr: str) -> Any:
         return self.get(attr)
@@ -98,7 +98,7 @@ class dotdict(dict):
 
 
 def parse_time_range(value: str) -> Tuple[datetime, datetime]:
-    """ Return tuple containing min/max time for given text representation. """
+    """Return tuple containing min/max time for given text representation."""
     one_day = timedelta(days=1)
     one_second = timedelta(seconds=1)
     almost_one_day = one_day - one_second
