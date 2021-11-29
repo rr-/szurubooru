@@ -189,6 +189,10 @@ class Executor:
                     db_query = db_query.order_by(column.asc())
                 elif order == sort_token.SORT_DESC:
                     db_query = db_query.order_by(column.desc())
+                elif order == sort_token.SORT_DESC_NULL_LAST:
+                    db_query = db_query.order_by(
+                        column.is_(None), column.desc()
+                    )
 
         db_query = self.config.finalize_query(db_query)
         return db_query

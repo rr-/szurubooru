@@ -11,6 +11,7 @@ class BaseSearchConfig:
     SORT_NONE = tokens.SortToken.SORT_NONE
     SORT_ASC = tokens.SortToken.SORT_ASC
     SORT_DESC = tokens.SortToken.SORT_DESC
+    SORT_DESC_NULL_LAST = tokens.SortToken.SORT_DESC_NULL_LAST
 
     def on_search_query_parsed(self, search_query: SearchQuery) -> None:
         pass

@@ -305,7 +305,13 @@ class PostSearchConfig(BaseSearchConfig):
                     ),
                 ),
                 (
-                    ["creation-date", "creation-time", "date", "time"],
+                    [
+                        "creation-date",
+                        "creation-time",
+                        "date",
+                        "time",
+                        "posted",
+                    ],
                     search_util.create_date_filter(model.Post.creation_time),
                 ),
                 (
@@ -314,8 +320,13 @@ class PostSearchConfig(BaseSearchConfig):
                         "last-edit-time",
                         "edit-date",
                         "edit-time",
+                        "edited",
                     ],
                     search_util.create_date_filter(model.Post.last_edit_time),
+                ),
+                (
+                    ["date-taken", "time-taken", "taken"],
+                    search_util.create_date_filter(model.Post.date_taken),
                 ),
                 (
                     ["comment-date", "comment-time"],
@@ -402,6 +413,10 @@ class PostSearchConfig(BaseSearchConfig):
                         "edit-time",
                     ],
                     (model.Post.last_edit_time, self.SORT_DESC),
+                ),
+                (
+                    ["date-taken", "taken"],
+                    (model.Post.date_taken, self.SORT_DESC_NULL_LAST),
                 ),
                 (
                     ["comment-date", "comment-time"],

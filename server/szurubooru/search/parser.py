@@ -19,6 +19,8 @@ def _create_criterion(
         if not low and not high:
             raise errors.SearchError("Empty ranged value")
         return criteria.RangedCriterion(original_value, low, high)
+    if value.lower() in ["null", "none", "unknown", "?"]:
+        return criteria.NullCriterion(original_value)
     return criteria.PlainCriterion(original_value, value)
 
 

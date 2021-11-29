@@ -42,3 +42,12 @@ class ArrayCriterion(BaseCriterion):
 
     def __hash__(self) -> int:
         return hash(tuple(["array"] + self.values))
+
+
+class NullCriterion(BaseCriterion):
+    def __init__(self, original_text) -> None:
+        super().__init__(original_text)
+        self.value = None
+
+    def __hash__(self) -> int:
+        return hash(self.value)

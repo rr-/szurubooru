@@ -179,6 +179,8 @@ def apply_date_criterion_to_column(
         elif criterion.max_value:
             max_date = util.parse_time_range(criterion.max_value)[1]
             expr = column <= max_date
+    elif isinstance(criterion, criteria.NullCriterion):
+        expr = column == sa.sql.null()
     else:
         assert False
     return expr

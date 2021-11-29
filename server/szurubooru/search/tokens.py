@@ -23,6 +23,7 @@ class NamedToken(AnonymousToken):
 
 class SortToken:
     SORT_DESC = "desc"
+    SORT_DESC_NULL_LAST = "desc null last"
     SORT_ASC = "asc"
     SORT_NONE = ""
     SORT_DEFAULT = "default"
