@@ -674,8 +674,10 @@ def update_post_content(post: model.Post, content: Optional[bytes]) -> None:
             post.canvas_height = None
     setattr(post, "__content", content)
 
-    if post.type in [model.Post.TYPE_IMAGE, model.Post.TYPE_VIDEO]:
-        post.date_taken = metadata.resolve_date_taken(content)
+    if post.type == model.Post.TYPE_IMAGE:
+        post.date_taken = metadata.resolve_image_date_taken(content)
+    elif post.type == model.Post.TYPE_VIDEO:
+        post.date_taken = metadata.resolve_video_date_taken(content)
     else:
         post.date_taken = None
 
