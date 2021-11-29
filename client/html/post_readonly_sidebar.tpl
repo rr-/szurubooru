@@ -30,12 +30,12 @@
             <%= ctx.makeRelativeTime(ctx.post.creationTime) %>
         </section>
 
-        <section class='date-taken'>
-            <% if (ctx.post.type == "image" || ctx.post.type == "video" ) { %>
+        <% if (ctx.post.type == "image" || ctx.post.type == "video" ) { %>
+            <section class='date-taken'>
                 <i class='fa fa-clock-o'></i>Taken on
                 <%= ctx.makeUserFriendlyTime(ctx.post.dateTaken) %>
-            <% } %>
-        </section>
+            </section>
+        <% } %>
 
         <% if (ctx.enableSafety) { %>
             <section class='safety'>
