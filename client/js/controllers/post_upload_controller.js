@@ -90,21 +90,30 @@ class PostUploadController {
                                     uploadable
                                 );
                             }
+                            if (e.detail.pauseRemainOnError) {
+                                return Promise.reject();
+                            }
                         })
                     ),
                 Promise.resolve()
             )
             .then(() => {
                 if (anyFailures) {
-                    this._view.showError(genericErrorMessage);
-                    this._view.enableForm();
-                } else {
+                    return Promise.reject();
+                }
+            })
+            .then(
+                () => {
                     this._view.clearMessages();
                     misc.disableExitConfirmation();
                     const ctx = router.show(uri.formatClientLink("posts"));
                     ctx.controller.showSuccess("Posts uploaded.");
+                },
+                (error) => {
+                    this._view.showError(genericErrorMessage);
+                    this._view.enableForm();
                 }
-            });
+            );
     }
 
     _uploadSinglePost(uploadable, skipDuplicates, alwaysUploadSimilar) {

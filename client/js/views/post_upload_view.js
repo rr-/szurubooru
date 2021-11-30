@@ -285,7 +285,7 @@ class PostUploadView extends events.EventTarget {
         for (let uploadable of this._uploadables) {
             this._updateUploadableFromDom(uploadable);
         }
-        this._submitButtonNode.value = "Resume upload";
+        this._submitButtonNode.value = "Resume";
         this._emit("submit");
     }
 
@@ -362,6 +362,8 @@ class PostUploadView extends events.EventTarget {
                     skipDuplicates: this._skipDuplicatesCheckboxNode.checked,
                     alwaysUploadSimilar:
                         this._alwaysUploadSimilarCheckboxNode.checked,
+                    pauseRemainOnError:
+                        this._pauseRemainOnErrorCheckboxNode.checked,
                 },
             })
         );
@@ -428,6 +430,12 @@ class PostUploadView extends events.EventTarget {
     get _alwaysUploadSimilarCheckboxNode() {
         return this._hostNode.querySelector(
             "form [name=always-upload-similar]"
+        );
+    }
+
+    get _pauseRemainOnErrorCheckboxNode() {
+        return this._hostNode.querySelector(
+            "form [name=pause-remain-on-error]"
         );
     }
 
