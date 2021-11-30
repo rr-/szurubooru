@@ -1,13 +1,20 @@
 import json
+import logging
 from datetime import datetime
 from subprocess import PIPE, Popen
 from typing import Optional
 
 from exif import Image
 
+logger = logging.getLogger(__name__)
+
 
 def resolve_image_date_taken(content: bytes) -> Optional[datetime]:
-    img = Image(content)
+    try:
+        img = Image(content)
+    except Exception:
+        logger.warning("Error reading image with exif library!")
+        return None
 
     if img.has_exif:
         if "datetime" in img.list_all():
