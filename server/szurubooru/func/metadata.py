@@ -61,7 +61,7 @@ def resolve_image_date_taken(
 
         resolved = None
 
-        for option in ("datetime", "datetimme_original"):
+        for option in ("datetime", "datetime_original"):
             if option in tags.list_all():
                 resolved = tags[option]
                 break
