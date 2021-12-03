@@ -201,6 +201,7 @@ class PostSerializer(serialization.BaseSerializer):
             "comments": self.serialize_comments,
             "pools": self.serialize_pools,
             "dateTaken": self.serialize_date_taken,
+            "camera": self.serialize_camera,
         }
 
     def serialize_id(self) -> Any:
@@ -348,6 +349,9 @@ class PostSerializer(serialization.BaseSerializer):
 
     def serialize_date_taken(self) -> Any:
         return self.post.date_taken
+
+    def serialize_camera(self) -> Any:
+        return self.post.camera
 
 
 def serialize_post(
@@ -674,12 +678,25 @@ def update_post_content(post: model.Post, content: Optional[bytes]) -> None:
             post.canvas_height = None
     setattr(post, "__content", content)
 
+    post.date_taken = None
+    post.camera = None
+
     if post.type == model.Post.TYPE_IMAGE:
-        post.date_taken = metadata.resolve_image_date_taken(content)
+        try:
+            image_tags = metadata._open_image(content)
+        except Exception:
+            pass
+
+        post.date_taken = metadata.resolve_image_date_taken(image_tags)
+        post.camera = metadata.resolve_image_camera(image_tags)
     elif post.type == model.Post.TYPE_VIDEO:
-        post.date_taken = metadata.resolve_video_date_taken(content)
-    else:
-        post.date_taken = None
+        try:
+            video_tags = metadata._run_ffmpeg(content)
+        except Exception:
+            pass
+
+        post.date_taken = metadata.resolve_video_date_taken(video_tags)
+        post.camera = metadata.resolve_video_camera(video_tags)
 
 
 def update_post_thumbnail(
