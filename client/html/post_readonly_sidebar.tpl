@@ -32,8 +32,21 @@
 
         <% if (ctx.post.type == "image" || ctx.post.type == "video" ) { %>
             <section class='date-taken'>
-                <i class='fa fa-clock-o'></i>Taken on
-                <%= ctx.makeUserFriendlyTime(ctx.post.dateTaken) %>
+                <i class='fa fa-clock-o'></i><!--
+                --><% if (ctx.post.dateTaken) { %><!--
+                    --><%= ctx.makeUserFriendlyTime(ctx.post.dateTaken) %><!--
+                --><% } else { %><!--
+                    -->Unknown date
+                <% } %>
+            </section>
+
+            <section class='camera'>
+                <i class='fa fa-camera'></i><!--
+                --><% if (ctx.post.camera) { %><!--
+                    --><%= ctx.post.camera %><!--
+                --><% } else { %><!--
+                    -->Unknown camera
+                <% } %>
             </section>
         <% } %>
 

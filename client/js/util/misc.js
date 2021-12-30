@@ -97,10 +97,6 @@ function formatRelativeTime(timeString) {
 }
 
 function formatUserFriendlyTime(timeString) {
-    if (!timeString) {
-        return "an unknown date";
-    }
-
     return format(Date.parse(timeString), "iii, LLLL dd yyyy 'at' HH:mm:ss");
 }
 

@@ -154,6 +154,10 @@ class Post extends events.EventTarget {
         return this._dateTaken;
     }
 
+    get camera() {
+        return this._camera;
+    }
+
     set flags(value) {
         this._flags = value;
     }
@@ -497,6 +501,7 @@ class Post extends events.EventTarget {
             _ownFavorite: response.ownFavorite,
             _hasCustomThumbnail: response.hasCustomThumbnail,
             _dateTaken: response.dateTaken,
+            _camera: response.camera,
         });
 
         for (let obj of [this, this._orig]) {
