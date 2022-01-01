@@ -2,20 +2,21 @@ import json
 import logging
 from datetime import datetime
 from subprocess import PIPE, Popen
-from typing import Optional, Union
+from typing import Optional, Tuple, Union
 
 from exif import Image
 
 logger = logging.getLogger(__name__)
 
 
-BASE_FFMPEG_COMMAND = [
+BASE_FFPROBE_COMMAND = [
     "ffprobe",
     "-loglevel",
     "8",
     "-print_format",
     "json",
     "-show_format",
+    "-show_streams",
 ]
 
 
@@ -28,10 +29,10 @@ def _open_image(content: bytes) -> Image:
     return tags
 
 
-def _run_ffmpeg(content: Union[bytes, str]) -> Image:
+def _run_ffprobe(content: Union[bytes, str]) -> Image:
     if isinstance(content, bytes):
         proc = Popen(
-            BASE_FFMPEG_COMMAND + ["-"],
+            BASE_FFPROBE_COMMAND + ["-"],
             stdin=PIPE,
             stdout=PIPE,
             stderr=PIPE,
@@ -40,7 +41,7 @@ def _run_ffmpeg(content: Union[bytes, str]) -> Image:
         output = proc.communicate(input=content)[0]
     else:
         proc = Popen(
-            BASE_FFMPEG_COMMAND + [content],
+            BASE_FFPROBE_COMMAND + [content],
             stdout=PIPE,
             stderr=PIPE,
         )
@@ -81,7 +82,7 @@ def resolve_video_date_taken(
         if isinstance(content, dict):
             tags = content
         else:
-            tags = _run_ffmpeg(content)
+            tags = _run_ffprobe(content)
 
         creation_time = tags["creation_time"]
     except Exception:
@@ -116,7 +117,7 @@ def resolve_video_camera(content: Union[bytes, str, dict]) -> Optional[str]:
         if isinstance(content, dict):
             tags = content
         else:
-            tags = _run_ffmpeg(content)
+            tags = _run_ffprobe(content)
 
         # List of tuples where only one value can be valid
         option_tuples = (
@@ -138,3 +139,45 @@ def resolve_video_camera(content: Union[bytes, str, dict]) -> Optional[str]:
         return None
     else:
         return " ".join(camera_string)
+
+
+def resolve_real_image_dimensions(
+    content: Union[bytes, Image]
+) -> Optional[Tuple[int, int]]:
+    try:
+        if isinstance(content, Image):
+            tags = content
+        else:
+            tags = _open_image(content)
+
+        orig_w = tags["pixel_x_dimension"]
+        orig_h = tags["pixel_y_dimension"]
+
+        # read: https://jdhao.github.io/2019/07/31/image_rotation_exif_info/
+        # 8, 6, 5, 7 are orientation values where the image is rotated 90
+        # degrees CW or CCW. in this case, we swap the two dimensions.
+        if tags["orientation"] in (8, 6, 5, 7):
+            dimensions = (orig_h, orig_w)
+        else:
+            dimensions = (orig_w, orig_h)
+    except Exception:
+        return (0, 0)
+    else:
+        return dimensions
+
+
+def resolve_video_dimensions(
+    content: Union[bytes, str, dict]
+) -> Optional[Tuple[int, int]]:
+    try:
+        if isinstance(content, dict):
+            tags = content
+        else:
+            tags = _run_ffprobe(content)
+
+        stream = tags["format"]["streams"][0]
+        dimensions = (stream["width"], stream["height"])
+    except Exception:
+        return (0, 0)
+    else:
+        return dimensions

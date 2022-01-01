@@ -655,17 +655,33 @@ def update_post_content(post: model.Post, content: Optional[bytes]) -> None:
         post.signature = generate_post_signature(post, content)
 
     post.file_size = len(content)
+    post.date_taken = None
+    post.camera = None
+
     try:
-        image = images.Image(content)
-        post.canvas_width = image.width
-        post.canvas_height = image.height
-    except errors.ProcessingError as ex:
+        if post.type == model.Post.TYPE_IMAGE:
+            media = metadata._open_image(content)
+        elif post.type == model.Post.TYPE_VIDEO:
+            media = metadata._run_ffprobe(content)
+    except Exception as ex:
         logger.exception(ex)
         if not config.config["allow_broken_uploads"]:
             raise InvalidPostContentError("Unable to process image metadata")
         else:
             post.canvas_width = None
             post.canvas_height = None
+    else:
+        if post.type == model.Post.TYPE_IMAGE:
+            dimensions = metadata.resolve_real_image_dimensions(media)
+            (post.canvas_width, post.canvas_height) = dimensions
+            post.date_taken = metadata.resolve_image_date_taken(media)
+            post.camera = metadata.resolve_image_camera(media)
+        elif post.type == model.Post.TYPE_VIDEO:
+            dimensions = metadata.resolve_video_dimensions(media)
+            (post.canvas_width, post.canvas_height) = dimensions
+            post.date_taken = metadata.resolve_video_date_taken(media)
+            post.camera = metadata.resolve_video_camera(media)
+
     if (post.canvas_width is not None and post.canvas_width <= 0) or (
         post.canvas_height is not None and post.canvas_height <= 0
     ):
@@ -676,27 +692,8 @@ def update_post_content(post: model.Post, content: Optional[bytes]) -> None:
         else:
             post.canvas_width = None
             post.canvas_height = None
+
     setattr(post, "__content", content)
-
-    post.date_taken = None
-    post.camera = None
-
-    if post.type == model.Post.TYPE_IMAGE:
-        try:
-            image_tags = metadata._open_image(content)
-        except Exception:
-            pass
-
-        post.date_taken = metadata.resolve_image_date_taken(image_tags)
-        post.camera = metadata.resolve_image_camera(image_tags)
-    elif post.type == model.Post.TYPE_VIDEO:
-        try:
-            video_tags = metadata._run_ffmpeg(content)
-        except Exception:
-            pass
-
-        post.date_taken = metadata.resolve_video_date_taken(video_tags)
-        post.camera = metadata.resolve_video_camera(video_tags)
 
 
 def update_post_thumbnail(
