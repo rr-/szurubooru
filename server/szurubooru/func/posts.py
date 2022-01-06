@@ -11,7 +11,6 @@ from szurubooru.func import (
     files,
     image_hash,
     images,
-    metadata,
     mime,
     pools,
     scores,
@@ -510,7 +509,7 @@ def generate_alternate_formats(
 
         if config.config["convert"]["gif"]["to_mp4"]:
             mp4_post, new_tags = create_post(
-                images.Image(content).to_mp4(), tag_names, post.user
+                images.Video(content).to_mp4(), tag_names, post.user
             )
             update_post_flags(mp4_post, ["loop"])
             update_post_safety(mp4_post, post.safety)
@@ -519,7 +518,7 @@ def generate_alternate_formats(
 
         if config.config["convert"]["gif"]["to_webm"]:
             webm_post, new_tags = create_post(
-                images.Image(content).to_webm(), tag_names, post.user
+                images.Video(content).to_webm(), tag_names, post.user
             )
             update_post_flags(webm_post, ["loop"])
             update_post_safety(webm_post, post.safety)
@@ -542,7 +541,7 @@ def get_default_flags(content: bytes) -> List[str]:
     ret = []
     if mime.is_video(mime.get_mime_type(content)):
         ret.append(model.Post.FLAG_LOOP)
-        if images.Image(content).check_for_sound():
+        if images.Video(content).check_for_sound():
             ret.append(model.Post.FLAG_SOUND)
     return ret
 
@@ -621,7 +620,10 @@ def update_post_content(post: model.Post, content: Optional[bytes]) -> None:
     update_signature = False
     post.mime_type = mime.get_mime_type(content)
     if mime.is_flash(post.mime_type):
-        post.type = model.Post.TYPE_FLASH
+        raise InvalidPostContentError(
+            "Flash animations are deprecated in this build and are slowly "
+            + "being phased out."
+        )
     elif mime.is_image(post.mime_type):
         update_signature = True
         if mime.is_animated_gif(content):
@@ -631,9 +633,7 @@ def update_post_content(post: model.Post, content: Optional[bytes]) -> None:
     elif mime.is_video(post.mime_type):
         post.type = model.Post.TYPE_VIDEO
     else:
-        raise InvalidPostContentError(
-            "Unhandled file type: %r" % post.mime_type
-        )
+        raise InvalidPostContentError(f"Unhandled file type: {post.mime_type}")
 
     post.checksum = util.get_sha1(content)
     post.checksum_md5 = util.get_md5(content)
@@ -655,43 +655,32 @@ def update_post_content(post: model.Post, content: Optional[bytes]) -> None:
         post.signature = generate_post_signature(post, content)
 
     post.file_size = len(content)
+
+    post.canvas_width = None
+    post.canvas_height = None
     post.date_taken = None
     post.camera = None
 
     try:
         if post.type == model.Post.TYPE_IMAGE:
-            media = metadata._open_image(content)
-        elif post.type == model.Post.TYPE_VIDEO:
-            media = metadata._run_ffprobe(content)
+            media = images.Image(content)
+        elif post.type in (model.Post.TYPE_ANIMATION, model.Post.TYPE_VIDEO):
+            media = images.Video(content)
     except Exception as ex:
         logger.exception(ex)
         if not config.config["allow_broken_uploads"]:
             raise InvalidPostContentError("Unable to process image metadata")
-        else:
-            post.canvas_width = None
-            post.canvas_height = None
     else:
-        if post.type == model.Post.TYPE_IMAGE:
-            dimensions = metadata.resolve_real_image_dimensions(media)
-            (post.canvas_width, post.canvas_height) = dimensions
-            post.date_taken = metadata.resolve_image_date_taken(media)
-            post.camera = metadata.resolve_image_camera(media)
-        elif post.type == model.Post.TYPE_VIDEO:
-            dimensions = metadata.resolve_video_dimensions(media)
-            (post.canvas_width, post.canvas_height) = dimensions
-            post.date_taken = metadata.resolve_video_date_taken(media)
-            post.camera = metadata.resolve_video_camera(media)
+        if not media.width or not media.height:
+            if not config.config["allow_broken_uploads"]:
+                raise InvalidPostContentError(
+                    "Invalid image dimensions returned during processing"
+                )
 
-    if (post.canvas_width is not None and post.canvas_width <= 0) or (
-        post.canvas_height is not None and post.canvas_height <= 0
-    ):
-        if not config.config["allow_broken_uploads"]:
-            raise InvalidPostContentError(
-                "Invalid image dimensions returned during processing"
-            )
-        else:
-            post.canvas_width = None
-            post.canvas_height = None
+        post.canvas_width = media.width
+        post.canvas_height = media.height
+        post.date_taken = media.date_taken
+        post.camera = media.camera
 
     setattr(post, "__content", content)
 
@@ -711,12 +700,17 @@ def generate_post_thumbnail(post: model.Post) -> None:
         content = files.get(get_post_content_path(post))
     try:
         assert content
-        image = images.Image(content)
-        image.resize_fill(
+        if post.type == model.Post.TYPE_IMAGE:
+            media = images.Image(content)
+        elif post.type == model.Post.TYPE_VIDEO:
+            media = images.Video(content)
+
+        thumb = media.to_thumbnail(
             int(config.config["thumbnails"]["post_width"]),
             int(config.config["thumbnails"]["post_height"]),
         )
-        files.save(get_post_thumbnail_path(post), image.to_jpeg())
+
+        files.save(get_post_thumbnail_path(post), thumb)
     except errors.ProcessingError:
         files.save(get_post_thumbnail_path(post), EMPTY_PIXEL)
 
