@@ -7,16 +7,21 @@ The idea for this started in [this issue](https://github.com/rr-/szurubooru/issu
 ## Added Features
 
 - **Date taken**
-  - Automatically extracts the date and time that the photo was taken on from its EXIF metadata.
-  - Date taken is shown on the post sidebar
+  - Automatically extracts the date and time when the photo was taken from its EXIF metadata.
+  - Shown on the post sidebar
 - **Camera**
   - Automatically extracts the make and model of the camera used to take the photo
+  - Also shown on the post sidebar
   - Also works with some videos
 - **EXIF orientation support**
   - Acknowledges EXIF orientation and generates thumbnails and post dimensions correctly
   - Images with orientations other than 1 now render properly
 
-**Please note:** Date taken and Camera do not work with image formats that lack EXIF support (such as PNG) or have been stripped of EXIF metadata.
+## Notices
+
+- Date taken and Camera do not work with image formats that lack EXIF support (such as PNG) or have been stripped of EXIF metadata.
+- The current migration does not regenerate post thumbnails or fixes post dimensions. This will be fixed in the next commit.
+- This fork might be less stable than upstream, since the changes I've made have not been tested on as large of a scale.
 
 ## Installation
 
