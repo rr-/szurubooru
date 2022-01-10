@@ -1,50 +1,36 @@
 # szurubooru
 
-Szurubooru is an image board engine inspired by services such as Danbooru,
-Gelbooru and Moebooru dedicated for small and medium communities. Its name [has
-its roots in Polish language and has onomatopeic meaning of scraping or
-scrubbing](http://sjp.pwn.pl/sjp/;2527372). It is pronounced as *shoorubooru*.
+A fork of [szurubooru](https://github.com/rr-/szurubooru) aimed at storing photos and videos taken with physical cameras.
 
-## Features
+The idea for this started in [this issue](https://github.com/rr-/szurubooru/issues/340). I wanted a self-hosted replacement for Google Photos.
 
-- Post content: images (JPG, PNG, GIF, animated GIF), videos (MP4, WEBM), Flash animations
-- Ability to retrieve web video content using [youtube-dl](https://github.com/ytdl-org/youtube-dl)
-- Post comments
-- Post notes / annotations, including arbitrary polygons
-- Rich JSON REST API ([see documentation](doc/API.md))
-- Token based authentication for clients
-- Rich search system
-- Rich privilege system
-- Autocomplete in search and while editing tags
-- Tag categories
-- Tag suggestions
-- Tag implications (adding a tag automatically adds another)
-- Tag aliases
-- Pools and pool categories
-- Duplicate detection
-- Post rating and favoriting; comment rating
-- Polished UI
-- Browser configurable endless paging
-- Browser configurable backdrop grid for transparent images
+## Added Features
+
+- **Date taken**
+  - Automatically extracts the date and time that the photo was taken on from its EXIF metadata.
+  - Date taken is shown on the post sidebar
+- **Camera**
+  - Automatically extracts the make and model of the camera used to take the photo
+  - Also works with some videos
+- **EXIF orientation support**
+  - Acknowledges EXIF orientation and generates thumbnails and post dimensions correctly
+  - Images with orientations other than 1 now render properly
+
+**Please note:** Date taken and Camera do not work with image formats that lack EXIF support (such as PNG) or have been stripped of EXIF metadata.
 
 ## Installation
 
-It is recommended that you use Docker for deployment.
 [See installation instructions.](doc/INSTALL.md)
 
-More installation resources, as well as related projects can be found on the
-[GitHub project Wiki](https://github.com/rr-/szurubooru/wiki)
+More installation resources as well as related projects can be found on upstream's [GitHub project Wiki](https://github.com/rr-/szurubooru/wiki).
 
-## Screenshots
+## Status and Plans
 
-Post list:
+This fork has reached the level of functionality I need for my personal use. As such, there are missing features that might be useful to some:
 
-![20160908_180032_fsk](https://cloud.githubusercontent.com/assets/1045476/18356730/3f1123d6-75ee-11e6-85dd-88a7615243a0.png)
+- Mass deletion support (will also implement this upstream when I get to it)
+- Tests (honestly, I don't even want to touch these)
+- Proper post merging
+- Updated documentation
 
-Post view:
-
-![20160908_180429_lmp](https://cloud.githubusercontent.com/assets/1045476/18356731/3f1566ee-75ee-11e6-9594-e86ca7347b0f.png)
-
-## License
-
-[GPLv3](LICENSE.md).
+I am also planning to rewrite this fork's [`server`](server/) in another language sometime in the future.

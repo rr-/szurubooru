@@ -6,7 +6,7 @@ and Docker Compose (version 1.6.0 or greater) already installed.
 1. Download the `szurubooru` source:
 
     ```console
-    user@host:~$ git clone https://github.com/rr-/szurubooru.git szuru
+    user@host:~$ git clone https://github.com/skybldev/szurubooru.git szuru
     user@host:~$ cd szuru
     ```
 2. Configure the application:
@@ -34,11 +34,11 @@ and Docker Compose (version 1.6.0 or greater) already installed.
     Read the comments to guide you. Note that `.env` should be in the root
     directory of this repository.
 
-### Running the Application
+### Building and Running the Application
 
-Download containers:
+Unlike the original szurubooru, this will need to be built locally:
 ```console
-user@host:szuru$ docker-compose pull
+user@host:szuru$ docker-compose build
 ```
 
 For first run, it is recommended to start the database separately:
@@ -61,6 +61,16 @@ To stop all containers:
 ```console
 user@host:szuru$ docker-compose down
 ```
+
+NOTE: For Debian users, if `docker-compose build` spits out:
+```
+ERROR: Service 'server' failed to build: failed to parse platform : "" is an invalid component of "": platform specifier component must match "^[A-Za-z0-9_-]+$": invalid argument
+```
+...you will need to export Docker BuildKit flags:
+```console
+user@host:szuru$export DOCKER_BUILDKIT=1; export COMPOSE_DOCKER_CLI_BUILD=1
+```
+...then run again.
 
 ### Additional Features
 
