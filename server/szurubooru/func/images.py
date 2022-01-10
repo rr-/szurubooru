@@ -172,7 +172,7 @@ class Image:
                     camera_string.append(tags[option])
 
             if camera_string:
-                self.camera_string = " ".join(camera_string)
+                self.camera = " ".join(camera_string)
         else:
             raise Exception
 
@@ -414,7 +414,8 @@ class Video:
         assert "format" in info
         assert "tags" in info["format"]
 
-        self.date_taken = info["format"]["tags"]["creation_time"]
+        if "creation_time" in info["format"]["tags"]:
+            self.date_taken = info["format"]["tags"]["creation_time"]
 
         # List of tuples where only one value can be valid
         option_tuples = (

@@ -225,7 +225,7 @@ class Post(Base):
 
     # EXIF things
     date_taken = sa.Column("date_taken", sa.DateTime, nullable=True)
-    camera = sa.Column("camera", sa.Text, nullable=True)
+    camera = sa.Column("camera", sa.UnicodeText, nullable=True)
 
     # foreign tables
     user = sa.orm.relationship("User")
