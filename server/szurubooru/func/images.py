@@ -277,10 +277,10 @@ class Image:
             proc = subprocess.Popen(
                 cli,
                 stdout=subprocess.PIPE,
-                stdin=subprocess.PIPE,
+                stdin=subprocess.DEVNULL,
                 stderr=subprocess.PIPE,
             )
-            out, err = proc.communicate(input=self.content)
+            out, err = proc.communicate()
             if proc.returncode != 0:
                 logger.warning(
                     "Failed to execute ffmpeg command (cli=%r, err=%r)",
