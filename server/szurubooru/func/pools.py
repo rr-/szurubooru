@@ -145,7 +145,8 @@ class PoolSerializer(serialization.BaseSerializer):
 
 
 def serialize_pool(
-    pool: model.Pool, options: List[str] = []
+    pool: model.Pool,
+    options: List[str] = [],
 ) -> Optional[rest.Response]:
     if not pool:
         return None
@@ -154,7 +155,8 @@ def serialize_pool(
 
 def serialize_micro_pool(pool: model.Pool) -> Optional[rest.Response]:
     return serialize_pool(
-        pool, options=["id", "names", "category", "description", "postCount"]
+        pool,
+        options=["id", "names", "category", "description", "postCount"],
     )
 
 

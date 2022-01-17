@@ -1,11 +1,12 @@
 #!/usr/bin/dumb-init /bin/sh
 
+# Create cache directory
+mkdir -p /tmp/nginx-cache
+chmod a+rwx /tmp/nginx-cache
+
 # Integrate environment variables
 sed -i "s|__BACKEND__|${BACKEND_HOST}|" \
     /etc/nginx/nginx.conf
-sed -i "s|__BASEURL__|${BASE_URL:-/}|g" \
-    /var/www/index.htm \
-    /var/www/manifest.json
 
 # Start server
 exec nginx

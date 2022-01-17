@@ -41,19 +41,17 @@ def test_simple_updating(user_factory, pool_factory, context_factory):
     ):
         posts.get_posts_by_ids.return_value = ([], [])
         pools.serialize_pool.return_value = "serialized pool"
-        result = api.pool_api.update_pool(
-            context_factory(
-                params={
-                    "version": 1,
-                    "names": ["pool3"],
-                    "category": "series",
-                    "description": "desc",
-                    "posts": [1, 2],
-                },
-                user=auth_user,
-            ),
-            {"pool_id": 1},
+        ctx = context_factory(
+            params={
+                "version": 1,
+                "names": ["pool3"],
+                "category": "series",
+                "description": "desc",
+                "posts": [1, 2],
+            },
+            user=auth_user,
         )
+        result = api.pool_api.update_pool(ctx, {"pool_id": 1})
         assert result == "serialized pool"
         pools.create_pool.assert_not_called()
         pools.update_pool_names.assert_called_once_with(pool, ["pool3"])

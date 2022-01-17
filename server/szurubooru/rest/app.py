@@ -5,7 +5,7 @@ import urllib.parse
 from datetime import datetime
 from typing import Any, Callable, Dict, Tuple
 
-from szurubooru import db
+from szurubooru import config, db
 from szurubooru.func import util
 from szurubooru.rest import context, errors, middleware, routes
 
@@ -18,8 +18,12 @@ def _json_serializer(obj: Any) -> str:
     raise TypeError("Type not serializable")
 
 
-def _dump_json(obj: Any) -> str:
-    return json.dumps(obj, default=_json_serializer, indent=2)
+def _serialize_response_body(obj: Any, accept: str) -> str:
+    if accept == "application/json":
+        return json.dumps(obj, default=_json_serializer, indent=2)
+    if "text/" in accept:
+        return obj
+    raise ValueError("Unhandled response type %s" % accept)
 
 
 def _get_headers(env: Dict[str, Any]) -> Dict[str, str]:
@@ -66,7 +70,14 @@ def _create_context(env: Dict[str, Any]) -> context.Context:
                 "was incorrect or was not encoded as UTF-8.",
             )
 
-    return context.Context(env, method, path, headers, params, files)
+    return context.Context(
+        env=env,
+        method=method,
+        url=path,
+        headers=headers,
+        params=params,
+        files=files,
+    )
 
 
 def application(
@@ -74,20 +85,32 @@ def application(
 ) -> Tuple[bytes]:
     try:
         ctx = _create_context(env)
-        if "application/json" not in ctx.get_header("Accept"):
-            raise errors.HttpNotAcceptable(
-                "ValidationError", "This API only supports JSON responses."
-            )
-
         for url, allowed_methods in routes.routes.items():
             match = re.fullmatch(url, ctx.url)
             if match:
                 if ctx.method not in allowed_methods:
                     raise errors.HttpMethodNotAllowed(
                         "ValidationError",
-                        "Allowed methods: %r" % allowed_methods,
+                        "Allowed methods: %s"
+                        % ", ".join(allowed_methods.keys()),
                     )
-                handler = allowed_methods[ctx.method]
+                handler, allowed_accept = allowed_methods[ctx.method]
+                if not any(
+                    map(
+                        lambda a: a in ctx.get_header("Accept"),
+                        [
+                            allowed_accept,
+                            allowed_accept.split("/")[0] + "/*",
+                            "*/*",
+                        ],
+                    )
+                ):
+                    raise errors.HttpNotAcceptable(
+                        "ValidationError",
+                        "This route only supports %s responses."
+                        % allowed_accept,
+                    )
+                ctx.accept = allowed_accept
                 break
         else:
             raise errors.HttpNotFound(
@@ -111,8 +134,10 @@ def application(
             finally:
                 db.session.remove()
 
-            start_response("200", [("content-type", "application/json")])
-            return (_dump_json(response).encode("utf-8"),)
+            start_response("200", [("content-type", ctx.accept)])
+            return (
+                _serialize_response_body(response, ctx.accept).encode("utf-8"),
+            )
 
         except Exception as ex:
             for exception_type, ex_handler in errors.error_handlers.items():
@@ -133,4 +158,6 @@ def application(
         if ex.extra_fields is not None:
             for key, value in ex.extra_fields.items():
                 blob[key] = value
-        return (_dump_json(blob).encode("utf-8"),)
+        return (
+            _serialize_response_body(blob, "application/json").encode("utf-8"),
+        )

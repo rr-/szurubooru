@@ -11,4 +11,5 @@ pytz>=2018.3
 pyRFC3339>=1.0
 pillow-avif-plugin>=1.1.0
 pyheif-pillow-opener>=0.1.0
+yattag>=1.14.0
 youtube_dl

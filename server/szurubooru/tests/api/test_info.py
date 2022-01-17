@@ -18,6 +18,7 @@ def test_info_api(
     config_injector(
         {
             "name": "test installation",
+            "base_url": "https://www.example.com",
             "contact_email": "test@example.com",
             "enable_safety": True,
             "data_dir": str(directory),
@@ -94,3 +95,33 @@ def test_info_api(
             "serverTime": datetime(2016, 1, 3, 13, 1),
             "config": expected_config_key,
         }
+
+
+def test_manifest(config_injector, context_factory):
+    config_injector(
+        {
+            "name": "test installation",
+            "base_url": "/someprefix",
+        }
+    )
+    ctx = context_factory()
+    expected_manifest = {
+        "name": "test installation",
+        "icons": [
+            {
+                "src": "/someprefix/img/android-chrome-192x192.png",
+                "type": "image/png",
+                "sizes": "192x192",
+            },
+            {
+                "src": "/someprefix/img/android-chrome-512x512.png",
+                "type": "image/png",
+                "sizes": "512x512",
+            },
+        ],
+        "start_url": "/someprefix/",
+        "theme_color": "#24aadd",
+        "background_color": "#ffffff",
+        "display": "standalone",
+    }
+    assert api.info_api.generate_manifest(ctx) == expected_manifest

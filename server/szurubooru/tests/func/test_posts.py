@@ -18,34 +18,6 @@ from szurubooru.func import (
 
 
 @pytest.mark.parametrize(
-    "input_mime_type,expected_url",
-    [
-        ("image/jpeg", "http://example.com/posts/1_244c8840887984c4.jpg"),
-        ("image/gif", "http://example.com/posts/1_244c8840887984c4.gif"),
-        ("totally/unknown", "http://example.com/posts/1_244c8840887984c4.dat"),
-    ],
-)
-def test_get_post_url(input_mime_type, expected_url, config_injector):
-    config_injector({"data_url": "http://example.com/", "secret": "test"})
-    post = model.Post()
-    post.post_id = 1
-    post.mime_type = input_mime_type
-    assert posts.get_post_content_url(post) == expected_url
-
-
-@pytest.mark.parametrize("input_mime_type", ["image/jpeg", "image/gif"])
-def test_get_post_thumbnail_url(input_mime_type, config_injector):
-    config_injector({"data_url": "http://example.com/", "secret": "test"})
-    post = model.Post()
-    post.post_id = 1
-    post.mime_type = input_mime_type
-    assert (
-        posts.get_post_thumbnail_url(post)
-        == "http://example.com/generated-thumbnails/1_244c8840887984c4.jpg"
-    )
-
-
-@pytest.mark.parametrize(
     "input_mime_type,expected_path",
     [
         ("image/jpeg", "posts/1_244c8840887984c4.jpg"),
@@ -53,7 +25,10 @@ def test_get_post_thumbnail_url(input_mime_type, config_injector):
         ("totally/unknown", "posts/1_244c8840887984c4.dat"),
     ],
 )
-def test_get_post_content_path(input_mime_type, expected_path):
+def test_get_post_content_path(
+    input_mime_type, expected_path, config_injector
+):
+    config_injector({"secret": "test"})
     post = model.Post()
     post.post_id = 1
     post.mime_type = input_mime_type
@@ -61,7 +36,8 @@ def test_get_post_content_path(input_mime_type, expected_path):
 
 
 @pytest.mark.parametrize("input_mime_type", ["image/jpeg", "image/gif"])
-def test_get_post_thumbnail_path(input_mime_type):
+def test_get_post_thumbnail_path(input_mime_type, config_injector):
+    config_injector({"secret": "test"})
     post = model.Post()
     post.post_id = 1
     post.mime_type = input_mime_type
@@ -72,7 +48,8 @@ def test_get_post_thumbnail_path(input_mime_type):
 
 
 @pytest.mark.parametrize("input_mime_type", ["image/jpeg", "image/gif"])
-def test_get_post_thumbnail_backup_path(input_mime_type):
+def test_get_post_thumbnail_backup_path(input_mime_type, config_injector):
+    config_injector({"secret": "test"})
     post = model.Post()
     post.post_id = 1
     post.mime_type = input_mime_type
@@ -105,7 +82,13 @@ def test_serialize_post(
     pool_category_factory,
     config_injector,
 ):
-    config_injector({"data_url": "http://example.com/", "secret": "test"})
+    config_injector(
+        {
+            "secret": "test",
+            "base_url": "http://example.com/",
+            "data_url": "http://example.com/",
+        }
+    )
     with patch("szurubooru.func.comments.serialize_comment"), patch(
         "szurubooru.func.users.serialize_micro_user"
     ), patch("szurubooru.func.posts.files.has"):
@@ -277,17 +260,15 @@ def test_serialize_post(
 
 
 def test_serialize_micro_post(post_factory, user_factory):
-    with patch("szurubooru.func.posts.get_post_thumbnail_url"):
-        posts.get_post_thumbnail_url.return_value = (
-            "https://example.com/thumb.png"
-        )
+    with patch("szurubooru.func.posts.get_post_thumbnail_path"):
+        posts.get_post_thumbnail_path.return_value = "thumb.png"
         auth_user = user_factory()
         post = post_factory()
         db.session.add(post)
         db.session.flush()
         assert posts.serialize_micro_post(post, auth_user) == {
             "id": post.post_id,
-            "thumbnailUrl": "https://example.com/thumb.png",
+            "thumbnailUrl": "http://example.com/thumb.png",
         }
 
 
@@ -519,7 +500,8 @@ def test_update_post_content_to_existing_content(
     config_injector(
         {
             "data_dir": str(tmpdir.mkdir("data")),
-            "data_url": "example.com",
+            "base_url": "https://example.com/",
+            "data_url": "https://example.com/data",
             "thumbnails": {
                 "post_width": 300,
                 "post_height": 300,

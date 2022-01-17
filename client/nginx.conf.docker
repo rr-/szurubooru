@@ -19,6 +19,13 @@ http {
     server_tokens off;
     keepalive_timeout 65;
 
+    proxy_cache_path /tmp/nginx-cache
+                     levels=1:2
+                     keys_zone=spa_cache:4m
+                     max_size=50m
+                     inactive=60m
+                     use_temp_path=off;
+
     upstream backend {
         server __BACKEND__:6666;
     }
@@ -69,9 +76,8 @@ http {
             error_page 404 @notfound;
         }
 
-        location / {
+        location ~ ^/(js|css|img|fonts)/.*$ {
             root /var/www;
-            try_files $uri /index.htm;
 
             sendfile on;
             tcp_nopush on;
@@ -79,6 +85,36 @@ http {
 
             gzip_static on;
             gzip_proxied expired no-cache no-store private auth;
+
+            error_page 404 @notfound;
+        }
+
+        location / {
+            tcp_nodelay on;
+
+            # remove unneeded auth headers to improve caching
+            proxy_set_header Authorization "";
+
+            proxy_cache spa_cache;
+            proxy_cache_use_stale error timeout updating http_500 http_502 http_503 http_504;
+            proxy_cache_background_update on;
+            proxy_cache_lock on;
+
+            gzip on;
+            gzip_comp_level 3;
+            gzip_min_length 20;
+            gzip_proxied any;
+            gzip_types text/plain application/json;
+
+            if ( $http_accept ~ "application/json" ) {
+                return 406 "API requests should be sent to the /api prefix";
+            }
+
+            if ($request_uri ~* "/(.*)") {
+                proxy_pass http://backend/html/$1;
+            }
+
+            error_page 500 502 503 504 @badproxy;
         }
 
         location @unauthorized {

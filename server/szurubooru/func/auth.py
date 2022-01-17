@@ -106,6 +106,16 @@ def is_valid_token(user_token: Optional[model.UserToken]) -> bool:
     return True
 
 
+def anon_has_privilege(privilege_name: str) -> bool:
+    all_ranks = list(RANK_MAP.keys())
+    assert privilege_name in config.config["privileges"]
+    minimal_rank = util.flip(RANK_MAP)[
+        config.config["privileges"][privilege_name]
+    ]
+    good_ranks = all_ranks[all_ranks.index(minimal_rank) :]
+    return model.User.RANK_ANONYMOUS in good_ranks
+
+
 def has_privilege(user: model.User, privilege_name: str) -> bool:
     assert user
     all_ranks = list(RANK_MAP.keys())

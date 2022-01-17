@@ -31,6 +31,7 @@ RUN apk --no-cache add \
         youtube_dl \
         pillow-avif-plugin \
         pyheif-pillow-opener \
+        yattag \
  && apk --no-cache del py3-pip
 
 COPY ./ /opt/app/

@@ -44,7 +44,9 @@ class PostAlreadyUploadedError(errors.ValidationError):
         super().__init__(
             "Post already uploaded (%d)" % other_post.post_id,
             {
-                "otherPostUrl": get_post_content_url(other_post),
+                "otherPostUrl": util.add_data_prefix(
+                    get_post_content_path(other_post)
+                ),
                 "otherPostId": other_post.post_id,
             },
         )
@@ -105,25 +107,6 @@ def get_post_security_hash(id: int) -> str:
     ).hexdigest()[0:16]
 
 
-def get_post_content_url(post: model.Post) -> str:
-    assert post
-    return "%s/posts/%d_%s.%s" % (
-        config.config["data_url"].rstrip("/"),
-        post.post_id,
-        get_post_security_hash(post.post_id),
-        mime.get_extension(post.mime_type) or "dat",
-    )
-
-
-def get_post_thumbnail_url(post: model.Post) -> str:
-    assert post
-    return "%s/generated-thumbnails/%d_%s.jpg" % (
-        config.config["data_url"].rstrip("/"),
-        post.post_id,
-        get_post_security_hash(post.post_id),
-    )
-
-
 def get_post_content_path(post: model.Post) -> str:
     assert post
     assert post.post_id
@@ -159,7 +142,11 @@ def serialize_note(note: model.PostNote) -> rest.Response:
 
 
 class PostSerializer(serialization.BaseSerializer):
-    def __init__(self, post: model.Post, auth_user: model.User) -> None:
+    def __init__(
+        self,
+        post: model.Post,
+        auth_user: model.User,
+    ) -> None:
         self.post = post
         self.auth_user = auth_user
 
@@ -241,10 +228,10 @@ class PostSerializer(serialization.BaseSerializer):
         return self.post.canvas_height
 
     def serialize_content_url(self) -> Any:
-        return get_post_content_url(self.post)
+        return util.add_data_prefix(get_post_content_path(self.post))
 
     def serialize_thumbnail_url(self) -> Any:
-        return get_post_thumbnail_url(self.post)
+        return util.add_data_prefix(get_post_thumbnail_path(self.post))
 
     def serialize_flags(self) -> Any:
         return self.post.flags
@@ -264,7 +251,7 @@ class PostSerializer(serialization.BaseSerializer):
             {
                 post["id"]: post
                 for post in [
-                    serialize_micro_post(rel, self.auth_user)
+                    serialize_micro_post(rel, self.auth_user, self.url_prefix)
                     for rel in self.post.relations
                 ]
             }.values(),
@@ -346,7 +333,9 @@ class PostSerializer(serialization.BaseSerializer):
 
 
 def serialize_post(
-    post: Optional[model.Post], auth_user: model.User, options: List[str] = []
+    post: Optional[model.Post],
+    auth_user: model.User,
+    options: List[str] = [],
 ) -> Optional[rest.Response]:
     if not post:
         return None
@@ -354,7 +343,8 @@ def serialize_post(
 
 
 def serialize_micro_post(
-    post: model.Post, auth_user: model.User
+    post: model.Post,
+    auth_user: model.User,
 ) -> Optional[rest.Response]:
     return serialize_post(
         post, auth_user=auth_user, options=["id", "thumbnailUrl"]

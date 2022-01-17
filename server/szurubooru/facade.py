@@ -85,13 +85,7 @@ def validate_config() -> None:
             % (config.config["default_rank"])
         )
 
-    for key in ["data_url", "data_dir"]:
-        if not config.config[key]:
-            raise errors.ConfigError(
-                "Service is not configured: %r is missing" % key
-            )
-
-    if not os.path.isabs(config.config["data_dir"]):
+    if not os.path.isabs(config.config["data_dir"] or ""):
         raise errors.ConfigError("data_dir must be an absolute path")
 
     if not config.config["database"]:

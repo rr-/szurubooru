@@ -30,26 +30,6 @@ const external_js = [
     'underscore',
 ];
 
-const app_manifest = {
-    name: 'szurubooru',
-    icons: [
-        {
-            src: baseUrl() + 'img/android-chrome-192x192.png',
-            type: 'image/png',
-            sizes: '192x192'
-        },
-        {
-            src: baseUrl() + 'img/android-chrome-512x512.png',
-            type: 'image/png',
-            sizes: '512x512'
-        }
-    ],
-    start_url: baseUrl(),
-    theme_color: '#24aadd',
-    background_color: '#ffffff',
-    display: 'standalone'
-}
-
 // -------------------------------------------------
 
 const fs = require('fs');
@@ -72,10 +52,6 @@ function gzipFile(file) {
     execSync('gzip -6 -k ' + file);
 }
 
-function baseUrl() {
-    return process.env.BASE_URL ? process.env.BASE_URL : '/';
-}
-
 // -------------------------------------------------
 
 function bundleHtml() {
@@ -89,10 +65,6 @@ function bundleHtml() {
             conservativeCollapse: true,
         }).trim();
     }
-
-    const baseHtml = readTextFile('./html/index.htm')
-        .replace('<!-- Base HTML Placeholder -->', `<base href="${baseUrl()}"/>`);
-    fs.writeFileSync('./public/index.htm', minifyHtml(baseHtml));
 
     let compiledTemplateJs = [
         `'use strict';`,
@@ -265,9 +237,6 @@ function bundleBinaryAssets() {
 
 function bundleWebAppFiles() {
     const Jimp = require('jimp');
-
-    fs.writeFileSync('./public/manifest.json', JSON.stringify(app_manifest));
-    console.info('Generated app manifest');
 
     Promise.all(webapp_icons.map(icon => {
         return Jimp.read('./img/app.png')

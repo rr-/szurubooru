@@ -31,7 +31,6 @@ services:
       - server
     environment:
       BACKEND_HOST: server
-      BASE_URL:
     volumes:
       - "${MOUNT_DATA}:/data:ro"
     ports:
