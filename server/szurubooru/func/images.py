@@ -7,6 +7,8 @@ import subprocess
 from io import BytesIO
 from typing import List
 
+import HeifImagePlugin
+import pillow_avif
 from PIL import Image as PILImage
 
 from szurubooru import errors
