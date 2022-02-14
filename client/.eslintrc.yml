@@ -10,3 +10,4 @@ ignorePatterns:
   - build.js
 parserOptions:
   ecmaVersion: 11
+  sourceType: module

@@ -1,6 +1,6 @@
 "use strict";
 
-const marked = require("marked");
+import { marked } from "marked";
 const DOMPurify = require("dompurify");
 
 class BaseMarkdownWrapper {
