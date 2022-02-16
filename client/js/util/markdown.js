@@ -1,6 +1,6 @@
 "use strict";
 
-import { marked } from "marked";
+const marked = require("marked");
 const DOMPurify = require("dompurify");
 
 class BaseMarkdownWrapper {
@@ -159,7 +159,7 @@ function formatMarkdown(text) {
     for (let wrapper of wrappers) {
         text = wrapper.preprocess(text);
     }
-    text = marked(text, options);
+    text = marked.parse(text, options);
     wrappers.reverse();
     for (let wrapper of wrappers) {
         text = wrapper.postprocess(text);
@@ -185,7 +185,7 @@ function formatInlineMarkdown(text) {
     for (let wrapper of wrappers) {
         text = wrapper.preprocess(text);
     }
-    text = marked.inlineLexer(text, [], options);
+    text = marked.parseInline(text, options);
     wrappers.reverse();
     for (let wrapper of wrappers) {
         text = wrapper.postprocess(text);
