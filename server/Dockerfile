@@ -7,8 +7,13 @@ WORKDIR /opt/app
 RUN apk --no-cache add \
         python3 \
         python3-dev \
-        ffmpeg \
         py3-pip \
+        build-base \
+        libheif \
+        libheif-dev \
+        libavif \
+        libavif-dev \
+        ffmpeg \
         # from requirements.txt:
         py3-yaml \
         py3-psycopg2 \
@@ -19,18 +24,13 @@ RUN apk --no-cache add \
         py3-pynacl \
         py3-tz \
         py3-pyrfc3339 \
-        build-base \
- && apk --no-cache add \
-        libheif \
-        libavif \
-        libheif-dev \
-        libavif-dev \
  && pip3 install --no-cache-dir --disable-pip-version-check \
-        alembic \
+        "alembic>=0.8.5" \
         "coloredlogs==5.0" \
-        heif-image-plugin \
+        "pyheif==0.6.1" \
+        "heif-image-plugin>=0.3.2" \
         youtube_dl \
-        pillow-avif-plugin \
+        "pillow-avif-plugin>=1.1.0" \
  && apk --no-cache del py3-pip
 
 COPY ./ /opt/app/
