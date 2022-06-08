@@ -37,6 +37,7 @@
         - [Creating post](#creating-post)
         - [Updating post](#updating-post)
         - [Getting post](#getting-post)
+        - [Getting around post](#getting-around-post)
         - [Deleting post](#deleting-post)
         - [Merging posts](#merging-posts)
         - [Rating post](#rating-post)
@@ -950,6 +951,29 @@ data.
 - **Description**
 
     Retrieves information about an existing post.
+
+## Getting around post
+- **Request**
+
+    `GET /post/<id>/around`
+
+- **Output**
+
+    ```json5
+    {
+        "prev":  <post-resource>,
+        "next":  <post-resource>
+    }
+    ```
+
+- **Errors**
+
+    - the post does not exist
+    - privileges are too low
+
+- **Description**
+
+    Retrieves information about posts that are before or after an existing post.
 
 ## Deleting post
 - **Request**
