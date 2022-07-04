@@ -175,7 +175,8 @@ def main() -> None:
         "--delete-posts",
         metavar="<post_ids>",
         nargs='+',
-        help="Will delete all posts with the given id's"
+        help="Will delete all posts with the given id's, all id's are seperated by a space. "
+             "If you want to delete a range of posts use it like: 37-47 (including the first and last number)"
     )
     command = parser_top.parse_args()
 
