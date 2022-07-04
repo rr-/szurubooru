@@ -119,6 +119,9 @@ def delete_posts(parameters: list) -> None:
         snapshots.delete(post, None)
 
     def delete_multiple_posts(start_id: int, end_id: int) -> None:
+        if start_id > end_id:
+            start_id, end_id = end_id, start_id
+
         for post_id in range(start_id, end_id + 1):
             delete_one_post(post_id)
 
