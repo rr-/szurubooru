@@ -1,8 +1,8 @@
-# szurubooru
+# szurubooru_photos
 
 A fork of [szurubooru](https://github.com/rr-/szurubooru) aimed at storing photos and videos taken with physical cameras.
 
-The idea for this started in [this issue](https://github.com/rr-/szurubooru/issues/340). I wanted a self-hosted replacement for Google Photos.
+The idea for this started in [this issue](https://github.com/rr-/szurubooru/issues/340). I wanted a self-hosted replacement for Google Photos. *If you're looking for one, also consider [Immich](https://github.com/immich-app/immich). (I'm not affiliated with the project at all, I just think it's really cool and will be a much better replacement for this when it comes out. In fact I plan to build a migration tool when it does.)
 
 ## Added Features
 
