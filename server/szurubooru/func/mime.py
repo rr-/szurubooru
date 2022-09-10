@@ -36,7 +36,7 @@ def get_mime_type(content: bytes) -> str:
     if content[0:4] == b"\x1A\x45\xDF\xA3":
         return "video/webm"
 
-    if content[4:12] in (b"ftypisom", b"ftypiso5", b"ftypmp42", b"ftypM4V "):
+    if content[4:12] in (b"ftypisom", b"ftypiso5", b"ftypiso6", b"ftypmp42", b"ftypM4V "):
         return "video/mp4"
 
     return "application/octet-stream"
