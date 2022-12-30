@@ -313,12 +313,11 @@ class PostUploadView extends events.EventTarget {
             uploadable.safety = safetyNode.value;
         }
 
-        const anonymousNode = rowNode.querySelector(
-            ".anonymous input:checked"
-        );
-        if (anonymousNode) {
-            uploadable.anonymous = true;
+        let anonymous = this._uploadAllAnonymous?.checked;
+        if (!anonymous) {
+            anonymous = rowNode.querySelector(".anonymous input:checked");
         }
+        uploadable.anonymous = anonymous;
 
         uploadable.tags = [];
         if (this._commonTagsInputNode) {
@@ -458,6 +457,10 @@ class PostUploadView extends events.EventTarget {
         return this._hostNode.querySelector(
             "form [name=pause-remain-on-error]"
         );
+    }
+
+    get _uploadAllAnonymous() {
+        return this._hostNode.querySelector("form [name=upload-all-anonymous]");
     }
 
     get _submitButtonNode() {
