@@ -15,6 +15,7 @@ $cancel-button-color = tomato
         &.inactive .skip-duplicates
         &.inactive .always-upload-similar
         &.inactive .pause-remain-on-error
+        &.inactive #common-tags,
         &.uploading input[type=submit],
         &.uploading .skip-duplicates,
         &.uploading .always-upload-similar
@@ -29,6 +30,9 @@ $cancel-button-color = tomato
             padding: 2em
             small
                 font-size: 60%
+
+    label[for=common-tags]
+        display: none !important
 
     input[type=submit]
         margin-top: 1em
