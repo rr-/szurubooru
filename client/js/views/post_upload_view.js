@@ -322,7 +322,7 @@ class PostUploadView extends events.EventTarget {
         uploadable.tags = [];
         if (this._commonTagsInputNode) {
             var tags = this._commonTagsInputNode.value.split(' ');
-            tags = tags.filter(t => t != "");
+            tags = tags.filter(t => t != "").map(t => t.replace('\\', ''));
             uploadable.tags = uploadable.tags.concat(tags);
         }
         uploadable.relations = [];
