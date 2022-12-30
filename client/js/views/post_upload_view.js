@@ -313,7 +313,7 @@ class PostUploadView extends events.EventTarget {
             uploadable.safety = safetyNode.value;
         }
 
-        let anonymous = this._uploadAllAnonymous?.checked;
+        let anonymous = this._uploadAllAnonymous.checked;
         if (!anonymous) {
             anonymous = rowNode.querySelector(".anonymous input:checked");
         }
