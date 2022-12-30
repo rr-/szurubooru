@@ -474,7 +474,7 @@ class PostUploadView extends events.EventTarget {
     }
 
     get _commonTagsInputNode() {
-        return this._formNode.querySelector('form [name=common-tags');
+        return this._formNode.querySelector('form [name=common-tags]');
     }
 }
 
