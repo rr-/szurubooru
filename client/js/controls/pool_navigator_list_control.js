@@ -28,9 +28,6 @@ class PoolNavigatorListControl extends events.EventTarget {
             poolListItemNode,
             poolPostNearby,
         );
-        // events.proxyEvent(commentControl, this, "submit");
-        // events.proxyEvent(commentControl, this, "score");
-        // events.proxyEvent(commentControl, this, "delete");
         this._indexToNode[poolPostNearby.id] = poolListItemNode;
         this._poolNavigatorListNode.appendChild(poolListItemNode);
     }
