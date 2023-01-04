@@ -992,8 +992,10 @@ def get_pools_nearby(
 
         for previous_item, current_item, next_item in _get_nearby_iter(pool.posts):
             if post.post_id == current_item.post_id:
-                prev_post_id = previous_item.post_id
-                next_post_id = next_item.post_id
+                if previous_item != None:
+                    prev_post_id = previous_item.post_id
+                if next_item != None:
+                    next_post_id = next_item.post_id
                 break
 
         resp_entry = PoolPostsNearby(
