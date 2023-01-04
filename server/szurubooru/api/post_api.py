@@ -5,12 +5,10 @@ from szurubooru import db, errors, model, rest, search
 from szurubooru.func import (
     auth,
     favorites,
-    mime,
     posts,
     scores,
     serialization,
     snapshots,
-    tags,
     versions,
 )
 
@@ -282,6 +280,19 @@ def get_posts_around(
     return _search_executor.get_around_and_serialize(
         ctx, post_id, lambda post: _serialize_post(ctx, post)
     )
+
+@rest.routes.get("/post/(?P<post_id>[^/]+)/pools-nearby/?")
+def get_pools_around(
+    ctx: rest.Context, params: Dict[str, str]
+) -> rest.Response:
+    auth.verify_privilege(ctx.user, "posts:list")
+    auth.verify_privilege(ctx.user, "posts:view")
+    auth.verify_privilege(ctx.user, "pools:list")
+    _search_executor_config.user = ctx.user
+    post = _get_post(params)
+    results = posts.get_pools_nearby(post)
+    return posts.serialize_pool_posts_nearby(results)
+
 
 
 @rest.routes.post("/posts/reverse-search/?")

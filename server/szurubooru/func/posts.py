@@ -1,5 +1,6 @@
 import hmac
 import logging
+from collections import namedtuple
 from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
@@ -15,7 +16,6 @@ from szurubooru.func import (
     pools,
     scores,
     serialization,
-    snapshots,
     tags,
     users,
     util,
@@ -968,3 +968,49 @@ def search_by_image(image_content: bytes) -> List[Tuple[float, model.Post]]:
         ]
     else:
         return []
+
+PoolPostsNearby = namedtuple('PoolPostsNearby', 'pool first_post prev_post next_post last_post')
+def get_pools_nearby(
+    post: model.Post
+) -> List[PoolPostsNearby]:
+    response = []
+    pools = post.pools
+
+    for pool in pools:
+        prev_post_id = None
+        next_post_id = None
+        break_loop = False
+
+        for pool_post in pools.posts:
+            next_post_id = pool_post.post_id
+
+            if break_loop == True:
+                break
+
+            if post.id == pool_post.post_id:
+                break_loop = True
+
+            prev_post_id = pool_post.post_id
+
+        resp_entry = PoolPostsNearby(
+            pool=pool,
+            first_post=pool.posts[0].post_id,
+            last_post=pool.posts[-1].post_id,
+            prev_post=next_post_id,
+            next_post=prev_post_id,
+        )
+        response.append(resp_entry)
+    return response
+
+def serialize_pool_posts_nearby(
+    nearby: List[PoolPostsNearby]
+) -> Optional[rest.Response]:
+    return [
+        {
+            "pool": pools.serialize_pool(entry.pool),
+            "firstPost": serialize_micro_post(try_get_post_by_id(entry.first_post)),
+            "lastPost": serialize_micro_post(try_get_post_by_id(entry.last_post)),
+            "prevPost": serialize_micro_post(try_get_post_by_id(entry.prev_post)),
+            "nextPost": serialize_micro_post(try_get_post_by_id(entry.first_post)),
+        } for entry in nearby
+    ]
