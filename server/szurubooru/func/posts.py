@@ -2,6 +2,7 @@ import hmac
 import logging
 from collections import namedtuple
 from datetime import datetime
+from itertools import tee, chain, islice, izip
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import sqlalchemy as sa
@@ -95,6 +96,13 @@ FLAG_MAP = {
     model.Post.FLAG_LOOP: "loop",
     model.Post.FLAG_SOUND: "sound",
 }
+
+# https://stackoverflow.com/a/1012089
+def _get_nearby_iter(post_list):
+    previous_item, current_item, next_item = tee(post_list, 3)
+    previous_item = chain([None], previous_item)
+    next_item = chain(islice(next_item, 1, None), [None])
+    return izip(previous_item, current_item, next_item)
 
 
 def get_post_security_hash(id: int) -> str:
@@ -982,12 +990,10 @@ def get_pools_nearby(
         first_post_id = pool.posts[0].post_id,
         last_post_id = pool.posts[-1].post_id,
 
-        for idx, pool_post in enumerate(pool.posts):
-            if post.post_id == pool_post.post_id:
-                if post.post_id != first_post_id:
-                    prev_post_id = pool.posts[idx-1].post_id
-                if post.post_id != last_post_id:
-                    next_post_id = pool.posts[idx+1].post_id
+        for previous_item, current_item, next_item in _get_nearby_iter(pool.posts):
+            if post.post_id == current_item.post_id:
+                prev_post_id = previous_item.post_id
+                next_post_id = next_item.post_id
                 break
 
         resp_entry = PoolPostsNearby(
