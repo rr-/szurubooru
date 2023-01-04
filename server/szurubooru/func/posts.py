@@ -2,7 +2,7 @@ import hmac
 import logging
 from collections import namedtuple
 from datetime import datetime
-from itertools import tee, chain, islice, izip
+from itertools import tee, chain, islice
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import sqlalchemy as sa
@@ -102,7 +102,7 @@ def _get_nearby_iter(post_list):
     previous_item, current_item, next_item = tee(post_list, 3)
     previous_item = chain([None], previous_item)
     next_item = chain(islice(next_item, 1, None), [None])
-    return izip(previous_item, current_item, next_item)
+    return zip(previous_item, current_item, next_item)
 
 
 def get_post_security_hash(id: int) -> str:
