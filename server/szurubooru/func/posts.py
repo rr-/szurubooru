@@ -981,7 +981,7 @@ def get_pools_nearby(
         next_post_id = None
         break_loop = False
 
-        for pool_post in pools.posts:
+        for pool_post in pool.posts:
             next_post_id = pool_post.post_id
 
             if break_loop == True:
