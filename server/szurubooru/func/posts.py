@@ -996,8 +996,8 @@ def get_pools_nearby(
             pool=pool,
             first_post=pool.posts[0].post_id,
             last_post=pool.posts[-1].post_id,
-            prev_post=next_post_id,
-            next_post=prev_post_id,
+            prev_post=prev_post_id,
+            next_post=next_post_id,
         )
         response.append(resp_entry)
     return response
@@ -1011,6 +1011,6 @@ def serialize_pool_posts_nearby(
             "firstPost": serialize_micro_post(try_get_post_by_id(entry.first_post), None),
             "lastPost": serialize_micro_post(try_get_post_by_id(entry.last_post), None),
             "prevPost": serialize_micro_post(try_get_post_by_id(entry.prev_post), None),
-            "nextPost": serialize_micro_post(try_get_post_by_id(entry.first_post), None),
+            "nextPost": serialize_micro_post(try_get_post_by_id(entry.next_post), None),
         } for entry in nearby
     ]
