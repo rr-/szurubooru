@@ -979,23 +979,21 @@ def get_pools_nearby(
     for pool in pools:
         prev_post_id = None
         next_post_id = None
-        break_loop = False
+        first_post_id = pool.posts[0].post_id,
+        last_post_id = pool.posts[-1].post_id,
 
-        for pool_post in pool.posts:
-            next_post_id = pool_post.post_id
-
-            if break_loop == True:
-                break
-
+        for idx, pool_post in enumerate(pool.posts):
             if post.post_id == pool_post.post_id:
-                break_loop = True
-
-            prev_post_id = pool_post.post_id
+                if post.post_id != first_post_id:
+                    prev_post_id = pool.posts[idx-1].post_id
+                if post.post_id != last_post_id:
+                    next_post_id = pool.posts[idx+1].post_id
+                break
 
         resp_entry = PoolPostsNearby(
             pool=pool,
-            first_post=pool.posts[0].post_id,
-            last_post=pool.posts[-1].post_id,
+            first_post=first_post_id,
+            last_post=last_post_id,
             prev_post=prev_post_id,
             next_post=next_post_id,
         )
@@ -1007,7 +1005,7 @@ def serialize_pool_posts_nearby(
 ) -> Optional[rest.Response]:
     return [
         {
-            "pool": pools.serialize_pool(entry.pool),
+            "pool": pools.serialize_micro_pool(entry.pool),
             "firstPost": serialize_micro_post(try_get_post_by_id(entry.first_post), None),
             "lastPost": serialize_micro_post(try_get_post_by_id(entry.last_post), None),
             "prevPost": serialize_micro_post(try_get_post_by_id(entry.prev_post), None),
