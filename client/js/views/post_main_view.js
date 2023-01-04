@@ -58,7 +58,7 @@ class PostMainView {
         this._installSidebar(ctx);
         this._installCommentForm();
         this._installComments(ctx.post.comments);
-        this._installPoolNavigators(ctx.poolPostsAround);
+        this._installPoolNavigators(ctx.poolPostsNearby);
 
         const showPreviousImage = () => {
             if (ctx.prevPostId) {
@@ -139,7 +139,7 @@ class PostMainView {
         }
     }
 
-    _installPoolNavigators(poolPostsAround) {
+    _installPoolNavigators(poolPostsNearby) {
         const poolNavigatorsContainerNode = document.querySelector(
             "#content-holder .pool-navigators-container"
         );
@@ -149,7 +149,7 @@ class PostMainView {
 
         this.poolNavigatorsControl = new PoolNavigatorListControl(
             poolNavigatorsContainerNode,
-            poolPostsAround,
+            poolPostsNearby,
         );
     }
 

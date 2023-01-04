@@ -19,7 +19,7 @@ class PostMainController extends BasePostController {
 
         let poolPostsNearby = Promise.resolve({results: []});
         if (api.hasPrivilege("pools:list") && api.hasPrivilege("pools:view")) {
-            poolPostsNearby = PostList.getNearbyPoolPosts(ctx.parameters.id)
+            poolPostsNearby = PostList.getNearbyPoolPosts(ctx.parameters.id);
         }
 
         let parameters = ctx.parameters;
