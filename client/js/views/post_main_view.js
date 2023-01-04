@@ -10,6 +10,7 @@ const PostContentControl = require("../controls/post_content_control.js");
 const PostNotesOverlayControl = require("../controls/post_notes_overlay_control.js");
 const PostReadonlySidebarControl = require("../controls/post_readonly_sidebar_control.js");
 const PostEditSidebarControl = require("../controls/post_edit_sidebar_control.js");
+const PoolNavigatorListControl = require("../controls/pool_navigator_list_control.js");
 const CommentControl = require("../controls/comment_control.js");
 const CommentListControl = require("../controls/comment_list_control.js");
 
