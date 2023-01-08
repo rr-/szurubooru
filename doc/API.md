@@ -998,10 +998,10 @@ data.
 - **Field meaning**
 
 - `<pool>`: The associated [micro pool resource](#micro-pool).
-- `firstPost`: A [micro post resource](#micro-post) that displays the first post in the pool.
-- `lastPost`: A [micro post resource](#micro-post) that displays the last post in the pool.
-- `nextPost`: A [micro post resource](#micro-post) that displays the next post in the pool.
-- `prevPost`: A [micro post resource](#micro-post) that displays the previous post in the pool.
+- `<first-post>`: A [micro post resource](#micro-post) that displays the first post in the pool.
+- `<last-post>`: A [micro post resource](#micro-post) that displays the last post in the pool.
+- `<next-post>`: A [micro post resource](#micro-post) that displays the next post in the pool.
+- `<previous-post>`: A [micro post resource](#micro-post) that displays the previous post in the pool.
 
 - **Errors**
 
