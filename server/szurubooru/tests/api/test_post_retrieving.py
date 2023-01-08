@@ -14,6 +14,7 @@ def inject_config(config_injector):
             "privileges": {
                 "posts:list": model.User.RANK_REGULAR,
                 "posts:view": model.User.RANK_REGULAR,
+                "pools:list": model.User.RANK_REGULAR,
             },
         }
     )
