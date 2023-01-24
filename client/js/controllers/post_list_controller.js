@@ -53,12 +53,14 @@ class PostListController {
             this._evtNavigate(e)
         );
 
-        this._headerView._bulkDeleteEditor.addEventListener(
-            "deleteSelectedPosts",
-            (e) => {
-                this._evtDeleteSelectedPosts(e);
-            }
-        );
+        if (this._headerView._bulkDeleteEditor) {
+            this._headerView._bulkDeleteEditor.addEventListener(
+                "deleteSelectedPosts",
+                (e) => {
+                    this._evtDeleteSelectedPosts(e);
+                }
+            );
+        }
 
         this._postsMarkedForDeletion = [];
         this._syncPageController();
