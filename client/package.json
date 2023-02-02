@@ -7,6 +7,7 @@
   },
   "dependencies": {
     "dompurify": "^2.0.17",
+    "flv.js": "^1.6.2",
     "font-awesome": "^4.7.0",
     "ios-inner-height": "^1.0.3",
     "js-cookie": "^2.2.0",

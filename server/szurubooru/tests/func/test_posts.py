@@ -462,6 +462,13 @@ def test_update_post_source_with_too_long_string():
             model.Post.TYPE_FLASH,
             "1_244c8840887984c4.swf",
         ),
+        (
+            False,
+            "flv.flv",
+            "video/x-flv",
+            model.Post.TYPE_VIDEO,
+            "1_244c8840887984c4.flv",
+        ),
     ],
 )
 def test_update_post_content_for_new_post(
