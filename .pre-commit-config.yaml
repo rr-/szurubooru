@@ -1,7 +1,7 @@
 repos:
 
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.0.1
+    rev: v4.4.0
     hooks:
     -   id: trailing-whitespace
     -   id: end-of-file-fixer
@@ -10,12 +10,12 @@ repos:
 
 
 -   repo: https://github.com/Lucas-C/pre-commit-hooks
-    rev: v1.1.10
+    rev: v1.4.2
     hooks:
     -   id: remove-tabs
 
 -   repo: https://github.com/psf/black
-    rev: '22.3.0'
+    rev: '23.1.0'
     hooks:
       - id: black
         files: 'server/'
@@ -23,7 +23,7 @@ repos:
         language_version: python3.9
 
 -   repo: https://github.com/PyCQA/isort
-    rev: '5.10.1'
+    rev: '5.12.0'
     hooks:
     -   id: isort
         files: 'server/'
@@ -33,7 +33,7 @@ repos:
         -   toml
 
 -   repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v2.5.0
+    rev: v2.7.1
     hooks:
     -   id: prettier
         files: client/js/
@@ -41,7 +41,7 @@ repos:
         args: ['--config', 'client/.prettierrc.yml']
 
 -   repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v8.3.0
+    rev: v8.33.0
     hooks:
     -   id: eslint
         files: client/js/
@@ -49,42 +49,14 @@ repos:
         additional_dependencies:
         -   eslint-config-prettier
 
--   repo: https://gitlab.com/PyCQA/flake8
-    rev: '4.0.1'
+-   repo: https://github.com/PyCQA/flake8
+    rev: '6.0.0'
     hooks:
     -   id: flake8
         files: server/szurubooru/
         additional_dependencies:
         -   flake8-print
         args: ['--config=server/.flake8']
-
--   repo: local
-    hooks:
-    -   id: docker-build-client
-        name: Docker - build client
-        entry: bash -c 'docker build client/'
-        language: system
-        types: [file]
-        files: client/
-        pass_filenames: false
-
-    -   id: docker-build-server
-        name: Docker - build server
-        entry: bash -c 'docker build server/'
-        language: system
-        types: [file]
-        files: server/
-        pass_filenames: false
-
-    -   id: pytest
-        name: pytest
-        entry: bash -c 'docker run --rm -t $(docker build --target testing -q server/) szurubooru/'
-        language: system
-        types: [python]
-        files: server/szurubooru/
-        exclude: server/szurubooru/migrations/
-        pass_filenames: false
-        stages: [manual]
 
 fail_fast: true
 exclude: LICENSE.md

@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "build": "node build.js",
-    "watch": "node build.js --watch"
+    "watch": "node build.js --watch",
+    "build-container": "docker build -t szurubooru/client:dev ."
   },
   "dependencies": {
     "dompurify": "^2.0.17",
