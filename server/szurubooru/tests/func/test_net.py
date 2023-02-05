@@ -1,3 +1,5 @@
+import os
+
 import pytest
 
 from szurubooru import errors
@@ -16,6 +18,9 @@ def inject_config(tmpdir, config_injector):
     )
 
 
+@pytest.mark.skipif(
+    "TEST_NET" not in os.environ, reason="Network tests skipped by default."
+)
 def test_download():
     url = "http://info.cern.ch/hypertext/WWW/TheProject.html"
 
@@ -62,6 +67,9 @@ def test_download():
     assert actual_content == expected_content
 
 
+@pytest.mark.skipif(
+    "TEST_NET" not in os.environ, reason="Network tests skipped by default."
+)
 @pytest.mark.parametrize(
     "url",
     [
@@ -74,6 +82,9 @@ def test_too_large_download(url):
         net.download(url, use_video_downloader=True)
 
 
+@pytest.mark.skipif(
+    "TEST_NET" not in os.environ, reason="Network tests skipped by default."
+)
 @pytest.mark.parametrize(
     "url,expected_sha1",
     [
@@ -96,6 +107,9 @@ def test_content_download(url, expected_sha1):
     assert get_sha1(actual_content) == expected_sha1
 
 
+@pytest.mark.skipif(
+    "TEST_NET" not in os.environ, reason="Network tests skipped by default."
+)
 def test_bad_content_downlaod():
     url = "http://info.cern.ch/hypertext/WWW/TheProject.html"
     with pytest.raises(errors.ThirdPartyError):
@@ -108,11 +122,13 @@ def test_no_webhooks(config_injector):
     assert len(res) == 0
 
 
+@pytest.mark.skipif(
+    "TEST_NET" not in os.environ, reason="Network tests skipped by default."
+)
 @pytest.mark.parametrize(
     "webhook,status_code",
     [
         ("https://postman-echo.com/post", 200),
-        ("http://localhost/", 400),
         ("https://postman-echo.com/get", 400),
     ],
 )
@@ -121,6 +137,9 @@ def test_single_webhook(config_injector, webhook, status_code):
     assert ret == status_code
 
 
+@pytest.mark.skipif(
+    "TEST_NET" not in os.environ, reason="Network tests skipped by default."
+)
 def test_multiple_webhooks(config_injector):
     config_injector(
         {
