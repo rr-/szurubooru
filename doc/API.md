@@ -2491,7 +2491,7 @@ One file together with its metadata posted to the site.
 ## Micro post
 **Description**
 
-A [post resource](#post) stripped down to `name` and `thumbnailUrl` fields.
+A [post resource](#post) stripped down to `id` and `thumbnailUrl` fields.
 
 ## Note
 **Description**
