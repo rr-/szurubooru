@@ -323,7 +323,7 @@ data.
     {
         "name":  <name>,
         "color": <color>,
-        "order": <order>  // optional
+        "order": <order>
     }
     ```
 
