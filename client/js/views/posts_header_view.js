@@ -141,6 +141,34 @@ class BulkTagEditor extends BulkEditor {
     }
 }
 
+class BulkDeleteEditor extends BulkEditor {
+    constructor(hostNode) {
+        super(hostNode);
+        this._hostNode.addEventListener("submit", (e) =>
+            this._evtFormSubmit(e)
+        );
+    }
+
+    _evtFormSubmit(e) {
+        e.preventDefault();
+        this.dispatchEvent(
+            new CustomEvent("deleteSelectedPosts", { detail: {} })
+        );
+    }
+
+    _evtOpenLinkClick(e) {
+        e.preventDefault();
+        this.toggleOpen(true);
+        this.dispatchEvent(new CustomEvent("open", { detail: {} }));
+    }
+
+    _evtCloseLinkClick(e) {
+        e.preventDefault();
+        this.toggleOpen(false);
+        this.dispatchEvent(new CustomEvent("close", { detail: {} }));
+    }
+}
+
 class PostsHeaderView extends events.EventTarget {
     constructor(ctx) {
         super();
@@ -186,6 +214,13 @@ class PostsHeaderView extends events.EventTarget {
             this._bulkEditors.push(this._bulkSafetyEditor);
         }
 
+        if (this._bulkEditDeleteNode) {
+            this._bulkDeleteEditor = new BulkDeleteEditor(
+                this._bulkEditDeleteNode
+            );
+            this._bulkEditors.push(this._bulkDeleteEditor);
+        }
+
         for (let editor of this._bulkEditors) {
             editor.addEventListener("submit", (e) => {
                 this._navigate();
@@ -204,6 +239,8 @@ class PostsHeaderView extends events.EventTarget {
             this._openBulkEditor(this._bulkTagEditor);
         } else if (ctx.parameters.safety && this._bulkSafetyEditor) {
             this._openBulkEditor(this._bulkSafetyEditor);
+        } else if (ctx.parameters.delete && this._bulkDeleteEditor) {
+            this._openBulkEditor(this._bulkDeleteEditor);
         }
     }
 
@@ -225,6 +262,10 @@ class PostsHeaderView extends events.EventTarget {
 
     get _bulkEditSafetyNode() {
         return this._hostNode.querySelector(".bulk-edit-safety");
+    }
+
+    get _bulkEditDeleteNode() {
+        return this._hostNode.querySelector(".bulk-edit-delete");
     }
 
     _openBulkEditor(editor) {
@@ -291,6 +332,10 @@ class PostsHeaderView extends events.EventTarget {
         }
         parameters.safety =
             this._bulkSafetyEditor && this._bulkSafetyEditor.opened
+                ? "1"
+                : null;
+        parameters.delete =
+            this._bulkDeleteEditor && this._bulkDeleteEditor.opened
                 ? "1"
                 : null;
         this.dispatchEvent(

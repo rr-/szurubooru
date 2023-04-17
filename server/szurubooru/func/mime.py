@@ -39,6 +39,9 @@ def get_mime_type(content: bytes) -> str:
     if content[4:12] in (b"ftypisom", b"ftypiso5", b"ftypiso6", b"ftypmp42", b"ftypM4V "):
         return "video/mp4"
 
+    if content[4:12] == b"ftypqt  ":
+        return "video/quicktime"
+
     return "application/octet-stream"
 
 
@@ -54,6 +57,7 @@ def get_extension(mime_type: str) -> Optional[str]:
         "image/heif": "heif",
         "image/heic": "heic",
         "video/mp4": "mp4",
+        "video/quicktime": "mov",
         "video/webm": "webm",
         "application/octet-stream": "dat",
     }
@@ -65,7 +69,12 @@ def is_flash(mime_type: str) -> bool:
 
 
 def is_video(mime_type: str) -> bool:
-    return mime_type.lower() in ("application/ogg", "video/mp4", "video/webm")
+    return mime_type.lower() in (
+        "application/ogg",
+        "video/mp4",
+        "video/quicktime",
+        "video/webm",
+    )
 
 
 def is_image(mime_type: str) -> bool:
