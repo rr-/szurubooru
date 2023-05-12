@@ -334,6 +334,23 @@ class Post extends events.EventTarget {
             });
     }
 
+    ban() {
+        return api
+            .post(uri.formatApiLink("post-ban", this.id), {
+                version: this._version
+            })
+            .then((response) => {
+                this.dispatchEvent(
+                    new CustomEvent("ban", {
+                        detail: {
+                            post: this
+                        }
+                    })
+                );
+                return Promise.resolve();
+            })
+    }
+
     delete() {
         return api
             .delete(uri.formatApiLink("post", this.id), {

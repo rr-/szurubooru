@@ -5,6 +5,7 @@ from szurubooru.model.pool import Pool, PoolName, PoolPost
 from szurubooru.model.pool_category import PoolCategory
 from szurubooru.model.post import (
     Post,
+    PostBan,
     PostFavorite,
     PostFeature,
     PostNote,

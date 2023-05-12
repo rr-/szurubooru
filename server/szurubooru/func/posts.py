@@ -50,6 +50,12 @@ class PostAlreadyUploadedError(errors.ValidationError):
         )
 
 
+class PostBannedError(errors.ValidationError):
+    def __init__(self, message: str = "This file was banned", extra_fields: Dict[str, str] = None) -> None:
+        super().__init__(message, extra_fields)
+
+
+
 class InvalidPostIdError(errors.ValidationError):
     pass
 
@@ -425,6 +431,15 @@ def create_post(
     return post, new_tags
 
 
+def create_ban(post: model.Post) -> model.PostBan:
+    ban = model.PostBan()
+    ban.checksum = post.checksum
+    ban.time = datetime.utcnow()
+
+    db.session.add(ban)
+    return ban
+
+
 def update_post_safety(post: model.Post, safety: str) -> None:
     assert post
     safety = util.flip(SAFETY_MAP).get(safety, None)
@@ -634,12 +649,22 @@ def update_post_content(post: model.Post, content: Optional[bytes]) -> None:
         .filter(model.Post.post_id != post.post_id)
         .one_or_none()
     )
+
     if (
         other_post
         and other_post.post_id
         and other_post.post_id != post.post_id
     ):
         raise PostAlreadyUploadedError(other_post)
+
+
+    post_ban = (db.session.query(model.PostBan)
+                .filter(model.PostBan.checksum == post.checksum)
+                .one_or_none()
+    )
+    if (post_ban):
+        raise PostBannedError()
+
 
     if update_signature:
         purge_post_signature(post)
@@ -804,6 +829,11 @@ def feature_post(post: model.Post, user: Optional[model.User]) -> None:
 def delete(post: model.Post) -> None:
     assert post
     db.session.delete(post)
+
+
+def ban(ban: model.PostBan) -> None:
+    assert ban
+    db.session.add(ban)
 
 
 def merge_posts(
