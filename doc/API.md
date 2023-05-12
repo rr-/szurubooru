@@ -39,6 +39,7 @@
         - [Getting post](#getting-post)
         - [Getting around post](#getting-around-post)
         - [Deleting post](#deleting-post)
+        - [Banning post](#banning-post)
         - [Merging posts](#merging-posts)
         - [Rating post](#rating-post)
         - [Adding post to favorites](#adding-post-to-favorites)
@@ -1003,6 +1004,40 @@ data.
 - **Description**
 
     Deletes existing post. Related posts and tags are kept.
+
+
+## Banning post
+- **Request**
+
+    `POST /post-ban/<id>`
+
+- **Input**
+
+    ```json5
+    {
+        "version": <version>
+    }
+    ```
+
+- **Output**
+
+    ```json5
+    {}
+    ```
+
+- **Errors**
+
+    - the version is outdated
+    - the post does not exist
+    - privileges are too low
+
+- **Description**
+
+    Deletes existing post, then adds the sha1sum of the post file to a ban list.
+    Users will not be able to upload the file again.
+    
+    Related posts and tags are kept.
+
 
 ## Merging posts
 - **Request**
