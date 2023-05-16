@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import sqlalchemy as sa
+from server.szurubooru.func.bans import PostBannedError
 
 from szurubooru import config, db, errors, model, rest
 from szurubooru.func import (
@@ -48,11 +49,6 @@ class PostAlreadyUploadedError(errors.ValidationError):
                 "otherPostId": other_post.post_id,
             },
         )
-
-
-class PostBannedError(errors.ValidationError):
-    def __init__(self, message: str = "This file was banned", extra_fields: Dict[str, str] = None) -> None:
-        super().__init__(message, extra_fields)
 
 
 
@@ -429,15 +425,6 @@ def create_post(
 
     db.session.add(post)
     return post, new_tags
-
-
-def create_ban(post: model.Post) -> model.PostBan:
-    ban = model.PostBan()
-    ban.checksum = post.checksum
-    ban.time = datetime.utcnow()
-
-    db.session.add(ban)
-    return ban
 
 
 def update_post_safety(post: model.Post, safety: str) -> None:

@@ -183,18 +183,6 @@ def delete_post(ctx: rest.Context, params: Dict[str, str]) -> rest.Response:
     return {}
 
 
-@rest.routes.post("/post-ban/(?P<post_id>[^/]+)/?")
-def ban_post(ctx: rest.Context, params: Dict[str, str]) -> rest.Response:
-    auth.verify_privilege(ctx.user, "posts:ban")
-    post = _get_post(params)
-    versions.verify_version(post, ctx)
-    posts.ban(posts.create_ban(post))
-    snapshots.delete(post, ctx.user)
-    posts.delete(post)
-    ctx.session.commit()
-    return {}
-
-
 @rest.routes.post("/post-merge/?")
 def merge_posts(
     ctx: rest.Context, _params: Dict[str, str] = {}
