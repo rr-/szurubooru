@@ -25,6 +25,7 @@ class PoolNavigatorControl extends events.EventTarget {
                 previousPost: poolPostNearby.previousPost,
                 nextPost: poolPostNearby.nextPost,
                 lastPost: poolPostNearby.lastPost,
+                getPrettyName: misc.getPrettyName,
             })
         );
     }
