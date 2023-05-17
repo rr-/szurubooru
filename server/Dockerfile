@@ -27,6 +27,7 @@ RUN apk --no-cache add \
  && pip3 install --no-cache-dir --disable-pip-version-check \
         "alembic>=0.8.5" \
         "coloredlogs==5.0" \
+        gallery_dl \
         "pyheif==0.6.1" \
         "heif-image-plugin>=0.3.2" \
         youtube_dl \

@@ -1,6 +1,7 @@
 alembic>=0.8.5
 certifi>=2017.11.5
 coloredlogs==5.0
+gallery_dl
 heif-image-plugin==0.3.2
 numpy>=1.8.2
 pillow-avif-plugin>=1.1.0
