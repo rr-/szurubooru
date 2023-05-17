@@ -15,7 +15,7 @@ class HashNotBannedError(errors.ValidationError):
     pass
 
 
-class TagSerializer(serialization.BaseSerializer):
+class BanSerializer(serialization.BaseSerializer):
     def __init__(self, ban: model.PostBan) -> None:
         self.ban = ban
 
@@ -65,4 +65,4 @@ def serialize_ban(
 ) -> Optional[rest.Response]:
     if not ban:
         return None
-    return serialization.BaseSerializer(ban).serialize(options)
+    return BanSerializer(ban).serialize(options)

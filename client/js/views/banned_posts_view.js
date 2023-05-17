@@ -83,7 +83,7 @@ class BannedPostsView extends events.EventTarget {
     }
 
     _evtBannedPostDeleted(e) {
-        this._removeBannedPostRowNode(e.detail.poolCategory);
+        this._removeBannedPostRowNode(e.detail.bannedPost);
     }
 
     _evtDeleteButtonClick(e, rowNode, link) {

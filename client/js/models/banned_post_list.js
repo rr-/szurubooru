@@ -26,8 +26,8 @@ class BannedPostList extends AbstractList {
 
     save() {
         let promises = [];
-        for (let BannedPost of this._deletedBans) {
-            promises.push(BannedPost.delete());
+        for (let bannedPost of this._deletedBans) {
+            promises.push(bannedPost.delete());
         }
 
         return Promise.all(promises).then((response) => {
@@ -37,7 +37,7 @@ class BannedPostList extends AbstractList {
     }
 
     _evtBannedPostDeleted(e) {
-        this._deletedBans.push(e.detail.BannedPost);
+        this._deletedBans.push(e.detail.bannedPost);
     }
 }
 

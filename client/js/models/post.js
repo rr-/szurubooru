@@ -336,7 +336,8 @@ class Post extends events.EventTarget {
 
     ban() {
         return api
-            .post(uri.formatApiLink("post-ban", this.id), {
+            .post(uri.formatApiLink("post-ban"), {
+                post_id: this.id,
                 version: this._version
             })
             .then((response) => {

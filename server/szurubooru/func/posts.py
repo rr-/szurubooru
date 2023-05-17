@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import sqlalchemy as sa
-from server.szurubooru.func.bans import PostBannedError
+from szurubooru.func.bans import PostBannedError
 
 from szurubooru import config, db, errors, model, rest
 from szurubooru.func import (

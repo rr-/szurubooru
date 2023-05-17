@@ -14,17 +14,7 @@ from szurubooru.search.typing import SaColumn, SaQuery
 
 class BanSearchConfig(BaseSearchConfig):
     def create_filter_query(self, _disable_eager_loads: bool) -> SaQuery:
-        strategy = (
-            sa.orm.lazyload if _disable_eager_loads else sa.orm.subqueryload
-        )
-        return (
-            db.session.query(model.PostBan)
-            .options(
-                sa.orm.defer(model.PostBan.checksum),
-                sa.orm.defer(model.PostBan.time),
-                sa.orm.defer(model.PostBan.ban_id)
-            )
-        )
+        return db.session.query(model.PostBan)
 
     def create_count_query(self, _disable_eager_loads: bool) -> SaQuery:
         return db.session.query(model.PostBan)
