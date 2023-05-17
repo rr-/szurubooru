@@ -321,6 +321,7 @@ function emptyContent(target) {
 }
 
 function replaceContent(target, source) {
+    if (!target) return;
     emptyContent(target);
     if (source instanceof NodeList) {
         for (let child of [...source]) {
