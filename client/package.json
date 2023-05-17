@@ -7,9 +7,9 @@
     "build-container": "docker build -t szurubooru/client:dev ."
   },
   "dependencies": {
+    "@formfunfunction/inner-height": "^2.0.0",
     "dompurify": "^2.0.17",
     "font-awesome": "^4.7.0",
-    "ios-inner-height": "^1.0.3",
     "js-cookie": "^2.2.0",
     "marked": "^4.0.10",
     "mousetrap": "^1.6.2",
