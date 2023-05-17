@@ -29,6 +29,7 @@
                     <span class='vim-nav-hint'>Next post &gt;</span>
                 </a>
             </article>
+            <% if (ctx.canEditPosts || ctx.canDeletePosts || ctx.canFeaturePosts) { %>
             <article class='edit-post'>
                 <% if (ctx.editMode) { %>
                     <a href='<%= ctx.getPostUrl(ctx.post.id, ctx.parameters) %>'>
@@ -36,16 +37,13 @@
                         <span class='vim-nav-hint'>Back to view mode</span>
                     </a>
                 <% } else { %>
-                    <% if (ctx.canEditPosts || ctx.canDeletePosts || ctx.canFeaturePosts) { %>
-                        <a href='<%= ctx.getPostEditUrl(ctx.post.id, ctx.parameters) %>'>
-                    <% } else { %>
-                        <a class='inactive'>
-                    <% } %>
-                        <i class='fa fa-pencil'></i>
-                        <span class='vim-nav-hint'>Edit post</span>
+                    <a href='<%= ctx.getPostEditUrl(ctx.post.id, ctx.parameters) %>'>
+                    <i class='fa fa-pencil'></i>
+                    <span class='vim-nav-hint'>Edit post</span>
                     </a>
                 <% } %>
             </article>
+            <% } %>
         </nav>
 
         <div class='sidebar-container'></div>
