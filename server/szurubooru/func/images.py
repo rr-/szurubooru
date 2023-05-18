@@ -96,24 +96,13 @@ class Image:
     def to_jpeg(self) -> bytes:
         return self._execute(
             [
-                "-f",
-                "lavfi",
-                "-i",
-                "color=white:s=%dx%d" % (self.width, self.height),
-                "-i",
+                "-quality",
+                "85",
+                "-sample",
+                "1x1",
                 "{path}",
-                "-f",
-                "image2",
-                "-filter_complex",
-                "overlay",
-                "-map",
-                "0:v:0",
-                "-vframes",
-                "1",
-                "-vcodec",
-                "mjpeg",
-                "-",
-            ]
+            ],
+            program="cjpeg",
         )
 
     def to_webm(self) -> bytes:
@@ -274,7 +263,10 @@ class Image:
         with util.create_temp_file(suffix="." + extension) as handle:
             handle.write(self.content)
             handle.flush()
-            cli = [program, "-loglevel", "32" if get_logs else "24"] + cli
+            if program in ["ffmpeg", "ffprobe"]:
+                cli = [program, "-loglevel", "32" if get_logs else "24"] + cli
+            else:
+                cli = [program] + cli
             cli = [part.format(path=handle.name) for part in cli]
             proc = subprocess.Popen(
                 cli,
@@ -285,7 +277,7 @@ class Image:
             out, err = proc.communicate()
             if proc.returncode != 0:
                 logger.warning(
-                    "Failed to execute ffmpeg command (cli=%r, err=%r)",
+                    "Failed to execute {program} command (cli=%r, err=%r)".format(program=program),
                     " ".join(shlex.quote(arg) for arg in cli),
                     err,
                 )
