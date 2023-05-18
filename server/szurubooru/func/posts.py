@@ -689,7 +689,7 @@ def generate_post_thumbnail(post: model.Post) -> None:
         image.resize_fill(
             int(config.config["thumbnails"]["post_width"]),
             int(config.config["thumbnails"]["post_height"]),
-            "rgb24",
+            keep_transparency=False,
         )
         files.save(get_post_thumbnail_path(post), image.to_jpeg())
     except errors.ProcessingError:

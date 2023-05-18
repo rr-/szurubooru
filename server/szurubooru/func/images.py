@@ -41,7 +41,7 @@ class Image:
     def frames(self) -> int:
         return self.info["streams"][0]["nb_read_frames"]
 
-    def resize_fill(self, width: int, height: int, pixel_format: str = "rgb32") -> None:
+    def resize_fill(self, width: int, height: int, keep_transparency: bool = True) -> None:
         width_greater = self.width > self.height
         width, height = (-1, height) if width_greater else (width, -1)
 
@@ -50,8 +50,12 @@ class Image:
             "{path}",
             "-f",
             "image2",
-            "-filter:v",
-            "format={pixel_format},scale={width}:{height}:flags=bicubic".format(pixel_format=pixel_format, width=width, height=height),
+            "-filter_complex",
+            (
+                "format=rgb32,scale={width}:{height}:flags=bicubic"
+                if keep_transparency else
+                "[0:v]format=rgb32,scale={width}:{height}:flags=bicubic[a];color=white[b];[b][a]scale2ref[b][a];[b][a]overlay"
+            ).format(width=width, height=height),
             "-map",
             "0:v:0",
             "-vframes",
