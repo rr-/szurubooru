@@ -42,6 +42,17 @@ const pools = require("./pools.js");
 const api = require("./api.js");
 const settings = require("./models/settings.js");
 
+const rgb2hex = (rgb) => `#${rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/).slice(1).map(n => parseInt(n, 10).toString(16).padStart(2, '0')).join('')}`
+
+window.RufflePlayer = window.RufflePlayer || {};
+window.RufflePlayer.config = {
+    "polyfills": true,
+    "autoplay": "off",
+    "backgroundColor": rgb2hex(window.getComputedStyle(document.body).backgroundColor),
+    "warnOnUnsupportedContent": false,
+    "splashScreen": false,
+};
+
 Promise.resolve()
     .then(() => api.fetchConfig())
     .then(
@@ -99,6 +110,10 @@ Promise.resolve()
         if (settings.get().darkTheme) {
             document.body.classList.add("darktheme");
         }
+
+        window.RufflePlayer.config.autoplay = settings.get().autoplayVideos ? "auto" : "off"
+        const topNav = document.getElementById("top-navigation")
+        if (topNav) window.RufflePlayer.config.backgroundColor = rgb2hex(window.getComputedStyle(topNav).backgroundColor)
     })
     .then(() => api.loginFromCookies())
     .then(
