@@ -261,7 +261,7 @@ function makePoolLink(id, includeHash, includeCount, pool, name) {
 }
 
 function makeUserLink(user) {
-    let text = makeThumbnail(user ? user.avatarUrl : null);
+    let text = makeThumbnail(user ? user.avatarUrl : "img/favicon.png");
     text += user && user.name ? misc.escapeHtml(user.name) : "Anonymous";
     const link =
         user && api.hasPrivilege("users:view")
