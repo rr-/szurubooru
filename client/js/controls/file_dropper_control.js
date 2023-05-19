@@ -56,7 +56,7 @@ class FileDropperControl extends events.EventTarget {
         }
 
         document.onpaste = (e) => {
-            if (!document.querySelector(".file-dropper")) return;
+            if (!document.getElementById("post-upload")) return;
             this._evtPaste(e)
         }
 
