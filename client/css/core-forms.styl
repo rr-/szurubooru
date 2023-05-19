@@ -125,6 +125,9 @@ input[type=radio]:checked + .radio:after,
 input[type=checkbox]:checked + .checkbox:after
     opacity: 1
 
+input[type=radio]:disabled + .radio:after
+    background: $input-disabled-text-color
+
 input[type=radio]:disabled + .radio:before,
 input[type=checkbox]:disabled + .checkbox:before,
 input[type=radio]:disabled + .radio:after,
