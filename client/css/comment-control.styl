@@ -16,7 +16,13 @@ $comment-border-color = #DDD
             width: 40px
             height: 40px
         a
+            outline: none
             display: inline-block
+            position: relative
+            top: -2px
+            border: 2px solid transparent
+            &:focus
+                border: 2px solid $main-color
 
     nav:not(.active), .tab:not(.active)
         display: none
