@@ -185,7 +185,8 @@ class Executor:
                     sort_token.name
                 ]
                 if callable(entry):
-                    db_query = entry(db_query)
+                    order = _get_order(sort_token.order, sort_token.SORT_DESC)
+                    db_query = entry(db_query, order)
                 else:
                     column, default_order = entry
                     order = _get_order(sort_token.order, default_order)

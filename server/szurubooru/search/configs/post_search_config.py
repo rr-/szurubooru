@@ -126,12 +126,14 @@ def _pool_filter(
 
 
 def _pool_sort(
-    query: SaQuery, pool_id: Optional[int]
+    query: SaQuery, pool_id: Optional[int], order: str
 ) -> SaQuery:
     if pool_id is None:
         return query
-    return query.join(model.PoolPost, sa.and_(model.PoolPost.post_id == model.Post.post_id, model.PoolPost.pool_id == pool_id)) \
-                .order_by(model.PoolPost.order.desc())
+    db_query = query.join(model.PoolPost, sa.and_(model.PoolPost.post_id == model.Post.post_id, model.PoolPost.pool_id == pool_id))
+    if order == tokens.SortToken.SORT_DESC:
+        return db_query.order_by(model.PoolPost.order.desc())
+    return db_query.order_by(model.PoolPost.order.asc())
 
 
 def _category_filter(
@@ -463,7 +465,7 @@ class PostSearchConfig(BaseSearchConfig):
                 ),
                 (
                     ["pool"],
-                    lambda subquery: _pool_sort(subquery, self.pool_id)
+                    lambda subquery, order: _pool_sort(subquery, self.pool_id, order)
                 )
             ]
         )
