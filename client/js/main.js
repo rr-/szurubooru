@@ -48,7 +48,6 @@ window.RufflePlayer = window.RufflePlayer || {};
 window.RufflePlayer.config = {
     "polyfills": true,
     "autoplay": "off",
-    "backgroundColor": rgb2hex(window.getComputedStyle(document.body).backgroundColor),
     "warnOnUnsupportedContent": false,
     "splashScreen": false,
 };
@@ -112,8 +111,6 @@ Promise.resolve()
         }
 
         window.RufflePlayer.config.autoplay = settings.get().autoplayVideos ? "auto" : "off"
-        const topNav = document.getElementById("top-navigation")
-        if (topNav) window.RufflePlayer.config.backgroundColor = rgb2hex(window.getComputedStyle(topNav).backgroundColor)
     })
     .then(() => api.loginFromCookies())
     .then(
