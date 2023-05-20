@@ -33,7 +33,7 @@ class PostMainController extends BasePostController {
         ]).then(
             (responses) => {
                 const [post, aroundResponse, poolPostsNearby] = responses;
-                let activePool = null;
+                let aroundPool = null;
 
                 // remove junk from query, but save it into history so that it can
                 // be still accessed after history navigation / page refresh
@@ -50,7 +50,12 @@ class PostMainController extends BasePostController {
                     parameters.query.split(" ").forEach((item) => {
                         const found = item.match(/^pool:([0-9]+)/i);
                         if (found) {
-                            activePool = parseInt(found[1]);
+                            const activePool = parseInt(found[1]);
+                            poolPostsNearby.forEach((nearbyPosts) => {
+                                if (nearbyPosts.pool.id == activePool) {
+                                    aroundPool = nearbyPosts
+                                }
+                            });
                         }
                     });
                 }
@@ -60,11 +65,11 @@ class PostMainController extends BasePostController {
                     post: post,
                     poolPostsNearby: poolPostsNearby,
                     editMode: editMode,
-                    prevPostId: activePool && poolPostsNearby.length > 0
-                        ? (poolPostsNearby[0].previousPost ? poolPostsNearby[0].previousPost.id : null)
+                    prevPostId: aroundPool
+                        ? (aroundPool.previousPost ? aroundPool.previousPost.id : null)
                         : (aroundResponse.prev ? aroundResponse.prev.id : null),
-                    nextPostId: activePool && poolPostsNearby.length > 0
-                        ? (poolPostsNearby[0].nextPost ? poolPostsNearby[0].nextPost.id : null)
+                    nextPostId: aroundPool
+                        ? (aroundPool.nextPost ? aroundPool.nextPost.id : null)
                         : (aroundResponse.next ? aroundResponse.next.id : null),
                     canEditPosts: api.hasPrivilege("posts:edit"),
                     canDeletePosts: api.hasPrivilege("posts:delete"),
