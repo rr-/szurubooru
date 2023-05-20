@@ -33,6 +33,7 @@ class PostMainController extends BasePostController {
         ]).then(
             (responses) => {
                 const [post, aroundResponse, poolPostsNearby] = responses;
+                let activePool = null;
 
                 // remove junk from query, but save it into history so that it can
                 // be still accessed after history navigation / page refresh
@@ -46,6 +47,12 @@ class PostMainController extends BasePostController {
                           )
                         : uri.formatClientLink("post", ctx.parameters.id);
                     router.replace(url, ctx.state, false);
+                    parameters.query.split(" ").forEach((item) => {
+                        const found = item.match(/^pool:([0-9]+)/i);
+                        if (found) {
+                            activePool = parseInt(found[1]);
+                        }
+                    });
                 }
 
                 this._post = post;
@@ -53,12 +60,12 @@ class PostMainController extends BasePostController {
                     post: post,
                     poolPostsNearby: poolPostsNearby,
                     editMode: editMode,
-                    prevPostId: aroundResponse.prev
-                        ? aroundResponse.prev.id
-                        : null,
-                    nextPostId: aroundResponse.next
-                        ? aroundResponse.next.id
-                        : null,
+                    prevPostId: activePool && poolPostsNearby.length > 0
+                        ? (poolPostsNearby[0].previousPost ? poolPostsNearby[0].previousPost.id : null)
+                        : (aroundResponse.prev ? aroundResponse.prev.id : null),
+                    nextPostId: activePool && poolPostsNearby.length > 0
+                        ? (poolPostsNearby[0].nextPost ? poolPostsNearby[0].nextPost.id : null)
+                        : (aroundResponse.next ? aroundResponse.next.id : null),
                     canEditPosts: api.hasPrivilege("posts:edit"),
                     canDeletePosts: api.hasPrivilege("posts:delete"),
                     canFeaturePosts: api.hasPrivilege("posts:feature"),
