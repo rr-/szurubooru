@@ -10,8 +10,8 @@
         margin: 0 0 1em 0
         display: flex
         padding: 0.5em 1em
-        border: 1px solid $pool-navigator-border-color
-        background: $pool-navigator-background-color
+        border: 1px solid $line-color
+        background: $top-navigation-color
 
         .pool-name
             flex: 1 1;
@@ -26,9 +26,14 @@
 
         .first, .prev, .next, .last
             flex: 0 1;
-            margin: 0 .25em;
             white-space: nowrap;
 
+        >span
+            padding-top: 2px
+            padding-bottom: 2px
+            margin: 0 .25em;
 
-.darktheme .pool-navigator-container
-    background: $pool-navigator-header-background-color-darktheme
+
+.darktheme .pool-navigator-container .pool-info-wrapper
+        border: 1px solid $top-navigation-color-darktheme
+        background: $window-color-darktheme
