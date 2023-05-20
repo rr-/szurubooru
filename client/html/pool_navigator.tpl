@@ -1,11 +1,11 @@
 <div class='pool-navigator-container'>
   <div class='pool-info-wrapper'>
     <span class='first'>
-      <% if (ctx.canViewPosts && ctx.firstPost) { %>
+      <% if (ctx.canViewPosts && ctx.previousPost && ctx.firstPost) { %>
         <a class='<%- ctx.linkClass %>' href='<%= ctx.getPostUrl(ctx.firstPost.id, ctx.parameters) %>'>
       <% } %>
       «
-      <% if (ctx.canViewPosts && ctx.firstPost) { %>
+      <% if (ctx.canViewPosts && ctx.previousPost && ctx.firstPost) { %>
         </a>
       <% } %>
     </span>
@@ -37,11 +37,11 @@
       <% } %>
     </span>
     <span class='last'>
-      <% if (ctx.canViewPosts && ctx.lastPost) { %>
+      <% if (ctx.canViewPosts && ctx.nextPost && ctx.lastPost) { %>
         <a class='<%- ctx.linkClass %>' href='<%= ctx.getPostUrl(ctx.lastPost.id, ctx.parameters) %>'>
       <% } %>
       »
-      <% if (ctx.canViewPosts && ctx.lastPost) { %>
+      <% if (ctx.canViewPosts && ctx.nextPost && ctx.lastPost) { %>
         </a>
       <% } %>
     </span>
