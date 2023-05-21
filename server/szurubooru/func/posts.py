@@ -531,8 +531,10 @@ def generate_alternate_formats(
 def get_default_flags(content: bytes) -> List[str]:
     assert content
     ret = []
-    if mime.is_video(mime.get_mime_type(content)):
-        ret.append(model.Post.FLAG_LOOP)
+    if mime.is_animated_gif(content):
+        if images.check_for_loop(content):
+            ret.append(model.Post.FLAG_LOOP)
+    elif mime.is_video(mime.get_mime_type(content)):
         if images.Image(content).check_for_sound():
             ret.append(model.Post.FLAG_SOUND)
     return ret
