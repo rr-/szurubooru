@@ -147,7 +147,9 @@ class AutoCompleteControl {
         let func = null;
         if (this._isVisible) {
             if (key === KEY_ESCAPE) {
-                func = this.hide;
+                func = () => {
+                    this.hide();
+                };
             } else if (key === KEY_TAB && shift) {
                 func = () => {
                     this._selectPrevious();
