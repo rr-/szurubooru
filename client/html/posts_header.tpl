@@ -16,7 +16,6 @@
         %><form class='horizontal bulk-edit bulk-edit-tags'><%
             %><span class='append hint'>Tagging with:</span><%
             %><a href class='mousetrap button append open'>Mass tag</a><%
-            %><wbr/><%
             %><%= ctx.makeTextInput({name: 'tag', value: ctx.parameters.tag}) %><%
             %><input class='mousetrap start' type='submit' value='Start tagging'/><%
             %><a href class='mousetrap button append close'>Stop tagging</a><%
