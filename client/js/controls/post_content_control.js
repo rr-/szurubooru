@@ -143,7 +143,18 @@ class PostContentControl {
             post: this._post,
             autoplay: settings.get().autoplayVideos,
         });
-        if (settings.get().transparencyGrid) {
+        if (["image", "flash"].includes(this._post.type)) {
+            newNode.style.backgroundImage = "url("+this._post.thumbnailUrl+")";
+        }
+        if (this._post.type == "image") {
+            newNode.firstElementChild.addEventListener("load", (e) => {
+                if (settings.get().transparencyGrid) {
+                    newNode.classList.add("transparency-grid");
+                } else {
+                    newNode.style.backgroundImage = "";
+                }
+            });
+        } else if (settings.get().transparencyGrid) {
             newNode.classList.add("transparency-grid");
         }
         if (this._postContentNode) {
