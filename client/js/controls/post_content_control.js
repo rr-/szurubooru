@@ -143,20 +143,28 @@ class PostContentControl {
             post: this._post,
             autoplay: settings.get().autoplayVideos,
         });
+        function load(argument) {
+            if (settings.get().transparencyGrid) {
+                newNode.classList.add("transparency-grid");
+            }
+            newNode.firstElementChild.style.backgroundImage = "";
+        }
         if (["image", "flash"].includes(this._post.type)) {
-            newNode.style.backgroundImage = "url("+this._post.thumbnailUrl+")";
+            newNode.firstElementChild.style.backgroundImage = "url("+this._post.thumbnailUrl+")";
         }
         if (this._post.type == "image") {
-            newNode.firstElementChild.addEventListener("load", (e) => {
-                if (settings.get().transparencyGrid) {
-                    newNode.classList.add("transparency-grid");
-                } else {
-                    newNode.style.backgroundImage = "";
-                }
-            });
+            newNode.firstElementChild.addEventListener("load", load);
         } else if (settings.get().transparencyGrid) {
             newNode.classList.add("transparency-grid");
         }
+        newNode.firstElementChild.addEventListener("error", (e) => {
+            newNode.classList.add("post-error");
+            if (["image", "animation"].includes(this._post.type)) {
+                newNode.firstElementChild.removeEventListener("load", load);
+                newNode.firstElementChild.style.backgroundImage = "url("+this._post.thumbnailUrl+")";
+                newNode.firstElementChild.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+            }
+        });
         if (this._postContentNode) {
             this._hostNode.replaceChild(newNode, this._postContentNode);
         } else {
