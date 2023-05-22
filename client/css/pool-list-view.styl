@@ -28,7 +28,7 @@
                 line-height: 80%
                 font-size: 80%
                 color: white
-                outline-offset: -2px
+                outline: none
                 border-right: 20px solid transparent
                 &:before
                     content: ' ';
@@ -76,10 +76,18 @@
                 .thumbnail
                     outline: 2px solid $main-color !important
 
-.pool-list ul li:hover, .pool-list ul li:has(a:focus), .pool-list ul li:has(a:active)
-    a.thumbnail-wrapper
-        outline: none
+.pool-list ul li:hover
+    .thumbnail-wrapper
+        .thumbnail-1
+            right: -0px
+            top: -0px
 
+        .thumbnail-3
+            right: -20px
+            top: -20px
+
+.pool-list ul li:has(a:focus), .pool-list ul li:has(a:active)
+    .thumbnail-wrapper
         .thumbnail-1
             right: -0px
             top: -0px
