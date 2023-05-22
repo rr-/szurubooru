@@ -1014,9 +1014,9 @@ def serialize_pool_posts_nearby(
     return [
         {
             "pool": pools.serialize_micro_pool(entry.pool),
-            "firstPost": serialize_micro_post(try_get_post_by_id(entry.first_post), None),
-            "lastPost": serialize_micro_post(try_get_post_by_id(entry.last_post), None),
-            "previousPost": serialize_micro_post(try_get_post_by_id(entry.prev_post), None),
-            "nextPost": serialize_micro_post(try_get_post_by_id(entry.next_post), None),
+            "firstPost": {"id": getattr(try_get_post_by_id(entry.first_post), "post_id", None)} if entry.first_post else None,
+            "lastPost": {"id": getattr(try_get_post_by_id(entry.last_post), "post_id", None)} if entry.last_post else None,
+            "previousPost": {"id": getattr(try_get_post_by_id(entry.prev_post), "post_id", None)} if entry.prev_post else None,
+            "nextPost": {"id": getattr(try_get_post_by_id(entry.next_post), "post_id", None)} if entry.next_post else None,
         } for entry in nearby
     ]
