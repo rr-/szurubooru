@@ -4,7 +4,7 @@ from typing import Any, Callable, Dict, Optional
 import sqlalchemy as sa
 
 from szurubooru import db, model
-from szurubooru.func import diff, net, users
+from szurubooru.func import diff, net, users, posts
 
 
 def get_tag_category_snapshot(category: model.TagCategory) -> Dict[str, Any]:
@@ -53,7 +53,7 @@ def get_post_snapshot(post: model.Post) -> Dict[str, Any]:
         "flags": post.flags,
         "featured": post.is_featured,
         "tags": sorted([tag.first_name for tag in post.tags]),
-        "relations": sorted([rel.post_id for rel in post.relations]),
+        "relations": sorted([rel.child_id for rel in posts.get_post_relations(post.post_id)]),
         "notes": sorted(
             [
                 {

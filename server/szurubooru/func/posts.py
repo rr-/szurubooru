@@ -264,8 +264,8 @@ class PostSerializer(serialization.BaseSerializer):
             {
                 post["id"]: post
                 for post in [
-                    serialize_micro_post(rel, self.auth_user)
-                    for rel in self.post.relations
+                    serialize_micro_post(try_get_post_by_id(rel.child_id), self.auth_user)
+                    for rel in get_post_relations(self.post.post_id)
                 ]
             }.values(),
             key=lambda post: post["id"],
@@ -361,6 +361,10 @@ def serialize_micro_post(
 
 def get_post_count() -> int:
     return db.session.query(sa.func.count(model.Post.post_id)).one()[0]
+
+
+def get_post_relations(post_id: int) -> List[model.Post]:
+    return db.session.query(model.PostRelation).filter(model.PostRelation.parent_id == post_id).all()
 
 
 def try_get_post_by_id(post_id: int) -> Optional[model.Post]:
