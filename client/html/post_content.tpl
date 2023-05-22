@@ -19,11 +19,12 @@
                 loop: (ctx.post.flags || []).includes('loop'),
                 playsinline: true,
                 autoplay: ctx.autoplay,
+                preload: 'auto',
                 poster: ctx.post.thumbnailUrl,
             },
             ctx.makeElement('source', {
                 type: ctx.post.mimeType,
-                src: ctx.post.contentUrl,
+                src: ctx.post.contentUrl + '#t=0.001',
             }),
             'Your browser doesn\'t support HTML5 videos.')
         %>
