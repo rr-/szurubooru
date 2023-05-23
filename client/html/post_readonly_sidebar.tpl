@@ -17,8 +17,8 @@
                     'video/mp4': 'MPEG-4',
                     'video/quicktime': 'MOV',
                     'application/x-shockwave-flash': 'SWF',
-                }[ctx.post.mimeType] %>
-            </a>
+                }[ctx.post.mimeType] %><!--
+            --></a>
             (<%- ctx.post.canvasWidth %>x<%- ctx.post.canvasHeight %>)
             <% if (ctx.post.flags.length) { %><!--
                 --><% if (ctx.post.flags.includes('loop')) { %><i class='fa fa-repeat'></i><% } %><!--
