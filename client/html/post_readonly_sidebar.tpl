@@ -99,10 +99,10 @@
                         --><% if (ctx.canListPosts) { %><!--
                             --><a href='<%- ctx.formatClientLink('posts', {query: ctx.escapeTagName(tag.names[0])}) %>' class='<%= ctx.makeCssName(tag.category, 'tag') %>'><!--
                         --><% } %><!--
-                            --><%- ctx.getPrettyName(tag.names[0]) %>&#32;<!--
+                            --><%- ctx.getPrettyName(tag.names[0]) %><!--
                         --><% if (ctx.canListPosts) { %><!--
                             --></a><!--
-                        --><% } %><!--
+                        --><% } %>&#32;<!--
                         --><span class='tag-usages' data-pseudo-content='<%- tag.postCount %>'></span><!--
                     --></li><!--
                 --><% } %><!--
