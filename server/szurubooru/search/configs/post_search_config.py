@@ -47,6 +47,7 @@ def _flag_transformer(value: str) -> str:
     available_values = {
         "loop": model.Post.FLAG_LOOP,
         "sound": model.Post.FLAG_SOUND,
+        "tagme": model.Post.FLAG_TAGME,
     }
     return "%" + search_util.enum_transformer(available_values, value) + "%"
 
