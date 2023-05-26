@@ -209,13 +209,13 @@ function makePostLink(id, includeHash) {
 }
 
 function makeTagLink(name, includeHash, includeCount, tag) {
-    const category = tag ? tag.category : "unknown";
+    const category = tag && tag.category ? tag.category : "unknown";
     let text = misc.getPrettyName(name);
     if (includeHash === true) {
         text = "#" + text;
     }
     if (includeCount === true) {
-        text += " (" + (tag ? tag.postCount : 0) + ")";
+        text += " (" + (tag && tag.postCount ? tag.postCount : 0) + ")";
     }
     return api.hasPrivilege("tags:view")
         ? makeElement(
@@ -234,15 +234,15 @@ function makeTagLink(name, includeHash, includeCount, tag) {
 }
 
 function makePoolLink(id, includeHash, includeCount, pool, name) {
-    const category = pool ? pool.category : "unknown";
+    const category = pool && pool.category ? pool.category : "unknown";
     let text = misc.getPrettyName(
-        name ? name : pool ? pool.names[0] : "unknown"
+        name ? name : pool && pool.names ? pool.names[0] : "unknown"
     );
     if (includeHash === true) {
         text = "#" + text;
     }
     if (includeCount === true) {
-        text += " (" + (pool ? pool.postCount : 0) + ")";
+        text += " (" + (pool && pool.postCount ? pool.postCount : 0) + ")";
     }
     return api.hasPrivilege("pools:view")
         ? makeElement(
@@ -264,7 +264,7 @@ function makeUserLink(user) {
     let text = makeThumbnail(user ? user.avatarUrl : null);
     text += user && user.name ? misc.escapeHtml(user.name) : "Anonymous";
     const link =
-        user && api.hasPrivilege("users:view")
+        user && user.name && api.hasPrivilege("users:view")
             ? makeElement(
                   "a",
                   { href: uri.formatClientLink("user", user.name) },
