@@ -4,13 +4,13 @@ const events = require("../events.js");
 const api = require("../api.js");
 const views = require("../util/views.js");
 const FileDropperControl = require("../controls/file_dropper_control.js");
+const ExpanderControl = require("../controls/expander_control.js");
+const TagInputControl = require("../controls/tag_input_control.js");
 
 const template = views.getTemplate("post-upload");
 const rowTemplate = views.getTemplate("post-upload-row");
 
-const misc = require('../util/misc.js');
-const TagAutoCompleteControl =
-    require('../controls/tag_auto_complete_control.js');
+const TagList = require("../models/tag_list.js");
 
 function _mimeTypeToPostType(mimeType) {
     return (
@@ -164,6 +164,7 @@ class PostUploadView extends events.EventTarget {
         this._uploadables.find = (u) => {
             return this._uploadables.findIndex((u2) => u.key === u2.key);
         };
+        this._commonTags = new TagList();
 
         this._contentFileDropper = new FileDropperControl(
             this._contentInputNode,
@@ -190,14 +191,21 @@ class PostUploadView extends events.EventTarget {
         );
         this._formNode.classList.add("inactive");
 
+        this._commonTagsExpander = new ExpanderControl(
+            "common-tags",
+            "Common Tags (0)",
+            this._hostNode.querySelectorAll(".common-tags")
+        );
+
         if (this._commonTagsInputNode) {
-            this._autoCompleteControl = new TagAutoCompleteControl(
+            this._commonTagsControl = new TagInputControl(
                 this._commonTagsInputNode,
-                {
-                    confirm: tag =>
-                        this._autoCompleteControl.replaceSelectedText(
-                            misc.escapeSearchTerm(tag.names[0]), true),
-                });
+                this._commonTags
+            );
+
+            this._commonTagsControl.addEventListener("change", (_) => {
+                this._commonTagsExpander.title = `Common Tags (${this._commonTags.length})`;
+            });
         }
     }
 
@@ -321,9 +329,7 @@ class PostUploadView extends events.EventTarget {
 
         uploadable.tags = [];
         if (this._commonTagsInputNode) {
-            var tags = this._commonTagsInputNode.value.split(' ');
-            tags = tags.filter(t => t != "").map(t => t.replace('\\', ''));
-            uploadable.tags = uploadable.tags.concat(tags);
+            uploadable.tags = this._commonTags.map((tag) => tag.names[0]);
         }
         uploadable.relations = [];
         for (let [i, lookalike] of uploadable.lookalikes.entries()) {
@@ -460,7 +466,9 @@ class PostUploadView extends events.EventTarget {
     }
 
     get _uploadAllAnonymous() {
-        return this._hostNode.querySelector("form [name=upload-all-anonymous]");
+        return this._hostNode.querySelector(
+            "form [name=upload-all-anonymous]"
+        );
     }
 
     get _submitButtonNode() {
@@ -476,7 +484,7 @@ class PostUploadView extends events.EventTarget {
     }
 
     get _commonTagsInputNode() {
-        return this._formNode.querySelector('form [name=common-tags]');
+        return this._formNode.querySelector(".common-tags input");
     }
 }
 

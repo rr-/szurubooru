@@ -3,8 +3,6 @@
         <div class='dropper-container'></div>
 
         <div class='control-strip'>
-            <input type='submit' value='Upload all' class='submit'/>
-
             <div class='control-options'>
                 <span class='skip-duplicates'>
                     <%= ctx.makeCheckbox({
@@ -39,8 +37,11 @@
                 </span>
             </div>
 
-            <%= ctx.makeTextInput({placeholder: 'Common tags', id: 'common-tags', name: 'common-tags'}) %>
+            <section class='common-tags'>
+                <%= ctx.makeTextInput({name: 'common-tags'}) %>
+            </section>
 
+            <input type='submit' value='Upload all' class='submit'/>
             <input type='button' value='Cancel' class='cancel'/>
         </div>
 
