@@ -64,7 +64,7 @@ def download(url: str, use_video_downloader: bool = False) -> bytes:
 
 
 def _get_youtube_dl_content_url(url: str) -> str:
-    cmd = ["youtube-dl", "--format", "best", "--no-playlist"]
+    cmd = ["yt-dlp", "--format", "best", "--no-playlist"]
     if config.config["user_agent"]:
         cmd.extend(["--user-agent", config.config["user_agent"]])
     cmd.extend(["--get-url", url])
