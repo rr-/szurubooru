@@ -11,7 +11,7 @@ from szurubooru.rest import context, errors, middleware, routes
 
 
 def _json_serializer(obj: Any) -> str:
-    """ JSON serializer for objects not serializable by default JSON code """
+    """JSON serializer for objects not serializable by default JSON code"""
     if isinstance(obj, datetime):
         serial = obj.isoformat("T") + "Z"
         return serial

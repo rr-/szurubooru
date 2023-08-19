@@ -1,0 +1,108 @@
+name: Build Docker containers
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build-client:
+    name: Build and push client/ Docker container
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Determine metadata
+        run: |
+          CLOSEST_VER="$(git describe --tags --abbrev=0 $GITHUB_SHA)"
+          CLOSEST_MAJOR_VER="$(echo ${CLOSEST_VER} | cut -d'.' -f1)"
+          CLOSEST_MINOR_VER="$(echo ${CLOSEST_VER} | cut -d'.' -f2)"
+          SHORT_COMMIT=$(echo $GITHUB_SHA | cut -c1-8)
+          BUILD_INFO="v${CLOSEST_VER}-${SHORT_COMMIT}"
+          BUILD_DATE="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+
+          echo "major_tag=${CLOSEST_MAJOR_VER}" >> $GITHUB_ENV
+          echo "minor_tag=${CLOSEST_MAJOR_VER}.${CLOSEST_MINOR_VER}" >> $GITHUB_ENV
+          echo "build_info=${BUILD_INFO}" >> $GITHUB_ENV
+          echo "build_date=${BUILD_DATE}" >> $GITHUB_ENV
+
+          echo "Build Info: ${BUILD_INFO}"
+          echo "Build Date: ${BUILD_DATE}"
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Build container
+        run: >
+          docker buildx build --push
+          --platform linux/amd64,linux/arm/v7,linux/arm64/v8
+          --build-arg BUILD_INFO=${{ env.build_info }}
+          --build-arg BUILD_DATE=${{ env.build_date }}
+          --build-arg SOURCE_COMMIT=$GITHUB_SHA
+          --build-arg DOCKER_REPO=szurubooru/client
+          -t "szurubooru/client:latest"
+          -t "szurubooru/client:${{ env.major_tag }}"
+          -t "szurubooru/client:${{ env.minor_tag }}"
+          ./client
+
+  build-server:
+    name: Build and push server/ Docker container
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Determine metadata
+        run: |
+          CLOSEST_VER="$(git describe --tags --abbrev=0 $GITHUB_SHA)"
+          CLOSEST_MAJOR_VER="$(echo ${CLOSEST_VER} | cut -d'.' -f1)"
+          CLOSEST_MINOR_VER="$(echo ${CLOSEST_VER} | cut -d'.' -f2)"
+          SHORT_COMMIT=$(echo $GITHUB_SHA | cut -c1-8)
+          BUILD_INFO="v${CLOSEST_VER}-${SHORT_COMMIT}"
+          BUILD_DATE="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+
+          echo "major_tag=${CLOSEST_MAJOR_VER}" >> $GITHUB_ENV
+          echo "minor_tag=${CLOSEST_MAJOR_VER}.${CLOSEST_MINOR_VER}" >> $GITHUB_ENV
+          echo "build_info=${BUILD_INFO}" >> $GITHUB_ENV
+          echo "build_date=${BUILD_DATE}" >> $GITHUB_ENV
+
+          echo "Build Info: ${BUILD_INFO}"
+          echo "Build Date: ${BUILD_DATE}"
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Build container
+        run: >
+          docker buildx build --push
+          --platform linux/amd64,linux/arm/v7,linux/arm64/v8
+          --build-arg BUILD_DATE=${{ env.build_date }}
+          --build-arg SOURCE_COMMIT=$GITHUB_SHA
+          --build-arg DOCKER_REPO=szurubooru/server
+          -t "szurubooru/server:latest"
+          -t "szurubooru/server:${{ env.major_tag }}"
+          -t "szurubooru/server:${{ env.minor_tag }}"
+          ./server

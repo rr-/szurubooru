@@ -14,9 +14,11 @@ $cancel-button-color = tomato
         &.inactive input[type=submit],
         &.inactive .skip-duplicates
         &.inactive .always-upload-similar
+        &.inactive .pause-remain-on-error
         &.uploading input[type=submit],
         &.uploading .skip-duplicates,
         &.uploading .always-upload-similar
+        &.uploading .pause-remain-on-error
         &:not(.uploading) .cancel
             display: none
 
@@ -44,6 +46,9 @@ $cancel-button-color = tomato
     .always-upload-similar
         margin-left: 1em
 
+    .pause-remain-on-error
+        margin-left: 1em
+
     form>.messages
         margin-top: 1em
 
@@ -56,6 +61,14 @@ $cancel-button-color = tomato
             clear: both
             margin: 0 0 1.2em 0
             padding-left: 13em
+
+            img
+                width: 100%
+                height: 100%
+            
+            video
+                width: 100%
+                height: 100%
 
             &>.thumbnail-wrapper
                 float: left

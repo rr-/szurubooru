@@ -1,7 +1,0 @@
-#!/bin/sh
-
-docker build \
-    --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ') \
-    --build-arg SOURCE_COMMIT \
-    --build-arg DOCKER_REPO \
-    -f $DOCKERFILE_PATH -t $IMAGE_NAME .

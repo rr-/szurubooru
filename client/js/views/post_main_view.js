@@ -25,9 +25,8 @@ class PostMainView {
         views.replaceContent(this._hostNode, sourceNode);
         views.syncScrollPosition();
 
-        const topNavigationNode = document.body.querySelector(
-            "#top-navigation"
-        );
+        const topNavigationNode =
+            document.body.querySelector("#top-navigation");
 
         this._postContentControl = new PostContentControl(
             postContainerNode,

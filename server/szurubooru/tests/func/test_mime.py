@@ -7,6 +7,7 @@ from szurubooru.func import mime
     "input_path,expected_mime_type",
     [
         ("mp4.mp4", "video/mp4"),
+        ("mov.mov", "video/quicktime"),
         ("webm.webm", "video/webm"),
         ("flash.swf", "application/x-shockwave-flash"),
         ("png.png", "image/png"),
@@ -35,6 +36,7 @@ def test_get_mime_type_for_empty_file():
     [
         ("video/mp4", "mp4"),
         ("video/webm", "webm"),
+        ("video/quicktime", "mov"),
         ("application/x-shockwave-flash", "swf"),
         ("image/png", "png"),
         ("image/jpeg", "jpg"),
@@ -70,6 +72,8 @@ def test_is_flash(input_mime_type, expected_state):
         ("VIDEO/WEBM", True),
         ("video/mp4", True),
         ("VIDEO/MP4", True),
+        ("video/quicktime", True),
+        ("VIDEO/QUICKTIME", True),
         ("video/anything_else", False),
         ("application/ogg", True),
         ("not a video", False),

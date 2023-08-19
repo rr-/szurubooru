@@ -34,33 +34,79 @@ and Docker Compose (version 1.6.0 or greater) already installed.
     Read the comments to guide you. Note that `.env` should be in the root
     directory of this repository.
 
-### Running the Application
+4. Pull the containers:
 
-Download containers:
-```console
-user@host:szuru$ docker-compose pull
-```
+    This pulls the latest containers from docker.io:
+    ```console
+    user@host:szuru$ docker-compose pull
+    ```
 
-For first run, it is recommended to start the database separately:
-```console
-user@host:szuru$ docker-compose up -d sql
-```
+    If you have modified the application's source and would like to manually
+    build it, follow the instructions in [**Building**](#Building) instead,
+    then read here once you're done.
 
-To start all containers:
-```console
-user@host:szuru$ docker-compose up -d
-```
+5. Run it!
 
-To view/monitor the application logs:
-```console
-user@host:szuru$ docker-compose logs -f
-# (CTRL+C to exit)
-```
+    For first run, it is recommended to start the database separately:
+    ```console
+    user@host:szuru$ docker-compose up -d sql
+    ```
 
-To stop all containers:
-```console
-user@host:szuru$ docker-compose down
-```
+    To start all containers:
+    ```console
+    user@host:szuru$ docker-compose up -d
+    ```
+
+    To view/monitor the application logs:
+    ```console
+    user@host:szuru$ docker-compose logs -f
+    # (CTRL+C to exit)
+    ```
+
+### Building
+
+1. Edit `docker-compose.yml` to tell Docker to build instead of pull containers:
+
+    ```diff yaml
+    ...
+    server:
+    - image: szurubooru/server:latest
+    + build: server
+    ...
+    client:
+    - image: szurubooru/client:latest
+    + build: client
+    ...
+    ```
+
+    You can choose to build either one from source.
+
+2. Build the containers:
+
+    ```console
+    user@host:szuru$ docker-compose build
+    ```
+
+    That will attempt to build both containers, but you can specify `client`
+    or `server` to make it build only one.
+
+    If `docker-compose build` spits out:
+
+    ```
+    ERROR: Service 'server' failed to build: failed to parse platform : "" is an invalid component of "": platform specifier component must match "^[A-Za-z0-9_-]+$": invalid argument
+    ```
+
+    ...you will need to export Docker BuildKit flags:
+
+    ```console
+    user@host:szuru$ export DOCKER_BUILDKIT=1; export COMPOSE_DOCKER_CLI_BUILD=1
+    ```
+
+    ...and run `docker-compose build` again.
+
+*Note: If your changes are not taking effect in your builds, consider building
+with `--no-cache`.*
+
 
 ### Additional Features
 

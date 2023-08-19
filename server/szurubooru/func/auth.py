@@ -25,7 +25,7 @@ RANK_MAP = OrderedDict(
 
 
 def get_password_hash(salt: str, password: str) -> Tuple[str, int]:
-    """ Retrieve argon2id password hash. """
+    """Retrieve argon2id password hash."""
     return (
         pwhash.argon2id.str(
             (config.config["secret"] + salt + password).encode("utf8")
@@ -37,7 +37,7 @@ def get_password_hash(salt: str, password: str) -> Tuple[str, int]:
 def get_sha256_legacy_password_hash(
     salt: str, password: str
 ) -> Tuple[str, int]:
-    """ Retrieve old-style sha256 password hash. """
+    """Retrieve old-style sha256 password hash."""
     digest = hashlib.sha256()
     digest.update(config.config["secret"].encode("utf8"))
     digest.update(salt.encode("utf8"))
@@ -46,7 +46,7 @@ def get_sha256_legacy_password_hash(
 
 
 def get_sha1_legacy_password_hash(salt: str, password: str) -> Tuple[str, int]:
-    """ Retrieve old-style sha1 password hash. """
+    """Retrieve old-style sha1 password hash."""
     digest = hashlib.sha1()
     digest.update(b"1A2/$_4xVa")
     digest.update(salt.encode("utf8"))
@@ -125,7 +125,7 @@ def verify_privilege(user: model.User, privilege_name: str) -> None:
 
 
 def generate_authentication_token(user: model.User) -> str:
-    """ Generate nonguessable challenge (e.g. links in password reminder). """
+    """Generate nonguessable challenge (e.g. links in password reminder)."""
     assert user
     digest = hashlib.md5()
     digest.update(config.config["secret"].encode("utf8"))

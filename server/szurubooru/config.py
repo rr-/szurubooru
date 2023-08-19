@@ -33,7 +33,7 @@ def _docker_config() -> Dict:
         "show_sql": int(os.getenv("LOG_SQL", 0)),
         "data_url": os.getenv("DATA_URL", "data/"),
         "data_dir": "/data/",
-        "database": "postgres://%(user)s:%(pass)s@%(host)s:%(port)d/%(db)s"
+        "database": "postgresql://%(user)s:%(pass)s@%(host)s:%(port)d/%(db)s"
         % {
             "user": os.getenv("POSTGRES_USER"),
             "pass": os.getenv("POSTGRES_PASSWORD"),

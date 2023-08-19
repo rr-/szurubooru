@@ -39,13 +39,20 @@ def download(url: str, use_video_downloader: bool = False) -> bytes:
     length_tally = 0
     try:
         with urllib.request.urlopen(request) as handle:
-            while (chunk := handle.read(_dl_chunk_size)) :
+            while chunk := handle.read(_dl_chunk_size):
                 length_tally += len(chunk)
                 if length_tally > config.config["max_dl_filesize"]:
-                    raise DownloadTooLargeError(url)
+                    raise DownloadTooLargeError(
+                        "Download target exceeds maximum. (%d)"
+                        % (config.config["max_dl_filesize"]),
+                        extra_fields={"URL": url},
+                    )
                 content_buffer += chunk
     except urllib.error.HTTPError as ex:
-        raise DownloadError(url) from ex
+        raise DownloadError(
+            "Download target returned HTTP %d. (%s)" % (ex.code, ex.reason),
+            extra_fields={"URL": url},
+        ) from ex
 
     if (
         youtube_dl_error
@@ -69,7 +76,8 @@ def _get_youtube_dl_content_url(url: str) -> str:
         )
     except subprocess.CalledProcessError:
         raise errors.ThirdPartyError(
-            "Could not extract content location from %s" % (url)
+            "Could not extract content location from URL.",
+            extra_fields={"URL": url},
         ) from None
 
 

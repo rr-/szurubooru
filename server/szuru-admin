@@ -91,6 +91,15 @@ def reset_filenames() -> None:
     rename_in_dir("posts/custom-thumbnails/")
 
 
+def regenerate_thumbnails() -> None:
+    for post in db.session.query(model.Post).all():
+        print("Generating tumbnail for post %d ..." % post.post_id, end="\r")
+        try:
+            postfuncs.generate_post_thumbnail(post)
+        except Exception:
+            pass
+
+
 def main() -> None:
     parser_top = ArgumentParser(
         description="Collection of CLI commands for an administrator to use",
@@ -114,6 +123,12 @@ def main() -> None:
         help="reset and rename the content and thumbnail "
         "filenames in case of a lost/changed secret key",
     )
+    parser.add_argument(
+        "--regenerate-thumbnails",
+        action="store_true",
+        help="regenerate the thumbnails for posts if the "
+        "thumbnail files are missing",
+    )
     command = parser_top.parse_args()
 
     try:
@@ -123,6 +138,8 @@ def main() -> None:
             check_audio()
         elif command.reset_filenames:
             reset_filenames()
+        elif command.regenerate_thumbnails:
+            regenerate_thumbnails()
     except errors.BaseError as e:
         print(e, file=stderr)
 

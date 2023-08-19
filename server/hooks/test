@@ -1,8 +1,0 @@
-#!/bin/sh
-set -e
-
-docker run --rm \
-    -t $(docker build --target testing -q .) \
-    --color=no szurubooru/
-
-exit $?

@@ -31,9 +31,8 @@ class UserController {
             userTokenPromise = UserToken.get(userName).then(
                 (userTokens) => {
                     return userTokens.map((token) => {
-                        token.isCurrentAuthToken = api.isCurrentAuthToken(
-                            token
-                        );
+                        token.isCurrentAuthToken =
+                            api.isCurrentAuthToken(token);
                         return token;
                     });
                 },

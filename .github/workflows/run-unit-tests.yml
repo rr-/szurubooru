@@ -1,0 +1,28 @@
+name: Run unit tests
+on: [push, pull_request]
+jobs:
+  test-server:
+    name: Run pytest for server/
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Build test container
+        run: >
+          docker buildx build --load
+          --platform linux/amd64 --target testing
+          -t test_container
+          ./server
+
+      - name: Run unit tests
+        run: >
+          docker run --rm -t test_container
+          --color=no
+          --cov-report=term-missing:skip-covered
+          --cov=szurubooru
+          szurubooru/

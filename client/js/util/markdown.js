@@ -65,17 +65,6 @@ class TagPermalinkFixWrapper extends BaseMarkdownWrapper {
 // post, user and tags permalinks
 class EntityPermalinkWrapper extends BaseMarkdownWrapper {
     preprocess(text) {
-        // URL-based permalinks
-        text = text.replace(new RegExp("\\b/post/(\\d+)/?\\b", "g"), "@$1");
-        text = text.replace(
-            new RegExp("\\b/tag/([a-zA-Z0-9_-]+?)/?", "g"),
-            "#$1"
-        );
-        text = text.replace(
-            new RegExp("\\b/user/([a-zA-Z0-9_-]+?)/?", "g"),
-            "+$1"
-        );
-
         text = text.replace(
             /(^|^\(|(?:[^\]])\(|[\s<>\[\]\)])([+#@][a-zA-Z0-9_-]+)/g,
             "$1[$2]($2)"
@@ -136,12 +125,8 @@ function createRenderer() {
 
     const renderer = new marked.Renderer();
     renderer.image = (href, title, alt) => {
-        let [
-            _,
-            url,
-            width,
-            height,
-        ] = /^(.+?)(?:\s=\s*(\d*)\s*x\s*(\d*)\s*)?$/.exec(href);
+        let [_, url, width, height] =
+            /^(.+?)(?:\s=\s*(\d*)\s*x\s*(\d*)\s*)?$/.exec(href);
         let res = '<img src="' + sanitize(url) + '" alt="' + sanitize(alt);
         if (width) {
             res += '" width="' + width;
@@ -174,7 +159,7 @@ function formatMarkdown(text) {
     for (let wrapper of wrappers) {
         text = wrapper.preprocess(text);
     }
-    text = marked(text, options);
+    text = marked.parse(text, options);
     wrappers.reverse();
     for (let wrapper of wrappers) {
         text = wrapper.postprocess(text);
@@ -200,7 +185,7 @@ function formatInlineMarkdown(text) {
     for (let wrapper of wrappers) {
         text = wrapper.preprocess(text);
     }
-    text = marked.inlineLexer(text, [], options);
+    text = marked.parseInline(text, options);
     wrappers.reverse();
     for (let wrapper of wrappers) {
         text = wrapper.postprocess(text);

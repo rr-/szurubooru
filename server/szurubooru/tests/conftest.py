@@ -43,14 +43,26 @@ def query_logger(pytestconfig):
         logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
 
 
-@pytest.yield_fixture(scope="function", autouse=True)
-def session(query_logger, postgresql_db):
+@pytest.fixture(scope="function", autouse=True)
+def session(query_logger, transacted_postgresql_db):
+    db.session = transacted_postgresql_db.session
+    transacted_postgresql_db.create_table(*model.Base.metadata.sorted_tables)
+    try:
+        yield transacted_postgresql_db.session
+    finally:
+        transacted_postgresql_db.reset_db()
+
+
+@pytest.fixture(scope="function")
+def nontransacted_session(query_logger, postgresql_db):
+    old_db_session = db.session
     db.session = postgresql_db.session
     postgresql_db.create_table(*model.Base.metadata.sorted_tables)
     try:
         yield postgresql_db.session
     finally:
         postgresql_db.reset_db()
+        db.session = old_db_session
 
 
 @pytest.fixture

@@ -7,7 +7,7 @@
 
             <span class='skip-duplicates'>
                 <%= ctx.makeCheckbox({
-                    text: 'Skip duplicates',
+                    text: 'Skip duplicate',
                     name: 'skip-duplicates',
                     checked: false,
                 }) %>
@@ -15,9 +15,17 @@
 
             <span class='always-upload-similar'>
                 <%= ctx.makeCheckbox({
-                    text: 'Always upload similar',
+                    text: 'Force upload similar',
                     name: 'always-upload-similar',
                     checked: false,
+                }) %>
+            </span>
+
+            <span class='pause-remain-on-error'>
+                <%= ctx.makeCheckbox({
+                    text: 'Pause on error',
+                    name: 'pause-remain-on-error',
+                    checked: true,
                 }) %>
             </span>
 

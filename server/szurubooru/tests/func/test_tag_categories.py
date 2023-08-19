@@ -107,17 +107,16 @@ def test_update_category_name_reusing_other_name(
         tag_categories.update_category_name(category, "NAME")
 
 
+@pytest.mark.parametrize("name", ["name", "NAME"])
 def test_update_category_name_reusing_own_name(
-    config_injector, tag_category_factory
+    config_injector, tag_category_factory, name
 ):
     config_injector({"tag_category_name_regex": ".*"})
-    for name in ["name", "NAME"]:
-        category = tag_category_factory(name="name")
-        db.session.add(category)
-        db.session.flush()
-        tag_categories.update_category_name(category, name)
-        assert category.name == name
-        db.session.rollback()
+    category = tag_category_factory(name="name")
+    db.session.add(category)
+    db.session.flush()
+    tag_categories.update_category_name(category, name)
+    assert category.name == name
 
 
 def test_update_category_color_with_empty_string(tag_category_factory):

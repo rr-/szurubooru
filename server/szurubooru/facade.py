@@ -135,7 +135,7 @@ _live_migrations = (
 
 
 def create_app() -> Callable[[Any, Any], Any]:
-    """ Create a WSGI compatible App object. """
+    """Create a WSGI compatible App object."""
     validate_config()
     coloredlogs.install(fmt="[%(asctime)-15s] %(name)s %(message)s")
     if config.config["debug"]:
