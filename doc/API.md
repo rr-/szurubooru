@@ -165,9 +165,9 @@ way. The files, however, should be passed as regular fields appended with a
 accepts a file named `content`, the client should pass
 `{"contentUrl":"http://example.com/file.jpg"}` as a part of the JSON message
 body. When creating or updating post content using this method, the server can
-also be configured to employ [youtube-dl](https://github.com/ytdl-org/youtube-dl)
-to download content from popular sites such as youtube, gfycat, etc. Access to
-youtube-dl can be configured with the `'uploads:use_downloader'` permission
+also be configured to employ [yt-dlp](https://github.com/yt-dlp/yt-dlp) to
+download content from popular sites such as youtube, gfycat, etc. Access to
+yt-dlp can be configured with the `'uploads:use_downloader'` permission
 
 Finally, in some cases the user might want to reuse one file between the
 requests to save the bandwidth (for example, reverse search + consecutive
