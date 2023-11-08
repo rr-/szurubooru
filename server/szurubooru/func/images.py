@@ -5,7 +5,8 @@ import re
 import shlex
 import subprocess
 from io import BytesIO
-from typing import List
+from typing import List, Optional
+import datetime
 
 import HeifImagePlugin
 import pillow_avif
@@ -31,15 +32,39 @@ class Image:
 
     @property
     def width(self) -> int:
-        return self.info["streams"][0]["width"]
+        return self.info["ImageWidth"]
 
     @property
     def height(self) -> int:
-        return self.info["streams"][0]["height"]
+        return self.info["ImageHeight"]
 
     @property
-    def frames(self) -> int:
-        return self.info["streams"][0]["nb_read_frames"]
+    def duration(self) -> Optional[datetime.timedelta]:
+        try:
+            duration_data = self.info["Duration"]
+        except KeyError:
+            return None
+
+        time_formats = [
+            "%H:%M:%S",
+            "%H:%M:%S.%f",
+            "%M:%S",
+            "%M:%S.%f",
+            "%S.%f s",
+        ]
+        for time_format in time_formats:
+            try:
+                duration = datetime.datetime.strptime(
+                    duration_data, time_format).time()
+                return datetime.timedelta(
+                    hours=duration.hour,
+                    minutes=duration.minute,
+                    seconds = duration.second,
+                    microseconds=duration.microsecond)
+            except ValueError:
+                pass
+        logger.warning("Unexpected time format(duration=%r)", duration_data)
+        return None
 
     def resize_fill(self, width: int, height: int) -> None:
         width_greater = self.width > self.height
@@ -60,15 +85,15 @@ class Image:
             "png",
             "-",
         ]
+        duration = self.duration
         if (
-            "duration" in self.info["format"]
-            and self.info["format"]["format_name"] != "swf"
+            duration is not None and self.info["FileType"] != "SWF"
         ):
-            duration = float(self.info["format"]["duration"])
-            if duration > 3:
+            total_seconds = duration.total_seconds()
+            if total_seconds > 3:
                 cli = [
                     "-ss",
-                    "%d" % math.floor(duration * 0.3),
+                    "%d" % math.floor(total_seconds * 0.3),
                 ] + cli
         content = self._execute(cli, ignore_error_if_data=True)
         if not content:
@@ -274,8 +299,10 @@ class Image:
         with util.create_temp_file(suffix="." + extension) as handle:
             handle.write(self.content)
             handle.flush()
-            cli = [program, "-loglevel", "32" if get_logs else "24"] + cli
             cli = [part.format(path=handle.name) for part in cli]
+            if program in ("ffmpeg", "ffprobe"):
+                cli = ["-loglevel", "32" if get_logs else "24"] + cli
+            cli = [program] + cli
             proc = subprocess.Popen(
                 cli,
                 stdout=subprocess.PIPE,
@@ -285,7 +312,7 @@ class Image:
             out, err = proc.communicate()
             if proc.returncode != 0:
                 logger.warning(
-                    "Failed to execute ffmpeg command (cli=%r, err=%r)",
+                    "Failed to execute command (cli=%r, err=%r)",
                     " ".join(shlex.quote(arg) for arg in cli),
                     err,
                 )
@@ -298,25 +325,17 @@ class Image:
             return err if get_logs else out
 
     def _reload_info(self) -> None:
-        self.info = json.loads(
+        exiftool_data = json.loads(
             self._execute(
                 [
-                    "-i",
                     "{path}",
-                    "-of",
-                    "json",
-                    "-select_streams",
-                    "v",
-                    "-show_format",
-                    "-show_streams",
+                    "-json",
                 ],
-                program="ffprobe",
+                program="exiftool",
             ).decode("utf-8")
         )
-        assert "format" in self.info
-        assert "streams" in self.info
-        if len(self.info["streams"]) < 1:
-            logger.warning("The video contains no video streams.")
-            raise errors.ProcessingError(
-                "The video contains no video streams."
-            )
+
+        if len(exiftool_data) != 1:
+            logger.warning("Unexpected output from exiftool")
+
+        self.info = exiftool_data[0]
