@@ -16,7 +16,6 @@ from szurubooru import errors
 from szurubooru.func import mime, util
 
 logger = logging.getLogger(__name__)
-logger.setLevel(level=logging.INFO)
 
 # Refer to:
 # https://exiftool.org/TagNames/EXIF.html
@@ -95,6 +94,8 @@ class Image:
         return None
 
     def _orientation_filter(self) -> str:
+        # This filter should be omitted in ffmpeg>=6.0,
+        # where it is automatically applied.
         try:
             return ORIENTATION_FILTER[self.info["Orientation"]]
         except KeyError:
@@ -390,3 +391,11 @@ class Image:
             logger.warning("Unexpected output from exiftool")
 
         self.info = exiftool_data[0]
+
+        if "Error" in self.info:
+            raise errors.ProcessingError(
+                "Error in metadata:" + str(self.info["Error"]))
+
+        if "Warning" in self.info:
+            raise errors.ProcessingError(
+                "Warning in metadata:" + str(self.info["Warning"]))
