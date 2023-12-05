@@ -54,7 +54,7 @@
         - [Deleting pool category](#deleting-pool-category)
         - [Setting default pool category](#setting-default-pool-category)
     - Pools
-        - [Listing pools](#listing-pool)
+        - [Listing pools](#listing-pools)
         - [Creating pool](#creating-pool)
         - [Updating pool](#updating-pool)
         - [Getting pool](#getting-pool)
@@ -1389,7 +1389,7 @@ data.
 ## Creating pool
 - **Request**
 
-    `POST /pools/create`
+    `POST /pool`
 
 - **Input**
 
