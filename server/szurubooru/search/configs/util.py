@@ -124,11 +124,11 @@ def apply_str_criterion_to_column(
     transformer: Callable[[str], str] = wildcard_transformer,
 ) -> SaQuery:
     if isinstance(criterion, criteria.PlainCriterion):
-        expr = column.ilike(transformer(criterion.value))
+        expr = sa.and_(column != None, column.ilike(transformer(criterion.value)))
     elif isinstance(criterion, criteria.ArrayCriterion):
         expr = sa.sql.false()
         for value in criterion.values:
-            expr = expr | column.ilike(transformer(value))
+            expr = expr | sa.and_(column != None, column.ilike(transformer(value)))
     elif isinstance(criterion, criteria.RangedCriterion):
         raise errors.SearchError(
             "Ranged criterion is invalid in this context. "
