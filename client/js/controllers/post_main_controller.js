@@ -11,10 +11,16 @@ const PostList = require("../models/post_list.js");
 const PostMainView = require("../views/post_main_view.js");
 const BasePostController = require("./base_post_controller.js");
 const EmptyView = require("../views/empty_view.js");
+const PoolNavigatorListControl = require("../controls/pool_navigator_list_control.js");
 
 class PostMainController extends BasePostController {
     constructor(ctx, editMode) {
         super(ctx);
+
+        let poolPostsNearby = Promise.resolve({results: []});
+        if (api.hasPrivilege("pools:list") && api.hasPrivilege("pools:view")) {
+            poolPostsNearby = PostList.getNearbyPoolPosts(ctx.parameters.id);
+        }
 
         let parameters = ctx.parameters;
         Promise.all([
@@ -23,9 +29,10 @@ class PostMainController extends BasePostController {
                 ctx.parameters.id,
                 parameters ? parameters.query : null
             ),
+            poolPostsNearby
         ]).then(
             (responses) => {
-                const [post, aroundResponse] = responses;
+                const [post, aroundResponse, poolPostsNearby] = responses;
 
                 // remove junk from query, but save it into history so that it can
                 // be still accessed after history navigation / page refresh
@@ -44,6 +51,7 @@ class PostMainController extends BasePostController {
                 this._post = post;
                 this._view = new PostMainView({
                     post: post,
+                    poolPostsNearby: poolPostsNearby,
                     editMode: editMode,
                     prevPostId: aroundResponse.prev
                         ? aroundResponse.prev.id
@@ -56,6 +64,8 @@ class PostMainController extends BasePostController {
                     canFeaturePosts: api.hasPrivilege("posts:feature"),
                     canListComments: api.hasPrivilege("comments:list"),
                     canCreateComments: api.hasPrivilege("comments:create"),
+                    canListPools: api.hasPrivilege("pools:list"),
+                    canViewPools: api.hasPrivilege("pools:view"),
                     parameters: parameters,
                 });
 

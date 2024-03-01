@@ -1,6 +1,8 @@
 import hmac
 import logging
+from collections import namedtuple
 from datetime import datetime
+from itertools import tee, chain, islice
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import sqlalchemy as sa
@@ -15,7 +17,6 @@ from szurubooru.func import (
     pools,
     scores,
     serialization,
-    snapshots,
     tags,
     users,
     util,
@@ -95,6 +96,13 @@ FLAG_MAP = {
     model.Post.FLAG_LOOP: "loop",
     model.Post.FLAG_SOUND: "sound",
 }
+
+# https://stackoverflow.com/a/1012089
+def _get_nearby_iter(post_list):
+    previous_item, current_item, next_item = tee(post_list, 3)
+    previous_item = chain([None], previous_item)
+    next_item = chain(islice(next_item, 1, None), [None])
+    return zip(previous_item, current_item, next_item)
 
 
 def get_post_security_hash(id: int) -> str:
@@ -968,3 +976,47 @@ def search_by_image(image_content: bytes) -> List[Tuple[float, model.Post]]:
         ]
     else:
         return []
+
+PoolPostsNearby = namedtuple('PoolPostsNearby', 'pool first_post prev_post next_post last_post')
+def get_pools_nearby(
+    post: model.Post
+) -> List[PoolPostsNearby]:
+    response = []
+    pools = post.pools
+
+    for pool in pools:
+        prev_post_id = None
+        next_post_id = None
+        first_post_id = pool.posts[0].post_id,
+        last_post_id = pool.posts[-1].post_id,
+
+        for previous_item, current_item, next_item in _get_nearby_iter(pool.posts):
+            if post.post_id == current_item.post_id:
+                if previous_item != None:
+                    prev_post_id = previous_item.post_id
+                if next_item != None:
+                    next_post_id = next_item.post_id
+                break
+
+        resp_entry = PoolPostsNearby(
+            pool=pool,
+            first_post=first_post_id,
+            last_post=last_post_id,
+            prev_post=prev_post_id,
+            next_post=next_post_id,
+        )
+        response.append(resp_entry)
+    return response
+
+def serialize_pool_posts_nearby(
+    nearby: List[PoolPostsNearby]
+) -> Optional[rest.Response]:
+    return [
+        {
+            "pool": pools.serialize_micro_pool(entry.pool),
+            "firstPost": serialize_micro_post(try_get_post_by_id(entry.first_post), None),
+            "lastPost": serialize_micro_post(try_get_post_by_id(entry.last_post), None),
+            "previousPost": serialize_micro_post(try_get_post_by_id(entry.prev_post), None),
+            "nextPost": serialize_micro_post(try_get_post_by_id(entry.next_post), None),
+        } for entry in nearby
+    ]
