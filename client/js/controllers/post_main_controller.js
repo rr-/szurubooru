@@ -88,6 +88,9 @@ class PostMainController extends BasePostController {
                     this._view.sidebarControl.addEventListener("delete", (e) =>
                         this._evtDeletePost(e)
                     );
+                    this._view.sidebarControl.addEventListener("ban", (e) =>
+                        this._evtBanPost(e)
+                    );
                     this._view.sidebarControl.addEventListener("merge", (e) =>
                         this._evtMergePost(e)
                     );
@@ -157,6 +160,22 @@ class PostMainController extends BasePostController {
                 misc.disableExitConfirmation();
                 const ctx = router.show(uri.formatClientLink("posts"));
                 ctx.controller.showSuccess("Post deleted.");
+            },
+            (error) => {
+                this._view.sidebarControl.showError(error.message);
+                this._view.sidebarControl.enableForm();
+            }
+        );
+    }
+
+    _evtBanPost(e) {
+        this._view.sidebarControl.disableForm();
+        this._view.sidebarControl.clearMessages();
+        e.detail.post.ban().then(
+            () => {
+                misc.disableExitConfirmation();
+                const ctx = router.show(uri.formatClientLink("posts"));
+                ctx.controller.showSuccess("Post banned.");
             },
             (error) => {
                 this._view.sidebarControl.showError(error.message);
