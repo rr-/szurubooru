@@ -19,7 +19,8 @@ class FileDropperControl extends events.EventTarget {
             lock: options.lock,
             id: "file-" + Math.random().toString(36).substring(7),
             urlPlaceholder:
-                options.urlPlaceholder || "Alternatively, paste an URL here.",
+                options.urlPlaceholder ||
+                "Alternatively, paste an image or URL here.",
         });
 
         this._dropperNode = source.querySelector(".file-dropper");
@@ -47,6 +48,9 @@ class FileDropperControl extends events.EventTarget {
         if (this._urlInputNode) {
             this._urlInputNode.addEventListener("keydown", (e) =>
                 this._evtUrlInputKeyDown(e)
+            );
+            this._urlInputNode.addEventListener("paste", (e) =>
+                this._evtPaste(e)
             );
         }
         if (this._urlConfirmButtonNode) {
@@ -127,6 +131,17 @@ class FileDropperControl extends events.EventTarget {
             window.alert("Cannot select multiple files.");
         }
         this._emitFiles(e.dataTransfer.files);
+    }
+
+    _evtPaste(e) {
+        const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+        const fileList = Array.from(items).map((x) => x.getAsFile());
+
+        if (!this._options.allowMultiple && fileList.length > 1) {
+            window.alert("Cannot select multiple files.");
+        } else if (fileList.length > 0) {
+            this._emitFiles(fileList);
+        }
     }
 
     _evtUrlInputKeyDown(e) {
