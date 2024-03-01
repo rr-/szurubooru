@@ -454,13 +454,6 @@ class Post extends events.EventTarget {
             });
     }
 
-    mutateContentUrl() {
-        this._contentUrl =
-            this._orig._contentUrl +
-            "?bypass-cache=" +
-            Math.round(Math.random() * 1000);
-    }
-
     _updateFromResponse(response) {
         const map = () => ({
             _version: response.version,
