@@ -67,6 +67,12 @@ webhooks:
 
 default_rank: regular
 
+# default blocklisted tags (space separated)
+default_tag_blocklist: ''
+
+# Apply blocklist for anonymous viewers too
+default_tag_blocklist_for_anonymous: yes
+
 privileges:
     'users:create:self':            anonymous # Registration permission
     'users:create:any':             administrator
@@ -76,11 +82,13 @@ privileges:
     'users:edit:any:pass':          moderator
     'users:edit:any:email':         moderator
     'users:edit:any:avatar':        moderator
+    'users:edit:any:blocklist':     moderator
     'users:edit:any:rank':          moderator
     'users:edit:self:name':         regular
     'users:edit:self:pass':         regular
     'users:edit:self:email':        regular
     'users:edit:self:avatar':       regular
+    'users:edit:self:blocklist':    regular
     'users:edit:self:rank':         moderator # one can't promote themselves or anyone to upper rank than their own.
     'users:delete:any':             administrator
     'users:delete:self':            regular
