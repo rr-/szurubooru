@@ -22,12 +22,15 @@ def test_creating_user(user_factory, context_factory, fake_datetime):
     ), patch(
         "szurubooru.func.users.update_user_avatar"
     ), patch(
+        "szurubooru.func.users.update_user_blocklist"
+    ), patch(
         "szurubooru.func.users.serialize_user"
     ), fake_datetime(
         "1969-02-12"
     ):
         users.serialize_user.return_value = "serialized user"
         users.create_user.return_value = user
+        users.update_user_blocklist.return_value = ([],[])
         result = api.user_api.create_user(
             context_factory(
                 params={
@@ -50,6 +53,7 @@ def test_creating_user(user_factory, context_factory, fake_datetime):
         assert not users.update_user_email.called
         users.update_user_rank.called_once_with(user, "moderator")
         users.update_user_avatar.called_once_with(user, "manual", b"...")
+        users.update_user_blocklist.called_once_with(user, None)
 
 
 @pytest.mark.parametrize("field", ["name", "password"])
