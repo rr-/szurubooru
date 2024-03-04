@@ -10,22 +10,23 @@ _cache_result = None  # type: Optional[int]
 
 
 def _get_disk_usage() -> int:
-    global _cache_time, _cache_result
-    threshold = timedelta(hours=48)
-    now = datetime.utcnow()
-    if _cache_time and _cache_time > now - threshold:
-        assert _cache_result is not None
-        return _cache_result
     total_size = 0
-    for dir_path, _, file_names in os.walk(config.config["data_dir"]):
-        for file_name in file_names:
-            file_path = os.path.join(dir_path, file_name)
-            try:
-                total_size += os.path.getsize(file_path)
-            except FileNotFoundError:
-                pass
-    _cache_time = now
-    _cache_result = total_size
+    if config.config["data_dir_get_usage"] == 1:
+        global _cache_time, _cache_result
+        threshold = timedelta(hours=48)
+        now = datetime.utcnow()
+        if _cache_time and _cache_time > now - threshold:
+            assert _cache_result is not None
+            return _cache_result
+        for dir_path, _, file_names in os.walk(config.config["data_dir"]):
+            for file_name in file_names:
+                file_path = os.path.join(dir_path, file_name)
+                try:
+                    total_size += os.path.getsize(file_path)
+                except FileNotFoundError:
+                    pass
+        _cache_time = now
+        _cache_result = total_size
     return total_size
 
 
