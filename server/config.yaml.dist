@@ -177,3 +177,9 @@ privileges:
 ## usage: schema://user:password@host:port/database_name
 ## example: postgres://szuru:dog@localhost:5432/szuru_test
 #database:
+
+
+## get the data dir usage
+## 0 disabled 
+## 1 enabled ( default )
+data_dir_get_usage: 1
