@@ -180,6 +180,6 @@ privileges:
 
 
 ## get the data dir usage
-## 0 disabled 
-## 1 enabled ( default )
-data_dir_get_usage: 1
+## false disabled 
+## true enabled ( default )
+data_dir_get_usage: true
