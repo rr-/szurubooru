@@ -11,7 +11,7 @@ _cache_result = None  # type: Optional[int]
 
 def _get_disk_usage() -> int:
     total_size = 0
-    if config.config["data_dir_get_usage"] == 1:
+    if config.config["data_dir_get_usage"]:
         global _cache_time, _cache_result
         threshold = timedelta(hours=48)
         now = datetime.utcnow()
