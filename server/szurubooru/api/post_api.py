@@ -21,7 +21,7 @@ _search_executor = search.Executor(_search_executor_config)
 def _get_post_id(params: Dict[str, str]) -> int:
     try:
         return int(params["post_id"])
-    except TypeError:
+    except (TypeError, ValueError):
         raise posts.InvalidPostIdError(
             "Invalid post ID: %r." % params["post_id"]
         )
