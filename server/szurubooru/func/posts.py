@@ -124,6 +124,15 @@ def get_post_thumbnail_url(post: model.Post) -> str:
     )
 
 
+def get_post_custom_thumbnail_url(post: model.Post) -> str:
+    assert post
+    return "%s/generated-thumbnails/custom-thumbnails/sample_%d_%s.jpg" % (
+        config.config["data_url"].rstrip("/"),
+        post.post_id,
+        post.image_key,
+    )
+
+
 def get_post_content_path(post: model.Post) -> str:
     assert post
     assert post.post_id
@@ -131,6 +140,15 @@ def get_post_content_path(post: model.Post) -> str:
         post.post_id,
         get_post_security_hash(post.post_id),
         mime.get_extension(post.mime_type) or "dat",
+    )
+
+
+def get_post_custom_content_path(post: model.Post) -> str:
+    assert post
+    assert post.post_id
+    return "posts/custom-thumbnails/%d_%s.dat" % (
+        post.post_id,
+        post.image_key,
     )
 
 
@@ -142,9 +160,9 @@ def get_post_thumbnail_path(post: model.Post) -> str:
     )
 
 
-def get_post_thumbnail_backup_path(post: model.Post) -> str:
+def get_post_custom_thumbnail_path(post: model.Post) -> str:
     assert post
-    return "posts/custom-thumbnails/%d_%s.dat" % (
+    return "generated-thumbnails/custom-thumbnails/sample_%d_%s.jpg" % (
         post.post_id,
         get_post_security_hash(post.post_id),
     )
@@ -180,6 +198,7 @@ class PostSerializer(serialization.BaseSerializer):
             "canvasHeight": self.serialize_canvas_height,
             "contentUrl": self.serialize_content_url,
             "thumbnailUrl": self.serialize_thumbnail_url,
+            "customThumbnailUrl": self.serialize_custom_thumbnail_url,
             "flags": self.serialize_flags,
             "tags": self.serialize_tags,
             "relations": self.serialize_relations,
@@ -195,7 +214,6 @@ class PostSerializer(serialization.BaseSerializer):
             "featureCount": self.serialize_feature_count,
             "lastFeatureTime": self.serialize_last_feature_time,
             "favoritedBy": self.serialize_favorited_by,
-            "hasCustomThumbnail": self.serialize_has_custom_thumbnail,
             "notes": self.serialize_notes,
             "comments": self.serialize_comments,
             "pools": self.serialize_pools,
@@ -319,8 +337,9 @@ class PostSerializer(serialization.BaseSerializer):
             for rel in self.post.favorited_by
         ]
 
-    def serialize_has_custom_thumbnail(self) -> Any:
-        return files.has(get_post_thumbnail_backup_path(self.post))
+    def serialize_custom_thumbnail_url(self) -> Any:
+        if files.has(get_post_custom_thumbnail_path(self.post)):
+            return get_post_custom_thumbnail_url(self.post)
 
     def serialize_notes(self) -> Any:
         return sorted(
@@ -357,7 +376,7 @@ def serialize_micro_post(
     post: model.Post, auth_user: model.User
 ) -> Optional[rest.Response]:
     return serialize_post(
-        post, auth_user=auth_user, options=["id", "thumbnailUrl"]
+        post, auth_user=auth_user, options=["id", "thumbnailUrl", "customThumbnailUrl"]
     )
 
 
@@ -462,32 +481,28 @@ def _before_post_delete(
 ) -> None:
     if post.post_id:
         if config.config["delete_source_files"]:
-            files.delete(get_post_content_path(post))
-            files.delete(get_post_thumbnail_path(post))
+            pattern = post.post_id + "_*"
+            for file in files.find("posts", "**/" + pattern, recursive=True) + files.find("generated-thumbnails", "**/sample_" + pattern, recursive=True):
+                files.delete(file)
 
 
 def _sync_post_content(post: model.Post) -> None:
-    regenerate_thumb = False
-
     if hasattr(post, "__content"):
         content = getattr(post, "__content")
         files.save(get_post_content_path(post), content)
+        generate_post_thumbnail(get_post_thumbnail_path(post), content, seek=False)
+        if mime.is_video(post.mime_type):
+            generate_post_thumbnail(get_post_custom_thumbnail_path(post), content, seek=True)
         delattr(post, "__content")
-        regenerate_thumb = True
 
     if hasattr(post, "__thumbnail"):
         if getattr(post, "__thumbnail"):
-            files.save(
-                get_post_thumbnail_backup_path(post),
-                getattr(post, "__thumbnail"),
-            )
+            thumbnail = getattr(post, "__thumbnail")
+            files.save(get_post_custom_content_path(post), thumbnail)
+            generate_post_thumbnail(get_post_custom_thumbnail_path(post), thumbnail, seek=True)
         else:
-            files.delete(get_post_thumbnail_backup_path(post))
+            files.delete(get_post_custom_thumbnail_path(post))
         delattr(post, "__thumbnail")
-        regenerate_thumb = True
-
-    if regenerate_thumb:
-        generate_post_thumbnail(post)
 
 
 def generate_alternate_formats(
@@ -677,12 +692,7 @@ def update_post_thumbnail(
     setattr(post, "__thumbnail", content)
 
 
-def generate_post_thumbnail(post: model.Post) -> None:
-    assert post
-    if files.has(get_post_thumbnail_backup_path(post)):
-        content = files.get(get_post_thumbnail_backup_path(post))
-    else:
-        content = files.get(get_post_content_path(post))
+def generate_post_thumbnail(path: str, content: bytes, seek=True) -> None:
     try:
         assert content
         image = images.Image(content)
@@ -690,10 +700,11 @@ def generate_post_thumbnail(post: model.Post) -> None:
             int(config.config["thumbnails"]["post_width"]),
             int(config.config["thumbnails"]["post_height"]),
             keep_transparency=False,
+            seek=seek,
         )
-        files.save(get_post_thumbnail_path(post), image.to_jpeg())
+        files.save(path, image.to_jpeg())
     except errors.ProcessingError:
-        files.save(get_post_thumbnail_path(post), EMPTY_PIXEL)
+        files.save(path, EMPTY_PIXEL)
 
 
 def update_post_tags(

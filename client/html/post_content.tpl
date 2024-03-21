@@ -24,7 +24,7 @@
             },
             ctx.makeElement('source', {
                 type: ctx.post.mimeType,
-                src: ctx.post.contentUrl + '#t=0.001',
+                src: ctx.post.contentUrl,
             }),
             'Your browser doesn\'t support HTML5 videos.')
         %>

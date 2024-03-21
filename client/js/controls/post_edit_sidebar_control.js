@@ -139,7 +139,7 @@ class PostEditSidebarControl extends events.EventTarget {
                 this._evtRemoveThumbnailClick(e)
             );
             this._thumbnailRemovalLinkNode.style.display = this._post
-                .hasCustomThumbnail
+                .customThumbnailUrl
                 ? "block"
                 : "none";
         }

@@ -150,7 +150,7 @@ class PostContentControl {
             newNode.firstElementChild.style.backgroundImage = "";
         }
         if (["image", "flash"].includes(this._post.type)) {
-            newNode.firstElementChild.style.backgroundImage = "url("+this._post.thumbnailUrl+")";
+            newNode.firstElementChild.style.backgroundImage = "url("+this._post.originalThumbnailUrl+")";
         }
         if (this._post.type == "image") {
             newNode.firstElementChild.addEventListener("load", load);
@@ -161,7 +161,7 @@ class PostContentControl {
             newNode.classList.add("post-error");
             if (["image", "animation"].includes(this._post.type)) {
                 newNode.firstElementChild.removeEventListener("load", load);
-                newNode.firstElementChild.style.backgroundImage = "url("+this._post.thumbnailUrl+")";
+                newNode.firstElementChild.style.backgroundImage = "url("+this._post.originalThumbnailUrl+")";
                 newNode.firstElementChild.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
             }
         });

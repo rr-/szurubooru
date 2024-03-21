@@ -72,12 +72,12 @@ def test_get_post_thumbnail_path(input_mime_type):
 
 
 @pytest.mark.parametrize("input_mime_type", ["image/jpeg", "image/gif"])
-def test_get_post_thumbnail_backup_path(input_mime_type):
+def test_get_post_custom_thumbnail_path(input_mime_type):
     post = model.Post()
     post.post_id = 1
     post.mime_type = input_mime_type
     assert (
-        posts.get_post_thumbnail_backup_path(post)
+        posts.get_post_custom_thumbnail_path(post)
         == "posts/custom-thumbnails/1_244c8840887984c4.dat"
     )
 
