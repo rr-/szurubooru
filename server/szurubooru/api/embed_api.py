@@ -81,7 +81,7 @@ def post_index(ctx: rest.Context, params: Dict[str, str]) -> rest.Response:
     try:
         oembed = get_post(ctx, {}, path)
     except posts.PostNotFoundError:
-        return {"return_type": "custom", "content": index_html}
+        return {"return_type": "custom", "status_code": "404", "content": index_html}
 
     url = config.config["site_url"] + path
     new_html = index_html.replace("</head>", f'''
