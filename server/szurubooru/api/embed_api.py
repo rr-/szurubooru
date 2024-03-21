@@ -78,7 +78,11 @@ def get_post(
 @rest.routes.get("/index(?P<path>/.+)")
 def post_index(ctx: rest.Context, params: Dict[str, str]) -> rest.Response:
     path = _index_path(params)
-    oembed = get_post(ctx, {}, path)
+    try:
+        oembed = get_post(ctx, {}, path)
+    except posts.PostNotFoundError:
+        return {"return_type": "custom", "content": index_html}
+
     url = config.config["site_url"] + path
     new_html = index_html.replace("</head>", f'''
 <meta property="og:site_name" content="{config.config["name"]}">
