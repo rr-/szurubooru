@@ -15,38 +15,42 @@
             border: 0
             outline: 0
 
-        nav.buttons
-            margin-top: 0
-            display: flex
-            flex-wrap: wrap
-            article
-                flex: 1 0 33%
-                a
-                    display: inline-block
-                    width: 100%
-                    padding: 0.3em 0
-                    text-align: center
-                    vertical-align: middle
-                    transition: background 0.2s linear, box-shadow 0.2s linear
-                    &:not(.inactive):hover
-                        background: lighten($main-color, 90%)
-                i
-                    font-size: 140%
+    >.sidebar>nav.buttons, >.content nav.buttons
+        margin-top: 0
+        display: flex
+        flex-wrap: wrap
+        article
+            flex: 1 0 33%
+            a
+                display: inline-block
+                width: 100%
+                padding: 0.3em 0
                 text-align: center
-            @media (max-width: 800px)
-                margin-top: 2em
+                vertical-align: middle
+                transition: background 0.2s linear, box-shadow 0.2s linear
+                &:not(.inactive):hover
+                    background: lighten($main-color, 90%)
+            i
+                font-size: 140%
+            text-align: center
+        @media (max-width: 800px)
+            margin-top: 0.6em
+            margin-bottom: 0.6em
 
     >.content
         width: 100%
 
     .post-container
-        margin-bottom: 2em
+        margin-bottom: 0.6em
 
         .post-content
             margin: 0
 
+    .after-mobile-controls
+        width: 100%
+
 .darktheme .post-view
-    >.sidebar
+    >.sidebar, >.content
         nav.buttons
             article
                 a:not(.inactive):hover
@@ -56,6 +60,8 @@
 @media (max-width: 800px)
     .post-view
         flex-wrap: wrap
+        >.after-mobile-controls
+            order: 3
         >.sidebar
             order: 2
             min-width: 100%
@@ -113,7 +119,6 @@
         h1
             margin-bottom: 0.5em
         .thumbnail
-            background-position: 50% 30%
             width: 4em
             height: 3em
         li
