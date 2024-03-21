@@ -1,5 +1,6 @@
 import szurubooru.api.comment_api
 import szurubooru.api.info_api
+import szurubooru.api.oembed_api
 import szurubooru.api.password_reset_api
 import szurubooru.api.pool_api
 import szurubooru.api.pool_category_api

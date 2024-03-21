@@ -74,7 +74,8 @@ def application(
 ) -> Tuple[bytes]:
     try:
         ctx = _create_context(env)
-        if "application/json" not in ctx.get_header("Accept"):
+        accept_header = ctx.get_header("Accept")
+        if "*/*" not in accept_header and "application/json" not in accept_header:
             raise errors.HttpNotAcceptable(
                 "ValidationError", "This API only supports JSON responses."
             )
@@ -110,6 +111,10 @@ def application(
                         hook(ctx)
             finally:
                 db.session.remove()
+
+            if type(response) == dict and response.get("return_type") == "custom":
+                start_response("200", [("content-type", "text/html")])
+                return (response.get("content", "").encode("utf-8"),)
 
             start_response("200", [("content-type", "application/json")])
             return (_dump_json(response).encode("utf-8"),)
