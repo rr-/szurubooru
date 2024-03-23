@@ -64,7 +64,8 @@ class TagAutoCompleteControl extends AutoCompleteControl {
                     "names",
                     "category",
                     "usages",
-                ]).then(
+                ],
+                { noProgress: true }).then(
                     (response) =>
                         resolve(
                             _tagListToMatches(response.results, this._options, negated)
