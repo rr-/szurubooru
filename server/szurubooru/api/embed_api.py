@@ -40,7 +40,7 @@ def _serialize_post(
     ctx: rest.Context, post: Optional[model.Post]
 ) -> rest.Response:
     return posts.serialize_post(
-        post, ctx.user, options=serialization.get_serialization_options(ctx)
+        post, ctx.user, options=["thumbnailUrl", "user"]
     )
 
 
