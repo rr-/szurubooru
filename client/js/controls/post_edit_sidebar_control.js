@@ -138,10 +138,7 @@ class PostEditSidebarControl extends events.EventTarget {
             this._thumbnailRemovalLinkNode.addEventListener("click", (e) =>
                 this._evtRemoveThumbnailClick(e)
             );
-            this._thumbnailRemovalLinkNode.style.display = this._post
-                .customThumbnailUrl
-                ? "block"
-                : "none";
+            this._thumbnailRemovalLinkUpdate(this._post);
         }
 
         if (this._addNoteLinkNode) {
@@ -249,12 +246,25 @@ class PostEditSidebarControl extends events.EventTarget {
         this._poolsExpander.title = `Pools (${this._post.pools.length})`;
     }
 
+    _thumbnailRemovalLinkUpdate(post) {
+        if (this._thumbnailRemovalLinkNode) {
+            this._thumbnailRemovalLinkNode.style.display = post
+                .customThumbnailUrl
+                ? "block"
+                : "none";
+        }
+    }
+
     _evtPostContentChange(e) {
         this._contentFileDropper.reset();
+        this._thumbnailRemovalLinkUpdate(e.detail.post);
+        this._newPostContent = null;
     }
 
     _evtPostThumbnailChange(e) {
         this._thumbnailFileDropper.reset();
+        this._thumbnailRemovalLinkUpdate(e.detail.post);
+        this._newPostThumbnail = undefined;
     }
 
     _evtRemoveThumbnailClick(e) {
@@ -427,9 +437,7 @@ class PostEditSidebarControl extends events.EventTarget {
                         : undefined,
 
                     thumbnail:
-                        this._newPostThumbnail !== undefined && this._newPostThumbnail !== null
-                            ? this._newPostThumbnail
-                            : undefined,
+                        this._newPostThumbnail,
 
                     source: this._sourceInputNode
                         ? this._sourceInputNode.value
