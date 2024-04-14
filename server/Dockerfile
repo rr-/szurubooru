@@ -26,6 +26,7 @@ RUN apk --no-cache add \
         py3-pyrfc3339
 RUN pip3 install --no-cache-dir --disable-pip-version-check \
         "alembic>=0.8.5" \
+        "alembic_utils>=0.5.6" \
         "coloredlogs==5.0" \
         "pyheif==0.6.1" \
         "heif-image-plugin>=0.3.2" \
