@@ -1,5 +1,5 @@
 ARG ALPINE_VERSION=3.13
-
+ARG BUILDPLATFORM=linux/amd64
 
 FROM alpine:$ALPINE_VERSION as prereqs
 WORKDIR /opt/app
@@ -26,7 +26,6 @@ RUN apk --no-cache add \
         py3-pyrfc3339
 RUN pip3 install --no-cache-dir --disable-pip-version-check \
         "alembic>=0.8.5" \
-        "alembic_utils>=0.5.6" \
         "coloredlogs==5.0" \
         "pyheif==0.6.1" \
         "heif-image-plugin>=0.3.2" \
@@ -34,8 +33,7 @@ RUN pip3 install --no-cache-dir --disable-pip-version-check \
         "pillow-avif-plugin~=1.1.0"
 RUN apk --no-cache del py3-pip
 
-COPY ./ /opt/app/
-RUN rm -rf /opt/app/szurubooru/tests
+
 
 
 FROM --platform=$BUILDPLATFORM prereqs as testing
@@ -74,8 +72,12 @@ RUN apk --no-cache add \
         py3-waitress \
  && mkdir -p /opt/app /data \
  && addgroup -g ${PGID} app \
- && adduser -SDH -h /opt/app -g '' -G app -u ${PUID} app \
- && chown -R app:app /opt/app /data
+ && adduser -SDH -h /opt/app -g '' -G app -u ${PUID} app
+
+
+COPY ./ /opt/app/
+
+RUN chown -R app:app /opt/app /data
 
 USER app
 CMD ["/opt/app/docker-start.sh"]
