@@ -40,17 +40,34 @@ function makeRelativeTime(time) {
     );
 }
 
-function makeThumbnail(url) {
+function makeThumbnail(url, klass) {
     return makeElement(
         "span",
         url
             ? {
-                  class: "thumbnail",
+                  class: klass || "thumbnail",
                   style: `background-image: url(\'${url}\')`,
               }
             : { class: "thumbnail empty" },
         makeElement("img", { alt: "thumbnail", src: url })
     );
+}
+
+function makePoolThumbnails(posts, postFlow) {
+    if (posts.length == 0) {
+        return makeThumbnail(null);
+    }
+    if (postFlow) {
+        return makeThumbnail(posts.at(0).thumbnailUrl);
+    }
+
+    let s = "";
+
+    for (let i = 0; i < Math.min(3, posts.length); i++) {
+        s += makeThumbnail(posts.at(i).thumbnailUrl, "thumbnail thumbnail-" + (i+1));
+    }
+
+    return s;
 }
 
 function makeRadio(options) {
@@ -254,7 +271,7 @@ function makePoolLink(id, includeHash, includeCount, pool, name) {
               misc.escapeHtml(text)
           )
         : makeElement(
-              "span",
+              "div",
               { class: misc.makeCssName(category, "pool") },
               misc.escapeHtml(text)
           );
@@ -436,6 +453,7 @@ function getTemplate(templatePath) {
             makeFileSize: makeFileSize,
             makeMarkdown: makeMarkdown,
             makeThumbnail: makeThumbnail,
+            makePoolThumbnails: makePoolThumbnails,
             makeRadio: makeRadio,
             makeCheckbox: makeCheckbox,
             makeSelect: makeSelect,

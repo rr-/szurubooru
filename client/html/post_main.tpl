@@ -54,6 +54,10 @@
     <div class='content'>
         <div class='post-container'></div>
 
+        <% if (ctx.canListPools && ctx.canViewPools) { %>
+            <div class='pool-navigators-container'></div>
+        <% } %>
+
         <% if (ctx.canListComments) { %>
             <div class='comments-container'></div>
         <% } %>

@@ -13,3 +13,4 @@ pytz>=2018.3
 pyyaml>=3.11
 SQLAlchemy>=1.0.12, <1.4
 yt-dlp
+alembic_utils>=0.5.6
