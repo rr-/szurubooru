@@ -220,8 +220,20 @@ class PostSearchConfig(BaseSearchConfig):
             if token.name == "pool" and isinstance(token.criterion, criteria.PlainCriterion):
                 self.pool_id = token.criterion.value
 
-    def create_around_query(self) -> SaQuery:
-        return db.session.query(model.Post).options(sa.orm.lazyload("*"))
+    def create_around_query(self, filter_query: SaQuery, entity_id: int) -> SaQuery:
+        prev_filter_query = (
+            filter_query.filter(self.config.id_column > entity_id)
+            .order_by(None)
+            .order_by(sa.func.abs(self.config.id_column - entity_id).asc())
+            .limit(1)
+        )
+        next_filter_query = (
+            filter_query.filter(self.config.id_column < entity_id)
+            .order_by(None)
+            .order_by(sa.func.abs(self.config.id_column - entity_id).asc())
+            .limit(1)
+        )
+        return prev_filter_query, next_filter_query
 
     def create_around_filter_queries(self, filter_query: SaQuery, entity_id: int) -> Tuple[SaQuery, SaQuery]:
         if self.pool_id is not None:
