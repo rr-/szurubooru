@@ -978,6 +978,8 @@ def search_by_image(image_content: bytes) -> List[Tuple[float, model.Post]]:
 PoolPostsAround = namedtuple('PoolPostsAround', 'pool first_post prev_post next_post last_post')
 
 def get_pool_posts_around(post: model.Post) -> List[PoolPostsAround]:
+    return []
+
     around = dict()
     pool_ids = set()
     post_ids = set()
