@@ -74,7 +74,7 @@ RUN apk --no-cache add \
  && addgroup -g ${PGID} app \
  && adduser -SDH -h /opt/app -g '' -G app -u ${PUID} app
 
-
+# TODO: put this back when done modifying things
 COPY ./ /opt/app/
 
 RUN chown -R app:app /opt/app /data

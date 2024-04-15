@@ -1,6 +1,8 @@
 # User-specific configuration
 config.yaml
 .env
+sql/
+data/
 
 # Client Development Artifacts
 */*_modules/
