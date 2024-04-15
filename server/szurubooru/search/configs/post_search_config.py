@@ -226,20 +226,7 @@ class PostSearchConfig(BaseSearchConfig):
     def create_around_filter_queries(self, filter_query: SaQuery, entity_id: int) -> Tuple[SaQuery, SaQuery]:
         if self.pool_id is not None:
             return _posts_around_pool(filter_query, entity_id, self.pool_id)
-        
-        prev_filter_query = (
-            filter_query.filter(self.id_column > entity_id)
-            .order_by(None)
-            .order_by(sa.func.abs(self.id_column - entity_id).asc())
-            .limit(1)
-        )
-        next_filter_query = (
-            filter_query.filter(self.id_column < entity_id)
-            .order_by(None)
-            .order_by(sa.func.abs(self.id_column - entity_id).asc())
-            .limit(1)
-        )
-        return prev_filter_query, next_filter_query
+        return super(PostSearchConfig, self).create_around_filter_queries(filter_query, entity_id)
 
     def create_filter_query(self, disable_eager_loads: bool) -> SaQuery:
         strategy = (
