@@ -76,13 +76,8 @@ RUN apk --no-cache add \
  && adduser -SDH -h /opt/app -g '' -G app -u ${PUID} app \
  && chown -R app:app /opt/app /data
 
-# TODO: put this back when done modifying things
-COPY ./ /opt/app/
-
 USER app
 
-# TODO: put this back when done modifying things
-COPY ./ /opt/app/
 CMD ["/opt/app/docker-start.sh"]
 
 ARG PORT=6666
