@@ -33,9 +33,6 @@ RUN pip3 install --no-cache-dir --disable-pip-version-check \
         "pillow-avif-plugin~=1.1.0"
 RUN apk --no-cache del py3-pip
 
-COPY ./ /opt/app/
-RUN rm -rf /opt/app/szurubooru/tests
-
 
 FROM --platform=$BUILDPLATFORM prereqs as testing
 WORKDIR /opt/app
@@ -73,7 +70,6 @@ RUN apk --no-cache add \
         dumb-init \
         py3-setuptools \
         py3-waitress
-
 
 COPY ./ /opt/app/
 
