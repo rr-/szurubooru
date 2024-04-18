@@ -33,7 +33,8 @@ RUN pip3 install --no-cache-dir --disable-pip-version-check \
         "pillow-avif-plugin~=1.1.0"
 RUN apk --no-cache del py3-pip
 
-
+COPY ./ /opt/app/
+RUN rm -rf /opt/app/szurubooru/tests
 
 
 FROM --platform=$BUILDPLATFORM prereqs as testing
@@ -72,14 +73,16 @@ RUN apk --no-cache add \
         py3-waitress \
  && mkdir -p /opt/app /data \
  && addgroup -g ${PGID} app \
- && adduser -SDH -h /opt/app -g '' -G app -u ${PUID} app
+ && adduser -SDH -h /opt/app -g '' -G app -u ${PUID} app \
+ && chown -R app:app /opt/app /data
 
 # TODO: put this back when done modifying things
 COPY ./ /opt/app/
 
-RUN chown -R app:app /opt/app /data
-
 USER app
+
+# TODO: put this back when done modifying things
+COPY ./ /opt/app/
 CMD ["/opt/app/docker-start.sh"]
 
 ARG PORT=6666
