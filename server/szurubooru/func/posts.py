@@ -991,7 +991,6 @@ def get_pool_posts_around(post: model.Post) -> List[PoolPostsAround]:
             last_post = pool.posts[-1]
         
         around = PoolPostsAround(pool, first_post, prev_post, next_post, last_post)
-        logger.info("===============> WE NOW HAVE: %s", around)
         results.append(around)
     
     return results

@@ -114,7 +114,6 @@ def _pool_filter(
     query: SaQuery, criterion: Optional[criteria.BaseCriterion], negated: bool
 ) -> SaQuery:
     assert criterion
-    from szurubooru.search.configs import util as search_util
     subquery = db.session.query(model.PoolPost.post_id.label("foreign_id"))
     subquery = subquery.options(sa.orm.lazyload("*"))
     subquery = search_util.create_num_filter(model.PoolPost.pool_id)(subquery, criterion, False)

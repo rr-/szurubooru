@@ -291,7 +291,6 @@ def get_pool_posts_around(
     auth.verify_privilege(ctx.user, "posts:list")
     auth.verify_privilege(ctx.user, "pools:list")
     auth.verify_privilege(ctx.user, "pools:view")
-    _search_executor_config.user = ctx.user   # never calling _search_executor so why are we setting user?
     post = _get_post(params)
     results = posts.get_pool_posts_around(post)
     return posts.serialize_pool_posts_around(ctx, results)
