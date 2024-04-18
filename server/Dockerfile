@@ -48,12 +48,14 @@ RUN apk --no-cache add \
  && pip3 install --no-cache-dir --disable-pip-version-check \
         pytest-pgsql \
         freezegun \
- && apk --no-cache del py3-pip \
- && addgroup app \
+ && apk --no-cache del py3-pip
+
+COPY ./ /opt/app/
+ 
+RUN addgroup app \
  && adduser -SDH -h /opt/app -g '' -G app app \
  && chown app:app /opt/app
 
-COPY --chown=app:app ./szurubooru/tests /opt/app/szurubooru/tests/
 
 ENV TEST_ENVIRONMENT="true"
 USER app
@@ -70,8 +72,12 @@ ARG PGID=1000
 RUN apk --no-cache add \
         dumb-init \
         py3-setuptools \
-        py3-waitress \
- && mkdir -p /opt/app /data \
+        py3-waitress
+
+
+COPY ./ /opt/app/
+
+RUN mkdir -p /opt/app /data \
  && addgroup -g ${PGID} app \
  && adduser -SDH -h /opt/app -g '' -G app -u ${PUID} app \
  && chown -R app:app /opt/app /data
