@@ -1008,10 +1008,10 @@ def serialize_pool_posts_around(ctx: rest.Context, around: List[PoolPostsAround]
     return [
         {
             "pool": pools.serialize_micro_pool(entry.pool),
-            "firstPost": serialize_micro_post(ctx.user, entry.first_post),
-            "prevPost": serialize_micro_post(ctx.user, entry.prev_post),
-            "nextPost": serialize_micro_post(ctx.user, entry.next_post),
-            "lastPost": serialize_micro_post(ctx.user, entry.last_post)
+            "firstPost": serialize_micro_post(entry.first_post, ctx.user),
+            "prevPost": serialize_micro_post(entry.prev_post, ctx.user),
+            "nextPost": serialize_micro_post(entry.next_post, ctx.user),
+            "lastPost": serialize_micro_post(entry.last_post, ctx.user)
         }
         for entry in sort_pool_posts_around(around)
     ]
