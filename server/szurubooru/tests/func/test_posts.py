@@ -1224,10 +1224,6 @@ def test_search_by_image(post_factory, config_injector, read_asset):
 
 
 def test_get_pool_posts_around(post_factory, pool_factory, config_injector):
-    from szurubooru.migrations.functions import get_pool_posts_around
-    db.session.execute(get_pool_posts_around.to_sql_statement_create())
-    db.session.flush()
-
     config_injector({"allow_broken_uploads": False, "secret": "test"})
     post1 = post_factory(id=1)
     post2 = post_factory(id=2)
@@ -1240,11 +1236,11 @@ def test_get_pool_posts_around(post_factory, pool_factory, config_injector):
     db.session.add_all([post1, post2, post3, post4, pool1, pool2])
     db.session.flush()
     around = posts.get_pool_posts_around(post2)
-    assert around[0].first_post["id"] == post1.post_id
-    assert around[0].prev_post["id"] == post1.post_id
-    assert around[0].next_post["id"] == post3.post_id
-    assert around[0].last_post["id"] == post4.post_id
-    assert around[1].first_post["id"] == post3.post_id
-    assert around[1].prev_post["id"] == post4.post_id
+    assert around[0].first_post.post_id == post1.post_id
+    assert around[0].prev_post.post_id == post1.post_id
+    assert around[0].next_post.post_id == post3.post_id
+    assert around[0].last_post.post_id == post4.post_id
+    assert around[1].first_post.post_id == post3.post_id
+    assert around[1].prev_post.post_id == post4.post_id
     assert around[1].next_post == None
     assert around[1].last_post == None
