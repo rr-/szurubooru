@@ -11,7 +11,6 @@ import sys
 from time import sleep
 
 import alembic
-#from alembic_utils.replaceable_entity import register_entities
 import sqlalchemy as sa
 
 
@@ -22,7 +21,6 @@ sys.path.append(os.path.join(dir_to_self, *[os.pardir] * 2))
 
 import szurubooru.config  # noqa: E402
 import szurubooru.model.base  # noqa: E402
-
 # fmt: on
 
 

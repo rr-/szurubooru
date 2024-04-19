@@ -1,4 +1,4 @@
-from typing import Any, Callable, Union
+from typing import Any, Callable
 
 SaColumn = Any
 SaQuery = Any
