@@ -221,7 +221,7 @@ class PostSearchConfig(BaseSearchConfig):
 
     def create_around_query(self) -> SaQuery:
         return db.session.query(model.Post).options(sa.orm.lazyload("*"))
-        
+
     def create_around_filter_queries(self, filter_query: SaQuery, entity_id: int) -> Tuple[SaQuery, SaQuery]:
         if self.pool_id is not None:
             return _posts_around_pool(filter_query, entity_id, self.pool_id)

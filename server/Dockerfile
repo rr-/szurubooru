@@ -49,7 +49,7 @@ RUN apk --no-cache add \
  && apk --no-cache del py3-pip
 
 COPY ./ /opt/app/
- 
+
 RUN addgroup app \
  && adduser -SDH -h /opt/app -g '' -G app app \
  && chown app:app /opt/app

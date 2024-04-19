@@ -989,10 +989,10 @@ def get_pool_posts_around(post: model.Post) -> List[PoolPostsAround]:
         if index_in_pool < len(pool.posts) - 1:
             next_post = pool.posts[index_in_pool + 1]
             last_post = pool.posts[-1]
-        
+
         around = PoolPostsAround(pool, first_post, prev_post, next_post, last_post)
         results.append(around)
-    
+
     return results
 
 
