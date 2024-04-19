@@ -1,5 +1,7 @@
 from typing import Callable, Dict, Optional, Tuple
 
+import sqlalchemy as sa
+
 from szurubooru.search import criteria, tokens
 from szurubooru.search.query import SearchQuery
 from szurubooru.search.typing import SaColumn, SaQuery
@@ -23,6 +25,21 @@ class BaseSearchConfig:
 
     def create_around_query(self) -> SaQuery:
         raise NotImplementedError()
+
+    def create_around_filter_queries(self, filter_query: SaQuery, entity_id: int) -> Tuple[SaQuery, SaQuery]:
+        prev_filter_query = (
+            filter_query.filter(self.id_column > entity_id)
+            .order_by(None)
+            .order_by(sa.func.abs(self.id_column - entity_id).asc())
+            .limit(1)
+        )
+        next_filter_query = (
+            filter_query.filter(self.id_column < entity_id)
+            .order_by(None)
+            .order_by(sa.func.abs(self.id_column - entity_id).asc())
+            .limit(1)
+        )
+        return (prev_filter_query, next_filter_query)
 
     def finalize_query(self, query: SaQuery) -> SaQuery:
         return query
