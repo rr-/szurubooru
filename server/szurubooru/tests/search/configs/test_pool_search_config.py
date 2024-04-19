@@ -423,8 +423,8 @@ def test_sort_by_category(
 ):
     cat1 = pool_category_factory(name="cat1")
     cat2 = pool_category_factory(name="cat2")
-    pool1 = pool_factory(id=1, names=["t1"], category=cat2)
-    pool2 = pool_factory(id=2, names=["t2"], category=cat2)
+    pool2 = pool_factory(id=1, names=["t2"], category=cat2)
+    pool1 = pool_factory(id=2, names=["t1"], category=cat2)
     pool3 = pool_factory(id=3, names=["t3"], category=cat1)
     db.session.add_all([pool1, pool2, pool3])
     db.session.flush()
