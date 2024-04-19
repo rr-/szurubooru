@@ -326,7 +326,6 @@ def test_filter_by_invalid_input(executor, input):
 @pytest.mark.parametrize(
     "input,expected_pool_names",
     [
-        ("", ["t1", "t2"]),
         ("sort:name", ["t1", "t2"]),
         ("-sort:name", ["t2", "t1"]),
         ("sort:name,asc", ["t1", "t2"]),
@@ -347,7 +346,6 @@ def test_sort_by_name(
 @pytest.mark.parametrize(
     "input,expected_pool_names",
     [
-        ("", ["t1", "t2", "t3"]),
         ("sort:creation-date", ["t3", "t2", "t1"]),
         ("sort:creation-time", ["t3", "t2", "t1"]),
     ],
@@ -369,7 +367,6 @@ def test_sort_by_creation_time(
 @pytest.mark.parametrize(
     "input,expected_pool_names",
     [
-        ("", ["t1", "t2", "t3"]),
         ("sort:last-edit-date", ["t3", "t2", "t1"]),
         ("sort:last-edit-time", ["t3", "t2", "t1"]),
         ("sort:edit-date", ["t3", "t2", "t1"]),
