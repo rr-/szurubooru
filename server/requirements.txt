@@ -3,7 +3,7 @@ certifi>=2017.11.5
 coloredlogs==5.0
 heif-image-plugin==0.3.2
 numpy>=1.8.2
-pillow-avif-plugin>=1.1.0
+pillow-avif-plugin~=1.1.0
 pillow>=4.3.0
 psycopg2-binary>=2.6.1
 pyheif==0.6.1
@@ -12,4 +12,4 @@ pyRFC3339>=1.0
 pytz>=2018.3
 pyyaml>=3.11
 SQLAlchemy>=1.0.12, <1.4
-youtube_dl
+yt-dlp

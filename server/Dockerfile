@@ -23,15 +23,15 @@ RUN apk --no-cache add \
         py3-pillow \
         py3-pynacl \
         py3-tz \
-        py3-pyrfc3339 \
- && pip3 install --no-cache-dir --disable-pip-version-check \
+        py3-pyrfc3339
+RUN pip3 install --no-cache-dir --disable-pip-version-check \
         "alembic>=0.8.5" \
         "coloredlogs==5.0" \
         "pyheif==0.6.1" \
         "heif-image-plugin>=0.3.2" \
-        youtube_dl \
-        "pillow-avif-plugin>=1.1.0" \
- && apk --no-cache del py3-pip
+        yt-dlp \
+        "pillow-avif-plugin~=1.1.0"
+RUN apk --no-cache del py3-pip
 
 COPY ./ /opt/app/
 RUN rm -rf /opt/app/szurubooru/tests
