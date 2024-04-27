@@ -65,6 +65,7 @@ class HomeView {
                 () => {
                     return [window.innerWidth * 0.8, window.innerHeight * 0.7];
                 },
+                null,
                 "fit-both"
             );
 
