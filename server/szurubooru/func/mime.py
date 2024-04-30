@@ -1,5 +1,32 @@
 import re
+from collections import ChainMap
 from typing import Optional
+
+MIME_TYPES_MAP = {
+    "image": {
+        "image/gif": "gif",
+        "image/jpeg": "jpg",
+        "image/png": "png",
+        "image/webp": "webp",
+        "image/bmp": "bmp",
+        "image/avif": "avif",
+        "image/heif": "heif",
+        "image/heic": "heic",
+    },
+    "video": {
+        "application/ogg": None,
+        "video/mp4": "mp4",
+        "video/quicktime": "mov",
+        "video/webm": "webm",
+    },
+    "flash": {
+        "application/x-shockwave-flash": "swf"
+    },
+    "other": {
+        "application/octet-stream": "dat",
+    },
+}
+MIME_EXTENSIONS_MAP = ChainMap(*MIME_TYPES_MAP.values())
 
 
 def get_mime_type(content: bytes) -> str:
@@ -46,48 +73,19 @@ def get_mime_type(content: bytes) -> str:
 
 
 def get_extension(mime_type: str) -> Optional[str]:
-    extension_map = {
-        "application/x-shockwave-flash": "swf",
-        "image/gif": "gif",
-        "image/jpeg": "jpg",
-        "image/png": "png",
-        "image/webp": "webp",
-        "image/bmp": "bmp",
-        "image/avif": "avif",
-        "image/heif": "heif",
-        "image/heic": "heic",
-        "video/mp4": "mp4",
-        "video/quicktime": "mov",
-        "video/webm": "webm",
-        "application/octet-stream": "dat",
-    }
-    return extension_map.get((mime_type or "").strip().lower(), None)
+    return MIME_EXTENSIONS_MAP.get((mime_type or "").strip().lower(), None)
 
 
 def is_flash(mime_type: str) -> bool:
-    return mime_type.lower() == "application/x-shockwave-flash"
+    return mime_type.lower() in MIME_TYPES_MAP["flash"]
 
 
 def is_video(mime_type: str) -> bool:
-    return mime_type.lower() in (
-        "application/ogg",
-        "video/mp4",
-        "video/quicktime",
-        "video/webm",
-    )
+    return mime_type.lower() in MIME_TYPES_MAP["video"]
 
 
 def is_image(mime_type: str) -> bool:
-    return mime_type.lower() in (
-        "image/jpeg",
-        "image/png",
-        "image/gif",
-        "image/webp",
-        "image/bmp",
-        "image/avif",
-        "image/heif",
-        "image/heic",
-    )
+    return mime_type.lower() in MIME_TYPES_MAP["image"]
 
 
 def is_animated_gif(content: bytes) -> bool:
