@@ -48,11 +48,22 @@ class FileDropperControl extends events.EventTarget {
             this._urlInputNode.addEventListener("keydown", (e) =>
                 this._evtUrlInputKeyDown(e)
             );
+            this._urlInputNode.addEventListener("paste", (e) => {
+                // document.onpaste is used on the post-upload page.
+                // And this event is used on the post edit page.
+                if (document.getElementById("post-upload")) return;
+                this._evtPaste(e)
+            });
         }
         if (this._urlConfirmButtonNode) {
             this._urlConfirmButtonNode.addEventListener("click", (e) =>
                 this._evtUrlConfirmButtonClick(e)
             );
+        }
+
+        document.onpaste = (e) => {
+            if (!document.getElementById("post-upload")) return;
+            this._evtPaste(e)
         }
 
         this._originalHtml = this._dropperNode.innerHTML;
@@ -127,6 +138,17 @@ class FileDropperControl extends events.EventTarget {
             window.alert("Cannot select multiple files.");
         }
         this._emitFiles(e.dataTransfer.files);
+    }
+
+    _evtPaste(e) {
+        const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+        const fileList = Array.from(items).map((x) => x.getAsFile()).filter(f => f);
+
+        if (!this._options.allowMultiple && fileList.length > 1) {
+            window.alert("Cannot select multiple files.");
+        } else if (fileList.length > 0) {
+            this._emitFiles(fileList);
+        }
     }
 
     _evtUrlInputKeyDown(e) {
