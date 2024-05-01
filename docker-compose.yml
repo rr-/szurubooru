@@ -32,6 +32,7 @@ services:
       - server
     environment:
       BACKEND_HOST: server
+      BACKEND_PORT: 6666
       BASE_URL:
     volumes:
       - "${MOUNT_DATA}:/data:ro"
