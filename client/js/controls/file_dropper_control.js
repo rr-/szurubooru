@@ -48,6 +48,12 @@ class FileDropperControl extends events.EventTarget {
             this._urlInputNode.addEventListener("keydown", (e) =>
                 this._evtUrlInputKeyDown(e)
             );
+            this._urlInputNode.addEventListener("paste", (e) => {
+                // document.onpaste is used on the post-upload page.
+                // And this event is used on the post edit page.
+                if (document.getElementById("post-upload")) return;
+                this._evtPaste(e)
+            });
         }
         if (this._urlConfirmButtonNode) {
             this._urlConfirmButtonNode.addEventListener("click", (e) =>
