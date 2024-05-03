@@ -127,11 +127,38 @@ with `--no-cache`.*
     If you want to host your website on, (`http://example.com/`) but want
     to serve the images on a different domain, (`http://static.example.com/`)
     then you can run the backend container with an additional environment
-    variable `DATA_URL=http://static.example.com/`. Make sure that this
+    variable in the docker-compose.yml e.g.:
+```
+  server:
+    build: server
+    depends_on:
+      - sql
+    environment:
+      DATA_URL: "https://static.your_domain.com/"
+
+```
+    `DATA_URL=http://static.example.com/`. Make sure that this
     additional host has access contents to the `/data` volume mounted in the
     backend.
 
-3. **Setting a specific base URI for proxying**
+    Example nginx config for static images.
+    ```
+server {
+  listen 80;
+  server_name static.your_domain.com;
+  client_body_timeout 30s;
+  server_tokens off;
+  root path_to_your_data;
+  location / {
+  try_files $uri $uri/ =404;
+  #autoindex on;
+  }
+  error_log   /var/log/nginx/static.your_domain.com_error.log error;
+  access_log  /var/log/nginx/static.your_domain.com_access.log;
+}
+    ```
+
+4. **Setting a specific base URI for proxying**
 
     Some users may wish to access the service at a different base URI, such
     as `http://example.com/szuru/`, commonly when sharing multiple HTTP
@@ -159,7 +186,7 @@ with `--no-cache`.*
     }
     ```
 
-4. **Preparing for production**
+5. **Preparing for production**
 
     If you plan on using szurubooru in a production setting, you may opt to
     use a reverse proxy for added security and caching capabilities. Start
