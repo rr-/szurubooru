@@ -460,6 +460,7 @@ function getTemplate(templatePath) {
             makeCssName: misc.makeCssName,
             makeNumericInput: makeNumericInput,
             formatClientLink: uri.formatClientLink,
+            escapeTagName: uri.escapeTagName,
         });
         return htmlToDom(templateFactory(ctx));
     };
