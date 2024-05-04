@@ -271,7 +271,7 @@ class Post extends events.EventTarget {
         if (this._newContent) {
             files.content = this._newContent;
         }
-        if (this._newThumbnail !== undefined && this._newThumbnail !== null) {
+        if (this._newThumbnail !== undefined) {
             files.thumbnail = this._newThumbnail;
         }
         if (this._source !== this._orig._source) {

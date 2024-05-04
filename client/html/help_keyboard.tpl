@@ -20,6 +20,11 @@ shortcuts:</p>
         </tr>
 
         <tr>
+            <td><kbd>R</kbd></td>
+            <td>Go to random post</td>
+        </tr>
+
+        <tr>
             <td><kbd>F</kbd></td>
             <td>Cycle post fit mode</td>
         </tr>
@@ -36,7 +41,7 @@ shortcuts:</p>
 
         <tr>
             <td><kbd>Delete</kbd></td>
-            <td>Delete post (while in edit mode)</td>
+            <td>(In edit mode) delete post</td>
         </tr>
     </tbody>
 </table>

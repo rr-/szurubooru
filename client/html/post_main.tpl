@@ -29,7 +29,20 @@
                     <span class='vim-nav-hint'>Next post &gt;</span>
                 </a>
             </article>
-            <% if (ctx.canEditPosts || ctx.canDeletePosts || ctx.canFeaturePosts) { %>
+            <article class='random-post'>
+                <% if (ctx.randomPostId) { %>
+                    <% if (ctx.editMode) { %>
+                        <a rel='next' href='<%= ctx.getPostEditUrl(ctx.randomPostId, ctx.parameters) %>'>
+                    <% } else { %>
+                        <a rel='next' href='<%= ctx.getPostUrl(ctx.randomPostId, ctx.parameters) %>'>
+                    <% } %>
+                <% } else { %>
+                    <a rel='next' class='inactive'>
+                <% } %>
+                    <i class='fa fa-random'></i>
+                    <span class='vim-nav-hint'>Random post</span>
+                </a>
+            </article>
             <article class='edit-post'>
                 <% if (ctx.editMode) { %>
                     <a href='<%= ctx.getPostUrl(ctx.post.id, ctx.parameters) %>'>
@@ -37,13 +50,16 @@
                         <span class='vim-nav-hint'>Back to view mode</span>
                     </a>
                 <% } else { %>
-                    <a href='<%= ctx.getPostEditUrl(ctx.post.id, ctx.parameters) %>'>
-                    <i class='fa fa-pencil'></i>
-                    <span class='vim-nav-hint'>Edit post</span>
+                    <% if (ctx.canEditPosts || ctx.canDeletePosts || ctx.canFeaturePosts) { %>
+                        <a href='<%= ctx.getPostEditUrl(ctx.post.id, ctx.parameters) %>'>
+                    <% } else { %>
+                        <a class='inactive'>
+                    <% } %>
+                        <i class='fa fa-pencil'></i>
+                        <span class='vim-nav-hint'>Edit post</span>
                     </a>
                 <% } %>
             </article>
-            <% } %>
         </nav>
 
         <div class='sidebar-container'></div>
@@ -52,15 +68,13 @@
     <div class='content'>
         <div class='post-container'></div>
 
-        <div class='after-mobile-controls'>
-            <% if (ctx.canCreateComments) { %>
-                <h2>Add comment</h2>
-                <div class='comment-form-container'></div>
-            <% } %>
+        <% if (ctx.canListComments) { %>
+            <div class='comments-container'></div>
+        <% } %>
 
-            <% if (ctx.canListComments) { %>
-                <div class='comments-container'></div>
-            <% } %>
-        </div>
+        <% if (ctx.canCreateComments) { %>
+            <h2>Add comment</h2>
+            <div class='comment-form-container'></div>
+        <% } %>
     </div>
 </div>

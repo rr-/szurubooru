@@ -197,8 +197,11 @@ class PostsHeaderView extends events.EventTarget {
                 this._evtSafetyButtonClick(e)
             );
         }
-        this._formNode.addEventListener("submit", (e) =>
-            this._evtFormSubmit(e)
+
+        this._formNode.addEventListener('submit', e =>
+            this._evtFormSubmit(e));
+        this._randomizeButtonNode.addEventListener('click', e =>
+            this._evtRandomizeButtonClick(e)
         );
 
         this._bulkEditors = [];
@@ -256,6 +259,10 @@ class PostsHeaderView extends events.EventTarget {
         return this._hostNode.querySelector("form [name=search-text]");
     }
 
+    get _randomizeButtonNode() {
+        return this._hostNode.querySelector('#randomize-button');
+    }
+    
     get _bulkEditTagsNode() {
         return this._hostNode.querySelector(".bulk-edit-tags");
     }
@@ -314,9 +321,21 @@ class PostsHeaderView extends events.EventTarget {
         this._navigate();
     }
 
+    _evtRandomizeButtonClick(e) {
+        e.preventDefault();
+        if (!this._queryInputNode.value.includes('sort:random')) {
+            this._queryInputNode.value += ' sort:random';
+        }
+        this._ctx.parameters.cachenumber = Math.round(Math.random() * 1000);
+        this._navigate();
+    }
+
     _navigate() {
         this._autoCompleteControl.hide();
-        let parameters = { query: this._queryInputNode.value };
+        let parameters = {
+            query: this._queryInputNode.value,
+            cachenumber: this._ctx.parameters.cachenumber,
+        };
 
         // convert falsy values to an empty string "" so that we can correctly compare with the current query
         const prevQuery = this._ctx.parameters.query

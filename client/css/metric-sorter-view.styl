@@ -1,0 +1,56 @@
+@import colors
+
+#metric-sorter
+    width: 100%
+    @media (max-width: 1000px)
+        padding: 0 !important
+        background-color: white !important
+        h2
+            display: none
+        .messages .message
+            margin-top: 0.5em
+            margin-bottom: 0
+    form
+        width: 100%
+    .posts-container
+        display: flex
+        flex-wrap: wrap
+        margin-bottom: 1em
+        @media (max-width: 1000px)
+            margin-left: -1em
+            margin-right: -1em
+            margin-top: -1em
+        .left-post-container, .right-post-container
+            flex: 1
+            width: 100%
+    .append
+        color: $inactive-link-color
+    .sorting-buttons
+        display: flex
+        @media (min-width: 1000px)
+            padding: 0 0.5em
+        @media (max-width: 1000px)
+            padding: 0.5em 1em
+            width: 100%
+        .compare-block
+            margin: auto
+            button
+                width: 1.3em
+                height: 1.3em
+                font-size: 200%
+                @media (min-width: 1000px)
+                    padding: 0
+                    padding-top: 0.05em
+                @media (max-width: 1000px)
+                    padding: 0
+                    i
+                        transform: rotate(90deg)
+
+            @media (max-width: 1000px)
+                display: flex
+                .save-btn
+                    margin: auto
+                    margin-right: 1em
+                .skip-btn
+                    margin: auto
+                    margin-left: 1em

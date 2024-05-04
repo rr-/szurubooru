@@ -1,0 +1,49 @@
+@import colors
+
+.metric-controls
+    margin-left: 1.4em
+    display: inline-block
+    color: $inactive-link-color
+
+hr.separator
+    display: none
+
+ul.compact-unset-metrics, ul.compact-post-metrics
+    width: 100%
+    margin: 0.5em 0 0 0
+    padding: 0
+    li
+        margin: 0
+        width: 100%
+        line-height: 140%
+        overflow: hidden
+        text-overflow: ellipsis
+        transition: background-color 0.5s linear
+        a
+            display: inline
+        a:focus
+            outline: 0
+            box-shadow: inset 0 0 0 2px $main-color
+        .remove-metric
+            color: $inactive-link-color
+            unselectable()
+            margin-right: 0.5em
+    i
+        padding-right: 0.4em
+    .metric-bounds
+        color: $inactive-link-color
+        unselectable()
+        font-size: 90%
+        margin-left: 0.7em
+
+ul.compact-post-metrics
+    input[type=number]
+        margin-left: 0.5em
+        margin-bottom: 0.5em
+        width: 4em
+        min-width: 60px
+    label
+        display: none
+    .range-delimiter
+        margin-left: 0.5em
+        color: $inactive-link-color

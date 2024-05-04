@@ -86,6 +86,12 @@ class PostMainView {
             }
         };
 
+        const showRandomImage = () => {
+            if (ctx.randomPostId) {
+                router.show(ctx.getPostUrl(ctx.randomPostId, ctx.parameters));
+            }
+        };
+
         keyboard.bind("e", () => {
             if (ctx.editMode) {
                 router.show(uri.formatClientLink("post", ctx.post.id));
@@ -95,6 +101,7 @@ class PostMainView {
         });
         keyboard.bind(["a", "left"], showPreviousImage);
         keyboard.bind(["d", "right"], showNextImage);
+	    keyboard.bind("r", showRandomImage);
         keyboard.bind("del", (e) => {
             if (ctx.editMode) {
                 this.sidebarControl._evtDeleteClick(e);
@@ -105,15 +112,21 @@ class PostMainView {
             postContainerNode,
             () => {
                 if (!ctx.editMode) {
-                    showPreviousImage();
+                    showNextImage()
                 }
             },
             () => {
                 if (!ctx.editMode) {
-                    showNextImage();
+                    showPreviousImage()
+                }
+            },
+            () => {},
+            (e) => {
+                if (!ctx.editMode && e.startScrollY === 0) {
+                    showRandomImage()
                 }
             }
-        );
+        )
     }
 
     _installSidebar(ctx) {

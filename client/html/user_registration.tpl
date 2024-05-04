@@ -24,6 +24,15 @@
                 }) %>
             </li>
             <li>
+                <%= ctx.makeCodeInput({
+                    text: 'Entry code',
+                    name: 'code',
+                    placeholder: 'Secret code',
+                    required: true,
+                    pattern: ctx.codePattern,
+                }) %>
+            </li>
+            <li>
                 <%= ctx.makeEmailInput({
                     text: 'Email',
                     name: 'email',

@@ -16,7 +16,7 @@ class PostList extends AbstractList {
         );
     }
 
-    static search(text, offset, limit, fields) {
+    static search(text, offset, limit, fields, cachenumber) {
         return api
             .get(
                 uri.formatApiLink("posts", {
@@ -24,6 +24,7 @@ class PostList extends AbstractList {
                     offset: offset,
                     limit: limit,
                     fields: fields.join(","),
+                    cachenumber: cachenumber,
                 })
             )
             .then((response) => {

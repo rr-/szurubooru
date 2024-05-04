@@ -37,7 +37,6 @@
         - [Creating post](#creating-post)
         - [Updating post](#updating-post)
         - [Getting post](#getting-post)
-        - [Getting around post](#getting-around-post)
         - [Deleting post](#deleting-post)
         - [Merging posts](#merging-posts)
         - [Rating post](#rating-post)
@@ -54,7 +53,7 @@
         - [Deleting pool category](#deleting-pool-category)
         - [Setting default pool category](#setting-default-pool-category)
     - Pools
-        - [Listing pools](#listing-pools)
+        - [Listing pools](#listing-pool)
         - [Creating pool](#creating-pool)
         - [Updating pool](#updating-pool)
         - [Getting pool](#getting-pool)
@@ -165,9 +164,9 @@ way. The files, however, should be passed as regular fields appended with a
 accepts a file named `content`, the client should pass
 `{"contentUrl":"http://example.com/file.jpg"}` as a part of the JSON message
 body. When creating or updating post content using this method, the server can
-also be configured to employ [yt-dlp](https://github.com/yt-dlp/yt-dlp) to
-download content from popular sites such as youtube, gfycat, etc. Access to
-yt-dlp can be configured with the `'uploads:use_downloader'` permission
+also be configured to employ [youtube-dl](https://github.com/ytdl-org/youtube-dl)
+to download content from popular sites such as youtube, gfycat, etc. Access to
+youtube-dl can be configured with the `'uploads:use_downloader'` permission
 
 Finally, in some cases the user might want to reuse one file between the
 requests to save the bandwidth (for example, reverse search + consecutive
@@ -323,7 +322,7 @@ data.
     {
         "name":  <name>,
         "color": <color>,
-        "order": <order>
+        "order": <order>  // optional
     }
     ```
 
@@ -952,29 +951,6 @@ data.
 
     Retrieves information about an existing post.
 
-## Getting around post
-- **Request**
-
-    `GET /post/<id>/around`
-
-- **Output**
-
-    ```json5
-    {
-        "prev":  <post-resource>,
-        "next":  <post-resource>
-    }
-    ```
-
-- **Errors**
-
-    - the post does not exist
-    - privileges are too low
-
-- **Description**
-
-    Retrieves information about posts that are before or after an existing post.
-
 ## Deleting post
 - **Request**
 
@@ -1389,7 +1365,7 @@ data.
 ## Creating pool
 - **Request**
 
-    `POST /pool`
+    `POST /pools/create`
 
 - **Input**
 
@@ -2491,7 +2467,7 @@ One file together with its metadata posted to the site.
 ## Micro post
 **Description**
 
-A [post resource](#post) stripped down to `id` and `thumbnailUrl` fields.
+A [post resource](#post) stripped down to `name` and `thumbnailUrl` fields.
 
 ## Note
 **Description**

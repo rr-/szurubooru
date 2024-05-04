@@ -15,6 +15,7 @@ class Api extends events.EventTarget {
         this.user = null;
         this.userName = null;
         this.userPassword = null;
+        this.userCode = null;
         this.token = null;
         this.cache = {};
         this.allRanks = [
@@ -90,6 +91,10 @@ class Api extends events.EventTarget {
 
     getPasswordRegex() {
         return remoteConfig.passwordRegex;
+    }
+
+    getCodeRegex() {
+        return remoteConfig.codeRegex;
     }
 
     getUserNameRegex() {

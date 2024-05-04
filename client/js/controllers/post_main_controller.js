@@ -51,6 +51,9 @@ class PostMainController extends BasePostController {
                     nextPostId: aroundResponse.next
                         ? aroundResponse.next.id
                         : null,
+                    randomPostId: aroundResponse.random 
+                        ? aroundResponse.random.id
+                        : null,
                     canEditPosts: api.hasPrivilege("posts:edit"),
                     canDeletePosts: api.hasPrivilege("posts:delete"),
                     canFeaturePosts: api.hasPrivilege("posts:feature"),
@@ -169,22 +172,22 @@ class PostMainController extends BasePostController {
         this._view.sidebarControl.disableForm();
         this._view.sidebarControl.clearMessages();
         const post = e.detail.post;
-        if (e.detail.safety !== undefined && e.detail.safety !== null) {
+        if (e.detail.safety !== undefined) {
             post.safety = e.detail.safety;
         }
-        if (e.detail.flags !== undefined && e.detail.flags !== null) {
+        if (e.detail.flags !== undefined) {
             post.flags = e.detail.flags;
         }
-        if (e.detail.relations !== undefined && e.detail.relations !== null) {
+        if (e.detail.relations !== undefined) {
             post.relations = e.detail.relations;
         }
-        if (e.detail.content !== undefined && e.detail.content !== null) {
+        if (e.detail.content !== undefined) {
             post.newContent = e.detail.content;
         }
-        if (e.detail.thumbnail !== undefined && e.detail.thumbnail !== null) {
+        if (e.detail.thumbnail !== undefined) {
             post.newThumbnail = e.detail.thumbnail;
         }
-        if (e.detail.source !== undefined && e.detail.source !== null) {
+        if (e.detail.source !== undefined) {
             post.source = e.detail.source;
         }
         post.save().then(

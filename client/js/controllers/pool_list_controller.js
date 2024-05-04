@@ -43,8 +43,6 @@ class PoolListController {
         this._headerView.addEventListener(
             "submit",
             (e) => this._evtSubmit(e),
-        );
-        this._headerView.addEventListener(
             "navigate",
             (e) => this._evtNavigate(e)
         );

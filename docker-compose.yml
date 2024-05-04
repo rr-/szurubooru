@@ -2,32 +2,39 @@
 ##
 ## Use this as a template to set up docker-compose, or as guide to set up other
 ## orchestration services
-version: '2'
+version: '3'
 
 services:
 
   server:
-    image: szurubooru/server:latest
-    depends_on:
-      - sql
+    # image: szurubooru/server:latest
+    build:
+      context: ./server
+#    depends_on:
+#      - sql
     environment:
       ## These should be the names of the dependent containers listed below,
       ## or FQDNs/IP addresses if these services are running outside of Docker
-      POSTGRES_HOST: sql
+      POSTGRES_HOST: 192.168.1.17
       ## Credentials for database:
-      POSTGRES_USER:
-      POSTGRES_PASSWORD:
+      POSTGRES_USER: stash_u
+      POSTGRES_PASSWORD: tGmwRgEHbziNNEdsvcXynudFayVayzBybFvmMw
       ## Commented Values are Default:
-      #POSTGRES_DB: defaults to same as POSTGRES_USER
-      #POSTGRES_PORT: 5432
+      POSTGRES_DB: stash_db
+      POSTGRES_PORT: 5432
       #LOG_SQL: 0 (1 for verbose SQL logs)
       THREADS:
     volumes:
       - "${MOUNT_DATA}:/data"
       - "./server/config.yaml:/opt/app/config.yaml"
+      - "${MOUNT_SQL}:/var/lib/postgresql/data"
+    networks:
+       - br0
 
   client:
-    image: szurubooru/client:latest
+    # image: szurubooru/client:latest
+    build:
+      context: ./client
     depends_on:
       - server
     environment:
@@ -36,13 +43,22 @@ services:
     volumes:
       - "${MOUNT_DATA}:/data:ro"
     ports:
-      - "${PORT}:80"
+      - "${PORT}:8069"
+    networks:
+      - br0
 
-  sql:
-    image: postgres:11-alpine
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER:
-      POSTGRES_PASSWORD:
-    volumes:
-      - "${MOUNT_SQL}:/var/lib/postgresql/data"
+  #sql:
+   # image: postgres:11-alpine
+    #restart: unless-stopped
+    #environment:
+     # POSTGRES_USER: stash_u
+      #POSTGRES_PASSWORD: TeKeuubttpyLtYHtkdvixgvyKqvfmeWuSkXcKp
+    #volumes:
+     # - "${MOUNT_SQL}:/var/lib/postgresql/data"
+    #networks:
+     # - temposvision
+
+networks:
+  br0:
+    external: true
+    name: br0

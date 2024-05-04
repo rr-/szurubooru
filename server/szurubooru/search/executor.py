@@ -37,8 +37,7 @@ class Executor:
         self.parser = parser.Parser()
 
     def get_around(
-        self, query_text: str, entity_id: int
-    ) -> Tuple[model.Base, model.Base]:
+        self, query_text: str, entity_id: int) -> Tuple[model.Base, model.Base, model.Base]:
         search_query = self.parser.parse(query_text)
         self.config.on_search_query_parsed(search_query)
         filter_query = self.config.create_around_query().options(
@@ -57,11 +56,15 @@ class Executor:
             filter_query.filter(self.config.id_column < entity_id)
             .order_by(None)
             .order_by(sa.func.abs(self.config.id_column - entity_id).asc())
-            .limit(1)
-        )
+            .limit(1))
+        # random post
+        if 'sort:random' not in query_text:
+            query_text = query_text + ' sort:random'
+        count, random_entities = self.execute(query_text, 0, 1)
         return (
             prev_filter_query.one_or_none(),
             next_filter_query.one_or_none(),
+            random_entities[0] if random_entities else None
         )
 
     def get_around_and_serialize(
@@ -76,6 +79,7 @@ class Executor:
         return {
             "prev": serializer(entities[0]),
             "next": serializer(entities[1]),
+            'random': serializer(entities[2]),
         }
 
     def execute(
@@ -94,7 +98,7 @@ class Executor:
                 disable_eager_loads = True
 
         key = (id(self.config), hash(search_query), offset, limit)
-        if cache.has(key):
+        if not disable_eager_loads and cache.has(key):
             return cache.get(key)
 
         filter_query = self.config.create_filter_query(disable_eager_loads)

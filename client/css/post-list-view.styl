@@ -56,8 +56,8 @@
 
             .edit-overlay
                 position: absolute
-                top: 0.5em
-                left: 0.5em
+                top: 0em
+                left: 0em
 
                 .tag-flipper
                     display: inline-block
@@ -116,7 +116,7 @@
 
                 .delete-flipper
                     display: inline-block
-                    padding: 0.5em
+                    padding: 10em
                     box-sizing: border-box
                     border: 0
                     &:after
@@ -133,7 +133,7 @@
                             font-family: FontAwesome;
                             content: "\f1f8"; // fa-trash
                     &:not(.delete)
-                        background: rgba(200, 200, 200, 0.7)
+                        background: rgba(200, 200, 200, 0.2)
                         &:after
                             color: white
                             content: '-'
@@ -187,9 +187,6 @@
             vertical-align: top
         @media (max-width: 1000px)
             display: block
-            &.bulk-edit-tags:not(.opened), &.bulk-edit-safety:not(.opened)
-                float: left
-                margin-right: 1em
     input
         margin-bottom: 0.25em
         margin-right: 0.25em

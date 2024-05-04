@@ -2,7 +2,7 @@
 set -e
 cd /opt/app
 
-alembic upgrade head
+alembic upgrade heads
 
-echo "Starting szurubooru API on port ${PORT} - Running on ${THREADS} threads"
-exec waitress-serve-3 --port ${PORT} --threads ${THREADS} szurubooru.facade:app
+echo "Starting szurubooru API on port ${PORT}"
+exec waitress-serve-3 --port ${PORT} szurubooru.facade:app

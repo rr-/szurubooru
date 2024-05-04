@@ -29,6 +29,7 @@ class UserRegistrationController {
         user.name = e.detail.name;
         user.email = e.detail.email;
         user.password = e.detail.password;
+        user.code = e.detail.code;
         const isLoggedIn = api.isLoggedIn();
         user.save()
             .then(() => {

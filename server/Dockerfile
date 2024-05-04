@@ -24,14 +24,21 @@ RUN apk --no-cache add \
         py3-pynacl \
         py3-tz \
         py3-pyrfc3339
-RUN pip3 install --no-cache-dir --disable-pip-version-check \
+		
+# Upgrade pip and setuptools
+RUN pip3 install --no-cache-dir --disable-pip-version-check --upgrade pip setuptools wheel
+
+# Install required Python packages with PEP 517 disabled
+RUN pip3 install --no-cache-dir --disable-pip-version-check --no-build-isolation \
         "alembic>=0.8.5" \
         "coloredlogs==5.0" \
         "pyheif==0.6.1" \
         "heif-image-plugin>=0.3.2" \
-        yt-dlp \
-        "pillow-avif-plugin~=1.1.0"
-RUN apk --no-cache del py3-pip
+        youtube_dl \
+        "pillow-avif-plugin>=1.1.0"
+
+# Debugging: Print the installed packages
+RUN apk list --installed
 
 COPY ./ /opt/app/
 RUN rm -rf /opt/app/szurubooru/tests
@@ -75,6 +82,8 @@ RUN apk --no-cache add \
  && addgroup -g ${PGID} app \
  && adduser -SDH -h /opt/app -g '' -G app -u ${PUID} app \
  && chown -R app:app /opt/app /data
+ 
+RUN chmod +x /opt/app/docker-start.sh
 
 USER app
 CMD ["/opt/app/docker-start.sh"]

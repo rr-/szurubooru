@@ -15,6 +15,7 @@ class RegistrationView extends events.EventTarget {
             template({
                 userNamePattern: api.getUserNameRegex(),
                 passwordPattern: api.getPasswordRegex(),
+                codePattern: api.getCodeRegex(),
             })
         );
         views.syncScrollPosition();
@@ -45,6 +46,7 @@ class RegistrationView extends events.EventTarget {
                 detail: {
                     name: this._userNameFieldNode.value,
                     password: this._passwordFieldNode.value,
+                    code: this._codeFieldNode.value,
                     email: this._emailFieldNode.value,
                 },
             })
@@ -61,6 +63,10 @@ class RegistrationView extends events.EventTarget {
 
     get _passwordFieldNode() {
         return this._formNode.querySelector("[name=password]");
+    }
+
+    get _codeFieldNode() {
+        return this._formNode.querySelector("[name=code]");
     }
 
     get _emailFieldNode() {

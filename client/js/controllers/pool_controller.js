@@ -91,16 +91,16 @@ class PoolController {
     _evtUpdate(e) {
         this._view.clearMessages();
         this._view.disableForm();
-        if (e.detail.names !== undefined && e.detail.names !== null) {
+        if (e.detail.names !== undefined) {
             e.detail.pool.names = e.detail.names;
         }
-        if (e.detail.category !== undefined && e.detail.category !== null) {
+        if (e.detail.category !== undefined) {
             e.detail.pool.category = e.detail.category;
         }
-        if (e.detail.description !== undefined && e.detail.description !== null) {
+        if (e.detail.description !== undefined) {
             e.detail.pool.description = e.detail.description;
         }
-        if (e.detail.posts !== undefined && e.detail.posts !== null) {
+        if (e.detail.posts !== undefined) {
             e.detail.pool.posts.clear();
             for (let postId of e.detail.posts) {
                 e.detail.pool.posts.add(

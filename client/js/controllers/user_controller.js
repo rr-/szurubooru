@@ -175,21 +175,21 @@ class UserController {
         const isLoggedIn = api.isLoggedIn(e.detail.user);
         const infix = isLoggedIn ? "self" : "any";
 
-        if (e.detail.name !== undefined && e.detail.name !== null) {
+        if (e.detail.name !== undefined) {
             e.detail.user.name = e.detail.name;
         }
-        if (e.detail.email !== undefined && e.detail.email !== null) {
+        if (e.detail.email !== undefined) {
             e.detail.user.email = e.detail.email;
         }
-        if (e.detail.rank !== undefined && e.detail.rank !== null) {
+        if (e.detail.rank !== undefined) {
             e.detail.user.rank = e.detail.rank;
         }
 
-        if (e.detail.password !== undefined && e.detail.password !== null) {
+        if (e.detail.password !== undefined) {
             e.detail.user.password = e.detail.password;
         }
 
-        if (e.detail.avatarStyle !== undefined && e.detail.avatarStyle !== null) {
+        if (e.detail.avatarStyle !== undefined) {
             e.detail.user.avatarStyle = e.detail.avatarStyle;
             if (e.detail.avatarContent) {
                 e.detail.user.avatarContent = e.detail.avatarContent;
@@ -302,7 +302,7 @@ class UserController {
         this._view.clearMessages();
         this._view.disableForm();
 
-        if (e.detail.note !== undefined && e.detail.note !== null) {
+        if (e.detail.note !== undefined) {
             e.detail.userToken.note = e.detail.note;
         }
 
