@@ -193,7 +193,7 @@ class SelectedState extends ActiveState {
             [KEY_DOWN]: [0, delta],
             [KEY_RIGHT]: [delta, 0],
         };
-        if (Object.prototype.hasOwnProperty.call(offsetMap, e.witch)) {
+        if (Object.prototype.hasOwnProperty.call(offsetMap, e.which)) {
             e.stopPropagation();
             e.stopImmediatePropagation();
             e.preventDefault();
