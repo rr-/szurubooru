@@ -2,13 +2,6 @@
 
 const views = require("../util/views.js");
 
-const KEY_TAB = 9;
-const KEY_RETURN = 13;
-const KEY_DELETE = 46;
-const KEY_ESCAPE = 27;
-const KEY_UP = 38;
-const KEY_DOWN = 40;
-
 function _getSelectionStart(input) {
     if ("selectionStart" in input) {
         return input.selectionStart;
@@ -142,36 +135,36 @@ class AutoCompleteControl {
     }
 
     _evtKeyDown(e) {
-        const key = e.which;
+        const key = (e.key || "").replace("Arrow", "");
         const shift = e.shiftKey;
         let func = null;
         if (this._isVisible) {
-            if (key === KEY_ESCAPE) {
+            if (key === "Escape") {
                 func = () => {
                     this.hide();
                 };
-            } else if (key === KEY_TAB && shift) {
+            } else if (key === "Tab" && shift) {
                 func = () => {
                     this._selectPrevious();
                 };
-            } else if (key === KEY_TAB && !shift) {
+            } else if (key === "Tab" && !shift) {
                 func = () => {
                     this._selectNext();
                 };
-            } else if (key === KEY_UP) {
+            } else if (key === "Up") {
                 func = () => {
                     this._selectPrevious();
                 };
-            } else if (key === KEY_DOWN) {
+            } else if (key === "Down") {
                 func = () => {
                     this._selectNext();
                 };
-            } else if (key === KEY_RETURN && this._activeResult >= 0) {
+            } else if (key === "Enter" && this._activeResult >= 0) {
                 func = () => {
                     this._confirm(this._getActiveSuggestion());
                     this.hide();
                 };
-            } else if (key === KEY_DELETE && this._activeResult >= 0) {
+            } else if (key === "Delete" && this._activeResult >= 0) {
                 func = () => {
                     this._delete(this._getActiveSuggestion());
                     this.hide();
