@@ -10,9 +10,6 @@ const events = require("../events.js");
 const views = require("../util/views.js");
 const TagAutoCompleteControl = require("./tag_auto_complete_control.js");
 
-const KEY_SPACE = 32;
-const KEY_RETURN = 13;
-
 const SOURCE_INIT = "init";
 const SOURCE_IMPLICATION = "implication";
 const SOURCE_USER_INPUT = "user-input";
@@ -273,7 +270,7 @@ class TagInputControl extends events.EventTarget {
     }
 
     _evtInputKeyDown(e) {
-        if (e.which === KEY_RETURN || e.which === KEY_SPACE) {
+        if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
             this._hideAutoComplete();
             this.addTagByText(this._tagInputNode.value, SOURCE_USER_INPUT);

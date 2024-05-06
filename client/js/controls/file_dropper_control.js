@@ -5,8 +5,6 @@ const views = require("../util/views.js");
 
 const template = views.getTemplate("file-dropper");
 
-const KEY_RETURN = 13;
-
 class FileDropperControl extends events.EventTarget {
     constructor(target, options) {
         super();
@@ -152,7 +150,7 @@ class FileDropperControl extends events.EventTarget {
     }
 
     _evtUrlInputKeyDown(e) {
-        if (e.which !== KEY_RETURN) {
+        if (e.key !== "Enter") {
             return;
         }
         e.preventDefault();

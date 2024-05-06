@@ -11,15 +11,6 @@ const svgNS = "http://www.w3.org/2000/svg";
 const snapThreshold = 10;
 const circleSize = 10;
 
-const MOUSE_BUTTON_LEFT = 1;
-
-const KEY_LEFT = 37;
-const KEY_UP = 38;
-const KEY_RIGHT = 39;
-const KEY_DOWN = 40;
-const KEY_ESCAPE = 27;
-const KEY_RETURN = 13;
-
 function _getDistance(point1, point2) {
     return Math.sqrt(
         Math.pow(point1.x - point2.x, 2) + Math.pow(point1.y - point2.y, 2)
@@ -188,16 +179,17 @@ class SelectedState extends ActiveState {
     evtCanvasKeyDown(e) {
         const delta = e.ctrlKey ? 10 : 1;
         const offsetMap = {
-            [KEY_LEFT]: [-delta, 0],
-            [KEY_UP]: [0, -delta],
-            [KEY_DOWN]: [0, delta],
-            [KEY_RIGHT]: [delta, 0],
+            ["Left"]: [-delta, 0],
+            ["Up"]: [0, -delta],
+            ["Down"]: [0, delta],
+            ["Right"]: [delta, 0],
         };
-        if (Object.prototype.hasOwnProperty.call(offsetMap, e.witch)) {
+        const key = (e.key || "").replace("Arrow", "");
+        if (Object.prototype.hasOwnProperty.call(offsetMap, key)) {
             e.stopPropagation();
             e.stopImmediatePropagation();
             e.preventDefault();
-            const args = offsetMap[e.which];
+            const args = offsetMap[key];
             if (e.shiftKey) {
                 this._scaleEditedNote(...args);
             } else {
@@ -331,7 +323,7 @@ class MovingPointState extends ActiveState {
     }
 
     evtCanvasKeyDown(e) {
-        if (e.which === KEY_ESCAPE) {
+        if (e.key === "Escape") {
             this._notePoint.x = this._originalNotePoint.x;
             this._notePoint.y = this._originalNotePoint.y;
             this._control._state = new SelectedState(
@@ -364,7 +356,7 @@ class MovingNoteState extends ActiveState {
     }
 
     evtCanvasKeyDown(e) {
-        if (e.which === KEY_ESCAPE) {
+        if (e.key === "Escape") {
             for (let i of misc.range(this._note.polygon.length)) {
                 this._note.polygon.at(i).x = this._originalPolygon[i].x;
                 this._note.polygon.at(i).y = this._originalPolygon[i].y;
@@ -402,7 +394,7 @@ class ScalingNoteState extends ActiveState {
     }
 
     evtCanvasKeyDown(e) {
-        if (e.which === KEY_ESCAPE) {
+        if (e.key === "Escape") {
             for (let i of misc.range(this._note.polygon.length)) {
                 this._note.polygon.at(i).x = this._originalPolygon[i].x;
                 this._note.polygon.at(i).y = this._originalPolygon[i].y;
@@ -516,12 +508,12 @@ class DrawingPolygonState extends ActiveState {
     }
 
     evtCanvasKeyDown(e) {
-        if (e.which === KEY_ESCAPE) {
+        if (e.key === "Escape") {
             this._note.polygon.remove(this._note.polygon.secondLastPoint);
             if (this._note.polygon.length === 1) {
                 this._cancel();
             }
-        } else if (e.which === KEY_RETURN) {
+        } else if (e.key === "Enter") {
             this._finish();
         }
     }
@@ -683,7 +675,7 @@ class PostNotesOverlayControl extends events.EventTarget {
 
     _evtCanvasMouseDown(e) {
         e.preventDefault();
-        if (e.which !== MOUSE_BUTTON_LEFT) {
+        if (e.button !== 0) {
             return;
         }
         const hoveredNode = document.elementFromPoint(e.clientX, e.clientY);
