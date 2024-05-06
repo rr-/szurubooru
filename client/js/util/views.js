@@ -571,6 +571,11 @@ document.addEventListener("click", (e) => {
         e.preventDefault();
     }
 });
+document.addEventListener("auxclick", (e) => {
+    if (e.target.getAttribute("href") === "" && e.button === 1) {
+        e.preventDefault();
+    }
+});
 
 module.exports = {
     htmlToDom: htmlToDom,
