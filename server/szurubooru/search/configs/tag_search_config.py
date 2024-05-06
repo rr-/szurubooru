@@ -96,6 +96,50 @@ class TagSearchConfig(BaseSearchConfig):
                     ["implication-count"],
                     search_util.create_num_filter(model.Tag.implication_count),
                 ),
+                (
+                    ["suggested-by"],
+                    search_util.create_nested_filter(
+                        model.Tag.tag_id,
+                        model.TagSuggestion.child_id,
+                        model.TagSuggestion.parent_id,
+                        model.TagName.tag_id,
+                        model.TagName.name,
+                        search_util.create_str_filter,
+                    ),
+                ),
+                (
+                    ["suggests"],
+                    search_util.create_nested_filter(
+                        model.Tag.tag_id,
+                        model.TagSuggestion.parent_id,
+                        model.TagSuggestion.child_id,
+                        model.TagName.tag_id,
+                        model.TagName.name,
+                        search_util.create_str_filter,
+                    ),
+                ),
+                (
+                    ["implied-by"],
+                    search_util.create_nested_filter(
+                        model.Tag.tag_id,
+                        model.TagImplication.child_id,
+                        model.TagImplication.parent_id,
+                        model.TagName.tag_id,
+                        model.TagName.name,
+                        search_util.create_str_filter,
+                    ),
+                ),
+                (
+                    ["implies"],
+                    search_util.create_nested_filter(
+                        model.Tag.tag_id,
+                        model.TagImplication.parent_id,
+                        model.TagImplication.child_id,
+                        model.TagName.tag_id,
+                        model.TagName.name,
+                        search_util.create_str_filter,
+                    ),
+                ),
             ]
         )
 
