@@ -399,6 +399,11 @@ class ScalingNoteState extends ActiveState {
         }));
         this._originalMousePoint = mousePoint;
         this._originalSize = _getNoteSize(note);
+        this._origin = _getNoteCentroid(this._note);
+        this._scaleDirection = new Point(
+            mousePoint.x > this._origin.x ? 1 : -1,
+            mousePoint.y > this._origin.y ? 1 : -1
+        );
     }
 
     evtCanvasKeyDown(e) {
@@ -417,22 +422,22 @@ class ScalingNoteState extends ActiveState {
     evtCanvasMouseMove(e) {
         const mousePoint = this._getPointFromEvent(e);
         const originalMousePoint = this._originalMousePoint;
+        const origin = this._origin;
         const originalSize = this._originalSize;
+        const scaleDirection = this._scaleDirection;
+        const scale = new Point(
+            1 +
+                ((mousePoint.x - originalMousePoint.x) / originalSize.x) *
+                    scaleDirection.x,
+            1 +
+                ((mousePoint.y - originalMousePoint.y) / originalSize.y) *
+                    scaleDirection.y
+        );
         for (let i of misc.range(this._note.polygon.length)) {
-            const polygonPoint = this._note.polygon.at(i);
-            const originalPolygonPoint = this._originalPolygon[i];
-            polygonPoint.x =
-                originalMousePoint.x +
-                (originalPolygonPoint.x - originalMousePoint.x) *
-                    (1 +
-                        (mousePoint.x - originalMousePoint.x) /
-                            originalSize.x);
-            polygonPoint.y =
-                originalMousePoint.y +
-                (originalPolygonPoint.y - originalMousePoint.y) *
-                    (1 +
-                        (mousePoint.y - originalMousePoint.y) /
-                            originalSize.y);
+            const point = this._note.polygon.at(i);
+            const originalPoint = this._originalPolygon[i];
+            point.x = origin.x + (originalPoint.x - origin.x) * scale.x;
+            point.y = origin.y + (originalPoint.y - origin.y) * scale.y;
         }
     }
 
