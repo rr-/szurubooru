@@ -928,6 +928,12 @@ def search_by_image_exact(image_content: bytes) -> Optional[model.Post]:
 
 
 def search_by_image(image_content: bytes) -> List[Tuple[float, model.Post]]:
+    # Convert PSD files to PNG so pillow can open them
+    if image_content[0:4] == b"\x38\x42\x50\x53":
+        image = images.Image(image_content)
+        image.resize_fill(image.width, image.height)
+        image_content = image.content
+
     query_signature = image_hash.generate_signature(image_content)
     query_words = image_hash.generate_words(query_signature)
 
