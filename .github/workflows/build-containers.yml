@@ -59,7 +59,7 @@ jobs:
 
       - name: Build container
         run: >
-          docker buildx build --push
+          docker buildx build ${{ github.event_name != 'pull_request' && '--push' || '' }}
           --platform linux/amd64,linux/arm/v7,linux/arm64/v8
           --build-arg BUILD_INFO=v${{ steps.metadata.outputs.build_info }}
           --build-arg BUILD_DATE=${{ steps.metadata.outputs.build_date }}
@@ -117,7 +117,7 @@ jobs:
 
       - name: Build container
         run: >
-          docker buildx build --push
+          docker buildx build ${{ github.event_name != 'pull_request' && '--push' || '' }}
           --platform linux/amd64,linux/arm/v7,linux/arm64/v8
           --build-arg BUILD_INFO=v${{ steps.metadata.outputs.build_info }}
           --build-arg BUILD_DATE=${{ steps.metadata.outputs.build_date }}
