@@ -773,6 +773,45 @@ def test_update_post_content_convert_heif_to_png_when_processing(
     assert os.path.exists(generated_path)
 
 
+def test_update_post_content_with_exif_orientation(
+        tmpdir, config_injector, read_asset, post_factory):
+    # exif.jpg is a copy of jpeg.jpg,
+    # rotated counter-clockwise by 90 degrees,
+    # and assigned the EXIF Orientation tag "Rotate 90 CW"
+    config_injector(
+        {
+            "data_dir": str(tmpdir.mkdir("data")),
+            "thumbnails": {
+                "post_width": 300,
+                "post_height": 300,
+            },
+            "secret": "test",
+            "allow_broken_uploads": False,
+        }
+    )
+
+    post = post_factory(id=1)
+    db.session.add(post)
+    posts.update_post_content(post, read_asset("exif.jpg"))
+    thumbnail_path = (
+        "{}/data/generated-thumbnails/1_244c8840887984c4.jpg".format(tmpdir))
+    db.session.flush()
+
+    assert post.canvas_width == 100
+    assert post.canvas_height == 75
+
+    with open(thumbnail_path, "rb") as handle:
+        thumbnail = images.Image(handle.read())
+        assert thumbnail.width == 400
+        assert thumbnail.height == 300
+
+    search_result = posts.search_by_image(read_asset("jpeg.jpg"))
+    assert len(search_result) == 1
+    search_distance, search_post = search_result[0]
+    assert search_post.post_id == post.post_id
+    assert abs(search_distance) < 0.15
+
+
 def test_update_post_tags(tag_factory):
     post = model.Post()
     with patch("szurubooru.func.tags.get_or_create_tags_by_names"):
