@@ -1,3 +1,4 @@
+import copy
 import re
 from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional, Union
@@ -5,7 +6,7 @@ from typing import Any, Callable, Dict, List, Optional, Union
 import sqlalchemy as sa
 
 from szurubooru import config, db, errors, model, rest
-from szurubooru.func import auth, files, images, serialization, util
+from szurubooru.func import auth, files, images, serialization, util, tags
 
 
 class UserNotFoundError(errors.NotFoundError):
@@ -107,6 +108,7 @@ class UserSerializer(serialization.BaseSerializer):
             "lastLoginTime": self.serialize_last_login_time,
             "version": self.serialize_version,
             "rank": self.serialize_rank,
+            "blocklist": self.serialize_blocklist,
             "avatarStyle": self.serialize_avatar_style,
             "avatarUrl": self.serialize_avatar_url,
             "commentCount": self.serialize_comment_count,
@@ -137,6 +139,9 @@ class UserSerializer(serialization.BaseSerializer):
 
     def serialize_avatar_url(self) -> Any:
         return get_avatar_url(self.user)
+
+    def serialize_blocklist(self) -> Any:
+        return [tags.serialize_tag(tag) for tag in get_blocklist_tag_from_user(self.user)]
 
     def serialize_comment_count(self) -> Any:
         return self.user.comment_count
@@ -292,6 +297,66 @@ def update_user_rank(
     ):
         raise errors.AuthError("Trying to set higher rank than your own.")
     user.rank = rank
+
+
+def get_blocklist_from_user(user: model.User) -> List[model.UserTagBlocklist]:
+    """
+    Return the UserTagBlocklist objects related to given user
+    """
+    rez = (db.session.query(model.UserTagBlocklist)
+        .filter(
+            model.UserTagBlocklist.user_id == user.user_id
+        )
+        .all())
+    return rez
+
+
+def get_blocklist_tag_from_user(user: model.User) -> List[model.UserTagBlocklist]:
+    """
+    Return the Tags blocklisted by given user
+    """
+    rez = (db.session.query(model.UserTagBlocklist.tag_id)
+        .filter(
+            model.UserTagBlocklist.user_id == user.user_id
+        ))
+    rez2 = (db.session.query(model.Tag)
+        .filter(
+            model.Tag.tag_id.in_(rez)
+        ).all())
+    return rez2
+
+
+def update_user_blocklist(user: model.User, new_blocklist_tags: Optional[List[model.Tag]]) -> List[List[model.UserTagBlocklist]]:
+    """
+    Modify blocklist for given user.
+    If new_blocklist_tags is None, set the blocklist to configured default tag blocklist.
+    """
+    assert user
+    to_add: List[model.UserTagBlocklist] = []
+    to_remove: List[model.UserTagBlocklist] = []
+
+    if new_blocklist_tags is None:  # We're creating the user, use default config blocklist
+        if 'default_tag_blocklist' in config.config.keys():
+            for e in tags.get_tags_by_exact_names(config.config['default_tag_blocklist'].split(' ')):
+                to_add.append(model.UserTagBlocklist(user_id=user.user_id, tag_id=e.tag_id))
+    else:
+        new_blocklist_ids: List[int] = [e.tag_id for e in new_blocklist_tags]
+        previous_blocklist_tags: List[model.Tag] = get_blocklist_from_user(user)
+        previous_blocklist_ids: List[int] = [e.tag_id for e in previous_blocklist_tags]
+        original_previous_blocklist_ids = copy.copy(previous_blocklist_ids)
+
+        ## Remove tags no longer in the new list
+        for i in range(len(original_previous_blocklist_ids)):
+            old_tag_id = original_previous_blocklist_ids[i]
+            if old_tag_id not in new_blocklist_ids:
+                to_remove.append(previous_blocklist_tags[i])
+                previous_blocklist_ids.remove(old_tag_id)
+
+        ## Add tags not yet in the original list
+        for new_tag_id in new_blocklist_ids:
+            if new_tag_id not in previous_blocklist_ids:
+                to_add.append(model.UserTagBlocklist(user_id=user.user_id, tag_id=new_tag_id))
+    return to_add, to_remove
 
 
 def update_user_avatar(

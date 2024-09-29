@@ -159,6 +159,9 @@ def get_tag_by_name(name: str) -> model.Tag:
 
 
 def get_tags_by_names(names: List[str]) -> List[model.Tag]:
+    """
+    Returns a list of all tags which names include all the letters from the input list
+    """
     names = util.icase_unique(names)
     if len(names) == 0:
         return []
@@ -173,6 +176,24 @@ def get_tags_by_names(names: List[str]) -> List[model.Tag]:
         )
         .all()
     )
+
+
+def get_tags_by_exact_names(names: List[str]) -> List[model.Tag]:
+    """
+    Returns a list of tags matching the names from the input list
+    """
+    entries = []
+    if len(names) == 0:
+        return []
+    names = [name.lower() for name in names]
+    entries = (
+        db.session.query(model.Tag)
+            .join(model.TagName)
+            .filter(
+                sa.func.lower(model.TagName.name).in_(names)
+            )
+            .all())
+    return entries
 
 
 def get_or_create_tags_by_names(
