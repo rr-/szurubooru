@@ -41,3 +41,11 @@ def save(path: str, content: bytes) -> None:
     os.makedirs(os.path.dirname(full_path), exist_ok=True)
     with open(full_path, "wb") as handle:
         handle.write(content)
+    if path.endswith(".psd"):
+        # Handle .psd files
+        handle_psd_file(full_path)
+
+
+def handle_psd_file(path: str) -> None:
+    # Add specific handling for .psd files here
+    pass

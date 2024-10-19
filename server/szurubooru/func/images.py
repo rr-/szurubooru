@@ -24,6 +24,13 @@ def convert_heif_to_png(content: bytes) -> bytes:
     return img_byte_arr.getvalue()
 
 
+def convert_psd_to_png(content: bytes) -> bytes:
+    img = PILImage.open(BytesIO(content))
+    img_byte_arr = BytesIO()
+    img.save(img_byte_arr, format="PNG")
+    return img_byte_arr.getvalue()
+
+
 class Image:
     def __init__(self, content: bytes) -> None:
         self.content = content
@@ -269,6 +276,8 @@ class Image:
             # FFmpeg does not support HEIF.
             # https://trac.ffmpeg.org/ticket/6521
             self.content = convert_heif_to_png(self.content)
+        elif mime_type == "image/vnd.adobe.photoshop":
+            self.content = convert_psd_to_png(self.content)
         extension = mime.get_extension(mime_type)
         assert extension
         with util.create_temp_file(suffix="." + extension) as handle:

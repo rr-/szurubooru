@@ -7,7 +7,7 @@ scrubbing](https://sjp.pwn.pl/sjp/;2527372). It is pronounced as *shoorubooru*.
 
 ## Features
 
-- Post content: images (JPG, PNG, GIF, animated GIF), videos (MP4, WEBM), Flash animations
+- Post content: images (JPG, PNG, GIF, animated GIF, PSD), videos (MP4, WEBM), Flash animations
 - Ability to retrieve web video content using [yt-dlp](https://github.com/yt-dlp/yt-dlp)
 - Post comments
 - Post notes / annotations, including arbitrary polygons

@@ -617,6 +617,8 @@ def update_post_content(post: model.Post, content: Optional[bytes]) -> None:
         update_signature = True
         if mime.is_animated_gif(content):
             post.type = model.Post.TYPE_ANIMATION
+        elif post.mime_type == "image/vnd.adobe.photoshop":
+            post.type = model.Post.TYPE_IMAGE
         else:
             post.type = model.Post.TYPE_IMAGE
     elif mime.is_video(post.mime_type):
