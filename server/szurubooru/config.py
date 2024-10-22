@@ -57,7 +57,7 @@ def _read_config() -> Dict:
         logger.warning(
             "'config.yaml' should be a file, not a directory, skipping"
         )
-    if os.path.exists("/.dockerenv"):
+    if os.path.exists("/.dockerenv") or os.path.exists("/run/.containerenv"):
         ret = _merge(ret, _docker_config())
     return ret
 
