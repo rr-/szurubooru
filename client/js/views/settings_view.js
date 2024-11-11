@@ -30,6 +30,7 @@ class SettingsView extends events.EventTarget {
 
     _evtSubmit(e) {
         e.preventDefault();
+        window.RufflePlayer.config.autoplay = this._find("autoplay-videos").checked ? "auto" : "off"
         this.dispatchEvent(
             new CustomEvent("submit", {
                 detail: {
