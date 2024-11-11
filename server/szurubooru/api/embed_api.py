@@ -1,3 +1,5 @@
+import logging
+from pathlib import Path
 import re
 import html
 from urllib.parse import quote
@@ -10,8 +12,11 @@ from szurubooru.func import (
     serialization,
 )
 
-with open(f"{config.config['data_dir']}/../index.htm") as index:
-    index_html = index.read()
+if (Path(config.config['client_dir']) / "index.htm").exists():
+    with open(f"{config.config['client_dir']}/index.htm") as index:
+        index_html = index.read()
+else:
+    logging.warning("Could not find index.htm needed for embeds.")
 
 def _index_path(params: Dict[str, str]) -> int:
     try:
@@ -78,6 +83,11 @@ def get_post(
 @rest.routes.get("/index(?P<path>/.+)")
 def post_index(ctx: rest.Context, params: Dict[str, str]) -> rest.Response:
     path = _index_path(params)
+
+    if not index_html:
+        logging.info("Embed was requested but index.htm file does not exist. Redirecting to 404.")
+        return {"return_type": "custom", "status_code": "404", "content": [("content-type", "text/html")]}
+
     try:
         oembed = get_post(ctx, {}, path)
     except posts.PostNotFoundError:

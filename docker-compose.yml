@@ -23,8 +23,12 @@ services:
       #LOG_SQL: 0 (1 for verbose SQL logs)
       THREADS:
     volumes:
+      - client:/opt/app/client:ro
       - "${MOUNT_DATA}:/data"
       - "./server/config.yaml:/opt/app/config.yaml"
+    ## Expose this port if you want embeds
+    #ports:
+    #  - "${PORT_SERVER}:6666"
 
   client:
     image: szurubooru/client:latest
@@ -34,6 +38,7 @@ services:
       BACKEND_HOST: server
       BASE_URL:
     volumes:
+      - client:/var/www
       - "${MOUNT_DATA}:/data:ro"
     ports:
       - "${PORT}:80"
@@ -46,3 +51,6 @@ services:
       POSTGRES_PASSWORD:
     volumes:
       - "${MOUNT_SQL}:/var/lib/postgresql/data"
+
+volumes:
+  client:
