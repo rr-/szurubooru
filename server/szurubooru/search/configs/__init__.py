@@ -4,3 +4,4 @@ from .post_search_config import PostSearchConfig
 from .snapshot_search_config import SnapshotSearchConfig
 from .tag_search_config import TagSearchConfig
 from .user_search_config import UserSearchConfig
+from .ban_search_config import BanSearchConfig
