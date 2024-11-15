@@ -789,7 +789,7 @@ data.
     | `fav-time`           | alias of `fav-date`                                                                                                                     |
     | `feature-date`       | featured at given date                                                                                                                  |
     | `feature-time`       | alias of `feature-time`                                                                                                                 |
-    | `safety`             | having given safety. `<value>` can be either `safe`, `sketchy` (or `questionable`) or `unsafe`.                                         |
+    | `safety`             | having given safety. `<value>` can be either `safe`, `sketchy` or `unsafe`.                                         |
     | `rating`             | alias of `safety`                                                                                                                       |
 
     **Sort style tokens**
