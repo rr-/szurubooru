@@ -25,8 +25,8 @@ def scan(path: str) -> List[Any]:
     return []
 
 
-def find(path: str, pattern: str) -> List[Any]:
-    return glob.glob(glob.escape(_get_full_path(path) + "/") + pattern)
+def find(path: str, pattern: str, recursive: bool = False) -> List[Any]:
+    return glob.glob(glob.escape(_get_full_path(path) + "/") + pattern, recursive=recursive)
 
 
 def move(source_path: str, target_path: str) -> None:
