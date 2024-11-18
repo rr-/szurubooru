@@ -13,7 +13,7 @@ from getpass import getpass
 from sys import stderr
 
 from szurubooru import config, db, errors, model
-from szurubooru.func import files, images
+from szurubooru.func import files, images, snapshots
 from szurubooru.func import posts as postfuncs
 from szurubooru.func import users as userfuncs
 
@@ -100,6 +100,48 @@ def regenerate_thumbnails() -> None:
             pass
 
 
+def delete_posts(parameters: list) -> None:
+    verification: str = input("Do you really want to delete all posts with the given ID's [y/n]: ").lower()
+
+    if "y" != verification:
+        return
+
+    def delete_one_post(post_id: int) -> None:
+        print("Deleting post %d" % post_id)
+
+        try:
+            post: model.Post = postfuncs.get_post_by_id(post_id)
+        except postfuncs.PostNotFoundError:
+            print("Post with ID %d not found" % post_id)
+            return
+
+        postfuncs.delete(post)
+        snapshots.delete(post, None)
+
+    def delete_multiple_posts(start_id: int, end_id: int) -> None:
+        if start_id > end_id:
+            start_id, end_id = end_id, start_id
+
+        for post_id in range(start_id, end_id + 1):
+            delete_one_post(post_id)
+
+    for parameter in parameters:
+        try:
+            if "-" not in parameter:
+                delete_one_post(int(parameter))
+                continue
+
+            post_range: list = [int(number) for number in parameter.split("-", 2)]
+            delete_multiple_posts(*post_range)
+        except ValueError:
+            print("One of the specified parameters is not a number")
+            return
+
+    db.get_session().commit()
+
+    print("All posts were deleted")
+
+
 def main() -> None:
     parser_top = ArgumentParser(
         description="Collection of CLI commands for an administrator to use",
@@ -129,6 +171,14 @@ def main() -> None:
         help="regenerate the thumbnails for posts if the "
         "thumbnail files are missing",
     )
+    parser.add_argument(
+        "--delete-posts",
+        metavar="<post_ids>",
+        nargs='+',
+        help="Delete all posts with the specified ID, separated by a space. "
+        "Multiple posts can be deleted at once by specifying them as follows, "
+        "including the upper and lower limits: 37-47"
+    )
     command = parser_top.parse_args()
 
     try:
@@ -140,6 +190,8 @@ def main() -> None:
             reset_filenames()
         elif command.regenerate_thumbnails:
             regenerate_thumbnails()
+        elif command.delete_posts:
+            delete_posts(command.delete_posts)
     except errors.BaseError as e:
         print(e, file=stderr)
 
