@@ -169,6 +169,9 @@ privileges:
     'uploads:create':               regular
     'uploads:use_downloader':       power
 
+homepage_url: https://www.example.com/
+site_url: https://www.example.com/booru
+
 ## ONLY SET THESE IF DEPLOYING OUTSIDE OF DOCKER
 #debug: 0 # generate server logs?
 #show_sql: 0 # show sql in server logs?
