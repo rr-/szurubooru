@@ -81,7 +81,7 @@ function makeCheckbox(options) {
             name: options.name,
             value: options.value,
             type: "checkbox",
-            checked: options.checked !== undefined ? options.checked : false,
+            checked: options.checked !== undefined && options.checked !== null ? options.checked : false,
             disabled: options.readonly,
             required: options.required,
         }),
