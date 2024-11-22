@@ -8,4 +8,5 @@ sed -i "s|__BASEURL__|${BASE_URL:-/}|g" \
     /var/www/manifest.json
 
 # Start server
-exec nginx
+echo "$0 starting server..."
+exec openresty -c /etc/nginx/nginx.conf
