@@ -315,8 +315,13 @@ function makeOutputDirs() {
 }
 
 function watch() {
-    let wss = new WebSocket.Server({ port: 8080 });
+    let wss = new WebSocket.Server({ port: 8081 });
     const liveReload = !process.argv.includes('--no-live-reload');
+    const polling = process.argv.includes("--polling");
+
+    const chokidarOptions = {
+        usePolling: polling,
+    };
 
     function emitReload() {
         if (liveReload) {
@@ -329,7 +334,7 @@ function watch() {
         }
     }
 
-    chokidar.watch('./fonts/**/*').on('change', () => {
+    chokidar.watch('./fonts/**/*', chokidarOptions).on('change', () => {
         try {
             bundleBinaryAssets();
             emitReload();
@@ -337,7 +342,7 @@ function watch() {
             console.error(pe.render(e));
         }
     });
-    chokidar.watch('./img/**/*').on('change', () => {
+    chokidar.watch('./img/**/*', chokidarOptions).on('change', () => {
         try {
             bundleWebAppFiles();
             emitReload();
@@ -345,14 +350,14 @@ function watch() {
             console.error(pe.render(e));
         }
     });
-    chokidar.watch('./html/**/*.tpl').on('change', () => {
+    chokidar.watch('./html/**/*.tpl', chokidarOptions).on('change', () => {
         try {
             bundleHtml();
         } catch (e) {
             console.error(pe.render(e));
         }
     });
-    chokidar.watch('./css/**/*.styl').on('change', () => {
+    chokidar.watch('./css/**/*.styl', chokidarOptions).on('change', () => {
         try {
             bundleCss()
             emitReload();

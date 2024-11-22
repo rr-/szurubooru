@@ -162,4 +162,18 @@ def create_app() -> Callable[[Any, Any], Any]:
     return rest.application
 
 
+if int(os.getenv("DEBUG", 0)) != 0:
+    try:
+        import debugpy
+    except ModuleNotFoundError:
+        raise RuntimeError("debugpy is not installed")
+
+    # TODO: These print statements don't show up in our docker output. Why is that?
+    logging.info("debugpy listening on port 5678")
+    debugpy.listen(("0.0.0.0", 5678))
+
+    if int(os.getenv("WAIT_FOR_CLIENT", 0)) != 0:
+        logging.info("Waiting for debugger attach")
+        debugpy.wait_for_client()
+
 app = create_app()
