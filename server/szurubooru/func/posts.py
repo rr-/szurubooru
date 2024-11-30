@@ -129,7 +129,7 @@ def get_post_custom_thumbnail_url(post: model.Post) -> str:
     return "%s/generated-thumbnails/custom-thumbnails/sample_%d_%s.jpg" % (
         config.config["data_url"].rstrip("/"),
         post.post_id,
-        post.image_key,
+        get_post_security_hash(post.post_id),
     )
 
 
@@ -148,7 +148,7 @@ def get_post_custom_content_path(post: model.Post) -> str:
     assert post.post_id
     return "posts/custom-thumbnails/%d_%s.dat" % (
         post.post_id,
-        post.image_key,
+        get_post_security_hash(post.post_id),
     )
 
 
