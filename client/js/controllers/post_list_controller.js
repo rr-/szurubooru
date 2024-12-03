@@ -14,6 +14,7 @@ const EmptyView = require("../views/empty_view.js");
 const fields = [
     "id",
     "thumbnailUrl",
+    "title",
     "type",
     "safety",
     "score",

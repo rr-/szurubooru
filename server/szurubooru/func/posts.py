@@ -169,6 +169,8 @@ class PostSerializer(serialization.BaseSerializer):
             "version": self.serialize_version,
             "creationTime": self.serialize_creation_time,
             "lastEditTime": self.serialize_last_edit_time,
+            "title": self.serialize_title,
+            "description": self.serialize_description,
             "safety": self.serialize_safety,
             "source": self.serialize_source,
             "type": self.serialize_type,
@@ -212,6 +214,12 @@ class PostSerializer(serialization.BaseSerializer):
 
     def serialize_last_edit_time(self) -> Any:
         return self.post.last_edit_time
+
+    def serialize_title(self) -> Any:
+        return self.post.title
+
+    def serialize_description(self) -> Any:
+        return self.post.description
 
     def serialize_safety(self) -> Any:
         return SAFETY_MAP[self.post.safety]

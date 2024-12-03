@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM node:lts as builder
+FROM --platform=$BUILDPLATFORM node:lts AS builder
 WORKDIR /opt/app
 
 COPY package.json package-lock.json ./
@@ -11,7 +11,7 @@ ARG CLIENT_BUILD_ARGS=""
 RUN BASE_URL="__BASEURL__" node build.js --gzip ${CLIENT_BUILD_ARGS}
 
 
-FROM --platform=$BUILDPLATFORM scratch as approot
+FROM --platform=$BUILDPLATFORM scratch AS approot
 
 COPY docker-start.sh /
 
@@ -22,7 +22,7 @@ WORKDIR /var/www
 COPY --from=builder /opt/app/public/ .
 
 
-FROM nginx:alpine as release
+FROM nginx:alpine AS release
 
 RUN apk --no-cache add dumb-init
 COPY --from=approot / /

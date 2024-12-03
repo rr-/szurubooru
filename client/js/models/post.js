@@ -162,6 +162,14 @@ class Post extends events.EventTarget {
         this._flags = value;
     }
 
+    set title(value) {
+        this._title = value;
+    }
+
+    set description(value) {
+        this._description = value;
+    }
+
     set safety(value) {
         this._safety = value;
     }
