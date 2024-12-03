@@ -55,7 +55,7 @@ class PostEditSidebarControl extends events.EventTarget {
             "post-info",
             "Basic info",
             this._hostNode.querySelectorAll(
-                ".safety, .relations, .flags, .post-source"
+                ".title, .description, .safety, .relations, .flags, .post-source"
             )
         );
         this._tagsExpander = new ExpanderControl(
@@ -398,6 +398,10 @@ class PostEditSidebarControl extends events.EventTarget {
                 detail: {
                     post: this._post,
 
+                    title: this._titleInputNode.value,
+
+                    description: this._descriptionInputNode.value,
+
                     safety: this._safetyButtonNodes.length
                         ? Array.from(this._safetyButtonNodes)
                               .filter((node) => node.checked)[0]
@@ -479,6 +483,14 @@ class PostEditSidebarControl extends events.EventTarget {
             ret.push("sound");
         }
         return ret;
+    }
+
+    get _titleInputNode() {
+        return this._formNode.querySelector(".title input");
+    }
+
+    get _descriptionInputNode() {
+        return this._formNode.querySelector(".description input");
     }
 
     get _relationsInputNode() {

@@ -4,9 +4,20 @@
             <% for (let post of ctx.response.results) { %>
                 <li data-post-id='<%= post.id %>'>
                     <a class='thumbnail-wrapper <%= post.tags.length > 0 ? "tags" : "no-tags" %>'
-                            title='@<%- post.id %> (<%- post.type %>)&#10;&#10;Tags: <%- post.tags.map(tag => '#' + tag.names[0]).join(' ') || 'none' %>'
+                            title='<%- post.title %> (<%- post.type %>)&#10;&#10;Tags: <%- post.tags.map(tag => '#' + tag.names[0]).join(' ') || 'none' %>'
                             href='<%= ctx.canViewPosts ? ctx.getPostUrl(post.id, ctx.parameters) : '' %>'>
                         <%= ctx.makeThumbnail(post.thumbnailUrl) %>
+                        <span class="post-title" style="
+                            position: absolute;
+                            bottom: 2.3em;
+                            left: 0;
+                            padding: .33em .5em;
+                            color: #fff;
+                            line-height: 1.2em;
+                            margin: 0.5em;
+                            font-size: 12px;
+                            background: rgba(0,0,0,0.5);
+                        "><%= post.title %></span>
                         <span class='type' data-type='<%- post.type %>'>
                             <% if (post.type == 'video' || post.type == 'flash' || post.type == 'animation') { %>
                                 <span class='icon'><i class='fa fa-film'></i></span>

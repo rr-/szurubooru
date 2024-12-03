@@ -4,6 +4,24 @@
 
         <div class='messages'></div>
 
+        <section class='title'>
+            <%= ctx.makeTextInput({
+                    text: 'Title',
+                    name: 'title',
+                    placeholder: '',
+                    value: ctx.post.title,
+                }) %>
+        </section>
+
+        <section class='description'>
+            <%= ctx.makeTextInput({
+                    text: 'Description',
+                    name: 'description',
+                    placeholder: '',
+                    value: ctx.post.description,
+                }) %>
+        </section>
+
         <% if (ctx.enableSafety && ctx.canEditPostSafety) { %>
             <section class='safety'>
                 <label>Safety</label>

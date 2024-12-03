@@ -215,6 +215,8 @@ class Post(Base):
     flags_string = sa.Column("flags", sa.Unicode(32), default="")
 
     # content description
+    title = sa.Column("title", sa.Unicode(512), nullable=False, default="")
+    description = sa.Column("description", sa.Unicode(2048), nullable=False, default="")
     type = sa.Column("type", sa.Unicode(32), nullable=False)
     checksum = sa.Column("checksum", sa.Unicode(64), nullable=False)
     checksum_md5 = sa.Column("checksum_md5", sa.Unicode(32))

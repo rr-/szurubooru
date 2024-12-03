@@ -169,6 +169,8 @@ class PostSerializer(serialization.BaseSerializer):
             "version": self.serialize_version,
             "creationTime": self.serialize_creation_time,
             "lastEditTime": self.serialize_last_edit_time,
+            "title": self.serialize_title,
+            "description": self.serialize_description,
             "safety": self.serialize_safety,
             "source": self.serialize_source,
             "type": self.serialize_type,
@@ -212,6 +214,12 @@ class PostSerializer(serialization.BaseSerializer):
 
     def serialize_last_edit_time(self) -> Any:
         return self.post.last_edit_time
+
+    def serialize_title(self) -> Any:
+        return self.post.title
+
+    def serialize_description(self) -> Any:
+        return self.post.description
 
     def serialize_safety(self) -> Any:
         return SAFETY_MAP[self.post.safety]
@@ -414,6 +422,8 @@ def create_post(
     post.creation_time = datetime.utcnow()
     post.flags = []
 
+    post.title = ""
+    post.description = ""
     post.type = ""
     post.checksum = ""
     post.mime_type = ""
@@ -440,6 +450,18 @@ def update_post_source(post: model.Post, source: Optional[str]) -> None:
     if util.value_exceeds_column_size(source, model.Post.source):
         raise InvalidPostSourceError("Source is too long.")
     post.source = source or None
+
+def update_post_title(post: model.Post, title: str) -> None:
+    assert post
+    if util.value_exceeds_column_size(title, model.Post.title):
+        raise InvalidPostSourceError("Title is too long.")
+    post.title = title
+
+def update_post_description(post: model.Post, description: str) -> None:
+    assert post
+    if util.value_exceeds_column_size(description, model.Post.description):
+        raise InvalidPostSourceError("Description is too long.")
+    post.description = description
 
 
 @sa.events.event.listens_for(model.Post, "after_insert")

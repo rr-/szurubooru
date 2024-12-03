@@ -1,4 +1,5 @@
 <div class='readonly-sidebar'>
+    <h1 style='line-height: 1.2em'><%= ctx.post.title %></h1>
     <article class='details'>
         <section class='download'>
             <a rel='external' href='<%- ctx.post.contentUrl %>'>
