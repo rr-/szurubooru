@@ -54,6 +54,14 @@ class Post extends events.EventTarget {
         return this._user;
     }
 
+    get title() {
+        return this._title;
+    }
+
+    get description() {
+        return this._description;
+    }
+
     get safety() {
         return this._safety;
     }
@@ -249,6 +257,12 @@ class Post extends events.EventTarget {
         // send only changed fields to avoid user privilege violation
         if (anonymous === true) {
             detail.anonymous = true;
+        }
+        if (this._title !== this._orig._title) {
+            detail.title = this._title;
+        }
+        if (this._description !== this._orig._description) {
+            detail.description = this._description;
         }
         if (this._safety !== this._orig._safety) {
             detail.safety = this._safety;
@@ -471,6 +485,8 @@ class Post extends events.EventTarget {
             _checksumMD5: response.checksumMD5,
             _creationTime: response.creationTime,
             _user: response.user,
+            _title: response.title,
+            _description: response.description,
             _safety: response.safety,
             _contentUrl: response.contentUrl,
             _fullContentUrl: new URL(

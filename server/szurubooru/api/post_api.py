@@ -65,6 +65,14 @@ def create_post(
             ctx.user, "uploads:use_downloader"
         ),
     )
+    title = ""
+    if ctx.has_param("title"):
+        title = ctx.get_param_as_string("title")
+    
+    description = ""
+    if ctx.has_param("description"):
+        description = ctx.get_param_as_string("description")
+        
     tag_names = ctx.get_param_as_string_list("tags", default=[])
     safety = ctx.get_param_as_string("safety")
     source = ctx.get_param_as_string("source", default="")
@@ -81,6 +89,8 @@ def create_post(
     )
     if len(new_tags):
         auth.verify_privilege(ctx.user, "tags:create")
+    posts.update_post_title(post, title)
+    posts.update_post_description(post, description)
     posts.update_post_safety(post, safety)
     posts.update_post_source(post, source)
     posts.update_post_relations(post, relations)
@@ -143,6 +153,14 @@ def update_post(ctx: rest.Context, params: Dict[str, str]) -> rest.Response:
             db.session.flush()
             for tag in new_tags:
                 snapshots.create(tag, ctx.user)
+    if ctx.has_param("title"):
+        # for now we're just treating this fields as "content"
+        auth.verify_privilege(ctx.user, "posts:edit:content")
+        posts.update_post_title(post, ctx.get_param_as_string("title"))
+    if ctx.has_param("description"):
+        # for now we're just treating this fields as "content"
+        auth.verify_privilege(ctx.user, "posts:edit:content")
+        posts.update_post_description(post, ctx.get_param_as_string("description"))
     if ctx.has_param("safety"):
         auth.verify_privilege(ctx.user, "posts:edit:safety")
         posts.update_post_safety(post, ctx.get_param_as_string("safety"))

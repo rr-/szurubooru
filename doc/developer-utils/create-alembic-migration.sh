@@ -10,15 +10,16 @@ fi
 # Create a dummy container
 WORKDIR="$(git rev-parse --show-toplevel)/server"
 IMAGE=$(docker build -q "${WORKDIR}")
-CONTAINER=$(docker run -d ${IMAGE} tail -f /dev/null)
+CONTAINER=$(docker run --network=host -d ${IMAGE} tail -f /dev/null)
 
 # Create the migration script
 docker exec -i \
     -e PYTHONPATH='/opt/app' \
-    -e POSTGRES_HOST='x' \
-    -e POSTGRES_USER='x' \
-    -e POSTGRES_PASSWORD='x' \
-    ${CONTAINER} alembic revision -m "$1"
+    -e POSTGRES_HOST='localhost' \
+    -e POSTGRES_PORT='15432' \
+    -e POSTGRES_USER='szuru' \
+    -e POSTGRES_PASSWORD='changeme' \
+    ${CONTAINER} alembic revision --autogenerate -m "$1"
 
 # Copy the file over from the container
 docker cp ${CONTAINER}:/opt/app/szurubooru/migrations/versions/ \
