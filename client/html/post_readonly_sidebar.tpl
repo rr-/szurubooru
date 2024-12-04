@@ -1,5 +1,6 @@
 <div class='readonly-sidebar'>
     <h1 style='line-height: 1.2em'><%= ctx.post.title %></h1>
+    <p style='line-height: 1.2em'><%= ctx.post.description %></p>
     <article class='details'>
         <section class='download'>
             <a rel='external' href='<%- ctx.post.contentUrl %>'>
@@ -84,11 +85,28 @@
         </nav>
     <% } %>
 
-    <nav class='tags'>
-        <h1>Tags (<%- ctx.post.tags.length %>)</h1>
-        <% if (ctx.post.tags.length) { %>
+    <%
+        function kebabToTitleCase(str) {
+            return str
+                .split('-') // Split the string into words using the hyphen as the delimiter
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize the first letter of each word
+                .join(' '); // Join the words back together with spaces
+        }
+        const categories = [];
+        
+        for (let tag of ctx.post.tags) {
+            if (!categories[tag.category]) {
+                categories[tag.category] = []
+            }
+            categories[tag.category].push(tag)
+        }
+    %>
+    
+    <% for (const [category, tags] of Object.entries(categories)) { %>
+        <h1><%= category === "default" ? "Other Tags" : kebabToTitleCase(category) %> (<%- tags.length %>)</h1>
+        <% if (tags.length) { %>
             <ul class='compact-tags'><!--
-                --><% for (let tag of ctx.post.tags) { %><!--
+                --><% for (const tag of tags) { %><!--
                     --><li><!--
                         --><% if (ctx.canViewTags) { %><!--
                         --><a href='<%- ctx.formatClientLink('tag', tag.names[0]) %>' class='<%= ctx.makeCssName(tag.category, 'tag') %>'><!--
@@ -116,5 +134,5 @@
                 <% } %>
             </p>
         <% } %>
-    </nav>
+    <% } %>
 </div>

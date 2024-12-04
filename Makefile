@@ -4,7 +4,13 @@ dc-up:
 dc-down:
 	docker compose down --volumes
 
-dc-reset:
+dc-restart:
 	make dc-down
 	make dc-up
 
+dc-build:
+	docker compose build
+
+dc-rebuild:
+	make dc-build
+	make dc-restart
