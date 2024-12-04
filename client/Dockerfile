@@ -1,3 +1,5 @@
+ARG BUILDPLATFORM=linux/amd64
+
 FROM --platform=$BUILDPLATFORM node:lts AS builder
 WORKDIR /opt/app
 
@@ -29,6 +31,8 @@ COPY --from=approot / /
 
 CMD ["/docker-start.sh"]
 VOLUME ["/data"]
+
+RUN chmod +x /docker-start.sh
 
 ARG DOCKER_REPO
 ARG BUILD_DATE
