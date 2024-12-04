@@ -6,6 +6,7 @@ services:
 
   server:
     image: szurubooru/server:latest
+    build: server
     depends_on:
       - sql
     environment:
@@ -24,14 +25,12 @@ services:
       GID: ${GID}
     user: "${UID}:${GID}"
     volumes:
-      - "./server:/opt/app"
       - "${MOUNT_DATA}:/data"
       - "./server/config.yaml:/opt/app/config.yaml"
 
   client:
-    # image: szurubooru/client:latest
-    build:
-      context: ./client
+    image: szurubooru/client:latest
+    build: client
     depends_on:
       - server
     environment:

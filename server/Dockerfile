@@ -1,7 +1,7 @@
 ARG ALPINE_VERSION=3.13
+ARG BUILDPLATFORM=linux/amd64
 
-
-FROM alpine:$ALPINE_VERSION as prereqs
+FROM alpine:$ALPINE_VERSION AS prereqs
 WORKDIR /opt/app
 
 RUN apk --no-cache add \
@@ -37,7 +37,7 @@ COPY ./ /opt/app/
 RUN rm -rf /opt/app/szurubooru/tests
 
 
-FROM --platform=$BUILDPLATFORM prereqs as testing
+FROM --platform=$BUILDPLATFORM prereqs AS testing
 WORKDIR /opt/app
 
 RUN apk --no-cache add \
@@ -61,7 +61,7 @@ ENTRYPOINT ["pytest", "--tb=short"]
 CMD ["szurubooru/"]
 
 
-FROM prereqs as release
+FROM prereqs AS release
 WORKDIR /opt/app
 
 ARG PUID=1000
@@ -78,6 +78,8 @@ RUN apk --no-cache add \
 
 USER app
 CMD ["/opt/app/docker-start.sh"]
+
+RUN chmod +x /opt/app/docker-start.sh
 
 ARG PORT=6666
 ENV PORT=${PORT}
