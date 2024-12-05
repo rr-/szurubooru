@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "build": "node build.js",
-    "watch": "node build.js --watch",
+    "watch": "node build.js --watch --no-live-reload",
     "build-container": "docker build -t szurubooru/client:dev ."
   },
   "dependencies": {

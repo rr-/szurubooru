@@ -1,0 +1,30 @@
+## Example Docker Compose configuration
+##
+## Use this as a template to set up docker-compose, or as guide to set up other
+## orchestration services
+services:
+
+  client:
+    image: szurubooru/client:latest
+    build: client
+    depends_on:
+      - server
+    environment:
+      BACKEND_HOST: server
+      BASE_URL:
+    volumes:
+      - ./client/public:/var/www
+      - "${MOUNT_DATA}:/data:ro"
+    ports:
+      - "${PORT}:80"
+
+  sql:
+    image: postgres:11-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER:
+      POSTGRES_PASSWORD:
+    ports:
+      - 15432:5432
+    volumes:
+      - "${MOUNT_SQL}:/var/lib/postgresql/data"

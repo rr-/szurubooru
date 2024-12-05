@@ -1,3 +1,34 @@
+<%
+function kebabToTitleCase(str) {
+    return str
+        .split('-') // Split the string into words using the hyphen as the delimiter
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize the first letter of each word
+        .join(' '); // Join the words back together with spaces
+}
+%>
+
+<div class='pools-grid'>
+    <% if (ctx.response.results.length) { %>
+        <% for (const pool of ctx.response.results) { %>
+            <a href='<%- ctx.formatClientLink('posts', {query: 'pool:' + pool.id}) %>'>
+                <div class='pool'>
+                    <div class='pool-inner-grid'>
+                        <% let counter = 0 %>
+                        <% for (const post of pool.posts) { %>
+                            <div><img src='<%- post.thumbnailUrl %>' /></div>
+                            <% counter++ %>
+                            <% if (counter === 4) break %>
+                        <% } %>
+                        <div class='pool-title'><%= kebabToTitleCase(pool.names[0]) %> (<%- pool.postCount %>)</div>
+                    </div>
+                </div>
+            </a>
+        <% } %>
+    <% } else { %>
+        <p>No pools to display.</p>
+    <% } %>
+</div>
+
 <div class='pool-list table-wrap'>
     <% if (ctx.response.results.length) { %>
         <table>

@@ -211,6 +211,13 @@ function getPrettyName(tag) {
     return tag;
 }
 
+function kebabToTitleCase(str) {
+    return str
+        .split('-') // Split the string into words using the hyphen as the delimiter
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize the first letter of each word
+        .join(' '); // Join the words back together with spaces
+}
+
 module.exports = {
     range: range,
     formatRelativeTime: formatRelativeTime,
@@ -229,4 +236,5 @@ module.exports = {
     escapeSearchTerm: escapeSearchTerm,
     dataURItoBlob: dataURItoBlob,
     getPrettyName: getPrettyName,
+    kebabToTitleCase: kebabToTitleCase,
 };
