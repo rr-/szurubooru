@@ -13,3 +13,9 @@ server/**/lib/
 server/**/bin/
 server/**/pyvenv.cfg
 __pycache__/
+
+# Developer Tools
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace

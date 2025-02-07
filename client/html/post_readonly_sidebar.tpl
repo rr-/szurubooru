@@ -13,6 +13,7 @@
                     'image/avif': 'AVIF',
                     'image/heif': 'HEIF',
                     'image/heic': 'HEIC',
+                    'image/vnd.adobe.photoshop': 'PSD',
                     'video/webm': 'WEBM',
                     'video/mp4': 'MPEG-4',
                     'video/quicktime': 'MOV',
