@@ -1,9 +1,7 @@
 ## Example Docker Compose configuration
 ##
-## Use this as a template to set up docker-compose, or as guide to set up other
+## Use this as a template to set up docker compose, or as guide to set up other
 ## orchestration services
-version: '2'
-
 services:
 
   server:
