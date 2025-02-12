@@ -1,9 +1,12 @@
-ARG ALPINE_VERSION=3.13
+ARG ALPINE_VERSION=3.16
 
-
-FROM alpine:$ALPINE_VERSION as prereqs
+#######################################
+# Base Stage (prereqs)
+#######################################
+FROM alpine:$ALPINE_VERSION AS prereqs
 WORKDIR /opt/app
 
+# Install system dependencies (Python, development packages, and runtime libraries)
 RUN apk --no-cache add \
         python3 \
         python3-dev \
@@ -13,31 +16,47 @@ RUN apk --no-cache add \
         libheif-dev \
         libavif \
         libavif-dev \
+        freetype-dev \
         ffmpeg \
+        lapack \
+        lapack-dev \
         # from requirements.txt:
         py3-yaml \
         py3-psycopg2 \
-        py3-sqlalchemy \
         py3-certifi \
-        py3-numpy \
-        py3-pillow \
         py3-pynacl \
         py3-tz \
         py3-pyrfc3339
+
+# Install pip-only packages, using a wheel to avoid building scikit-image
+RUN pip3 install --no-cache-dir wheel
+
 RUN pip3 install --no-cache-dir --disable-pip-version-check \
+        --extra-index-url https://alpine-wheels.github.io/index \
+        "aggdraw==1.3.12" \
         "alembic>=0.8.5" \
+        "attrs==25.1.0" \
         "coloredlogs==5.0" \
         "pyheif==0.6.1" \
         "heif-image-plugin>=0.3.2" \
         yt-dlp \
-        "pillow-avif-plugin~=1.1.0"
+        "pillow>=6.1.0" \
+        "pillow-avif-plugin~=1.1.0" \
+        "psd-tools==1.10.4" \
+        "numpy==1.21.6" \
+        "scikit-image==0.19.3" \
+        "scipy==1.8.0" \
+        "sqlalchemy==1.3.21"
+
 RUN apk --no-cache del py3-pip
 
 COPY ./ /opt/app/
 RUN rm -rf /opt/app/szurubooru/tests
 
-
-FROM --platform=$BUILDPLATFORM prereqs as testing
+#######################################
+# Testing Stage
+#######################################
+FROM --platform=$BUILDPLATFORM prereqs AS testing
 WORKDIR /opt/app
 
 RUN apk --no-cache add \
@@ -60,8 +79,10 @@ USER app
 ENTRYPOINT ["pytest", "--tb=short"]
 CMD ["szurubooru/"]
 
-
-FROM prereqs as release
+#######################################
+# Release Stage
+#######################################
+FROM prereqs AS release
 WORKDIR /opt/app
 
 ARG PUID=1000

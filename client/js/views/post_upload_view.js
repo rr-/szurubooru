@@ -20,6 +20,7 @@ function _mimeTypeToPostType(mimeType) {
             "image/avif": "image",
             "image/heif": "image",
             "image/heic": "image",
+            "image/vnd.adobe.photoshop": "image",
             "video/mp4": "video",
             "video/webm": "video",
             "video/quicktime": "video",
@@ -165,7 +166,7 @@ class PostUploadView extends events.EventTarget {
             this._contentInputNode,
             {
                 extraText:
-                    "Allowed extensions: .jpg, .png, .gif, .webm, .mp4, .swf, .avif, .heif, .heic",
+                    "Allowed extensions: .jpg, .png, .gif, .webm, .mp4, .swf, .avif, .heif, .heic, .psd",
                 allowUrls: true,
                 allowMultiple: true,
                 lock: false,

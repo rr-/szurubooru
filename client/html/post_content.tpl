@@ -1,7 +1,11 @@
 <div class='post-content post-type-<%- ctx.post.type %>'>
     <% if (['image', 'animation'].includes(ctx.post.type)) { %>
 
-        <img class='resize-listener' alt='' src='<%- ctx.post.contentUrl %>'/>
+        <% if (ctx.post.mimeType === 'image/vnd.adobe.photoshop') { %>
+            <img class='resize-listener' alt='' src='<%- ctx.post.thumbnailUrl %>'/>
+        <% } else { %>
+            <img class='resize-listener' alt='' src='<%- ctx.post.contentUrl %>'/>
+        <% } %>
 
     <% } else if (ctx.post.type === 'flash') { %>
 
