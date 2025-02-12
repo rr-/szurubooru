@@ -386,7 +386,7 @@ class TagInputControl extends events.EventTarget {
                     );
                 }
                 for (let suggestion of tag.suggestions || []) {
-                    this._suggestions.set(suggestion, 5);
+                    this._suggestions.set(suggestion._origName, 5);
                 }
                 if (this._suggestions.length) {
                     this._openSuggestionsPopup();
