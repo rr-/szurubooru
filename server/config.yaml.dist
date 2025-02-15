@@ -100,6 +100,7 @@ privileges:
     'posts:reverse_search':         regular
     'posts:view':                   anonymous
     'posts:view:featured':          anonymous
+    'posts:view:unsafe':            regular
     'posts:edit:content':           power
     'posts:edit:flags':             regular
     'posts:edit:notes':             regular
