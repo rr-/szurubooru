@@ -60,7 +60,15 @@ def executor():
 
 
 @pytest.fixture
-def auth_executor(executor, user_factory):
+def auth_executor(executor, user_factory, config_injector):
+    config_injector(
+        {
+            "privileges": {
+                "posts:list:unsafe": model.User.RANK_REGULAR,
+            }
+        }
+    )
+
     def wrapper():
         auth_user = user_factory()
         db.session.add(auth_user)
@@ -927,15 +935,7 @@ def test_filter_unsafe_without_privilege(
     auth_executor,
     verify_unpaged,
     post_factory,
-    config_injector,
 ):
-    config_injector(
-        {
-            "privileges": {
-                "posts:list:unsafe": model.User.RANK_REGULAR,
-            }
-        }
-    )
     post1 = post_factory(id=1)
     post2 = post_factory(id=2, safety=model.Post.SAFETY_SKETCHY)
     post3 = post_factory(id=3, safety=model.Post.SAFETY_UNSAFE)

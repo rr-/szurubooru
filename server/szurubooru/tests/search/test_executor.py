@@ -2,8 +2,17 @@ import unittest.mock
 
 import pytest
 
-from szurubooru import search
+from szurubooru import search, model
 from szurubooru.func import cache
+
+
+@pytest.fixture(autouse=True)
+def inject_config(config_injector):
+    config_injector(
+        {
+            "privileges": {"posts:list:unsafe": model.User.RANK_REGULAR},
+        }
+    )
 
 
 def test_retrieving_from_cache():
