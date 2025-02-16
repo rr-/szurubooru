@@ -97,6 +97,7 @@ privileges:
     'posts:create:anonymous':       regular
     'posts:create:identified':      regular
     'posts:list':                   anonymous
+    'posts:list:unsafe':            regular
     'posts:reverse_search':         regular
     'posts:view':                   anonymous
     'posts:view:featured':          anonymous
