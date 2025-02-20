@@ -258,7 +258,7 @@ const _onPopState = (router) => {
 
 const _onClick = (router) => {
     return (e) => {
-        if (1 !== _which(e)) {
+        if (e.button !== 0) {
             return;
         }
         if (e.metaKey || e.ctrlKey || e.shiftKey) {
@@ -309,11 +309,6 @@ const _onClick = (router) => {
         router.show(orig);
     };
 };
-
-function _which(e) {
-    e = e || window.event;
-    return e.which === null ? e.button : e.which;
-}
 
 Router.prototype.Context = Context;
 Router.prototype.Route = Route;
