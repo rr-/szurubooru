@@ -1,5 +1,0 @@
-pytest>=2.9.1
-pytest-cov>=2.2.1
-pytest-pgsql>=1.1.1
-freezegun>=0.3.6
-pycodestyle>=2.0.0

@@ -1,8 +1,8 @@
-#!/usr/bin/dumb-init /bin/sh
+#!/bin/bash
 set -e
-cd /opt/app
+# cd /opt/app
 
 alembic upgrade head
 
 echo "Starting szurubooru API on port ${PORT} - Running on ${THREADS} threads"
-exec waitress-serve-3 --port ${PORT} --threads ${THREADS} szurubooru.facade:app
+exec gunicorn --bind 0.0.0.0:${PORT} --threads ${THREADS} szurubooru.facade:app

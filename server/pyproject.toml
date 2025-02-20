@@ -1,9 +1,54 @@
+[project]
+name = "szurubooru"
+version = "2.5"
+requires-python = ">=3.12"
+dependencies = [
+    "alembic>=0.8.5",
+    "certifi>=2017.11.5",
+    "coloredlogs>=5.0",
+    "gunicorn>=23.0.0",
+    "heif-image-plugin>=0.3.2",
+    "numpy>=1.8.2",
+    "pillow>=4.3.0",
+    "pillow-avif-plugin>=1.1.0",
+    "psycopg2-binary>=2.6.1",
+    "pyheif>=0.6.1",
+    "pynacl>=1.2.1",
+    "pyrfc3339>=1.0",
+    "pytz>=2018.3",
+    "pyyaml>=3.11",
+    "sqlalchemy>=1.0.12,<1.4",
+    "yt-dlp>=2025.2.19",
+]
+
+[dependency-groups]
+dev = [
+    "freezegun>=0.3.6",
+    "pycodestyle>=2.0.0",
+    "pytest>=2.9.1",
+    "pytest-cov>=2.2.1",
+    "pytest-pgsql>=1.1.1",
+]
+
 [tool.black]
 line-length = 79
 
 [tool.isort]
 known_first_party = ["szurubooru"]
-known_third_party = ["PIL", "alembic", "coloredlogs", "freezegun", "nacl", "numpy", "pyrfc3339", "pytest", "pytz", "sqlalchemy", "yaml", "youtube_dl"]
+known_third_party = [
+    "PIL",
+    "alembic",
+    "coloredlogs",
+    "freezegun",
+    "nacl",
+    "numpy",
+    "pyrfc3339",
+    "pytest",
+    "pytz",
+    "sqlalchemy",
+    "yaml",
+    "youtube_dl",
+]
 multi_line_output = 3
 include_trailing_comma = true
 force_grid_wrap = 0
