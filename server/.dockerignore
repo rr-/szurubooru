@@ -1,5 +1,4 @@
 # Linter configs
-pyproject.toml
 .flake8
 
 # Python requirements files
