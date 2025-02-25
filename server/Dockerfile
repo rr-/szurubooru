@@ -28,7 +28,7 @@ RUN pip3 install --no-cache-dir --disable-pip-version-check \
         "alembic>=0.8.5" \
         "coloredlogs==5.0" \
         "pyheif==0.6.1" \
-        "heif-image-plugin>=0.3.2" \
+        "heif-image-plugin==0.5.1" \
         yt-dlp \
         "pillow-avif-plugin~=1.1.0"
 RUN apk --no-cache del py3-pip
