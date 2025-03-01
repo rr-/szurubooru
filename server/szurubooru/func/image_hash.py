@@ -6,7 +6,6 @@ from typing import Any, Callable, List, Optional, Set, Tuple
 
 import HeifImagePlugin
 import numpy as np
-import pillow_avif
 from PIL import Image
 
 from szurubooru import config, errors
