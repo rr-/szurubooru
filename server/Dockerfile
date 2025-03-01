@@ -11,8 +11,6 @@ RUN apk --no-cache add \
         build-base \
         libheif \
         libheif-dev \
-        libavif \
-        libavif-dev \
         ffmpeg \
         # from requirements.txt:
         py3-yaml \
@@ -29,8 +27,7 @@ RUN pip3 install --no-cache-dir --disable-pip-version-check \
         "coloredlogs==5.0" \
         "pyheif==0.6.1" \
         "heif-image-plugin==0.5.1" \
-        yt-dlp \
-        "pillow-avif-plugin~=1.1.0"
+        yt-dlp
 RUN apk --no-cache del py3-pip
 
 COPY ./ /opt/app/
