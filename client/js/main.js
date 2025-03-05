@@ -3,7 +3,7 @@
 const config = require("./config.js");
 
 if (config.environment == "development") {
-    var ws = new WebSocket("ws://" + location.hostname + ":8080");
+    var ws = new WebSocket("ws://" + location.hostname + ":8081");
     ws.addEventListener("open", function (event) {
         console.log("Live-reloading websocket connected.");
     });
