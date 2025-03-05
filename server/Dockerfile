@@ -61,7 +61,42 @@ ENTRYPOINT ["pytest", "--tb=short"]
 CMD ["szurubooru/"]
 
 
+FROM prereqs as development
+WORKDIR /opt/app
+
+ARG PUID=1000
+ARG PGID=1000
+
+RUN apk --no-cache add \
+    dumb-init \
+    py3-pip \
+    py3-setuptools \
+    py3-waitress \
+    && pip3 install --no-cache-dir --disable-pip-version-check \
+    hupper \
+    && mkdir -p /opt/app /data \
+    && addgroup -g ${PGID} app \
+    && adduser -SDH -h /opt/app -g '' -G app -u ${PUID} app \
+    && chown -R app:app /opt/app /data
+
+USER app
+CMD ["/opt/app/docker-start-dev.sh"]
+
+ARG PORT=6666
+ENV PORT=${PORT}
+EXPOSE ${PORT}
+
+ARG THREADS=4
+ENV THREADS=${THREADS}
+
+VOLUME ["/data/"]
+
+
 FROM prereqs as release
+
+COPY ./ /opt/app/
+RUN rm -rf /opt/app/szurubooru/tests
+
 WORKDIR /opt/app
 
 ARG PUID=1000
