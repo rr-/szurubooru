@@ -228,6 +228,11 @@ class PostSearchConfig(BaseSearchConfig):
             )
         return query.order_by(model.Post.post_id.desc())
 
+
+    @property
+    def can_list_unsafe(self) -> bool:
+        return self.user and auth.has_privilege(self.user, "posts:list:unsafe")
+
     @property
     def id_column(self) -> SaColumn:
         return model.Post.post_id
