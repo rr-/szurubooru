@@ -114,6 +114,8 @@ def create_snapshots_for_post(
 def get_post(ctx: rest.Context, params: Dict[str, str]) -> rest.Response:
     auth.verify_privilege(ctx.user, "posts:view")
     post = _get_post(params)
+    if post.safety == model.Post.SAFETY_UNSAFE:
+        auth.verify_privilege(ctx.user, "posts:view:unsafe")
     return _serialize_post(ctx, post)
 
 
