@@ -237,7 +237,7 @@ def update_user_name(user: model.User, name: str) -> None:
         raise InvalidUserNameError("User name is too long.")
     name = name.strip()
     name_regex = config.config["user_name_regex"]
-    if not re.match(name_regex, name):
+    if not re.fullmatch(name_regex, name):
         raise InvalidUserNameError(
             "User name %r must satisfy regex %r." % (name, name_regex)
         )
@@ -254,7 +254,7 @@ def update_user_password(user: model.User, password: str) -> None:
     if not password:
         raise InvalidPasswordError("Password cannot be empty.")
     password_regex = config.config["password_regex"]
-    if not re.match(password_regex, password):
+    if not re.fullmatch(password_regex, password):
         raise InvalidPasswordError(
             "Password must satisfy regex %r." % password_regex
         )
