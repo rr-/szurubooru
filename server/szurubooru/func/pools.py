@@ -48,7 +48,7 @@ def _verify_name_validity(name: str) -> None:
     if util.value_exceeds_column_size(name, model.PoolName.name):
         raise InvalidPoolNameError("Name is too long.")
     name_regex = config.config["pool_name_regex"]
-    if not re.match(name_regex, name):
+    if not re.fullmatch(name_regex, name):
         raise InvalidPoolNameError("Name must satisfy regex %r." % name_regex)
 
 

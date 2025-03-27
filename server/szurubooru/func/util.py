@@ -84,7 +84,7 @@ def flip(source: Dict[Any, Any]) -> Dict[Any, Any]:
 
 def is_valid_email(email: Optional[str]) -> bool:
     """Return whether given email address is valid or empty."""
-    return not email or re.match(r"^[^@]*@[^@]*\.[^@]*$", email) is not None
+    return not email or re.fullmatch(r"^[^@]*@[^@]*\.[^@]*$", email) is not None
 
 
 class dotdict(dict):
@@ -121,12 +121,12 @@ def parse_time_range(value: str) -> Tuple[datetime, datetime]:
             datetime(now.year, now.month, now.day, 0, 0, 0) - one_second,
         )
 
-    match = re.match(r"^(\d{4})$", value)
+    match = re.fullmatch(r"^(\d{4})$", value)
     if match:
         year = int(match.group(1))
         return (datetime(year, 1, 1), datetime(year + 1, 1, 1) - one_second)
 
-    match = re.match(r"^(\d{4})-(\d{1,2})$", value)
+    match = re.fullmatch(r"^(\d{4})-(\d{1,2})$", value)
     if match:
         year = int(match.group(1))
         month = int(match.group(2))
@@ -135,7 +135,7 @@ def parse_time_range(value: str) -> Tuple[datetime, datetime]:
             datetime(year, month + 1, 1) - one_second,
         )
 
-    match = re.match(r"^(\d{4})-(\d{1,2})-(\d{1,2})$", value)
+    match = re.fullmatch(r"^(\d{4})-(\d{1,2})-(\d{1,2})$", value)
     if match:
         year = int(match.group(1))
         month = int(match.group(2))
