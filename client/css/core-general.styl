@@ -106,6 +106,11 @@ form .fa-question-circle-o
                     background-color: $scrollbar-bg-color
                 &::-webkit-scrollbar-thumb
                     background-color: $scrollbar-thumb-color
+                li[data-name=view]
+                    background: $button-enabled-background-color
+                    margin-right: 1em
+                    a
+                        color: $button-enabled-text-color
     >.content-wrapper:not(.transparent)
         background: $top-navigation-color
         padding: 1.8em
@@ -214,8 +219,6 @@ nav
         ul li[data-name=settings],
         ul li[data-name=help]
             float: none
-        .access-key
-            text-decoration: underline
         .thumbnail
             width: 1.5em
             height: 1.5em
@@ -243,9 +246,6 @@ nav
         ul
             #mobile-navigation-toggle
                 color: $text-color-darktheme
-
-a .access-key
-    text-decoration: underline
 
 .messages
     margin: 0 auto
@@ -298,11 +298,9 @@ a .access-key
         background-position: 0 0, 0 10px, 10px -10px, -10px 0px
         background-repeat: repeat
         background-size: 20px 20px
-    img
+    img, video
         opacity: 0
-        width: 100%
-        height: 100%
-    video
+        object-fit: cover
         width: 100%
         height: 100%
 
