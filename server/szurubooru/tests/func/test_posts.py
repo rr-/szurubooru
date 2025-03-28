@@ -41,7 +41,7 @@ def test_get_post_thumbnail_url(input_mime_type, config_injector):
     post.mime_type = input_mime_type
     assert (
         posts.get_post_thumbnail_url(post)
-        == "http://example.com/generated-thumbnails/1_244c8840887984c4.jpg"
+        == "http://example.com/generated-thumbnails/sample_1_244c8840887984c4.jpg"
     )
 
 
@@ -67,7 +67,7 @@ def test_get_post_thumbnail_path(input_mime_type):
     post.mime_type = input_mime_type
     assert (
         posts.get_post_thumbnail_path(post)
-        == "generated-thumbnails/1_244c8840887984c4.jpg"
+        == "generated-thumbnails/sample_1_244c8840887984c4.jpg"
     )
 
 
@@ -78,7 +78,7 @@ def test_get_post_custom_thumbnail_path(input_mime_type):
     post.mime_type = input_mime_type
     assert (
         posts.get_post_custom_thumbnail_path(post)
-        == "posts/custom-thumbnails/1_244c8840887984c4.dat"
+        == "generated-thumbnails/custom-thumbnails/sample_1_244c8840887984c4.jpg"
     )
 
 
@@ -226,7 +226,9 @@ def test_serialize_post(
             "canvasHeight": 300,
             "contentUrl": "http://example.com/posts/1_244c8840887984c4.jpg",
             "thumbnailUrl": "http://example.com/"
-            "generated-thumbnails/1_244c8840887984c4.jpg",
+            "generated-thumbnails/sample_1_244c8840887984c4.jpg",
+            "customThumbnailUrl": "http://example.com/"
+            "generated-thumbnails/custom-thumbnails/sample_1_244c8840887984c4.jpg",
             "flags": ["loop"],
             "tags": [
                 {
@@ -270,16 +272,26 @@ def test_serialize_post(
             "relationCount": 0,
             "lastFeatureTime": datetime(1999, 1, 1),
             "favoritedBy": ["fav1"],
-            "hasCustomThumbnail": True,
             "mimeType": "image/jpeg",
             "comments": ["commenter1", "commenter2"],
         }
 
 
-def test_serialize_micro_post(post_factory, user_factory):
+def test_serialize_micro_post(tmpdir, config_injector, post_factory, user_factory):
     with patch("szurubooru.func.posts.get_post_thumbnail_url"):
         posts.get_post_thumbnail_url.return_value = (
             "https://example.com/thumb.png"
+        )
+        config_injector(
+            {
+                "data_dir": str(tmpdir.mkdir("data")),
+                "thumbnails": {
+                    "post_width": 300,
+                    "post_height": 300,
+                },
+                "secret": "test",
+                "allow_broken_uploads": False,
+            }
         )
         auth_user = user_factory()
         post = post_factory()
@@ -288,6 +300,7 @@ def test_serialize_micro_post(post_factory, user_factory):
         assert posts.serialize_micro_post(post, auth_user) == {
             "id": post.post_id,
             "thumbnailUrl": "https://example.com/thumb.png",
+            "customThumbnailUrl": None,
         }
 
 
@@ -605,7 +618,7 @@ def test_update_post_thumbnail_to_new_one(
     assert post.post_id
     generated_path = (
         "{}/data/generated-thumbnails/".format(tmpdir)
-        + "1_244c8840887984c4.jpg"
+        + "sample_1_244c8840887984c4.jpg"
     )
     source_path = (
         "{}/data/posts/custom-thumbnails/".format(tmpdir)
@@ -646,7 +659,7 @@ def test_update_post_thumbnail_to_default(
     assert post.post_id
     generated_path = (
         "{}/data/generated-thumbnails/".format(tmpdir)
-        + "1_244c8840887984c4.jpg"
+        + "sample_1_244c8840887984c4.jpg"
     )
     source_path = (
         "{}/data/posts/custom-thumbnails/".format(tmpdir)
@@ -686,7 +699,7 @@ def test_update_post_thumbnail_with_broken_thumbnail(
     assert post.post_id
     generated_path = (
         "{}/data/generated-thumbnails/".format(tmpdir)
-        + "1_244c8840887984c4.jpg"
+        + "sample_1_244c8840887984c4.jpg"
     )
     source_path = (
         "{}/data/posts/custom-thumbnails/".format(tmpdir)
@@ -705,8 +718,8 @@ def test_update_post_thumbnail_with_broken_thumbnail(
         assert handle.read() == read_asset("png-broken.png")
     with open(generated_path, "rb") as handle:
         image = images.Image(handle.read())
-        assert image.width == 1
-        assert image.height == 1
+        assert image.width == 300
+        assert image.height == 300
 
 
 def test_update_post_content_leaving_custom_thumbnail(
@@ -731,7 +744,7 @@ def test_update_post_content_leaving_custom_thumbnail(
     db.session.flush()
     generated_path = (
         "{}/data/generated-thumbnails/".format(tmpdir)
-        + "1_244c8840887984c4.jpg"
+        + "sample_1_244c8840887984c4.jpg"
     )
     source_path = (
         "{}/data/posts/custom-thumbnails/".format(tmpdir)
@@ -763,7 +776,7 @@ def test_update_post_content_convert_heif_to_png_when_processing(
     db.session.flush()
     generated_path = (
         "{}/data/generated-thumbnails/".format(tmpdir)
-        + "1_244c8840887984c4.jpg"
+        + "sample_1_244c8840887984c4.jpg"
     )
     source_path = (
         "{}/data/posts/custom-thumbnails/".format(tmpdir)
