@@ -40,6 +40,11 @@ class Settings extends events.EventTarget {
     save(newSettings, silent) {
         newSettings = Object.assign(this.cache, newSettings);
         localStorage.setItem("settings", JSON.stringify(newSettings));
+        if (newSettings.darkTheme) {
+            document.body.classList.add("darktheme");
+        } else {
+            document.body.classList.remove("darktheme");
+        }
         this.cache = this._getFromLocalStorage();
         if (silent !== true) {
             this.dispatchEvent(
