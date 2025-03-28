@@ -398,7 +398,7 @@ class Api extends events.EventTarget {
 
             if (data) {
                 if (files && Object.keys(files).length) {
-                    req.attach("metadata", new Blob([JSON.stringify(data)]));
+                    req.attach("metadata", new Blob([JSON.stringify(data)], { type: "application/json" }));
                 } else {
                     req.set("Content-Type", "application/json");
                     req.send(data);
