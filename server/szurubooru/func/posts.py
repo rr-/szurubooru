@@ -117,7 +117,7 @@ def get_post_content_url(post: model.Post) -> str:
 
 def get_post_thumbnail_url(post: model.Post) -> str:
     assert post
-    return "%s/generated-thumbnails/%d_%s.jpg" % (
+    return "%s/generated-thumbnails/sample_%d_%s.jpg" % (
         config.config["data_url"].rstrip("/"),
         post.post_id,
         get_post_security_hash(post.post_id),
@@ -154,7 +154,7 @@ def get_post_custom_content_path(post: model.Post) -> str:
 
 def get_post_thumbnail_path(post: model.Post) -> str:
     assert post
-    return "generated-thumbnails/%d_%s.jpg" % (
+    return "generated-thumbnails/sample_%d_%s.jpg" % (
         post.post_id,
         get_post_security_hash(post.post_id),
     )
