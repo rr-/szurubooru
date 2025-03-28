@@ -33,9 +33,6 @@ class Image:
     def __init__(self, content: bytes) -> None:
         self.content = content
         self._reload_info()
-        if self.info["format"]["format_name"] == "swf":
-            self.content = self.swf_to_png()
-            self._reload_info()
 
     @property
     def width(self) -> int:
@@ -72,7 +69,11 @@ class Image:
             "png",
             "-",
         ]
-        if seek and "duration" in self.info["format"]:
+        if (
+            seek
+            and "duration" in self.info["format"]
+            and self.info["format"]["format_name"] != "swf"
+        ):
             duration = float(self.info["format"]["duration"])
             if duration > 3:
                 cli = [
@@ -84,19 +85,6 @@ class Image:
             raise errors.ProcessingError("Error while resizing image.")
         self.content = content
         self._reload_info()
-
-    def swf_to_png(self) -> bytes:
-        return self._execute(
-            [
-                "--silent",
-                "-g",
-                "gl",
-                "--",
-                "{path}",
-                "-",
-            ],
-            program="exporter",
-        )
 
     def to_png(self) -> bytes:
         return self._execute(
@@ -329,7 +317,7 @@ class Image:
         )
         assert "format" in self.info
         assert "streams" in self.info
-        if len(self.info["streams"]) < 1 and self.info["format"]["format_name"] != "swf":
+        if len(self.info["streams"]) < 1:
             logger.warning("The video contains no video streams.")
             raise errors.ProcessingError(
                 "The video contains no video streams."
