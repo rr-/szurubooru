@@ -13,7 +13,7 @@ from getpass import getpass
 from sys import stderr
 
 from szurubooru import config, db, errors, model
-from szurubooru.func import files, images
+from szurubooru.func import files, images, mime
 from szurubooru.func import posts as postfuncs
 from szurubooru.func import users as userfuncs
 
@@ -95,7 +95,14 @@ def regenerate_thumbnails() -> None:
     for post in db.session.query(model.Post).all():
         print("Generating tumbnail for post %d ..." % post.post_id, end="\r")
         try:
-            postfuncs.generate_post_thumbnail(post)
+            content = files.get(postfuncs.get_post_content_path(post))
+            postfuncs.generate_post_thumbnail(postfuncs.get_post_thumbnail_path(post), content, seek=False)
+
+            custom_content = files.get(postfuncs.get_post_custom_content_path(post))
+            if custom_content:
+                generate_post_thumbnail(get_post_custom_thumbnail_path(post), custom_content, seek=True)
+            elif mime.is_video(post.mime_type):
+                generate_post_thumbnail(get_post_custom_thumbnail_path(post), content, seek=True)
         except Exception:
             pass
 
