@@ -63,11 +63,18 @@ class AutoCompleteControl {
             prefix = this._sourceInputNode.value.substring(0, index + 1);
             middle = this._sourceInputNode.value.substring(index + 1);
         }
+        suffix = spaceIndex < commaIndex ? suffix.replace(/^[^,]+/, "") : suffix.replace(/^\S+/, "");
+        suffix = suffix.trimLeft();
         this._sourceInputNode.value =
-            prefix + result.toString() + delimiter + suffix.trimLeft();
+            prefix + result.toString() + delimiter + suffix;
         if (!addSpace) {
-            this._sourceInputNode.value = this._sourceInputNode.value.trim();
+            this._sourceInputNode.value = this._sourceInputNode.value.trimLeft();
         }
+        const selection = this._sourceInputNode.value.length - suffix.length;
+        if (!addSpace) {
+            this._sourceInputNode.value = this._sourceInputNode.value.trimRight();
+        }
+        this._sourceInputNode.setSelectionRange(selection, selection);
         this._sourceInputNode.focus();
     }
 
