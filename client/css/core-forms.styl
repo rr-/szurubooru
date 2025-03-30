@@ -206,6 +206,7 @@ input[type=number]
     background: $input-enabled-background-color
     color: $input-enabled-text-color
     box-shadow: none /* :-moz-submit-invalid on FF */
+    outline: none
     transition: border-color 0.1s linear, background-color 0.1s linear
 
     &:disabled
@@ -214,7 +215,7 @@ input[type=number]
         color: $input-disabled-text-color
 
     &:focus
-        border-color: $main-color
+        border-color: $main-color !important
 
     &[readonly]
         border: 2px solid $input-disabled-border-color
