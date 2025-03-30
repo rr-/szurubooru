@@ -211,6 +211,15 @@ function getPrettyName(tag) {
     return tag;
 }
 
+function preloadPostImages(post) {
+    if (!["image", "animation"].includes(post.type)) {
+        return;
+    }
+    const img = new Image()
+    img.fetchPriority = "low";
+    img.src = post.contentUrl;
+}
+
 module.exports = {
     range: range,
     formatRelativeTime: formatRelativeTime,
@@ -229,4 +238,5 @@ module.exports = {
     escapeSearchTerm: escapeSearchTerm,
     dataURItoBlob: dataURItoBlob,
     getPrettyName: getPrettyName,
+    preloadPostImages: preloadPostImages,
 };

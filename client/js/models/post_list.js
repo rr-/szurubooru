@@ -7,12 +7,13 @@ const AbstractList = require("./abstract_list.js");
 const Post = require("./post.js");
 
 class PostList extends AbstractList {
-    static getAround(id, searchQuery) {
+    static getAround(id, searchQuery, options) {
         return api.get(
             uri.formatApiLink("post", id, "around", {
                 query: PostList._decorateSearchQuery(searchQuery || ""),
                 fields: "id",
-            })
+            }),
+            options
         );
     }
 
