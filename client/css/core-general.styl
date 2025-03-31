@@ -166,6 +166,8 @@ nav
             li.active a
                 background: $active-tab-background-color
                 color: $active-tab-text-color
+            li.active:has(:focus)
+                background: $active-tab-background-color
             :focus
                 background: $focused-tab-background-color
                 outline: 0
@@ -241,6 +243,8 @@ nav
             li.active a
                 background: $active-tab-background-color-darktheme
                 color: $active-tab-text-color-darktheme
+            li.active:has(:focus)
+                background: $active-tab-background-color-darktheme
             :focus
                 background: $focused-tab-background-color-darktheme
     &#top-navigation
