@@ -281,16 +281,14 @@ class PostSerializer(serialization.BaseSerializer):
         return scores.get_score(self.post, self.auth_user)
 
     def serialize_own_favorite(self) -> Any:
-        return (
-            len(
-                [
-                    user
-                    for user in self.post.favorited_by
-                    if user.user_id == self.auth_user.user_id
-                ]
-            )
-            > 0
-        )
+        if self.auth_user.user_id is None:
+            return False
+
+        for user in self.post.favorited_by:
+            if user.user_id == self.auth_user.user_id:
+                return True
+
+        return False
 
     def serialize_tag_count(self) -> Any:
         return self.post.tag_count
