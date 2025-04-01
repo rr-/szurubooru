@@ -5,11 +5,12 @@ const views = require("../util/views.js");
 const optimizedResize = require("../util/optimized_resize.js");
 
 class PostContentControl {
-    constructor(hostNode, post, viewportSizeCalculator, fitFunctionOverride) {
+    constructor(hostNode, post, isMediaCached, viewportSizeCalculator, fitFunctionOverride) {
         this._post = post;
         this._viewportSizeCalculator = viewportSizeCalculator;
         this._hostNode = hostNode;
         this._template = views.getTemplate("post-content");
+        this._isMediaCached = isMediaCached;
 
         let fitMode = settings.get().fitMode;
         if (typeof fitFunctionOverride !== "undefined") {
@@ -150,9 +151,11 @@ class PostContentControl {
             newNode.firstElementChild.style.backgroundImage = "";
         }
         if (["image", "flash"].includes(this._post.type)) {
-            newNode.firstElementChild.style.backgroundImage = "url("+this._post.originalThumbnailUrl+")";
+            if (this._post.type !== "image" || !this._isMediaCached) {
+                newNode.firstElementChild.style.backgroundImage = "url("+this._post.originalThumbnailUrl+")";
+            }
         }
-        if (this._post.type == "image") {
+        if (this._post.type == "image" && !this._isMediaCached) {
             newNode.firstElementChild.addEventListener("load", load);
         } else if (settings.get().transparencyGrid) {
             newNode.classList.add("transparency-grid");

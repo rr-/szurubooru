@@ -211,6 +211,15 @@ function getPrettyName(tag) {
     return tag;
 }
 
+function isMediaCached(post) {
+    if (post.type !== "image") {
+        return false;
+    }
+    const img = new Image()
+    img.src = post.contentUrl;
+    return img.complete;
+}
+
 module.exports = {
     range: range,
     formatRelativeTime: formatRelativeTime,
@@ -229,4 +238,5 @@ module.exports = {
     escapeSearchTerm: escapeSearchTerm,
     dataURItoBlob: dataURItoBlob,
     getPrettyName: getPrettyName,
+    isMediaCached: isMediaCached,
 };

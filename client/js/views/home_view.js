@@ -62,6 +62,7 @@ class HomeView {
             this._postContentControl = new PostContentControl(
                 this._postContainerNode,
                 postInfo.featuredPost,
+                misc.isMediaCached(postInfo.featuredPost),
                 () => {
                     return [window.innerWidth * 0.8, window.innerHeight * 0.7];
                 },
