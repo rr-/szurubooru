@@ -51,7 +51,7 @@ class Context:
         use_video_downloader: bool = False,
         allow_tokens: bool = True,
     ) -> bytes:
-        if name in self._files and self._files[name]:
+        if name in self._files:
             return self._files[name]
 
         if name + "Url" in self._params:
