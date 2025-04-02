@@ -17,11 +17,6 @@ class PostMainController extends BasePostController {
     constructor(ctx, editMode) {
         super(ctx);
 
-        let poolPostsNearby = Promise.resolve({results: []});
-        if (api.hasPrivilege("pools:list") && api.hasPrivilege("pools:view")) {
-            poolPostsNearby = PostList.getNearbyPoolPosts(ctx.parameters.id);
-        }
-
         let parameters = ctx.parameters;
         Promise.all([
             Post.get(ctx.parameters.id),
@@ -29,10 +24,9 @@ class PostMainController extends BasePostController {
                 ctx.parameters.id,
                 parameters ? parameters.query : null
             ),
-            poolPostsNearby
         ]).then(
             (responses) => {
-                const [post, aroundResponse, poolPostsNearby] = responses;
+                const [post, aroundResponse] = responses;
                 let aroundPool = null;
 
                 // remove junk from query, but save it into history so that it can
@@ -51,9 +45,9 @@ class PostMainController extends BasePostController {
                         const found = item.match(/^pool:([0-9]+)/i);
                         if (found) {
                             const activePool = parseInt(found[1]);
-                            poolPostsNearby.forEach((nearbyPosts) => {
-                                if (nearbyPosts.pool.id == activePool) {
-                                    aroundPool = nearbyPosts
+                            post.pools.map((pool) => {
+                                if (pool.id == activePool) {
+                                    aroundPool = pool;
                                 }
                             });
                         }
@@ -63,7 +57,6 @@ class PostMainController extends BasePostController {
                 this._post = post;
                 this._view = new PostMainView({
                     post: post,
-                    poolPostsNearby: poolPostsNearby,
                     editMode: editMode,
                     prevPostId: aroundPool
                         ? (aroundPool.previousPost ? aroundPool.previousPost.id : null)

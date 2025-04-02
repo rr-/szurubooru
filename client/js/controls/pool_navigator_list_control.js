@@ -13,8 +13,8 @@ class PoolNavigatorListControl extends events.EventTarget {
         this._poolPostNearby = poolPostNearby;
         this._indexToNode = {};
 
-        for (let [i, entry] of this._poolPostNearby.entries()) {
-            this._installPoolNavigatorNode(entry, i);
+        for (const entry of this._poolPostNearby) {
+            this._installPoolNavigatorNode(entry);
         }
     }
 
@@ -22,7 +22,7 @@ class PoolNavigatorListControl extends events.EventTarget {
         return this._hostNode;
     }
 
-    _installPoolNavigatorNode(poolPostNearby, i) {
+    _installPoolNavigatorNode(poolPostNearby) {
         const poolListItemNode = document.createElement("div");
         const poolControl = new PoolNavigatorControl(
             poolListItemNode,

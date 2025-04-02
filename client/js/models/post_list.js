@@ -16,14 +16,6 @@ class PostList extends AbstractList {
         );
     }
 
-    static getNearbyPoolPosts(id) {
-        return api.get(
-            uri.formatApiLink("post", id, "pools-nearby", {
-                fields: "id",
-            })
-        );
-    }
-
     static search(text, offset, limit, fields) {
         return api
             .get(

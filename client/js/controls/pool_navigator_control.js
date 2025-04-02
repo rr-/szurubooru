@@ -16,9 +16,9 @@ class PoolNavigatorControl extends events.EventTarget {
         views.replaceContent(
             this._hostNode,
             template({
-                pool: poolPostNearby.pool,
-                parameters: { query: `pool:${poolPostNearby.pool.id}` },
-                linkClass: misc.makeCssName(poolPostNearby.pool.category, "pool"),
+                pool: poolPostNearby,
+                parameters: { query: `pool:${poolPostNearby.id}` },
+                linkClass: misc.makeCssName(poolPostNearby.category, "pool"),
                 canViewPosts: api.hasPrivilege("posts:view"),
                 canViewPools: api.hasPrivilege("pools:view"),
                 firstPost: poolPostNearby.firstPost,
