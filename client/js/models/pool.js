@@ -36,7 +36,7 @@ class Pool extends events.EventTarget {
     }
 
     get posts() {
-        return this._posts;
+        return this._postsMicro || this._posts;
     }
 
     get postCount() {
@@ -185,6 +185,7 @@ class Pool extends events.EventTarget {
             _creationTime: response.creationTime,
             _lastEditTime: response.lastEditTime,
             _postCount: response.postCount || 0,
+            _postsMicro: response.postsMicro,
             _firstPost: response.firstPost || null,
             _lastPost: response.lastPost || null,
             _previousPost: response.previousPost || null,
@@ -192,7 +193,7 @@ class Pool extends events.EventTarget {
         };
 
         for (let obj of [this, this._orig]) {
-            obj._posts.sync(response.posts);
+            obj._posts.sync(response.posts || []);
         }
 
         Object.assign(this, map);

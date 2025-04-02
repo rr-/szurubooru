@@ -14,7 +14,6 @@ const EmptyView = require("../views/empty_view.js");
 const fields = [
     "id",
     "names",
-    "posts",
     "creationTime",
     "postCount",
     "category",
@@ -101,11 +100,13 @@ class PoolListController {
                 return uri.formatClientLink("pools", parameters);
             },
             requestPage: (offset, limit) => {
+                const canEditPosts = api.hasPrivilege("pools:edit") || api.hasPrivilege("pools:edit:posts");
+                const effectiveFields = fields.concat([canEditPosts ? "posts": "postsMicro"]);
                 return PoolList.search(
                     this._ctx.parameters.query,
                     offset,
                     limit,
-                    fields
+                    effectiveFields
                 );
             },
             pageRenderer: (pageCtx) => {
