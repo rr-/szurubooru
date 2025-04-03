@@ -329,6 +329,10 @@
             <td><code>feature-time</code></td>
             <td>alias of <code>feature-time</code></td>
         </tr>
+        <tr>
+            <td><code>pool</code></td>
+            <td>pool order, requires pool named token</code></td>
+        </tr>
     </tbody>
 </table>
 

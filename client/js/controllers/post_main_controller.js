@@ -11,6 +11,7 @@ const PostList = require("../models/post_list.js");
 const PostMainView = require("../views/post_main_view.js");
 const BasePostController = require("./base_post_controller.js");
 const EmptyView = require("../views/empty_view.js");
+const PoolNavigatorListControl = require("../controls/pool_navigator_list_control.js");
 
 class PostMainController extends BasePostController {
     constructor(ctx, editMode) {
@@ -26,6 +27,7 @@ class PostMainController extends BasePostController {
         ]).then(
             (responses) => {
                 const [post, aroundResponse] = responses;
+                let aroundPool = null;
 
                 // remove junk from query, but save it into history so that it can
                 // be still accessed after history navigation / page refresh
@@ -39,23 +41,36 @@ class PostMainController extends BasePostController {
                           )
                         : uri.formatClientLink("post", ctx.parameters.id);
                     router.replace(url, ctx.state, false);
+                    misc.splitByWhitespace(parameters.query).forEach((item) => {
+                        const found = item.match(/^pool:([0-9]+)/i);
+                        if (found) {
+                            const activePool = parseInt(found[1]);
+                            post.pools.map((pool) => {
+                                if (pool.id == activePool) {
+                                    aroundPool = pool;
+                                }
+                            });
+                        }
+                    });
                 }
 
                 this._post = post;
                 this._view = new PostMainView({
                     post: post,
                     editMode: editMode,
-                    prevPostId: aroundResponse.prev
-                        ? aroundResponse.prev.id
-                        : null,
-                    nextPostId: aroundResponse.next
-                        ? aroundResponse.next.id
-                        : null,
+                    prevPostId: aroundPool
+                        ? (aroundPool.previousPost ? aroundPool.previousPost.id : null)
+                        : (aroundResponse.prev ? aroundResponse.prev.id : null),
+                    nextPostId: aroundPool
+                        ? (aroundPool.nextPost ? aroundPool.nextPost.id : null)
+                        : (aroundResponse.next ? aroundResponse.next.id : null),
                     canEditPosts: api.hasPrivilege("posts:edit"),
                     canDeletePosts: api.hasPrivilege("posts:delete"),
                     canFeaturePosts: api.hasPrivilege("posts:feature"),
                     canListComments: api.hasPrivilege("comments:list"),
                     canCreateComments: api.hasPrivilege("comments:create"),
+                    canListPools: api.hasPrivilege("pools:list"),
+                    canViewPools: api.hasPrivilege("pools:view"),
                     parameters: parameters,
                 });
 

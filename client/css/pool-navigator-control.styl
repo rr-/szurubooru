@@ -1,0 +1,39 @@
+@import colors
+
+.pool-navigator-container
+    padding: 0
+    margin: 0 auto
+
+    .pool-info-wrapper
+        box-sizing: border-box
+        width: 100%
+        margin: 0 0 1em 0
+        display: flex
+        padding: 0.5em 1em
+        border: 1px solid $line-color
+        background: $top-navigation-color
+
+        .pool-name
+            flex: 1 1
+            text-align: center
+            overflow: hidden
+            white-space: nowrap
+            -o-text-overflow: ellipsis
+            text-overflow: ellipsis
+
+        .first, .last
+            flex-basis: 1em
+
+        .first, .prev, .next, .last
+            flex: 0 1
+            white-space: nowrap
+
+        >span
+            padding-top: 2px
+            padding-bottom: 2px
+            margin: 0 .25em
+
+
+.darktheme .pool-navigator-container .pool-info-wrapper
+        border: 1px solid $top-navigation-color-darktheme
+        background: $window-color-darktheme

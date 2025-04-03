@@ -108,6 +108,7 @@ class PoolSerializer(serialization.BaseSerializer):
             "lastEditTime": self.serialize_last_edit_time,
             "postCount": self.serialize_post_count,
             "posts": self.serialize_posts,
+            "postsMicro": self.serialize_posts_micro,
         }
 
     def serialize_id(self) -> Any:
@@ -142,6 +143,14 @@ class PoolSerializer(serialization.BaseSerializer):
                 for rel in self.pool.posts
             ]
         ]
+
+    def serialize_posts_micro(self) -> Any:
+        posts_micro = []
+        for i, rel in enumerate(self.pool.posts):
+            posts_micro.append(posts.serialize_micro_post(rel, None))
+            if i == 2:
+                break
+        return posts_micro
 
 
 def serialize_pool(
