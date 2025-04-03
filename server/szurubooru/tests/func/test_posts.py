@@ -105,7 +105,14 @@ def test_serialize_post(
     pool_category_factory,
     config_injector,
 ):
-    config_injector({"data_url": "http://example.com/", "secret": "test"})
+    config_injector({
+        "privileges": {
+            "pools:list": model.User.RANK_REGULAR,
+            "pools:view": model.User.RANK_REGULAR,
+        },
+        "data_url": "http://example.com/",
+        "secret": "test"
+    })
     with patch("szurubooru.func.comments.serialize_comment"), patch(
         "szurubooru.func.users.serialize_micro_user"
     ), patch("szurubooru.func.posts.files.has"):
@@ -249,6 +256,10 @@ def test_serialize_post(
                     "description": "desc",
                     "category": "test-cat1",
                     "postCount": 1,
+                    "firstPost": {"id": 1},
+                    "lastPost": {"id": 1},
+                    "previousPost": None,
+                    "nextPost": None,
                 },
                 {
                     "id": 2,
@@ -256,6 +267,10 @@ def test_serialize_post(
                     "description": "desc2",
                     "category": "test-cat2",
                     "postCount": 1,
+                    "firstPost": {"id": 1},
+                    "lastPost": {"id": 1},
+                    "previousPost": None,
+                    "nextPost": None,
                 },
             ],
             "user": "post author",
