@@ -40,7 +40,7 @@ function makeRelativeTime(time) {
     );
 }
 
-function makeThumbnail(url, klass) {
+function makeThumbnail(url, klass, extraProperties) {
     return makeElement(
         "span",
         url
@@ -49,7 +49,7 @@ function makeThumbnail(url, klass) {
                   style: `background-image: url(\'${url}\')`,
               }
             : { class: "thumbnail empty" },
-        makeElement("img", { alt: "thumbnail", src: url })
+        makeElement("img", Object.assign({ alt: "thumbnail", src: url }, extraProperties || {}))
     );
 }
 
@@ -64,7 +64,7 @@ function makePoolThumbnails(posts, postFlow) {
     let s = "";
 
     for (let i = 0; i < Math.min(3, posts.length); i++) {
-        s += makeThumbnail(posts.at(i).thumbnailUrl, "thumbnail thumbnail-" + (i+1));
+        s += makeThumbnail(posts.at(i).thumbnailUrl, "thumbnail thumbnail-" + (i+1), i === 0 ? {fetchPriority: "high"} : {});
     }
 
     return s;
