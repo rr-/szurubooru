@@ -26,7 +26,7 @@
                         %><a href='<%- ctx.formatClientLink('user', ctx.user.name) %>'><%
                     %><% } %><%
 
-                    %><%- ctx.user ? ctx.user.name : 'Deleted user' %><%
+                    %><%- ctx.user ? ctx.user.name : 'Anonymous' %><%
 
                     %><% if (ctx.user && ctx.user.name && ctx.canViewUsers) { %><%
                         %></a><%
