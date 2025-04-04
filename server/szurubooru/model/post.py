@@ -24,8 +24,8 @@ class PostFeature(Base):
     user_id = sa.Column(
         "user_id",
         sa.Integer,
-        sa.ForeignKey("user.id"),
-        nullable=False,
+        sa.ForeignKey("user.id", ondelete="SET NULL"),
+        nullable=True,
         index=True,
     )
     time = sa.Column("time", sa.DateTime, nullable=False)
