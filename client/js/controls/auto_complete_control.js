@@ -223,6 +223,13 @@ class AutoCompleteControl {
     }
 
     _updateResults(textToFind) {
+        if (this._options.isNegationAllowed && textToFind === "-") {
+            this._results = [];
+            this._activeResult = -1;
+            this._refreshList();
+            return;
+        }
+
         this._options.getMatches(textToFind).then((matches) => {
             const oldResults = this._results.slice();
             this._results = matches.slice(0, this._options.maxResults);

@@ -5,7 +5,7 @@ const views = require("../util/views.js");
 const TagList = require("../models/tag_list.js");
 const AutoCompleteControl = require("./auto_complete_control.js");
 
-function _tagListToMatches(tags, options) {
+function _tagListToMatches(tags, options, negated) {
     return [...tags]
         .sort((tag1, tag2) => {
             return tag2.usages - tag1.usages;
@@ -14,6 +14,9 @@ function _tagListToMatches(tags, options) {
             let cssName = misc.makeCssName(tag.category, "tag");
             if (options.isTaggedWith(tag.names[0])) {
                 cssName += " disabled";
+            }
+            if (negated) {
+                tag.names = tag.names.map((tagName) => "-"+tagName);
             }
             const caption =
                 '<span class="' +
@@ -35,16 +38,26 @@ class TagAutoCompleteControl extends AutoCompleteControl {
         options = Object.assign(
             {
                 isTaggedWith: (tag) => false,
+                isNegationAllowed: false,
             },
             options
         );
 
         options.getMatches = (text) => {
+            const negated = options.isNegationAllowed && text[0] === "-";
+            if (negated) text = text.substring(1);
+            if (!text) {
+                return new Promise((resolve, reject) => {
+                    (response) => resolve(null),
+                    reject
+                });
+            }
+
             const term = misc.escapeSearchTerm(text);
             const query =
-                (text.length < minLengthForPartialSearch
-                    ? term + "*"
-                    : "*" + term + "*") + " sort:usages";
+                (text.length >= minLengthForPartialSearch || (!options.isNegationAllowed && text[0] === "-")
+                    ? "*" + term + "*"
+                    : term + "*") + " sort:usages";
 
             return new Promise((resolve, reject) => {
                 TagList.search(query, 0, this._options.maxResults, [
@@ -54,7 +67,7 @@ class TagAutoCompleteControl extends AutoCompleteControl {
                 ]).then(
                     (response) =>
                         resolve(
-                            _tagListToMatches(response.results, this._options)
+                            _tagListToMatches(response.results, this._options, negated)
                         ),
                     reject
                 );

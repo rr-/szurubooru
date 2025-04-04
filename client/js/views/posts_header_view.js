@@ -186,6 +186,7 @@ class PostsHeaderView extends events.EventTarget {
                         misc.escapeSearchTerm(tag.names[0]),
                         true
                     ),
+                isNegationAllowed: true,
             }
         );
 
