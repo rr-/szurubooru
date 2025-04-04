@@ -4,18 +4,20 @@ const misc = require("../util/misc.js");
 const PoolList = require("../models/pool_list.js");
 const AutoCompleteControl = require("./auto_complete_control.js");
 
-function _poolListToMatches(pools, options) {
+function _poolListToMatches(text, pools, options) {
     return [...pools]
         .sort((pool1, pool2) => {
             return pool2.postCount - pool1.postCount;
         })
         .map((pool) => {
+            pool.matchingNames = pool.names.filter((name) => misc.wildcardMatch(text + "*", name, false));
+            pool.matchingNames = pool.matchingNames.length ? pool.matchingNames : pool.names;
             let cssName = misc.makeCssName(pool.category, "pool");
             const caption =
                 '<span class="' +
                 cssName +
                 '">' +
-                misc.escapeHtml(pool.names[0] + " (" + pool.postCount + ")") +
+                misc.escapeHtml(pool.matchingNames[0] + " (" + pool.postCount + ")") +
                 "</span>";
             return {
                 caption: caption,
@@ -46,7 +48,7 @@ class PoolAutoCompleteControl extends AutoCompleteControl {
                 { noProgress: true }).then(
                     (response) =>
                         resolve(
-                            _poolListToMatches(response.results, this._options)
+                            _poolListToMatches(text, response.results, this._options)
                         ),
                     reject
                 );
@@ -54,6 +56,17 @@ class PoolAutoCompleteControl extends AutoCompleteControl {
         };
 
         super(input, options);
+    }
+
+    _getActiveSuggestion() {
+        if (this._activeResult === -1) {
+            return null;
+        }
+        const result = this._results[this._activeResult].value;
+        const textToFind = this._options.getTextToFind();
+        result.matchingNames = result.names.filter((name) => misc.wildcardMatch(textToFind + "*", name, false));
+        result.matchingNames = result.matchingNames.length ? result.matchingNames : result.names;
+        return result;
     }
 }
 

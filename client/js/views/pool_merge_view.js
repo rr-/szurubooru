@@ -25,7 +25,7 @@ class PoolMergeView extends events.EventTarget {
                     confirm: (pool) => {
                         this._targetPoolId = pool.id;
                         this._autoCompleteControl.replaceSelectedText(
-                            pool.names[0],
+                            pool.matchingNames[0],
                             false
                         );
                     },
