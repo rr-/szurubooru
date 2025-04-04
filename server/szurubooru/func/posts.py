@@ -794,6 +794,8 @@ def update_post_flags(post: model.Post, flags: List[str]) -> None:
 
 def feature_post(post: model.Post, user: Optional[model.User]) -> None:
     assert post
+    if user and not user.name:
+        user = None
     post_feature = model.PostFeature()
     post_feature.time = datetime.utcnow()
     post_feature.post = post
