@@ -31,9 +31,9 @@ class PoolAutoCompleteControl extends AutoCompleteControl {
         options.getMatches = (text) => {
             const term = misc.escapeSearchTerm(text);
             const query =
-                (text.length < minLengthForPartialSearch
-                    ? term + "*"
-                    : "*" + term + "*") + " sort:post-count";
+                (text.length >= minLengthForPartialSearch
+                    ? "*" + term + "*"
+                    : term + "*") + " sort:post-count";
 
             return new Promise((resolve, reject) => {
                 PoolList.search(query, 0, this._options.maxResults, [

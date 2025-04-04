@@ -30,6 +30,7 @@ class HomeView {
                             misc.escapeSearchTerm(tag.names[0]),
                             true
                         ),
+                    isNegationAllowed: true,
                 }
             );
             this._formNode.addEventListener("submit", (e) =>
