@@ -46,7 +46,7 @@ class Comment(Base):
     user_id = sa.Column(
         "user_id",
         sa.Integer,
-        sa.ForeignKey("user.id"),
+        sa.ForeignKey("user.id", ondelete="SET NULL"),
         nullable=True,
         index=True,
     )
