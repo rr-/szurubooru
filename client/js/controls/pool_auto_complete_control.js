@@ -42,7 +42,8 @@ class PoolAutoCompleteControl extends AutoCompleteControl {
                     "category",
                     "postCount",
                     "version",
-                ]).then(
+                ],
+                { noProgress: true }).then(
                     (response) =>
                         resolve(
                             _poolListToMatches(response.results, this._options)
