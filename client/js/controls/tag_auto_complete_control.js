@@ -11,8 +11,7 @@ function _tagListToMatches(text, tags, options, negated) {
             return tag2.usages - tag1.usages;
         })
         .map((tag) => {
-            tag.matchingNames = tag.names.filter((name) => misc.wildcardMatch(text + "*", name, false));
-            tag.matchingNames = tag.matchingNames.length ? tag.matchingNames : tag.names;
+            tag.matchingNames = misc.matchingNames(text, tag.names);
             let cssName = misc.makeCssName(tag.category, "tag");
             if (options.isTaggedWith(tag.names[0])) {
                 cssName += " disabled";
@@ -87,8 +86,7 @@ class TagAutoCompleteControl extends AutoCompleteControl {
         }
         const result = this._results[this._activeResult].value;
         const textToFind = this._options.getTextToFind();
-        result.matchingNames = result.names.filter((name) => misc.wildcardMatch(textToFind + "*", name, false));
-        result.matchingNames = result.matchingNames.length ? result.matchingNames : result.names;
+        result.matchingNames = misc.matchingNames(textToFind, result.names);
         return result;
     }
 }

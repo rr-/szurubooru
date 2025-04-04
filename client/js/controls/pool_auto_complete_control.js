@@ -10,8 +10,7 @@ function _poolListToMatches(text, pools, options) {
             return pool2.postCount - pool1.postCount;
         })
         .map((pool) => {
-            pool.matchingNames = pool.names.filter((name) => misc.wildcardMatch(text + "*", name, false));
-            pool.matchingNames = pool.matchingNames.length ? pool.matchingNames : pool.names;
+            pool.matchingNames = misc.matchingNames(text, pool.names);
             let cssName = misc.makeCssName(pool.category, "pool");
             const caption =
                 '<span class="' +
@@ -64,8 +63,7 @@ class PoolAutoCompleteControl extends AutoCompleteControl {
         }
         const result = this._results[this._activeResult].value;
         const textToFind = this._options.getTextToFind();
-        result.matchingNames = result.names.filter((name) => misc.wildcardMatch(textToFind + "*", name, false));
-        result.matchingNames = result.matchingNames.length ? result.matchingNames : result.names;
+        result.matchingNames = misc.matchingNames(textToFind, result.names);
         return result;
     }
 }
