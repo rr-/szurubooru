@@ -110,6 +110,15 @@ class StrikeThroughWrapper extends BaseMarkdownWrapper {
     }
 }
 
+class FaviconWrapper extends BaseMarkdownWrapper {
+    preprocess(text) {
+        return text.replace(
+            /\[icon\]((?:[^\[]|\[(?!\/?icon\]))+)\[\/icon\]/gi,
+            '<a href="$1"><img src="https://www.google.com/s2/favicons?domain=$1"> $1</a>'
+        );
+    }
+}
+
 function createRenderer() {
     function sanitize(str) {
         return str.replace(/&<"/g, (m) => {
@@ -155,6 +164,7 @@ function formatMarkdown(text) {
         new SpoilersWrapper(),
         new SmallWrapper(),
         new StrikeThroughWrapper(),
+        new FaviconWrapper(),
     ];
     for (let wrapper of wrappers) {
         text = wrapper.preprocess(text);
@@ -181,6 +191,7 @@ function formatInlineMarkdown(text) {
         new SpoilersWrapper(),
         new SmallWrapper(),
         new StrikeThroughWrapper(),
+        new FaviconWrapper(),
     ];
     for (let wrapper of wrappers) {
         text = wrapper.preprocess(text);
