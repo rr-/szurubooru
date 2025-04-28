@@ -7,7 +7,7 @@ version: '2'
 services:
 
   server:
-    image: szurubooru/server:latest
+    build: server
     depends_on:
       - sql
     environment:
@@ -25,9 +25,10 @@ services:
     volumes:
       - "${MOUNT_DATA}:/data"
       - "./server/config.yaml:/opt/app/config.yaml"
+    restart: unless-stopped
 
   client:
-    image: szurubooru/client:latest
+    build: client
     depends_on:
       - server
     environment:
@@ -37,6 +38,7 @@ services:
       - "${MOUNT_DATA}:/data:ro"
     ports:
       - "${PORT}:80"
+    restart: unless-stopped
 
   sql:
     image: postgres:11-alpine
