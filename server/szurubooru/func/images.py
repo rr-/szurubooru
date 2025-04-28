@@ -7,18 +7,28 @@ import subprocess
 from io import BytesIO
 from typing import List
 
-import HeifImagePlugin
-import pillow_avif
 from PIL import Image as PILImage
+
+from psd_tools import PSDImage
 
 from szurubooru import errors
 from szurubooru.func import mime, util
+
 
 logger = logging.getLogger(__name__)
 
 
 def convert_heif_to_png(content: bytes) -> bytes:
     img = PILImage.open(BytesIO(content))
+    img_byte_arr = BytesIO()
+    img.save(img_byte_arr, format="PNG")
+    return img_byte_arr.getvalue()
+
+
+
+def convert_psd_to_png(content: bytes) -> bytes:
+    psd_object = PSDImage.open(BytesIO(content))
+    img = psd_object.composite()
     img_byte_arr = BytesIO()
     img.save(img_byte_arr, format="PNG")
     return img_byte_arr.getvalue()
@@ -265,10 +275,13 @@ class Image:
         get_logs: bool = False,
     ) -> bytes:
         mime_type = mime.get_mime_type(self.content)
+        # FFmpeg does not support HEIF or PSD.
+        # https://trac.ffmpeg.org/ticket/6521
+        # https://ffmpeg.org/pipermail/ffmpeg-devel/2016-July/196477.html
         if mime.is_heif(mime_type):
-            # FFmpeg does not support HEIF.
-            # https://trac.ffmpeg.org/ticket/6521
             self.content = convert_heif_to_png(self.content)
+        elif mime_type == "image/vnd.adobe.photoshop":
+            self.content = convert_psd_to_png(self.content)
         extension = mime.get_extension(mime_type)
         assert extension
         with util.create_temp_file(suffix="." + extension) as handle:
