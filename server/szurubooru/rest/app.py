@@ -101,7 +101,7 @@ def application(
                 for hook in middleware.pre_hooks:
                     hook(ctx)
                 try:
-                    response = handler(ctx, match.groupdict())
+                    response = handler(ctx, {k: urllib.parse.unquote(v) for k, v in match.groupdict().items()})
                 except Exception:
                     ctx.session.rollback()
                     raise
