@@ -31,7 +31,7 @@ class InvalidPoolCategoryColorError(errors.ValidationError):
 
 def _verify_name_validity(name: str) -> None:
     name_regex = config.config["pool_category_name_regex"]
-    if not re.match(name_regex, name):
+    if not re.fullmatch(name_regex, name):
         raise InvalidPoolCategoryNameError(
             "Name must satisfy regex %r." % name_regex
         )
@@ -110,7 +110,7 @@ def update_category_color(category: model.PoolCategory, color: str) -> None:
     assert category
     if not color:
         raise InvalidPoolCategoryColorError("Color cannot be empty.")
-    if not re.match(r"^#?[0-9a-z]+$", color):
+    if not re.fullmatch(r"^#?[0-9a-z]+$", color):
         raise InvalidPoolCategoryColorError("Invalid color.")
     if util.value_exceeds_column_size(color, model.PoolCategory.color):
         raise InvalidPoolCategoryColorError("Color is too long.")

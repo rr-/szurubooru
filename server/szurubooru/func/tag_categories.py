@@ -31,7 +31,7 @@ class InvalidTagCategoryColorError(errors.ValidationError):
 
 def _verify_name_validity(name: str) -> None:
     name_regex = config.config["tag_category_name_regex"]
-    if not re.match(name_regex, name):
+    if not re.fullmatch(name_regex, name):
         raise InvalidTagCategoryNameError(
             "Name must satisfy regex %r." % name_regex
         )
@@ -115,7 +115,7 @@ def update_category_color(category: model.TagCategory, color: str) -> None:
     assert category
     if not color:
         raise InvalidTagCategoryColorError("Color cannot be empty.")
-    if not re.match(r"^#?[0-9a-z]+$", color):
+    if not re.fullmatch(r"^#?[0-9a-z]+$", color):
         raise InvalidTagCategoryColorError("Invalid color.")
     if util.value_exceeds_column_size(color, model.TagCategory.color):
         raise InvalidTagCategoryColorError("Color is too long.")
