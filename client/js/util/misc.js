@@ -211,6 +211,24 @@ function getPrettyName(tag) {
     return tag;
 }
 
+function wildcardMatch(pattern, str, sensitive = false) {
+    let w = pattern.replace(/[.+^${}()|[\]\\?]/g, "\\$&");
+    const re = new RegExp(`^${w.replace(/\(--wildcard--\)|\*/g, ".*")}$`, sensitive ? "" : "i");
+    return re.test(str);
+}
+
+function matchingNames(text, names) {
+    const minLengthForPartialSearch = 3;
+    let matches = names.filter((name) => wildcardMatch(text + "*", name, false));
+
+    if (!matches.length && text.length >= minLengthForPartialSearch) {
+        matches = names.filter((name) => wildcardMatch("*" + text + "*", name, false));
+    }
+
+    matches = matches.length ? matches : names;
+    return matches;
+}
+
 module.exports = {
     range: range,
     formatRelativeTime: formatRelativeTime,
@@ -229,4 +247,6 @@ module.exports = {
     escapeSearchTerm: escapeSearchTerm,
     dataURItoBlob: dataURItoBlob,
     getPrettyName: getPrettyName,
+    wildcardMatch: wildcardMatch,
+    matchingNames: matchingNames,
 };

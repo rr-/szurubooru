@@ -114,6 +114,7 @@ class TagInputControl extends events.EventTarget {
                 },
                 verticalShift: -2,
                 isTaggedWith: (tagName) => this.tags.isTaggedWith(tagName),
+                isNegationAllowed: false,
             }
         );
 

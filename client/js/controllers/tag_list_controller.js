@@ -78,7 +78,8 @@ class TagListController {
                     this._ctx.parameters.query,
                     offset,
                     limit,
-                    fields
+                    fields,
+                    {}
                 );
             },
             pageRenderer: (pageCtx) => {
