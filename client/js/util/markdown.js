@@ -110,24 +110,22 @@ class StrikeThroughWrapper extends BaseMarkdownWrapper {
     }
 }
 
-function createRenderer() {
-    function sanitize(str) {
-        return str.replace(/&<"/g, (m) => {
-            if (m === "&") {
-                return "&amp;";
-            }
-            if (m === "<") {
-                return "&lt;";
-            }
-            return "&quot;";
-        });
-    }
+function escapeHtml(unsafe) {
+    return unsafe
+        .toString()
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&apos;");
+}
 
+function createRenderer() {
     const renderer = new marked.Renderer();
     renderer.image = (href, title, alt) => {
         let [_, url, width, height] =
             /^(.+?)(?:\s=\s*(\d*)\s*x\s*(\d*)\s*)?$/.exec(href);
-        let res = '<img src="' + sanitize(url) + '" alt="' + sanitize(alt);
+        let res = '<img src="' + escapeHtml(url) + '" alt="' + escapeHtml(alt);
         if (width) {
             res += '" width="' + width;
         }
@@ -156,6 +154,7 @@ function formatMarkdown(text) {
         new SmallWrapper(),
         new StrikeThroughWrapper(),
     ];
+    text = escapeHtml(text);
     for (let wrapper of wrappers) {
         text = wrapper.preprocess(text);
     }
@@ -182,6 +181,7 @@ function formatInlineMarkdown(text) {
         new SmallWrapper(),
         new StrikeThroughWrapper(),
     ];
+    text = escapeHtml(text);
     for (let wrapper of wrappers) {
         text = wrapper.preprocess(text);
     }
@@ -196,4 +196,5 @@ function formatInlineMarkdown(text) {
 module.exports = {
     formatMarkdown: formatMarkdown,
     formatInlineMarkdown: formatInlineMarkdown,
+    escapeHtml: escapeHtml,
 };
