@@ -4,6 +4,9 @@ $comment-header-background-color-darktheme = $top-navigation-color-darktheme
 
 $comment-border-color = #DDD
 
+.comments-container
+    margin-top: 2em
+
 .comment-container
     padding: 0 0 0 60px
 
@@ -16,7 +19,13 @@ $comment-border-color = #DDD
             width: 40px
             height: 40px
         a
+            outline: none
             display: inline-block
+            position: relative
+            top: -2px
+            border: 2px solid transparent
+            &:focus
+                border: 2px solid $main-color
 
     nav:not(.active), .tab:not(.active)
         display: none
@@ -114,17 +123,30 @@ $comment-border-color = #DDD
         .messages
             margin: 1em 0
 
-.darktheme .comment-container .comment header
-    background: $comment-header-background-color-darktheme
-    nav.edit
-        ul
-            li
-                &.active
-                    background: $window-color-darktheme
-                    border-bottom: 1px solid $window-color-darktheme
-    .edit, .delete, .score-container a, .nickname a
-        &:not(.inactive)
-            color: mix($main-color, $inactive-link-color-darktheme)
+.darktheme .comment-container
+    .comment
+        border: 1px solid $comment-header-background-color-darktheme
+
+        header
+            background: $comment-header-background-color-darktheme
+            border-bottom: 1px solid $comment-header-background-color-darktheme
+
+            nav.edit
+                ul
+                    li
+                        &.active
+                            background: $window-color-darktheme
+                            border: 1px solid $window-color-darktheme
+
+            .edit, .delete, .score-container a, .nickname a
+                &:not(.inactive)
+                    color: mix($main-color, $inactive-link-color-darktheme)
+
+            &:before
+                border-right: 0
+
+            &:after
+                border-right: 0.75em solid $comment-header-background-color-darktheme
 
 .comment-content
     p
