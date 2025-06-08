@@ -55,12 +55,16 @@ class TildeWrapper extends BaseMarkdownWrapper {
 class EntityPermalinkWrapper extends BaseMarkdownWrapper {
     preprocess(text) {
         text = text.replace(
-            /(^|^\(|(?:[^\]])\(|[\s<>\[\]\)])([+#@][a-zA-Z0-9_-]+)/g,
-            "$1[$2]($2)"
+            /(?<=(?<!\])\(|[\[<])([+#@?][^\s%#+/]+)(?=[\)\]>])/g, "[$1]($1)"
         );
+
+        text = text.replace(
+            /(?<![\(\[<]|%%%)([+#@?][^\s%#+/]+)(?![\)\]>])/g, "[$1]($1)"
+        );
+
         text = text.replace(/\]\(@(\d+)\)/g, "](/post/$1)");
         text = text.replace(/\]\(\+([a-zA-Z0-9_-]+)\)/g, "](/user/$1)");
-        text = text.replace(/\]\(#([a-zA-Z0-9_-]+)\)/g, "](/posts/query=$1)");
+        text = text.replace(/\]\(#([^\s%+#/]+)\)/g, "](/posts/query=$1)");
         return text;
     }
 }
