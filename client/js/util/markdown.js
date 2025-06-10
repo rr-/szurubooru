@@ -65,6 +65,9 @@ class EntityPermalinkWrapper extends BaseMarkdownWrapper {
         text = text.replace(/\]\(@(\d+)\)/g, "](/post/$1)");
         text = text.replace(/\]\(\+([a-zA-Z0-9_-]+)\)/g, "](/user/$1)");
         text = text.replace(/\]\(#([^\s%+#/]+)\)/g, "](/posts/query=$1)");
+        text = text.replace(/\[\?([^\s%+#/]+)\]\(\?\1\)/g, (_, tag) => {
+            return `[${tag.replace(/_/g, " ")}](/tag/${tag})`;
+        });
         return text;
     }
 }

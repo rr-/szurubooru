@@ -11,6 +11,10 @@
             <td>links to tag &ldquo;Dragon_Ball&rdquo;</td>
         </tr>
         <tr>
+            <td><code>?Hatsune_Miku</code></td>
+            <td>links to tag page for &ldquo;Hatsune_Miku&rdquo;</td>
+        </tr>
+        <tr>
             <td><code>+Pirate</code></td>
             <td>links to user &ldquo;Pirate&rdquo;</td>
         </tr>
