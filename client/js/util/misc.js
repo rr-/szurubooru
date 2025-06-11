@@ -95,11 +95,11 @@ function formatRelativeTime(timeString) {
 }
 
 function formatMarkdown(text) {
-    return markdown.formatMarkdown(text);
+    return markdown.formatMarkdown(text, getPrettyName);
 }
 
 function formatInlineMarkdown(text) {
-    return markdown.formatInlineMarkdown(text);
+    return markdown.formatInlineMarkdown(text, getPrettyName);
 }
 
 function splitByWhitespace(str) {
