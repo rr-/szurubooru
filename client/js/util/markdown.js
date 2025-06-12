@@ -116,7 +116,7 @@ class FaviconWrapper extends BaseMarkdownWrapper {
     preprocess(text) {
         return text.replace(
             /\[icon\]((?:[^\[]|\[(?!\/?icon\]))+)\[\/icon\]/gi,
-            "[![$1](https://www.google.com/s2/favicons?domain=$1)]($1) $1"
+            '<a href="$1"><img src="https://www.google.com/s2/favicons?domain=$1"> $1</a>'
         );
     }
 }
