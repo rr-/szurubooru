@@ -57,13 +57,13 @@ class EntityPermalinkWrapper extends BaseMarkdownWrapper {
         super();
         this.getPrettyName = getPrettyName || ((text) => text);
     }
+    unescape(text) {
+        return text.replace(/\\([^#@+/])/g, "$1");
+    }
     preprocess(text) {
         text = text.replace(
-            /(?<=(?<!\])\(|[\[<])([+#@?][^\s%#+/]+)(?=[\)\]>])/g, "[$1]($1)"
-        );
-
-        text = text.replace(
-            /(?<![\(\[<]|%%%)([+#@?][^\s%#+/]+)(?![\)\]>])/g, "[$1]($1)"
+            /(?<![a-zA-Z0-9])([#+@?](?:[a-zA-Z0-9_-]|\\[^#@+/])+)/g,
+            (_, entity) => `[${this.unescape(entity)}](${this.unescape(entity)})`
         );
 
         text = text.replace(/\]\(@(\d+)\)/g, "](/post/$1)");
