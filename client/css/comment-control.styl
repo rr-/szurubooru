@@ -169,8 +169,16 @@ $comment-border-color = #DDD
     .spoiler
         background: #eee
         color: #eee
-        &:hover
+        a
+            transition: none
+        &:not(:hover):not(:has(:focus)) a
+            color: #eee
+        img
+            filter: brightness(0) invert(0.933)
+        &:hover, &:has(:focus)
             color: dimgray
+            img
+                filter: none
         &:before
             content: '['
             color: #000
