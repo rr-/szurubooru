@@ -33,6 +33,18 @@ RUN apk --no-cache add \
         "pillow-avif-plugin>=1.1.0" \
  && apk --no-cache del py3-pip
 
+# build and install ruffle exporter
+ENV RUSTFLAGS="-C target-feature=-crt-static"
+RUN apk --no-cache add git rustup openjdk11 mesa-gl mesa-egl mesa-gles mesa-dri-gallium \
+ && rustup-init --default-toolchain nightly -y \
+ && git clone https://github.com/ruffle-rs/ruffle \
+ && cd ruffle \
+ && /root/.cargo/bin/cargo build --release --package=exporter \
+ && cp target/release/exporter /usr/bin/ \
+ && cd .. \
+ && rm -rf ruffle /root/.cargo \
+ && apk --no-cache del git rustup
+
 COPY ./ /opt/app/
 RUN rm -rf /opt/app/szurubooru/tests
 
