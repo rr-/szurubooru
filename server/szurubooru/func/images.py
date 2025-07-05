@@ -287,7 +287,10 @@ class Image:
         with util.create_temp_file(suffix="." + extension) as handle:
             handle.write(self.content)
             handle.flush()
-            cli = [program, "-loglevel", "32" if get_logs else "24"] + cli
+            if program in ["ffmpeg", "ffprobe"]:
+                cli = [program, "-loglevel", "32" if get_logs else "24"] + cli
+            else:
+                cli = [program] + cli
             cli = [part.format(path=handle.name) for part in cli]
             proc = subprocess.Popen(
                 cli,
@@ -298,7 +301,7 @@ class Image:
             out, err = proc.communicate()
             if proc.returncode != 0:
                 logger.warning(
-                    "Failed to execute ffmpeg command (cli=%r, err=%r)",
+                    "Failed to execute {program} command (cli=%r, err=%r)".format(program=program),
                     " ".join(shlex.quote(arg) for arg in cli),
                     err,
                 )
