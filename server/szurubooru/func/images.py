@@ -46,7 +46,7 @@ class Image:
     def frames(self) -> int:
         return self.info["streams"][0]["nb_read_frames"]
 
-    def resize_fill(self, width: int, height: int, keep_transparency: bool = True, seek=True) -> None:
+    def resize_fill(self, width: int, height: int, keep_transparency: bool = True, seek: bool = True) -> None:
         width_greater = self.width > self.height
         width, height = (-1, height) if width_greater else (width, -1)
 
