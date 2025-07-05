@@ -34,19 +34,21 @@ RUN pip3 install --no-cache-dir --disable-pip-version-check \
 RUN apk --no-cache del py3-pip
 
 # build and install mozjpeg
-RUN apk --no-cache add automake cmake nasm libpng-dev libpng curl
-RUN curl -fL "https://github.com/mozilla/mozjpeg/archive/refs/tags/v4.1.1.tar.gz" -o mozjpeg.tar.gz
-RUN tar xzf mozjpeg.tar.gz && cd mozjpeg-* \
-&& cmake -DCMAKE_INSTALL_PREFIX=/usr \
-	-DCMAKE_INSTALL_LIBDIR=/usr/lib \
-	-DBUILD_SHARED_LIBS=True \	
-	-DCMAKE_BUILD_TYPE=None \
-	-DCMAKE_C_FLAGS="$CFLAGS" \
-	-DWITH_JPEG8=1 \
-	-DWITH_TURBOJPEG=1 \
-	-DENABLE_STATIC=0 \
-&& make install && cd
-RUN apk --no-cache del automake nasm cmake curl
+RUN apk --no-cache add automake cmake nasm curl libpng-dev libpng \
+ && curl -fL "https://github.com/mozilla/mozjpeg/archive/refs/tags/v4.1.1.tar.gz" -o mozjpeg.tar.gz \
+ && tar xzf mozjpeg.tar.gz && cd mozjpeg-* \
+ && cmake -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_INSTALL_LIBDIR=/usr/lib \
+        -DBUILD_SHARED_LIBS=True \
+        -DCMAKE_BUILD_TYPE=None \
+        -DCMAKE_C_FLAGS="$CFLAGS" \
+        -DWITH_JPEG8=1 \
+        -DWITH_TURBOJPEG=1 \
+        -DENABLE_STATIC=0 \
+ && make install \
+ && cd .. \
+ && rm -rf mozjpeg.tar.gz mozjpeg-* \
+ && apk --no-cache del automake cmake nasm curl
 
 COPY ./ /opt/app/
 RUN rm -rf /opt/app/szurubooru/tests
