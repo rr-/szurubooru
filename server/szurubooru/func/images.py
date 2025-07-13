@@ -330,7 +330,7 @@ class Image:
         )
         assert "format" in self.info
         assert "streams" in self.info
-        if len(self.info["streams"]) < 1 and self.info["format"]["format_name"] != "swf":
+        if len(self.info["streams"]) < 1:
             logger.warning("The video contains no video streams.")
             raise errors.ProcessingError(
                 "The video contains no video streams."
