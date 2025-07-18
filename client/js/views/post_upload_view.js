@@ -161,11 +161,14 @@ class PostUploadView extends events.EventTarget {
             return this._uploadables.findIndex((u2) => u.key === u2.key);
         };
 
+				let allowedExtensions = api.getAllowedExtensions().map(
+					function(e) {return "." + e}
+				);
         this._contentFileDropper = new FileDropperControl(
             this._contentInputNode,
             {
                 extraText:
-                    "Allowed extensions: .jpg, .png, .gif, .webm, .mp4, .swf, .avif, .heif, .heic",
+                    "Allowed extensions: " + allowedExtensions.join(", "),
                 allowUrls: true,
                 allowMultiple: true,
                 lock: false,
