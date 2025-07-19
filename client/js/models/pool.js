@@ -36,7 +36,7 @@ class Pool extends events.EventTarget {
     }
 
     get posts() {
-        return this._posts;
+        return this._postsMicro || this._posts;
     }
 
     get postCount() {
@@ -49,6 +49,22 @@ class Pool extends events.EventTarget {
 
     get lastEditTime() {
         return this._lastEditTime;
+    }
+
+    get firstPost() {
+        return this._firstPost;
+    }
+
+    get lastPost() {
+        return this._lastPost;
+    }
+
+    get previousPost() {
+        return this._previousPost;
+    }
+
+    get nextPost() {
+        return this._nextPost;
     }
 
     set names(value) {
@@ -169,10 +185,15 @@ class Pool extends events.EventTarget {
             _creationTime: response.creationTime,
             _lastEditTime: response.lastEditTime,
             _postCount: response.postCount || 0,
+            _postsMicro: response.postsMicro,
+            _firstPost: response.firstPost || null,
+            _lastPost: response.lastPost || null,
+            _previousPost: response.previousPost || null,
+            _nextPost: response.nextPost || null,
         };
 
         for (let obj of [this, this._orig]) {
-            obj._posts.sync(response.posts);
+            obj._posts.sync(response.posts || []);
         }
 
         Object.assign(this, map);

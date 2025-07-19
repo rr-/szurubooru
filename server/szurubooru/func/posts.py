@@ -1,12 +1,15 @@
 import hmac
 import logging
+from collections import namedtuple
 from datetime import datetime
+from itertools import tee, chain, islice
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import sqlalchemy as sa
 
 from szurubooru import config, db, errors, model, rest
 from szurubooru.func import (
+    auth,
     comments,
     files,
     image_hash,
@@ -15,7 +18,6 @@ from szurubooru.func import (
     pools,
     scores,
     serialization,
-    snapshots,
     tags,
     users,
     util,
@@ -95,6 +97,13 @@ FLAG_MAP = {
     model.Post.FLAG_LOOP: "loop",
     model.Post.FLAG_SOUND: "sound",
 }
+
+# https://stackoverflow.com/a/1012089
+def _get_nearby_iter(post_list):
+    previous_item, current_item, next_item = tee(post_list, 3)
+    previous_item = chain([None], previous_item)
+    next_item = chain(islice(next_item, 1, None), [None])
+    return zip(previous_item, current_item, next_item)
 
 
 def get_post_security_hash(id: int) -> str:
@@ -337,8 +346,10 @@ class PostSerializer(serialization.BaseSerializer):
         ]
 
     def serialize_pools(self) -> List[Any]:
+        if not auth.has_privilege(self.auth_user, "pools:list"):
+            return []
         return [
-            pools.serialize_micro_pool(pool)
+            {**pools.serialize_micro_pool(pool), **get_pool_posts_nearby(self.post, pool)} if auth.has_privilege(self.auth_user, "pools:view") else pools.serialize_micro_pool(pool)
             for pool in sorted(
                 self.post.pools, key=lambda pool: pool.creation_time
             )
@@ -968,3 +979,38 @@ def search_by_image(image_content: bytes) -> List[Tuple[float, model.Post]]:
         ]
     else:
         return []
+
+def serialize_safe_post(
+    post: Optional[model.Post]
+) -> rest.Response:
+    return {"id": getattr(post, "post_id", None)} if post else None
+
+
+def serialize_id_post(
+    post_id: Optional[int]
+) -> rest.Response:
+    return serialize_safe_post(try_get_post_by_id(post_id)) if post_id else None
+
+
+def get_pool_posts_nearby(
+    post: model.Post, pool: model.Pool
+) -> rest.Response:
+    prev_post_id = None
+    next_post_id = None
+    first_post_id = pool.posts[0].post_id,
+    last_post_id = pool.posts[-1].post_id,
+
+    for previous_item, current_item, next_item in _get_nearby_iter(pool.posts):
+        if post.post_id == current_item.post_id:
+            if previous_item != None:
+                prev_post_id = previous_item.post_id
+            if next_item != None:
+                next_post_id = next_item.post_id
+            break
+
+    return {
+        "firstPost": serialize_id_post(first_post_id),
+        "lastPost": serialize_id_post(last_post_id),
+        "previousPost": serialize_id_post(prev_post_id),
+        "nextPost": serialize_id_post(next_post_id),
+    }

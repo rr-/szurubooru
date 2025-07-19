@@ -5,12 +5,10 @@ from szurubooru import db, errors, model, rest, search
 from szurubooru.func import (
     auth,
     favorites,
-    mime,
     posts,
     scores,
     serialization,
     snapshots,
-    tags,
     versions,
 )
 

@@ -975,6 +975,43 @@ data.
 
     Retrieves information about posts that are before or after an existing post.
 
+## Getting pools around post
+- **Request**
+
+    `GET /post/<id>/pools-nearby`
+
+- **Output**
+
+    ```json5
+    [
+        {
+            "pool": <pool>,
+            "firstPost": <first-post>,
+            "lastPost": <last-post>,
+            "nextPost": <next-post>,
+            "previousPost": <previous-post>
+        },
+        ...
+    ]
+    ```
+
+- **Field meaning**
+
+- `<pool>`: The associated [micro pool resource](#micro-pool).
+- `<first-post>`: A [micro post resource](#micro-post) that displays the first post in the pool.
+- `<last-post>`: A [micro post resource](#micro-post) that displays the last post in the pool.
+- `<next-post>`: A [micro post resource](#micro-post) that displays the next post in the pool.
+- `<previous-post>`: A [micro post resource](#micro-post) that displays the previous post in the pool.
+
+- **Errors**
+
+    - the post does not exist
+    - privileges are too low
+
+- **Description**
+
+    Retrieves extra information about any pools that the post is in.
+
 ## Deleting post
 - **Request**
 

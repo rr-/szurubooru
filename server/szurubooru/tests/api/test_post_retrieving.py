@@ -14,6 +14,7 @@ def inject_config(config_injector):
             "privileges": {
                 "posts:list": model.User.RANK_REGULAR,
                 "posts:view": model.User.RANK_REGULAR,
+                "pools:list": model.User.RANK_REGULAR,
             },
         }
     )
@@ -125,3 +126,25 @@ def test_trying_to_retrieve_single_without_privileges(
             context_factory(user=user_factory(rank=model.User.RANK_ANONYMOUS)),
             {"post_id": 999},
         )
+
+
+def test_get_pool_post_around(user_factory, post_factory, pool_factory, pool_post_factory):
+    p1 = post_factory(id=1)
+    p2 = post_factory(id=2)
+    p3 = post_factory(id=3)
+    db.session.add_all([p1, p2, p3])
+
+    pool = pool_factory(id=1)
+    db.session.add(pool)
+
+    pool_posts = [pool_post_factory(pool=pool, post=p1), pool_post_factory(pool=pool, post=p2), pool_post_factory(pool=pool, post=p3)]
+    db.session.add_all(pool_posts)
+
+    result = posts.get_pool_posts_nearby(p1, pool)
+    assert result["previousPost"] == None and result["nextPost"]["id"] == 2
+
+    result = posts.get_pool_posts_nearby(p2, pool)
+    assert result["previousPost"]["id"] == 1 and result["nextPost"]["id"] == 3
+
+    result = posts.get_pool_posts_nearby(p3, pool)
+    assert result["previousPost"]["id"] == 2 and result["nextPost"] == None
