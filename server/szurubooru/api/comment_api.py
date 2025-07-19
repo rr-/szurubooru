@@ -48,7 +48,7 @@ def create_comment(
     text = ctx.get_param_as_string("text")
     post_id = ctx.get_param_as_int("postId")
     post = posts.get_post_by_id(post_id)
-    comment = comments.create_comment(ctx.user, post, text)
+    comment = comments.create_comment(ctx.user if ctx.user.name else None, post, text)
     ctx.session.add(comment)
     ctx.session.commit()
     return _serialize(ctx, comment)
