@@ -26,6 +26,10 @@
             <td><code>[sjis](´･ω･`)[/sjis]</td>
             <td>adds SJIS art</td>
         </tr>
+        <tr>
+            <td><code>[icon]https://youtube.com[/icon]</td>
+            <td>adds the site icon next to the link</td>
+        </tr>
     </tbody>
 </table>
 
