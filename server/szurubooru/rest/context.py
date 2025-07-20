@@ -48,7 +48,7 @@ class Context:
         self,
         name: str,
         default: Union[object, bytes] = MISSING,
-        use_video_downloader: bool = False,
+        use_downloader: bool = False,
         allow_tokens: bool = True,
     ) -> bytes:
         if name in self._files and self._files[name]:
@@ -57,7 +57,7 @@ class Context:
         if name + "Url" in self._params:
             return net.download(
                 self._params[name + "Url"],
-                use_video_downloader=use_video_downloader,
+                use_downloader=use_downloader,
             )
 
         if allow_tokens and name + "Token" in self._params:
