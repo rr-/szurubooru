@@ -93,7 +93,7 @@ def test_post_updating(
             post, ["note1", "note2"]
         )
         posts.update_post_flags.assert_called_once_with(
-            post, ["flag1", "flag2"]
+            post, ["flag1", "flag2"], remove=True
         )
         posts.serialize_post.assert_called_once_with(
             post, auth_user, options=[]

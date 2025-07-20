@@ -60,12 +60,14 @@ class BulkSafetyEditor extends BulkEditor {
         e.preventDefault();
         this.toggleOpen(true);
         this.dispatchEvent(new CustomEvent("open", { detail: {} }));
+        misc.enableExitConfirmation();
     }
 
     _evtCloseLinkClick(e) {
         e.preventDefault();
         this.toggleOpen(false);
         this.dispatchEvent(new CustomEvent("close", { detail: {} }));
+        misc.disableExitConfirmation();
     }
 }
 
@@ -130,6 +132,7 @@ class BulkTagEditor extends BulkEditor {
         this.toggleOpen(true);
         this.focus();
         this.dispatchEvent(new CustomEvent("open", { detail: {} }));
+        misc.enableExitConfirmation();
     }
 
     _evtCloseLinkClick(e) {
@@ -138,6 +141,7 @@ class BulkTagEditor extends BulkEditor {
         this.toggleOpen(false);
         this.blur();
         this.dispatchEvent(new CustomEvent("close", { detail: {} }));
+        misc.disableExitConfirmation();
     }
 }
 
@@ -160,12 +164,14 @@ class BulkDeleteEditor extends BulkEditor {
         e.preventDefault();
         this.toggleOpen(true);
         this.dispatchEvent(new CustomEvent("open", { detail: {} }));
+        misc.enableExitConfirmation();
     }
 
     _evtCloseLinkClick(e) {
         e.preventDefault();
         this.toggleOpen(false);
         this.dispatchEvent(new CustomEvent("close", { detail: {} }));
+        misc.disableExitConfirmation();
     }
 }
 

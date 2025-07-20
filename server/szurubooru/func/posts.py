@@ -94,6 +94,7 @@ TYPE_MAP = {
 FLAG_MAP = {
     model.Post.FLAG_LOOP: "loop",
     model.Post.FLAG_SOUND: "sound",
+    model.Post.FLAG_TAGME: "tagme",
 }
 
 
@@ -264,8 +265,8 @@ class PostSerializer(serialization.BaseSerializer):
             {
                 post["id"]: post
                 for post in [
-                    serialize_micro_post(rel, self.auth_user)
-                    for rel in self.post.relations
+                    serialize_micro_post(try_get_post_by_id(rel.child_id), self.auth_user)
+                    for rel in get_post_relations(self.post.post_id)
                 ]
             }.values(),
             key=lambda post: post["id"],
@@ -281,16 +282,14 @@ class PostSerializer(serialization.BaseSerializer):
         return scores.get_score(self.post, self.auth_user)
 
     def serialize_own_favorite(self) -> Any:
-        return (
-            len(
-                [
-                    user
-                    for user in self.post.favorited_by
-                    if user.user_id == self.auth_user.user_id
-                ]
-            )
-            > 0
-        )
+        if self.auth_user.user_id is None:
+            return False
+
+        for user in self.post.favorited_by:
+            if user.user_id == self.auth_user.user_id:
+                return True
+
+        return False
 
     def serialize_tag_count(self) -> Any:
         return self.post.tag_count
@@ -363,6 +362,10 @@ def serialize_micro_post(
 
 def get_post_count() -> int:
     return db.session.query(sa.func.count(model.Post.post_id)).one()[0]
+
+
+def get_post_relations(post_id: int) -> List[model.Post]:
+    return db.session.query(model.PostRelation).filter(model.PostRelation.parent_id == post_id).all()
 
 
 def try_get_post_by_id(post_id: int) -> Optional[model.Post]:
@@ -531,10 +534,13 @@ def generate_alternate_formats(
 def get_default_flags(content: bytes) -> List[str]:
     assert content
     ret = []
-    if mime.is_video(mime.get_mime_type(content)):
-        ret.append(model.Post.FLAG_LOOP)
+    if mime.is_animated_gif(content):
+        if images.check_for_loop(content):
+            ret.append(model.Post.FLAG_LOOP)
+    elif mime.is_video(mime.get_mime_type(content)):
         if images.Image(content).check_for_sound():
             ret.append(model.Post.FLAG_SOUND)
+    ret.append(model.Post.FLAG_TAGME)
     return ret
 
 
@@ -779,10 +785,12 @@ def update_post_notes(post: model.Post, notes: Any) -> None:
         )
 
 
-def update_post_flags(post: model.Post, flags: List[str]) -> None:
+def update_post_flags(post: model.Post, flags: List[str], remove: bool = False) -> None:
     assert post
     target_flags = []
     for flag in flags:
+        if remove and flag == model.Post.FLAG_TAGME:
+            continue
         flag = util.flip(FLAG_MAP).get(flag, None)
         if not flag:
             raise InvalidPostFlagError(

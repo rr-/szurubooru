@@ -1,4 +1,10 @@
 <div class='content-wrapper tag-summary'>
+    <section class='description'>
+        <%= ctx.makeMarkdown(ctx.tag.description || 'This tag has no description yet.') %>
+        <p>This tag has <a href='<%- ctx.formatClientLink('posts', {query: ctx.escapeTagName(ctx.tag.names[0])}) %>'><%- ctx.tag.postCount %> usage(s)</a>.</p>
+        <hr/>
+    </section>
+
     <section class='details'>
         <section>
             Category:
@@ -31,11 +37,5 @@
             --><% } %><!--
         --></ul>
         </section>
-    </section>
-
-    <section class='description'>
-        <hr/>
-        <%= ctx.makeMarkdown(ctx.tag.description || 'This tag has no description yet.') %>
-        <p>This tag has <a href='<%- ctx.formatClientLink('posts', {query: ctx.escapeTagName(ctx.tag.names[0])}) %>'><%- ctx.tag.postCount %> usage(s)</a>.</p>
     </section>
 </div>

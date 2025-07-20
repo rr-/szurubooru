@@ -12,7 +12,7 @@
 
                         <%= item.operation %>
 
-                        <%= ctx.makeResourceLink(item.type, item.id) %>
+                        <%= ctx.makeResourceLink(item.type, item.id, item.data) %>
                     </div>
 
                     <div class='details'><!--
