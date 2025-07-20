@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Dict, List, Optional
 
 from szurubooru import db, model, rest, search
-from szurubooru.func import auth, serialization, snapshots, tags, versions
+from szurubooru.func import auth, serialization, snapshots, tags, versions, users
 
 _search_executor = search.Executor(search.configs.TagSearchConfig())
 
