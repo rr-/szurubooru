@@ -93,7 +93,10 @@ class Executor:
             if token.name == "random":
                 disable_eager_loads = True
 
-        key = (id(self.config), hash(search_query), offset, limit)
+
+        can_list_unsafe = getattr(self.config, "can_list_unsafe", False)
+
+        key = (id(self.config), hash(search_query), offset, limit, can_list_unsafe)
         if cache.has(key):
             return cache.get(key)
 
