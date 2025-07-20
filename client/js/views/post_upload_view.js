@@ -401,6 +401,14 @@ class PostUploadView extends events.EventTarget {
             .addEventListener("click", (e) =>
                 this._evtMoveClick(e, uploadable, 1)
             );
+        if (uploadable.type == "video") {
+            const video = rowNode.querySelector("video");
+            if (video) {
+                video.addEventListener("loadedmetadata", (e) => {
+                    if (!isNaN(video.duration)) video.currentTime = Math.floor(video.duration * 0.3)
+                });
+            }
+        }
     }
 
     _updateThumbnailNode(uploadable) {

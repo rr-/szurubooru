@@ -8,7 +8,7 @@ const PageController = require("../controllers/page_controller.js");
 const CommentsPageView = require("../views/comments_page_view.js");
 const EmptyView = require("../views/empty_view.js");
 
-const fields = ["id", "comments", "commentCount", "thumbnailUrl"];
+const fields = ["id", "comments", "commentCount", "thumbnailUrl", "customThumbnailUrl"];
 
 class CommentsController {
     constructor(ctx) {
