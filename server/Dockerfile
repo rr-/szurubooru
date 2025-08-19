@@ -13,6 +13,7 @@ RUN apk --no-cache add \
         libheif-dev \
         libavif \
         libavif-dev \
+        exiftool \
         ffmpeg \
         # from requirements.txt:
         py3-yaml \
