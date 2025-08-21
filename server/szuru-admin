@@ -100,9 +100,9 @@ def regenerate_thumbnails() -> None:
 
             custom_content = files.get(postfuncs.get_post_custom_content_path(post))
             if custom_content:
-                generate_post_thumbnail(get_post_custom_thumbnail_path(post), custom_content, seek=True)
+                postfuncs.generate_post_thumbnail(postfuncs.get_post_custom_thumbnail_path(post), custom_content, seek=True)
             elif mime.is_video(post.mime_type):
-                generate_post_thumbnail(get_post_custom_thumbnail_path(post), content, seek=True)
+                postfuncs.generate_post_thumbnail(postfuncs.get_post_custom_thumbnail_path(post), content, seek=True)
         except Exception:
             pass
 
