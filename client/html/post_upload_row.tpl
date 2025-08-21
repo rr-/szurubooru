@@ -10,7 +10,7 @@
 
             <div class='thumbnail'>
                 <a href='<%= ctx.uploadable.previewUrl %>'>
-                    <video id='video' nocontrols muted>
+                    <video nocontrols muted>
                         <source type='<%- ctx.uploadable.mimeType %>' src='<%- ctx.uploadable.previewUrl %>'/>
                     </video>
                 </a>

@@ -70,6 +70,14 @@ class Post extends events.EventTarget {
         return this._thumbnailUrl;
     }
 
+    get customThumbnailUrl() {
+        return this._customThumbnailUrl;
+    }
+
+    get originalThumbnailUrl() {
+        return this._originalThumbnailUrl;
+    }
+
     get source() {
         return this._source;
     }
@@ -144,10 +152,6 @@ class Post extends events.EventTarget {
 
     get ownScore() {
         return this._ownScore;
-    }
-
-    get hasCustomThumbnail() {
-        return this._hasCustomThumbnail;
     }
 
     set flags(value) {
@@ -477,7 +481,9 @@ class Post extends events.EventTarget {
                 response.contentUrl,
                 document.getElementsByTagName("base")[0].href
             ).href,
-            _thumbnailUrl: response.thumbnailUrl,
+            _thumbnailUrl: response.customThumbnailUrl ? response.customThumbnailUrl : response.thumbnailUrl,
+            _customThumbnailUrl: response.customThumbnailUrl,
+            _originalThumbnailUrl: response.thumbnailUrl,
             _source: response.source,
             _canvasWidth: response.canvasWidth,
             _canvasHeight: response.canvasHeight,
@@ -491,7 +497,6 @@ class Post extends events.EventTarget {
             _favoriteCount: response.favoriteCount,
             _ownScore: response.ownScore,
             _ownFavorite: response.ownFavorite,
-            _hasCustomThumbnail: response.hasCustomThumbnail,
         });
 
         for (let obj of [this, this._orig]) {

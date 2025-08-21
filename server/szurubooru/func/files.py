@@ -1,4 +1,5 @@
 import os
+import glob
 from typing import Any, List, Optional
 
 from szurubooru import config
@@ -22,6 +23,10 @@ def scan(path: str) -> List[Any]:
     if has(path):
         return list(os.scandir(_get_full_path(path)))
     return []
+
+
+def find(path: str, pattern: str, recursive: bool = False) -> List[Any]:
+    return glob.glob(glob.escape(_get_full_path(path) + "/") + pattern, recursive=recursive)
 
 
 def move(source_path: str, target_path: str) -> None:

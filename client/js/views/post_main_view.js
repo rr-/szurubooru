@@ -31,6 +31,7 @@ class PostMainView {
         this._postContentControl = new PostContentControl(
             postContainerNode,
             ctx.post,
+            misc.isMediaCached(ctx.post),
             () => {
                 const margin = sidebarNode.getBoundingClientRect().left;
 
