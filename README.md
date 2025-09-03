@@ -1,4 +1,9 @@
-# szurubooru
+# szurubooru-deka
+
+Szurubooru-Deka is a fork of Szurubooru that adds features Deka feels are
+useful. Created due to not really having the time to be fully involved in the PR
+process for upstream but am able to find some time for dev. This branch diverged
+at version 2.5.
 
 Szurubooru is an image board engine inspired by services such as Danbooru,
 Gelbooru and Moebooru dedicated for small and medium communities. Its name [has

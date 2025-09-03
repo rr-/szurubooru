@@ -50,10 +50,10 @@ jobs:
           --build-arg BUILD_INFO=${{ env.build_info }}
           --build-arg BUILD_DATE=${{ env.build_date }}
           --build-arg SOURCE_COMMIT=$GITHUB_SHA
-          --build-arg DOCKER_REPO=szurubooru/client
-          -t "szurubooru/client:latest"
-          -t "szurubooru/client:${{ env.major_tag }}"
-          -t "szurubooru/client:${{ env.minor_tag }}"
+          --build-arg DOCKER_REPO=dekarrin/szuru-client
+          -t "dekarrin/szuru-client:latest"
+          -t "dekarrin/szuru-client:${{ env.major_tag }}"
+          -t "dekarrin/szuru-client:${{ env.minor_tag }}"
           ./client
 
   build-server:
@@ -101,8 +101,8 @@ jobs:
           --platform linux/amd64,linux/arm/v7,linux/arm64/v8
           --build-arg BUILD_DATE=${{ env.build_date }}
           --build-arg SOURCE_COMMIT=$GITHUB_SHA
-          --build-arg DOCKER_REPO=szurubooru/server
-          -t "szurubooru/server:latest"
-          -t "szurubooru/server:${{ env.major_tag }}"
-          -t "szurubooru/server:${{ env.minor_tag }}"
+          --build-arg DOCKER_REPO=dekarrin/szuru-server
+          -t "dekarrin/szuru-server:latest"
+          -t "dekarrin/szuru-server:${{ env.major_tag }}"
+          -t "dekarrin/szuru-server:${{ env.minor_tag }}"
           ./server

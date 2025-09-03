@@ -4,7 +4,7 @@
   "scripts": {
     "build": "node build.js",
     "watch": "node build.js --watch",
-    "build-container": "docker build -t szurubooru/client:dev ."
+    "build-container": "docker build -t dekarrin/szuru-client:dev ."
   },
   "dependencies": {
     "dompurify": "^2.0.17",
