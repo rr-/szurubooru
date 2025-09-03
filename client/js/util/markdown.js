@@ -110,24 +110,31 @@ class StrikeThroughWrapper extends BaseMarkdownWrapper {
     }
 }
 
-function createRenderer() {
-    function sanitize(str) {
-        return str.replace(/&<"/g, (m) => {
-            if (m === "&") {
-                return "&amp;";
-            }
-            if (m === "<") {
-                return "&lt;";
-            }
-            return "&quot;";
-        });
+class FaviconWrapper extends BaseMarkdownWrapper {
+    preprocess(text) {
+        return text.replace(
+            /\[icon\]((?:[^\[]|\[(?!\/?icon\]))+)\[\/icon\]/gi,
+            '<a href="$1"><img src="https://www.google.com/s2/favicons?domain=$1"> $1</a>'
+        );
     }
+}
 
+function escapeHtml(unsafe) {
+    return unsafe
+        .toString()
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&apos;");
+}
+
+function createRenderer() {
     const renderer = new marked.Renderer();
     renderer.image = (href, title, alt) => {
         let [_, url, width, height] =
             /^(.+?)(?:\s=\s*(\d*)\s*x\s*(\d*)\s*)?$/.exec(href);
-        let res = '<img src="' + sanitize(url) + '" alt="' + sanitize(alt);
+        let res = '<img src="' + escapeHtml(url) + '" alt="' + escapeHtml(alt);
         if (width) {
             res += '" width="' + width;
         }
@@ -145,6 +152,7 @@ function formatMarkdown(text) {
         renderer: renderer,
         breaks: true,
         smartypants: true,
+        headerIds: false,
     };
     let wrappers = [
         new SjisWrapper(),
@@ -155,7 +163,9 @@ function formatMarkdown(text) {
         new SpoilersWrapper(),
         new SmallWrapper(),
         new StrikeThroughWrapper(),
+        new FaviconWrapper(),
     ];
+    text = escapeHtml(text);
     for (let wrapper of wrappers) {
         text = wrapper.preprocess(text);
     }
@@ -173,6 +183,7 @@ function formatInlineMarkdown(text) {
         renderer: renderer,
         breaks: true,
         smartypants: true,
+        headerIds: false,
     };
     let wrappers = [
         new TildeWrapper(),
@@ -181,7 +192,9 @@ function formatInlineMarkdown(text) {
         new SpoilersWrapper(),
         new SmallWrapper(),
         new StrikeThroughWrapper(),
+        new FaviconWrapper(),
     ];
+    text = escapeHtml(text);
     for (let wrapper of wrappers) {
         text = wrapper.preprocess(text);
     }
@@ -196,4 +209,5 @@ function formatInlineMarkdown(text) {
 module.exports = {
     formatMarkdown: formatMarkdown,
     formatInlineMarkdown: formatInlineMarkdown,
+    escapeHtml: escapeHtml,
 };

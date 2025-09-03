@@ -1,11 +1,13 @@
-## Example Docker Compose configuration
+## Docker Compose configuration for dev iteration
 ##
-## Use this as a template to set up docker compose, or as guide to set up other
-## orchestration services
+## Data is transient by using named vols.
+## Run: docker-compose -f ./docker-compose.dev.yml up
 services:
 
   server:
-    image: dekarrin/szuru-server:latest
+    build:
+      context: ./server
+      target: development
     depends_on:
       - sql
     environment:
@@ -21,20 +23,22 @@ services:
       #LOG_SQL: 0 (1 for verbose SQL logs)
       THREADS:
     volumes:
-      - "${MOUNT_DATA}:/data"
-      - "./server/config.yaml:/opt/app/config.yaml"
+      - "data:/data"
+      - "./server/:/opt/app/"
 
   client:
-    image: dekarrin/szuru-client:latest
+    build:
+      context: ./client
+      target: development
     depends_on:
       - server
-    environment:
-      BACKEND_HOST: server
-      BASE_URL:
     volumes:
-      - "${MOUNT_DATA}:/data:ro"
+      - "data:/data:ro"
+      - "./client/:/opt/app/"
+      - "/opt/app/public/"
     ports:
       - "${PORT}:80"
+      - "8081:8081"
 
   sql:
     image: postgres:11-alpine
@@ -43,4 +47,8 @@ services:
       POSTGRES_USER:
       POSTGRES_PASSWORD:
     volumes:
-      - "${MOUNT_SQL}:/var/lib/postgresql/data"
+      - "sql:/var/lib/postgresql/data"
+
+volumes:
+  data:
+  sql:

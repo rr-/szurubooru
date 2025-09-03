@@ -17,4 +17,3 @@ server/**/pyvenv.cfg
 __pycache__/
 
 .vscode
-docker-compose.dev.yml

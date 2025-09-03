@@ -103,6 +103,30 @@ class PostContentControl {
     }
 
     _refreshSize() {
+        if (window.innerWidth <= 800) {
+            const buttons = document.querySelector(".sidebar > .buttons");
+            if (buttons) {
+                const content = document.querySelector(".content");
+                content.insertBefore(buttons, content.querySelector(".post-container + *"));
+
+                const afterControls = document.querySelector(".content > .after-mobile-controls");
+                if (afterControls) {
+                    afterControls.parentElement.parentElement.appendChild(afterControls);
+                }
+            }
+        } else {
+            const buttons = document.querySelector(".content > .buttons");
+            if (buttons) {
+                const sidebar = document.querySelector(".sidebar");
+                sidebar.insertBefore(buttons, sidebar.firstElementChild);
+            }
+
+            const afterControls = document.querySelector(".content + .after-mobile-controls");
+            if (afterControls) {
+                document.querySelector(".content").appendChild(afterControls);
+            }
+        }
+
         this._currentFitFunction();
     }
 
