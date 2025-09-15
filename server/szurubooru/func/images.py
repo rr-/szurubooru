@@ -7,14 +7,14 @@ import subprocess
 from io import BytesIO
 from typing import List
 
-import HeifImagePlugin
-import pillow_avif
+from pillow_heif import register_heif_opener
 from PIL import Image as PILImage
 
 from szurubooru import errors
 from szurubooru.func import mime, util
 
 logger = logging.getLogger(__name__)
+register_heif_opener()
 
 
 def convert_heif_to_png(content: bytes) -> bytes:

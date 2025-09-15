@@ -1,4 +1,4 @@
-ARG ALPINE_VERSION=3.13
+ARG ALPINE_VERSION=3.22
 
 
 FROM alpine:$ALPINE_VERSION as prereqs
@@ -24,13 +24,11 @@ RUN apk --no-cache add \
         py3-pynacl \
         py3-tz \
         py3-pyrfc3339
-RUN pip3 install --no-cache-dir --disable-pip-version-check \
+RUN pip3 install --no-cache-dir --disable-pip-version-check --break-system-packages \
         "alembic>=0.8.5" \
         "coloredlogs==5.0" \
-        "pyheif==0.6.1" \
-        "heif-image-plugin>=0.3.2" \
         yt-dlp \
-        "pillow-avif-plugin~=1.1.0"
+        "pillow-heif>=1.0.0"
 RUN apk --no-cache del py3-pip
 
 COPY ./ /opt/app/
@@ -45,7 +43,7 @@ RUN apk --no-cache add \
         py3-pytest \
         py3-pytest-cov \
         postgresql \
- && pip3 install --no-cache-dir --disable-pip-version-check \
+ && pip3 install --no-cache-dir --disable-pip-version-check --break-system-packages \
         pytest-pgsql \
         freezegun \
  && apk --no-cache del py3-pip \
@@ -72,7 +70,7 @@ RUN apk --no-cache add \
     py3-pip \
     py3-setuptools \
     py3-waitress \
-    && pip3 install --no-cache-dir --disable-pip-version-check \
+    && pip3 install --no-cache-dir --disable-pip-version-check --break-system-packages \
     hupper \
     && mkdir -p /opt/app /data \
     && addgroup -g ${PGID} app \
