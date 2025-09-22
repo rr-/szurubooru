@@ -70,7 +70,7 @@ def test_creating_minimal_posts(context_factory, post_factory, user_factory):
         posts.update_post_source.assert_called_once_with(post, "")
         posts.update_post_relations.assert_called_once_with(post, [])
         posts.update_post_notes.assert_called_once_with(post, [])
-        posts.update_post_flags.assert_called_once_with(post, [])
+        posts.update_post_flags.assert_called_once_with(post, ["tagme"])
         posts.update_post_thumbnail.assert_called_once_with(
             post, "post-thumbnail"
         )
