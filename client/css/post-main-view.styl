@@ -39,12 +39,26 @@
 
     >.content
         width: 100%
+        &[data-fit=fit-original] .after-mobile-controls, &[data-fit=fit-height] .after-mobile-controls
+            width: auto
+            margin-right: 1.5em
+            @media (max-width: 1000px)
+                margin-right: 1em
 
     .post-container
         margin-bottom: 0.6em
 
         .post-content
             margin: 0
+            background-size: cover
+            background-repeat: no-repeat
+            background-origin: content-box
+            padding-right: 1.5em
+            @media (max-width: 1000px)
+                padding-right: 1em
+
+    .after-mobile-controls
+        width: 100%
 
     .after-mobile-controls
         width: 100%

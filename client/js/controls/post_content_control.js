@@ -5,11 +5,12 @@ const views = require("../util/views.js");
 const optimizedResize = require("../util/optimized_resize.js");
 
 class PostContentControl {
-    constructor(hostNode, post, viewportSizeCalculator, fitFunctionOverride) {
+    constructor(hostNode, post, viewportSizeCalculator, overflowNode, fitFunctionOverride) {
         this._post = post;
         this._viewportSizeCalculator = viewportSizeCalculator;
         this._hostNode = hostNode;
         this._template = views.getTemplate("post-content");
+        this._overflowNode = overflowNode;
 
         let fitMode = settings.get().fitMode;
         if (typeof fitFunctionOverride !== "undefined") {
@@ -36,6 +37,7 @@ class PostContentControl {
     }
 
     fitWidth() {
+        if (this._overflowNode) this._overflowNode.style.overflowX = "hidden";
         this._currentFitFunction = this.fitWidth;
         const mul = this._post.canvasHeight / this._post.canvasWidth;
         let width = this._viewportWidth;
@@ -46,6 +48,7 @@ class PostContentControl {
     }
 
     fitHeight() {
+        if (this._overflowNode) this._overflowNode.style.overflowX = "visible";
         this._currentFitFunction = this.fitHeight;
         const mul = this._post.canvasWidth / this._post.canvasHeight;
         let height = this._viewportHeight;
@@ -56,16 +59,17 @@ class PostContentControl {
     }
 
     fitBoth() {
+        if (this._overflowNode) this._overflowNode.style.overflowX = "hidden";
         this._currentFitFunction = this.fitBoth;
         let mul = this._post.canvasHeight / this._post.canvasWidth;
-        if (this._viewportWidth * mul < this._viewportHeight) {
-            let width = this._viewportWidth;
+        let width = this._viewportWidth;
+        let height = this._viewportHeight;
+        if (width * mul < height) {
             if (!settings.get().upscaleSmallPosts) {
                 width = Math.min(this._post.canvasWidth, width);
             }
             this._resize(width, width * mul);
         } else {
-            let height = this._viewportHeight;
             if (!settings.get().upscaleSmallPosts) {
                 height = Math.min(this._post.canvasHeight, height);
             }
@@ -74,6 +78,7 @@ class PostContentControl {
     }
 
     fitOriginal() {
+        if (this._overflowNode) this._overflowNode.style.overflowX = "visible";
         this._currentFitFunction = this.fitOriginal;
         this._resize(this._post.canvasWidth, this._post.canvasHeight);
     }
