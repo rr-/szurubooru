@@ -16,6 +16,14 @@ class PostMainController extends BasePostController {
     constructor(ctx, editMode) {
         super(ctx);
 
+        let poolPostsAround = Promise.resolve({results: [], activePool: null});
+        if (api.hasPrivilege("pools:list") && api.hasPrivilege("pools:view")) {
+            poolPostsAround = PostList.getPoolPostsAround(
+                ctx.parameters.id,
+                parameters ? parameters.query : null
+            );
+        }
+
         let parameters = ctx.parameters;
         Promise.all([
             Post.get(ctx.parameters.id),
@@ -23,9 +31,11 @@ class PostMainController extends BasePostController {
                 ctx.parameters.id,
                 parameters ? parameters.query : null
             ),
+            poolPostsAround
         ]).then(
             (responses) => {
-                const [post, aroundResponse] = responses;
+                const [post, aroundResponse, poolPostsAroundResponse] = responses;
+                let activePool = null;
 
                 // remove junk from query, but save it into history so that it can
                 // be still accessed after history navigation / page refresh
@@ -39,6 +49,13 @@ class PostMainController extends BasePostController {
                           )
                         : uri.formatClientLink("post", ctx.parameters.id);
                     router.replace(url, ctx.state, false);
+                    console.log(parameters.query);
+                    parameters.query.split(" ").forEach((item) => {
+                        const found = item.match(/^pool:([0-9]+)/i);
+                        if (found) {
+                            activePool = parseInt(found[1]);
+                        }
+                    });
                 }
 
                 const prevPostId = aroundResponse.prev
@@ -61,6 +78,8 @@ class PostMainController extends BasePostController {
                 this._post = post;
                 this._view = new PostMainView({
                     post: post,
+                    poolPostsAround: poolPostsAroundResponse,
+                    activePool: activePool,
                     editMode: editMode,
                     prevPostId: prevPostId,
                     nextPostId: nextPostId,
@@ -69,6 +88,8 @@ class PostMainController extends BasePostController {
                     canFeaturePosts: api.hasPrivilege("posts:feature"),
                     canListComments: api.hasPrivilege("comments:list"),
                     canCreateComments: api.hasPrivilege("comments:create"),
+                    canListPools: api.hasPrivilege("pools:list"),
+                    canViewPools: api.hasPrivilege("pools:view"),
                     parameters: parameters,
                 });
 

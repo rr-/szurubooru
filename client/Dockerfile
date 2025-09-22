@@ -1,3 +1,4 @@
+ARG BUILDPLATFORM=linux/amd64
 FROM --platform=$BUILDPLATFORM node:lts-alpine as development
 WORKDIR /opt/app
 
