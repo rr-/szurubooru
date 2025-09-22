@@ -21,14 +21,22 @@ class DownloadTooLargeError(DownloadError):
     pass
 
 
-def download(url: str, use_video_downloader: bool = False) -> bytes:
+def download(url: str, use_downloader: bool = False) -> bytes:
     assert url
-    youtube_dl_error = None
-    if use_video_downloader:
+    dl_error = None
+    new_url = None
+    if use_downloader:
         try:
-            url = _get_youtube_dl_content_url(url) or url
+            new_url = _get_gallery_dl_content_url(url)
         except errors.ThirdPartyError as ex:
-            youtube_dl_error = ex
+            dl_error = ex
+        if new_url:
+            url = new_url
+        else:
+            try:
+                url = _get_youtube_dl_content_url(url) or url
+            except errors.ThirdPartyError as ex:
+                dl_error = ex
 
     request = urllib.request.Request(url)
     if config.config["user_agent"]:
@@ -55,10 +63,10 @@ def download(url: str, use_video_downloader: bool = False) -> bytes:
         ) from ex
 
     if (
-        youtube_dl_error
+        dl_error
         and mime.get_mime_type(content_buffer) == "application/octet-stream"
     ):
-        raise youtube_dl_error
+        raise dl_error
 
     return content_buffer
 
@@ -68,6 +76,21 @@ def _get_youtube_dl_content_url(url: str) -> str:
     if config.config["user_agent"]:
         cmd.extend(["--user-agent", config.config["user_agent"]])
     cmd.extend(["--get-url", url])
+    try:
+        return (
+            subprocess.run(cmd, text=True, capture_output=True, check=True)
+            .stdout.split("\n")[0]
+            .strip()
+        )
+    except subprocess.CalledProcessError:
+        raise errors.ThirdPartyError(
+            "Could not extract content location from URL.",
+            extra_fields={"URL": url},
+        ) from None
+
+
+def _get_gallery_dl_content_url(url: str) -> str:
+    cmd = ["gallery-dl", "-q", "-g", url]
     try:
         return (
             subprocess.run(cmd, text=True, capture_output=True, check=True)

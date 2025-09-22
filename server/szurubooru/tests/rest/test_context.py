@@ -29,7 +29,7 @@ def test_get_file_from_url():
         )
         assert ctx.get_file("key") == b"content"
         net.download.assert_called_once_with(
-            "example.com", use_video_downloader=False
+            "example.com", use_downloader=False
         )
         with pytest.raises(errors.ValidationError):
             assert ctx.get_file("non-existing")

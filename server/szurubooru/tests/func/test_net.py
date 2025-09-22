@@ -79,7 +79,7 @@ def test_download():
 )
 def test_too_large_download(url):
     with pytest.raises(net.DownloadTooLargeError):
-        net.download(url, use_video_downloader=True)
+        net.download(url, use_downloader=True)
 
 
 @pytest.mark.skipif(
@@ -103,7 +103,7 @@ def test_too_large_download(url):
     ],
 )
 def test_content_download(url, expected_sha1):
-    actual_content = net.download(url, use_video_downloader=True)
+    actual_content = net.download(url, use_downloader=True)
     assert get_sha1(actual_content) == expected_sha1
 
 
@@ -113,7 +113,7 @@ def test_content_download(url, expected_sha1):
 def test_bad_content_downlaod():
     url = "http://info.cern.ch/hypertext/WWW/TheProject.html"
     with pytest.raises(errors.ThirdPartyError):
-        net.download(url, use_video_downloader=True)
+        net.download(url, use_downloader=True)
 
 
 def test_no_webhooks(config_injector):

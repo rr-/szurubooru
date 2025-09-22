@@ -12,7 +12,7 @@ def create_temporary_file(
     content = ctx.get_file(
         "content",
         allow_tokens=False,
-        use_video_downloader=auth.has_privilege(
+        use_downloader=auth.has_privilege(
             ctx.user, "uploads:use_downloader"
         ),
     )
