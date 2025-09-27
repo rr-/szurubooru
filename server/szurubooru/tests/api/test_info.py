@@ -34,6 +34,7 @@ def test_info_api(
             "smtp": {
                 "host": "example.com",
             },
+            "allowed_mime_types": ["application/octet-stream"],
         }
     )
     db.session.add_all([post_factory(), post_factory()])
@@ -54,6 +55,7 @@ def test_info_api(
             "posts:view:featured": "regular",
         },
         "canSendMails": True,
+        "allowedExtensions": ["dat"],
     }
 
     with fake_datetime("2016-01-01 13:00"):
