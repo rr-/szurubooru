@@ -1,5 +1,7 @@
 worker_processes 1;
-user nginx;
+user nobody;
+
+pcre_jit on;
 
 error_log /dev/stderr warn;
 pid /var/run/nginx.pid;
@@ -9,7 +11,7 @@ events {
 }
 
 http {
-    include /etc/nginx/mime.types;
+    include /usr/local/openresty/nginx/conf/mime.types;
     default_type application/octet-stream;
 
     log_format main '$remote_addr -> $request [$status] - '
@@ -21,6 +23,15 @@ http {
 
     upstream backend {
         server __BACKEND__:6666;
+    }
+
+    map $request_uri $request_uri_path {
+        "~^(?P<path>[^?]*)(\?.*)?$"  $path;
+    }
+
+    init_by_lua_block {
+        cjson = require("cjson")
+        html_head_tag_replacement_str = "{{ generated_head_tags }}"
     }
 
     server {
@@ -50,6 +61,9 @@ http {
             gzip_proxied expired no-cache no-store private auth;
             gzip_types text/plain application/json;
 
+            proxy_connect_timeout 180s;
+            proxy_send_timeout 300s;
+            proxy_read_timeout 600s;
             if ($request_uri ~* "/api/(.*)") {
                 proxy_pass http://backend/$1;
             }
@@ -71,7 +85,7 @@ http {
 
         location / {
             root /var/www;
-            try_files $uri /index.htm;
+            try_files $uri /_meta_tags_html;
 
             sendfile on;
             tcp_nopush on;
@@ -79,6 +93,30 @@ http {
 
             gzip_static on;
             gzip_proxied expired no-cache no-store private auth;
+        }
+
+        location ~ ^/_internal_api/(.*)$ {
+            internal;
+            tcp_nodelay on;
+
+            add_header 'Access-Control-Allow-Origin' '*';
+
+            gzip off;
+            proxy_connect_timeout 10s;
+            proxy_send_timeout 10s;
+            proxy_read_timeout 10s;
+            proxy_pass http://backend/$1;
+        }
+
+        location /_meta_tags_html {
+            internal;
+            set $original_scheme $scheme;
+            if ( $http_x_forwarded_proto = 'https' ) {
+                set $original_scheme "https";
+            }
+            root /var/www;
+            set $external_host_url "${original_scheme}://${http_host}";
+            content_by_lua_file /etc/nginx/metatags.lua;
         }
 
         location @unauthorized {
