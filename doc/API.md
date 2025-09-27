@@ -39,6 +39,7 @@
         - [Getting post](#getting-post)
         - [Getting around post](#getting-around-post)
         - [Deleting post](#deleting-post)
+        - [Banning post](#banning-post)
         - [Merging posts](#merging-posts)
         - [Rating post](#rating-post)
         - [Adding post to favorites](#adding-post-to-favorites)
@@ -911,7 +912,7 @@ data.
 
 - **Output**
 
-    A [post resource](#post).
+    A [post resource](#banned-post).
 
 - **Errors**
 
@@ -1003,6 +1004,81 @@ data.
 - **Description**
 
     Deletes existing post. Related posts and tags are kept.
+
+
+
+## Listing banned posts
+- **Request**
+
+    `GET /post-ban`
+
+- **Output**
+
+    An [unpaged search result](#unpaged-search-result) of [banned posts](#postban).
+
+- **Errors**
+
+    - the post does not exist
+    - privileges are too low
+
+- **Description**
+
+    Retrieves information about an existing post.
+
+## Banning post
+- **Request**
+
+    `POST /post-ban`
+
+- **Input**
+
+    ```json5
+    {
+        "post_id": <post id>
+        "version": <version>
+    }
+    ```
+
+- **Output**
+
+    ```json5
+    {}
+    ```
+
+- **Errors**
+
+    - the version is outdated
+    - the post does not exist
+    - privileges are too low
+
+- **Description**
+
+    Deletes existing post, then adds the sha1sum of the post file to a ban list.
+    Users will not be able to upload the file again.
+    
+    Related posts and tags are kept.
+
+
+## Undoing post ban
+- **Request**
+
+    `DELETE /post-ban/<image_hash>`
+
+- **Output**
+
+    ```json5
+    {}
+    ```
+
+- **Errors**
+
+    - there is no banned image with that hash
+    - privileges are too low
+
+- **Description**
+
+    Removes a banned image from the ban list. Takes a SHA-1 hash of the image as input.
+
 
 ## Merging posts
 - **Request**
@@ -2581,6 +2657,26 @@ An ordered list of posts, with a description and category.
 
 A [pool resource](#pool) stripped down to `id`, `names`, `category`,
 `description` and `postCount` fields.
+
+
+## Banned post
+**Description**
+
+A record of a post that has been banned.
+
+**Structure**
+
+```json5
+{
+    "checksum":      <sha-hash>,
+    "time":          <time-of-ban>
+}
+```
+
+**Field meaning**
+- `<sha-hash>`: SHA-1 hash of an image that has been banned
+- `<time-of-ban>`: time the post was banned
+
 
 ## Comment
 **Description**
