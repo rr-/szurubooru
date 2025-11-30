@@ -6,7 +6,7 @@ from szurubooru.func import files, util
 MAX_MINUTES = 60
 
 
-def _get_path(checksum: str) -> str:
+def get_path(checksum: str) -> str:
     return "temporary-uploads/%s.dat" % checksum
 
 
@@ -24,7 +24,7 @@ def get(checksum: str) -> Optional[bytes]:
 
 def save(content: bytes) -> str:
     checksum = util.get_sha1(content)
-    path = _get_path(checksum)
+    path = get_path(checksum)
     if not files.has(path):
         files.save(path, content)
     return checksum

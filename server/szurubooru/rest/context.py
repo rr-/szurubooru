@@ -75,6 +75,15 @@ class Context:
             "Required file %r is missing." % name
         )
 
+    def get_token_filename(self, name: str) -> str:
+        filename = file_uploads.get_path(self._params[name + "Token"])
+        if not files.has(filename):
+            raise errors.MissingOrExpiredRequiredFileError(
+                "Required file %r is missing or has expired." % name
+            )
+
+        return filename
+
     def has_param(self, name: str) -> bool:
         return name in self._params
 

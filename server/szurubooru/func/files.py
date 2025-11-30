@@ -1,4 +1,5 @@
 import os
+import shutil
 from typing import Any, List, Optional
 
 from szurubooru import config
@@ -26,6 +27,10 @@ def scan(path: str) -> List[Any]:
 
 def move(source_path: str, target_path: str) -> None:
     os.rename(_get_full_path(source_path), _get_full_path(target_path))
+
+
+def copy(source_path: str, target_path: str) -> None:
+    shutil.copyfile(_get_full_path(source_path), _get_full_path(target_path))
 
 
 def get(path: str) -> Optional[bytes]:

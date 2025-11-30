@@ -406,7 +406,10 @@ def try_get_featured_post() -> Optional[model.Post]:
 
 
 def create_post(
-    content: bytes, tag_names: List[str], user: Optional[model.User]
+    content: Optional[bytes],
+    tag_names: List[str],
+    user: Optional[model.User],
+    content_file: Optional[str] = None,
 ) -> Tuple[model.Post, List[model.Tag]]:
     post = model.Post()
     post.safety = model.Post.SAFETY_SAFE
@@ -418,7 +421,7 @@ def create_post(
     post.checksum = ""
     post.mime_type = ""
 
-    update_post_content(post, content)
+    update_post_content(post, content, content_file)
     new_tags = update_post_tags(post, tag_names)
 
     db.session.add(post)
@@ -475,6 +478,12 @@ def _sync_post_content(post: model.Post) -> None:
         delattr(post, "__content")
         regenerate_thumb = True
 
+    if hasattr(post, "__content_file"):
+        content_file = getattr(post, "__content_file")
+        files.copy(content_file, get_post_content_path(post))
+        delattr(post, "__content_file")
+        regenerate_thumb = True
+
     if hasattr(post, "__thumbnail"):
         if getattr(post, "__thumbnail"):
             files.save(
@@ -491,17 +500,19 @@ def _sync_post_content(post: model.Post) -> None:
 
 
 def generate_alternate_formats(
-    post: model.Post, content: bytes
+    post: model.Post,
+    content: Optional[bytes],
+    content_file: Optional[str] = None
 ) -> List[Tuple[model.Post, List[model.Tag]]]:
     assert post
-    assert content
+    assert content or content_file
     new_posts = []
-    if mime.is_animated_gif(content):
+    if mime.is_animated_gif(content, content_file):
         tag_names = [tag.first_name for tag in post.tags]
 
         if config.config["convert"]["gif"]["to_mp4"]:
             mp4_post, new_tags = create_post(
-                images.Image(content).to_mp4(), tag_names, post.user
+                images.Image(content, content_file).to_mp4(), tag_names, post.user
             )
             update_post_flags(mp4_post, ["loop"])
             update_post_safety(mp4_post, post.safety)
@@ -510,7 +521,7 @@ def generate_alternate_formats(
 
         if config.config["convert"]["gif"]["to_webm"]:
             webm_post, new_tags = create_post(
-                images.Image(content).to_webm(), tag_names, post.user
+                images.Image(content, content_file).to_webm(), tag_names, post.user
             )
             update_post_flags(webm_post, ["loop"])
             update_post_safety(webm_post, post.safety)
@@ -528,12 +539,14 @@ def generate_alternate_formats(
     return new_posts
 
 
-def get_default_flags(content: bytes) -> List[str]:
-    assert content
+def get_default_flags(
+    content: Optional[bytes], content_type: Optional[str] = None
+) -> List[str]:
+    assert content or content_type
     ret = []
-    if mime.is_video(mime.get_mime_type(content)):
+    if mime.is_video(mime.get_mime_type(content, content_type)):
         ret.append(model.Post.FLAG_LOOP)
-        if images.Image(content).check_for_sound():
+        if images.Image(content, content_type).check_for_sound():
             ret.append(model.Post.FLAG_SOUND)
     return ret
 
@@ -546,9 +559,13 @@ def purge_post_signature(post: model.Post) -> None:
     )
 
 
-def generate_post_signature(post: model.Post, content: bytes) -> None:
+def generate_post_signature(
+    post: model.Post,
+    content: Optional[bytes],
+    content_file: Optional[str] = None
+) -> None:
     try:
-        unpacked_signature = image_hash.generate_signature(content)
+        unpacked_signature = image_hash.generate_signature(content, content_file)
         packed_signature = image_hash.pack_signature(unpacked_signature)
         words = image_hash.generate_words(unpacked_signature)
 
@@ -604,18 +621,22 @@ def update_all_md5_checksums() -> None:
             logger.exception(ex)
 
 
-def update_post_content(post: model.Post, content: Optional[bytes]) -> None:
+def update_post_content(
+    post: model.Post,
+    content: Optional[bytes],
+    content_file: Optional[str] = None
+) -> None:
     assert post
-    if not content:
+    if not content and not content_file:
         raise InvalidPostContentError("Post content missing.")
 
     update_signature = False
-    post.mime_type = mime.get_mime_type(content)
+    post.mime_type = mime.get_mime_type(content, content_file)
     if mime.is_flash(post.mime_type):
         post.type = model.Post.TYPE_FLASH
     elif mime.is_image(post.mime_type):
         update_signature = True
-        if mime.is_animated_gif(content):
+        if mime.is_animated_gif(content, content_file):
             post.type = model.Post.TYPE_ANIMATION
         else:
             post.type = model.Post.TYPE_IMAGE
@@ -626,8 +647,14 @@ def update_post_content(post: model.Post, content: Optional[bytes]) -> None:
             "Unhandled file type: %r" % post.mime_type
         )
 
-    post.checksum = util.get_sha1(content)
-    post.checksum_md5 = util.get_md5(content)
+    if content:
+        sha1 = util.get_sha1(content)
+        md5 = util.get_md5(content)
+    else:
+        sha1, md5 = util.get_checksums_from_file(content_file)
+
+    post.checksum = sha1
+    post.checksum_md5 = md5
     other_post = (
         db.session.query(model.Post)
         .filter(model.Post.checksum == post.checksum)
@@ -643,11 +670,11 @@ def update_post_content(post: model.Post, content: Optional[bytes]) -> None:
 
     if update_signature:
         purge_post_signature(post)
-        post.signature = generate_post_signature(post, content)
+        post.signature = generate_post_signature(post, content, content_file)
 
-    post.file_size = len(content)
+    post.file_size = util.get_content_size(content, content_file)
     try:
-        image = images.Image(content)
+        image = images.Image(content, content_file)
         post.canvas_width = image.width
         post.canvas_height = image.height
     except errors.ProcessingError as ex:
@@ -667,7 +694,10 @@ def update_post_content(post: model.Post, content: Optional[bytes]) -> None:
         else:
             post.canvas_width = None
             post.canvas_height = None
-    setattr(post, "__content", content)
+    if content:
+        setattr(post, "__content", content)
+    else:
+        setattr(post, "__content_file", content_file)
 
 
 def update_post_thumbnail(
@@ -906,9 +936,9 @@ def merge_posts(
         target.flags = source.flags
         db.session.flush()
 
-    content = None
+    content_file = None
     if replace_content:
-        content = files.get(get_post_content_path(source_post))
+        content_file = get_post_content_path(source_post)
         transfer_flags(source_post.post_id, target_post.post_id)
 
     # fixes unknown issue with SA's cascade deletions
@@ -916,8 +946,8 @@ def merge_posts(
     delete(source_post)
     db.session.flush()
 
-    if content is not None:
-        update_post_content(target_post, content)
+    if content_file is not None:
+        update_post_content(target_post, None, content_file)
 
 
 def search_by_image_exact(image_content: bytes) -> Optional[model.Post]:

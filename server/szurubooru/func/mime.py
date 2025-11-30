@@ -2,9 +2,14 @@ import re
 from typing import Optional
 
 
-def get_mime_type(content: bytes) -> str:
+def get_mime_type(
+    content: Optional[bytes], content_file: Optional[str] = None
+) -> str:
     if not content:
-        return "application/octet-stream"
+        if not content_file:
+            return "application/octet-stream"
+        with open(content_file, 'r') as f:
+            content = f.read(20)
 
     if content[0:3] in (b"CWS", b"FWS", b"ZWS"):
         return "application/x-shockwave-flash"
@@ -90,7 +95,15 @@ def is_image(mime_type: str) -> bool:
     )
 
 
-def is_animated_gif(content: bytes) -> bool:
+def is_animated_gif(
+    content: Optional[bytes], content_file: Optional[str] = None
+) -> bool:
+    if not content:
+        if not content_file:
+            return False
+        with open(content_file, 'r') as f:
+            content = f.read(20)
+
     pattern = b"\x21\xF9\x04[\x00-\xFF]{4}\x00[\x2C\x21]"
     return (
         get_mime_type(content) == "image/gif"

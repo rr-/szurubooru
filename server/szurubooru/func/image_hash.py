@@ -38,9 +38,14 @@ Window = Tuple[Tuple[float, float], Tuple[float, float]]
 NpMatrix = np.ndarray
 
 
-def _preprocess_image(content: bytes) -> NpMatrix:
+def _preprocess_image(
+    content: Optional[bytes], content_file: Optional[str] = None
+) -> NpMatrix:
     try:
-        img = Image.open(BytesIO(content))
+        if not content:
+            img = Image.open(content_file)
+        else:
+            img = Image.open(BytesIO(content))
         return np.asarray(img.convert("L"), dtype=np.uint8)
     except (IOError, ValueError):
         raise errors.ProcessingError(
@@ -225,8 +230,10 @@ def _get_words(array: NpMatrix, k: int, n: int) -> NpMatrix:
     return words
 
 
-def generate_signature(content: bytes) -> NpMatrix:
-    im_array = _preprocess_image(content)
+def generate_signature(
+    content: Optional[bytes], content_file: Optional[str] = None
+) -> NpMatrix:
+    im_array = _preprocess_image(content, content_file)
     image_limits = _crop_image(
         im_array,
         lower_percentile=LOWER_PERCENTILE,

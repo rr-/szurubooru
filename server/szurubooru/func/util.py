@@ -61,6 +61,18 @@ def unalias_dict(source: List[Tuple[List[str], T]]) -> Dict[str, T]:
             output_dict[alias] = value
     return output_dict
 
+def get_checksums_from_file(source: str):
+    sha1 = hashlib.sha1()
+    md5 = hashlib.md5()
+
+    with open(source, 'rb') as f:
+        data = f.read(2**20)
+        while data:
+            md5.update(data)
+            sha1.update(data)
+            data = f.read(2**20)
+
+    return sha1.hexdigest(), md5.hexdigest()
 
 def get_md5(source: Union[str, bytes]) -> str:
     if not isinstance(source, bytes):
@@ -176,3 +188,8 @@ def get_column_size(column: Any) -> Optional[int]:
 def chunks(source_list: List[Any], part_size: int) -> Generator:
     for i in range(0, len(source_list), part_size):
         yield source_list[i : i + part_size]
+
+def get_content_size(content: bytes, content_file: str):
+    if isinstance(content, str):
+        return os.path.getsize(file)
+    return len(content)
