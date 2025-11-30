@@ -190,7 +190,9 @@ def chunks(source_list: List[Any], part_size: int) -> Generator:
     for i in range(0, len(source_list), part_size):
         yield source_list[i : i + part_size]
 
-def get_content_size(content: bytes, content_file: str):
-    if isinstance(content, str):
-        return os.path.getsize(file)
+def get_content_size(
+    content: Optional[bytes], content_file: Optional[str] = None
+) -> int:
+    if not content:
+        return files.get_file_size(content_file)
     return len(content)

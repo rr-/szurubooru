@@ -49,6 +49,13 @@ def get_handle(path: str) -> Optional[BufferedIOBase]:
     return open(full_path, "rb")
 
 
+def get_file_size(path: str) -> int:
+    full_path = _get_full_path(path)
+    if not os.path.exists(full_path):
+        return 0
+    return os.path.getsize(full_path)
+
+
 def save(path: str, content: bytes) -> None:
     full_path = _get_full_path(path)
     os.makedirs(os.path.dirname(full_path), exist_ok=True)
