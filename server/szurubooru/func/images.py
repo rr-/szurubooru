@@ -12,7 +12,7 @@ import pillow_avif
 from PIL import Image as PILImage
 
 from szurubooru import errors
-from szurubooru.func import mime, util
+from szurubooru.func import mime, util, files
 
 logger = logging.getLogger(__name__)
 
@@ -21,12 +21,15 @@ def convert_heif_to_png(
     content: Optional[bytes], content_file: Optional[str] = None
 ) -> bytes:
     if content:
-        img = PILImage.open(BytesIO(content))
+        handle = BytesIO(content)
     else:
-        img = PILImage.open(content_file)
-    img_byte_arr = BytesIO()
-    img.save(img_byte_arr, format="PNG")
-    return img_byte_arr.getvalue()
+        handle = files.get_handle(content_file)
+
+    with handle as f:
+        img = PILImage.open(f)
+        img_byte_arr = BytesIO()
+        img.save(img_byte_arr, format="PNG")
+        return img_byte_arr.getvalue()
 
 
 class Image:

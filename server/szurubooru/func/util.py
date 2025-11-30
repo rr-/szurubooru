@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from typing import Any, Dict, Generator, List, Optional, Tuple, TypeVar, Union
 
 from szurubooru import errors
+from szurubooru.func import files
 
 T = TypeVar("T")
 
@@ -65,7 +66,7 @@ def get_checksums_from_file(source: str):
     sha1 = hashlib.sha1()
     md5 = hashlib.md5()
 
-    with open(source, 'rb') as f:
+    with files.get_handle(source) as f:
         data = f.read(2**20)
         while data:
             md5.update(data)

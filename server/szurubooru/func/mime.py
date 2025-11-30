@@ -1,5 +1,6 @@
 import re
 from typing import Optional
+from szurubooru.func import files
 
 
 def get_mime_type(
@@ -8,7 +9,11 @@ def get_mime_type(
     if not content:
         if not content_file:
             return "application/octet-stream"
-        with open(content_file, 'r') as f:
+
+        handle = files.get_handle(content_file)
+        if not handle:
+            return "application/octet-stream"
+        with handle as f:
             content = f.read(20)
 
     if content[0:3] in (b"CWS", b"FWS", b"ZWS"):
@@ -98,17 +103,17 @@ def is_image(mime_type: str) -> bool:
 def is_animated_gif(
     content: Optional[bytes], content_file: Optional[str] = None
 ) -> bool:
+    if not content and not content_file:
+        return False
+
+    if get_mime_type(content, content_file) != "image/gif":
+        return False
+
     if not content:
-        if not content_file:
-            return False
-        with open(content_file, 'r') as f:
-            content = f.read(20)
+        content = files.get(content_file)
 
     pattern = b"\x21\xF9\x04[\x00-\xFF]{4}\x00[\x2C\x21]"
-    return (
-        get_mime_type(content) == "image/gif"
-        and len(re.findall(pattern, content)) > 1
-    )
+    return len(re.findall(pattern, content)) > 1
 
 
 def is_heif(mime_type: str) -> bool:

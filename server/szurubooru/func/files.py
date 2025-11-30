@@ -1,5 +1,6 @@
 import os
 import shutil
+from io import BufferedIOBase
 from typing import Any, List, Optional
 
 from szurubooru import config
@@ -39,6 +40,13 @@ def get(path: str) -> Optional[bytes]:
         return None
     with open(full_path, "rb") as handle:
         return handle.read()
+
+
+def get_handle(path: str) -> Optional[BufferedIOBase]:
+    full_path = _get_full_path(path)
+    if not os.path.exists(full_path):
+        return None
+    return open(full_path, "rb")
 
 
 def save(path: str, content: bytes) -> None:

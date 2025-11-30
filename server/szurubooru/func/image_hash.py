@@ -10,6 +10,7 @@ import pillow_avif
 from PIL import Image
 
 from szurubooru import config, errors
+from szurubooru.func import files
 
 logger = logging.getLogger(__name__)
 
@@ -43,10 +44,13 @@ def _preprocess_image(
 ) -> NpMatrix:
     try:
         if not content:
-            img = Image.open(content_file)
+            handle = files.get_handle(content_file)
         else:
-            img = Image.open(BytesIO(content))
-        return np.asarray(img.convert("L"), dtype=np.uint8)
+            handle = BytesIO(content)
+
+        with handle as f:
+            img = Image.open(f)
+            return np.asarray(img.convert("L"), dtype=np.uint8)
     except (IOError, ValueError):
         raise errors.ProcessingError(
             "Unable to generate a signature hash " "for this image."
