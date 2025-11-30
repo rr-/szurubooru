@@ -316,8 +316,9 @@ class Image:
         assert extension
 
         if not self.content:
+            content_file = files.get_full_path(self.content_file)
             return self._execute_impl(
-                self.content_file, cli, program, ignore_error_if_data, get_logs
+                content_file, cli, program, ignore_error_if_data, get_logs
             )
 
         with util.create_temp_file(suffix="." + extension) as handle:
