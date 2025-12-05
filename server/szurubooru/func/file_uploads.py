@@ -22,6 +22,10 @@ def get(checksum: str) -> Optional[bytes]:
     return files.get("temporary-uploads/%s.dat" % checksum)
 
 
+def get_handle(checksum: str) -> Optional[BufferedIOBase]:
+    return files.get_handle("temporary-uploads/%s.dat" % checksum)
+
+
 def save(content: bytes) -> str:
     checksum = util.get_sha1(content)
     path = get_path(checksum)

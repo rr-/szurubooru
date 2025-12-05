@@ -16,7 +16,7 @@ class Context:
         url: str,
         headers: Dict[str, str] = None,
         params: Request = None,
-        files: Dict[str, bytes] = None,
+        files: Dict[str, BufferedIOBase] = None,
     ) -> None:
         self.env = env
         self.method = method
@@ -44,6 +44,7 @@ class Context:
             or (allow_tokens and name + "Token" in self._params)
         )
 
+    # WARN: Deprecated, use get_file_handle instead
     def get_file(
         self,
         name: str,
@@ -52,7 +53,9 @@ class Context:
         allow_tokens: bool = True,
     ) -> bytes:
         if name in self._files and self._files[name]:
-            return self._files[name]
+            ret = self._files[name].read()
+            self._files[name].seek(0)
+            return ret
 
         if name + "Url" in self._params:
             return net.download(
@@ -74,6 +77,38 @@ class Context:
         raise errors.MissingRequiredFileError(
             "Required file %r is missing." % name
         )
+
+    def get_file_stream(
+        self,
+        name: str,
+        default: Union[object, bytes] = MISSING,
+        use_video_downloader: bool = False,
+        allow_tokens: bool = True,
+    ) -> BufferedIOBase:
+        if name in self._files and self._files[name]:
+            return self._files[name]
+
+        if name + "Url" in self._params:
+            return net.download(
+                self._params[name + "Url"],
+                use_video_downloader=use_video_downloader,
+            )
+
+        if allow_tokens and name + "Token" in self._params:
+            ret = file_uploads.get_handle(self._params[name + "Token"])
+            if ret:
+                return ret
+            elif default is not MISSING:
+                raise errors.MissingOrExpiredRequiredFileError(
+                    "Required file %r is missing or has expired." % name
+                )
+
+        if default is not MISSING:
+            return cast(bytes, default)
+        raise errors.MissingRequiredFileError(
+            "Required file %r is missing." % name
+        )
+
 
     def get_token_filename(self, name: str) -> str:
         filename = file_uploads.get_path(self._params[name + "Token"])
