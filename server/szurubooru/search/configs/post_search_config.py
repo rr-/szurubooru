@@ -2,9 +2,9 @@ from typing import Any, Dict, Optional, Tuple
 
 import sqlalchemy as sa
 
-from szurubooru import db, errors, model
-from szurubooru.func import util
-from szurubooru.search import criteria, tokens
+from szurubooru import config, db, errors, model
+from szurubooru.func import tags, users, util
+from szurubooru.search import criteria, parser, tokens
 from szurubooru.search.configs import util as search_util
 from szurubooru.search.configs.base_search_config import (
     BaseSearchConfig,
@@ -177,6 +177,32 @@ class PostSearchConfig(BaseSearchConfig):
             else:
                 new_special_tokens.append(token)
         search_query.special_tokens = new_special_tokens
+
+        blocklist_to_use = ""
+
+        if self.user:  # Ensure there's a user object
+            if (self.user.rank == model.User.RANK_ANONYMOUS) and config.config["default_tag_blocklist_for_anonymous"]:
+                # Anonymous user, if configured to use default blocklist, do so
+                blocklist_to_use = config.config["default_tag_blocklist"]
+            else:
+                # Registered user, use their blocklist
+                user_blocklist_tags = users.get_blocklist_tag_from_user(self.user)
+                if user_blocklist_tags:
+                    user_blocklist = db.session.query(model.Tag.first_name).filter(
+                        model.Tag.tag_id.in_([e.tag_id for e in user_blocklist_tags])
+                    ).all()
+                    blocklist_to_use = [e[0] for e in user_blocklist]
+                blocklist_to_use = " ".join(blocklist_to_use)
+
+        if len(blocklist_to_use) > 0:
+            # TODO Sort an already parsed and checked version instead?
+            blocklist_query = parser.Parser().parse(blocklist_to_use)
+            search_query_orig_list = [e.criterion.original_text for e in search_query.anonymous_tokens]
+            for t in blocklist_query.anonymous_tokens:
+                if t.criterion.original_text in search_query_orig_list:
+                    continue
+                t.negated = True
+                search_query.anonymous_tokens.append(t)
 
     def create_around_query(self) -> SaQuery:
         return db.session.query(model.Post).options(sa.orm.lazyload("*"))
