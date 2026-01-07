@@ -1,7 +1,7 @@
 ARG ALPINE_VERSION=3.13
 
 
-FROM alpine:$ALPINE_VERSION as prereqs
+FROM alpine:$ALPINE_VERSION AS prereqs
 WORKDIR /opt/app
 
 RUN apk --no-cache add \
@@ -14,7 +14,7 @@ RUN apk --no-cache add \
         libavif \
         libavif-dev \
         ffmpeg \
-        # from requirements.txt:
+        # from requirements.txt: \
         py3-yaml \
         py3-psycopg2 \
         py3-sqlalchemy \
@@ -37,7 +37,7 @@ COPY ./ /opt/app/
 RUN rm -rf /opt/app/szurubooru/tests
 
 
-FROM --platform=$BUILDPLATFORM prereqs as testing
+FROM --platform=$BUILDPLATFORM prereqs AS testing
 WORKDIR /opt/app
 
 RUN apk --no-cache add \
@@ -47,6 +47,7 @@ RUN apk --no-cache add \
         postgresql \
  && pip3 install --no-cache-dir --disable-pip-version-check \
         pytest-pgsql \
+        pytest-xdist \
         freezegun \
  && apk --no-cache del py3-pip \
  && addgroup app \
@@ -61,7 +62,7 @@ ENTRYPOINT ["pytest", "--tb=short"]
 CMD ["szurubooru/"]
 
 
-FROM prereqs as development
+FROM prereqs AS development
 WORKDIR /opt/app
 
 ARG PUID=1000
@@ -92,7 +93,7 @@ ENV THREADS=${THREADS}
 VOLUME ["/data/"]
 
 
-FROM prereqs as release
+FROM prereqs AS release
 
 COPY ./ /opt/app/
 RUN rm -rf /opt/app/szurubooru/tests
