@@ -10,6 +10,7 @@ import pillow_avif
 from PIL import Image
 
 from szurubooru import config, errors
+from szurubooru.func import files
 
 logger = logging.getLogger(__name__)
 
@@ -38,10 +39,18 @@ Window = Tuple[Tuple[float, float], Tuple[float, float]]
 NpMatrix = np.ndarray
 
 
-def _preprocess_image(content: bytes) -> NpMatrix:
+def _preprocess_image(
+    content: Optional[bytes], content_file: Optional[str] = None
+) -> NpMatrix:
     try:
-        img = Image.open(BytesIO(content))
-        return np.asarray(img.convert("L"), dtype=np.uint8)
+        if not content:
+            handle = files.get_handle(content_file)
+        else:
+            handle = BytesIO(content)
+
+        with handle as f:
+            img = Image.open(f)
+            return np.asarray(img.convert("L"), dtype=np.uint8)
     except (IOError, ValueError):
         raise errors.ProcessingError(
             "Unable to generate a signature hash " "for this image."
@@ -225,8 +234,10 @@ def _get_words(array: NpMatrix, k: int, n: int) -> NpMatrix:
     return words
 
 
-def generate_signature(content: bytes) -> NpMatrix:
-    im_array = _preprocess_image(content)
+def generate_signature(
+    content: Optional[bytes], content_file: Optional[str] = None
+) -> NpMatrix:
+    im_array = _preprocess_image(content, content_file)
     image_limits = _crop_image(
         im_array,
         lower_percentile=LOWER_PERCENTILE,

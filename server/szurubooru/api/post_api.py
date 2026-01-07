@@ -59,12 +59,19 @@ def create_post(
         auth.verify_privilege(ctx.user, "posts:create:anonymous")
     else:
         auth.verify_privilege(ctx.user, "posts:create:identified")
-    content = ctx.get_file(
-        "content",
-        use_video_downloader=auth.has_privilege(
-            ctx.user, "uploads:use_downloader"
-        ),
-    )
+
+    if ctx.has_param("contentToken"):
+        content = None
+        content_file = ctx.get_token_filename("content")
+    else:
+        content = ctx.get_file(
+            "content",
+            use_video_downloader=auth.has_privilege(
+                ctx.user, "uploads:use_downloader"
+            ),
+        )
+        content_file = None
+
     tag_names = ctx.get_param_as_string_list("tags", default=[])
     safety = ctx.get_param_as_string("safety")
     source = ctx.get_param_as_string("source", default="")
@@ -73,11 +80,11 @@ def create_post(
     relations = ctx.get_param_as_int_list("relations", default=[])
     notes = ctx.get_param_as_list("notes", default=[])
     flags = ctx.get_param_as_string_list(
-        "flags", default=posts.get_default_flags(content)
+        "flags", default=posts.get_default_flags(content, content_file)
     )
 
     post, new_tags = posts.create_post(
-        content, tag_names, None if anonymous else ctx.user
+        content, tag_names, None if anonymous else ctx.user, content_file
     )
     if len(new_tags):
         auth.verify_privilege(ctx.user, "tags:create")
@@ -91,7 +98,7 @@ def create_post(
     ctx.session.add(post)
     ctx.session.flush()
     create_snapshots_for_post(post, new_tags, None if anonymous else ctx.user)
-    alternate_format_posts = posts.generate_alternate_formats(post, content)
+    alternate_format_posts = posts.generate_alternate_formats(post, content, content_file)
     for alternate_post, alternate_post_new_tags in alternate_format_posts:
         create_snapshots_for_post(
             alternate_post,

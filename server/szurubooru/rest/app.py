@@ -48,7 +48,7 @@ def _create_context(env: Dict[str, Any]) -> context.Context:
             )
         body = form.getvalue("metadata")
         for key in form:
-            files[key] = form.getvalue(key)
+            files[key] = form[key].file
     else:
         body = env["wsgi.input"].read()
 
