@@ -8,11 +8,11 @@ $inactive-tab-text-color-darktheme = $inactive-link-color-darktheme
 
 /* latin */
 @font-face
-    font-family: 'Open Sans';
-    font-style: normal;
-    font-weight: 400;
-    src: local('Open Sans'), local('OpenSans'), url(../fonts/open_sans.woff2) format('woff2');
-    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+    font-family: 'Open Sans'
+    font-style: normal
+    font-weight: 400
+    src: local('Open Sans'), local('OpenSans'), url(../fonts/open_sans.woff2) format('woff2')
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000
 
 /* make <body> cover entire viewport */
 html
@@ -106,7 +106,12 @@ form .fa-question-circle-o
                     background-color: $scrollbar-bg-color
                 &::-webkit-scrollbar-thumb
                     background-color: $scrollbar-thumb-color
-    >.content-wrapper:not(.transparent)
+                li[data-name=view]
+                    background: $button-enabled-background-color
+                    margin-right: 1em
+                    a
+                        color: $button-enabled-text-color
+    >.content-wrapper:not(.transparent-container)
         background: $top-navigation-color
         padding: 1.8em
         @media (max-width: 1000px)
@@ -117,7 +122,7 @@ form .fa-question-circle-o
                 margin-bottom: 0
 
 .darktheme #content-holder
-    >.content-wrapper:not(.transparent)
+    >.content-wrapper:not(.transparent-container)
         background: $top-navigation-color-darktheme
 
 hr
@@ -161,6 +166,8 @@ nav
             li.active a
                 background: $active-tab-background-color
                 color: $active-tab-text-color
+            li.active:has(:focus)
+                background: $active-tab-background-color
             :focus
                 background: $focused-tab-background-color
                 outline: 0
@@ -236,6 +243,8 @@ nav
             li.active a
                 background: $active-tab-background-color-darktheme
                 color: $active-tab-text-color-darktheme
+            li.active:has(:focus)
+                background: $active-tab-background-color-darktheme
             :focus
                 background: $focused-tab-background-color-darktheme
     &#top-navigation

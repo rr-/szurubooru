@@ -30,7 +30,7 @@ def has_favorited(entity: model.Base, user: model.User) -> bool:
     return _get_fav_entity(entity, user) is not None
 
 
-def unset_favorite(entity: model.Base, user: Optional[model.User]) -> None:
+def unset_favorite(entity: model.Base, user: model.User) -> None:
     assert entity
     assert user
     fav_entity = _get_fav_entity(entity, user)
@@ -38,7 +38,7 @@ def unset_favorite(entity: model.Base, user: Optional[model.User]) -> None:
         db.session.delete(fav_entity)
 
 
-def set_favorite(entity: model.Base, user: Optional[model.User]) -> None:
+def set_favorite(entity: model.Base, user: model.User) -> None:
     from szurubooru.func import scores
 
     assert entity
