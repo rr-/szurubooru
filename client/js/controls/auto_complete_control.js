@@ -255,7 +255,7 @@ class AutoCompleteControl {
             const link = document.createElement("a");
             link.innerHTML = resultItem.caption;
             link.setAttribute("href", "");
-            link.setAttribute("data-key", resultItem.value);
+            link.setAttribute("data-key", resultItem.value._origName);
             link.addEventListener("mouseenter", (e) => {
                 e.preventDefault();
                 this._activeResult = resultIndexWorkaround;
