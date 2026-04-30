@@ -17,3 +17,4 @@ __pycache__/
 # Local database and data directories
 data/
 sql/
+sql_data/
