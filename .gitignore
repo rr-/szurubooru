@@ -13,3 +13,7 @@ server/**/lib/
 server/**/bin/
 server/**/pyvenv.cfg
 __pycache__/
+
+# Local database and data directories
+data/
+sql/

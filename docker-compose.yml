@@ -5,6 +5,7 @@
 services:
 
   server:
+    user: root
     image: szurubooru/server:latest
     depends_on:
       - sql
@@ -21,7 +22,7 @@ services:
       #LOG_SQL: 0 (1 for verbose SQL logs)
       THREADS:
     volumes:
-      - "${MOUNT_DATA}:/data"
+      - "./data:/data"
       - "./server/config.yaml:/opt/app/config.yaml"
 
   client:
@@ -32,7 +33,7 @@ services:
       BACKEND_HOST: server
       BASE_URL:
     volumes:
-      - "${MOUNT_DATA}:/data:ro"
+      - "./data:/data:ro"
     ports:
       - "${PORT}:80"
 
@@ -43,4 +44,4 @@ services:
       POSTGRES_USER:
       POSTGRES_PASSWORD:
     volumes:
-      - "${MOUNT_SQL}:/var/lib/postgresql/data"
+      - "./sql:/var/lib/postgresql/data"
