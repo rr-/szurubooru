@@ -31,7 +31,7 @@ RUN pip3 install --no-cache-dir --disable-pip-version-check \
         "heif-image-plugin>=0.3.2" \
         yt-dlp \
         "pillow-avif-plugin~=1.1.0" \
-        "requests[socks]>=2.34.2,<3.0.0"
+        "requests[socks]>=2.32.4,<3.0.0"
 RUN apk --no-cache del py3-pip
 
 COPY ./ /opt/app/
