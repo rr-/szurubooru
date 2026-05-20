@@ -60,6 +60,11 @@ def download(url: str, use_video_downloader: bool = False) -> bytes:
             "Download target returned HTTP %d. (%s)" % (ex.code, ex.reason),
             extra_fields={"URL": url},
         ) from ex
+    except requests.ConnectionError as ex:
+        raise DownloadError(
+            "General error connecting to server",
+            extra_fields={"URL": url},
+        ) from ex
 
     if (
         youtube_dl_error
