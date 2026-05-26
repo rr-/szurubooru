@@ -4,13 +4,13 @@ from datetime import datetime
 from io import BytesIO
 from typing import Any, Callable, List, Optional, Set, Tuple
 
-import HeifImagePlugin
+from pillow_heif import register_heif_opener
 import numpy as np
-import pillow_avif
 from PIL import Image
 
 from szurubooru import config, errors
 
+register_heif_opener()
 logger = logging.getLogger(__name__)
 
 # Math based on paper from H. Chi Wong, Marshall Bern and David Goldberg
