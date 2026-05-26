@@ -26,6 +26,8 @@ def test_info_api(
             "tag_name_regex": "3",
             "tag_category_name_regex": "4",
             "default_rank": "5",
+            "default_tag_blocklist": "testTag",
+            "default_tag_blocklist_for_anonymous": True,
             "privileges": {
                 "test_key1": "test_value1",
                 "test_key2": "test_value2",
@@ -48,6 +50,8 @@ def test_info_api(
         "tagNameRegex": "3",
         "tagCategoryNameRegex": "4",
         "defaultUserRank": "5",
+        "defaultTagBlocklist": "testTag",
+        "defaultTagBlocklistForAnonymous": True,
         "privileges": {
             "testKey1": "test_value1",
             "testKey2": "test_value2",

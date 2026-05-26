@@ -137,6 +137,20 @@ def user_token_factory(user_factory):
 
 
 @pytest.fixture
+def user_blocklist_factory(user_factory, tag_factory):
+    def factory(tag=None, user=None):
+        if user is None:
+            user = user_factory()
+        if tag is None:
+            tag = tag_factory()
+        return model.UserTagBlocklist(
+            tag=tag, user=user
+        )
+
+    return factory
+
+
+@pytest.fixture
 def tag_category_factory():
     def factory(name=None, color="dummy", order=1, default=False):
         category = model.TagCategory()
@@ -172,6 +186,7 @@ def post_factory():
         id=None,
         safety=model.Post.SAFETY_SAFE,
         type=model.Post.TYPE_IMAGE,
+        tags=[],
         checksum="...",
     ):
         post = model.Post()
@@ -182,6 +197,7 @@ def post_factory():
         post.flags = []
         post.mime_type = "application/octet-stream"
         post.creation_time = datetime(1996, 1, 1)
+        post.tags = tags
         return post
 
     return factory

@@ -5,6 +5,46 @@ from szurubooru.model.comment import Comment
 from szurubooru.model.post import Post, PostFavorite, PostScore
 
 
+class UserTagBlocklist(Base):
+    __tablename__ = "user_tag_blocklist"
+
+    user_id = sa.Column(
+        "user_id",
+        sa.Integer,
+        sa.ForeignKey("user.id"),
+        primary_key=True,
+        nullable=False,
+        index=True,
+    )
+    tag_id = sa.Column(
+        "tag_id",
+        sa.Integer,
+        sa.ForeignKey("tag.id"),
+        primary_key=True,
+        nullable=False,
+        index=True,
+    )
+
+    tag = sa.orm.relationship(
+        "Tag",
+        backref=sa.orm.backref("user_tag_blocklist", cascade="all, delete-orphan"),
+    )
+    user = sa.orm.relationship(
+        "User",
+        backref=sa.orm.backref("user_tag_blocklist", cascade="all, delete-orphan"),
+    )
+
+    def __init__(self, user_id: int=None, tag_id: int=None, user=None, tag=None) -> None:
+        if user_id is not None:
+            self.user_id = user_id
+        if tag_id is not None:
+            self.tag_id = tag_id
+        if user is not None:
+            self.user = user
+        if tag is not None:
+            self.tag = tag
+
+
 class User(Base):
     __tablename__ = "user"
 
@@ -35,6 +75,7 @@ class User(Base):
         "avatar_style", sa.Unicode(32), nullable=False, default=AVATAR_GRAVATAR
     )
 
+    blocklist = sa.orm.relationship("UserTagBlocklist")
     comments = sa.orm.relationship("Comment")
 
     @property

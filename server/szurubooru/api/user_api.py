@@ -1,7 +1,7 @@
-from typing import Any, Dict
+from typing import Any, Dict, List
 
-from szurubooru import model, rest, search
-from szurubooru.func import auth, serialization, users, versions
+from szurubooru import db, model, rest, search
+from szurubooru.func import auth, serialization, snapshots, users, versions, tags
 
 _search_executor = search.Executor(search.configs.UserSearchConfig())
 
@@ -15,6 +15,18 @@ def _serialize(
         options=serialization.get_serialization_options(ctx),
         **kwargs
     )
+
+
+def _create_tag_if_needed(tag_names: List[str], user: model.User) -> None:
+    # Taken from tag_api.py
+    if not tag_names:
+        return
+    _existing_tags, new_tags = tags.get_or_create_tags_by_names(tag_names)
+    if len(new_tags):
+        auth.verify_privilege(user, "tags:create")
+    db.session.flush()
+    for tag in new_tags:
+        snapshots.create(tag, user)
 
 
 @rest.routes.get("/users/?")
@@ -50,6 +62,10 @@ def create_user(
         )
     ctx.session.add(user)
     ctx.session.commit()
+    to_add, _ = users.update_user_blocklist(user, None)
+    for e in to_add:
+        ctx.session.add(e)
+    ctx.session.commit()
 
     return _serialize(ctx, user, force_show_email=True)
 
@@ -80,6 +96,16 @@ def update_user(ctx: rest.Context, params: Dict[str, str]) -> rest.Response:
     if ctx.has_param("rank"):
         auth.verify_privilege(ctx.user, "users:edit:%s:rank" % infix)
         users.update_user_rank(user, ctx.get_param_as_string("rank"), ctx.user)
+    if ctx.has_param("blocklist"):
+        auth.verify_privilege(ctx.user, "users:edit:%s:blocklist" % infix)
+        blocklist = ctx.get_param_as_string_list("blocklist")
+        _create_tag_if_needed(blocklist, user)  # Non-existing tags are created.
+        blocklist_tags = tags.get_tags_by_names(blocklist)
+        to_add, to_remove = users.update_user_blocklist(user, blocklist_tags)
+        for e in to_remove:
+            ctx.session.delete(e)
+        for e in to_add:
+            ctx.session.add(e)
     if ctx.has_param("avatarStyle"):
         auth.verify_privilege(ctx.user, "users:edit:%s:avatar" % infix)
         users.update_user_avatar(
