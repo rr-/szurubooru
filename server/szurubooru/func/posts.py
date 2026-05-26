@@ -626,13 +626,12 @@ def update_post_content(post: model.Post, content: Optional[bytes]) -> None:
             "Unhandled file type: %r" % post.mime_type
         )
 
-    post.checksum = util.get_sha1(content)
-    post.checksum_md5 = util.get_md5(content)
+    checksum = util.get_sha1(content)
     other_post = (
         db.session.query(model.Post)
-        .filter(model.Post.checksum == post.checksum)
+        .filter(model.Post.checksum == checksum)
         .filter(model.Post.post_id != post.post_id)
-        .one_or_none()
+        .first()
     )
     if (
         other_post
@@ -641,11 +640,6 @@ def update_post_content(post: model.Post, content: Optional[bytes]) -> None:
     ):
         raise PostAlreadyUploadedError(other_post)
 
-    if update_signature:
-        purge_post_signature(post)
-        post.signature = generate_post_signature(post, content)
-
-    post.file_size = len(content)
     try:
         image = images.Image(content)
         post.canvas_width = image.width
@@ -667,6 +661,15 @@ def update_post_content(post: model.Post, content: Optional[bytes]) -> None:
         else:
             post.canvas_width = None
             post.canvas_height = None
+
+    post.checksum = checksum
+    post.checksum_md5 = util.get_md5(content)
+    post.file_size = len(content)
+
+    if update_signature:
+        purge_post_signature(post)
+        post.signature = generate_post_signature(post, content)
+
     setattr(post, "__content", content)
 
 
@@ -925,7 +928,7 @@ def search_by_image_exact(image_content: bytes) -> Optional[model.Post]:
     return (
         db.session.query(model.Post)
         .filter(model.Post.checksum == checksum)
-        .one_or_none()
+        .first()
     )
 
 
