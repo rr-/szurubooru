@@ -47,18 +47,7 @@ class Executor:
         filter_query = self._prepare_db_query(
             filter_query, search_query, False
         )
-        prev_filter_query = (
-            filter_query.filter(self.config.id_column > entity_id)
-            .order_by(None)
-            .order_by(sa.func.abs(self.config.id_column - entity_id).asc())
-            .limit(1)
-        )
-        next_filter_query = (
-            filter_query.filter(self.config.id_column < entity_id)
-            .order_by(None)
-            .order_by(sa.func.abs(self.config.id_column - entity_id).asc())
-            .limit(1)
-        )
+        prev_filter_query, next_filter_query = self.config.create_around_filter_queries(filter_query, entity_id)
         return (
             prev_filter_query.one_or_none(),
             next_filter_query.one_or_none(),
@@ -181,14 +170,18 @@ class Executor:
                             _format_dict_keys(self.config.sort_columns),
                         )
                     )
-                column, default_order = self.config.sort_columns[
+                entry = self.config.sort_columns[
                     sort_token.name
                 ]
-                order = _get_order(sort_token.order, default_order)
-                if order == sort_token.SORT_ASC:
-                    db_query = db_query.order_by(column.asc())
-                elif order == sort_token.SORT_DESC:
-                    db_query = db_query.order_by(column.desc())
+                if callable(entry):
+                    db_query = entry(db_query)
+                else:
+                    column, default_order = entry
+                    order = _get_order(sort_token.order, default_order)
+                    if order == sort_token.SORT_ASC:
+                        db_query = db_query.order_by(column.asc())
+                    elif order == sort_token.SORT_DESC:
+                        db_query = db_query.order_by(column.desc())
 
         db_query = self.config.finalize_query(db_query)
         return db_query

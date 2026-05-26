@@ -70,11 +70,11 @@ and the Docker Compose CLI (version 1.27.0 or greater) already installed.
     ```diff yaml
     ...
     server:
-    - image: szurubooru/server:latest
+    - image: dekarrin/szuru-server:latest
     + build: server
     ...
     client:
-    - image: szurubooru/client:latest
+    - image: dekarrin/szuru-client:latest
     + build: client
     ...
     ```

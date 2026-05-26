@@ -1,6 +1,8 @@
 # User-specific configuration
 config.yaml
 .env
+sql/
+data/
 
 # Client Development Artifacts
 */*_modules/
@@ -13,3 +15,5 @@ server/**/lib/
 server/**/bin/
 server/**/pyvenv.cfg
 __pycache__/
+
+.vscode

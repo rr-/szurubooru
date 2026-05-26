@@ -2,6 +2,7 @@ import hmac
 import logging
 from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional, Tuple
+from collections import namedtuple
 
 import sqlalchemy as sa
 
@@ -970,3 +971,48 @@ def search_by_image(image_content: bytes) -> List[Tuple[float, model.Post]]:
         ]
     else:
         return []
+
+
+PoolPostsAround = namedtuple('PoolPostsAround', 'pool first_post prev_post next_post last_post')
+
+
+def get_pool_posts_around(post: model.Post) -> List[PoolPostsAround]:
+    results = []
+    for pool in post.pools:
+        first_post, prev_post, next_post, last_post = None, None, None, None
+
+        # find index of current post:
+        index_in_pool = list(map(lambda p: p.post_id, pool.posts)).index(post.post_id)
+
+        # collect first, prev, next, last post:
+        if index_in_pool > 0:
+            first_post = pool.posts[0]
+            prev_post = pool.posts[index_in_pool - 1]
+        if index_in_pool < len(pool.posts) - 1:
+            next_post = pool.posts[index_in_pool + 1]
+            last_post = pool.posts[-1]
+
+        around = PoolPostsAround(pool, first_post, prev_post, next_post, last_post)
+        results.append(around)
+
+    return results
+
+
+def sort_pool_posts_around(around: List[PoolPostsAround]) -> List[PoolPostsAround]:
+    return sorted(
+        around,
+        key=lambda entry: entry.pool.pool_id,
+    )
+
+
+def serialize_pool_posts_around(ctx: rest.Context, around: List[PoolPostsAround]) -> Optional[rest.Response]:
+    return [
+        {
+            "pool": pools.serialize_micro_pool(entry.pool),
+            "firstPost": serialize_micro_post(entry.first_post, ctx.user),
+            "prevPost": serialize_micro_post(entry.prev_post, ctx.user),
+            "nextPost": serialize_micro_post(entry.next_post, ctx.user),
+            "lastPost": serialize_micro_post(entry.last_post, ctx.user)
+        }
+        for entry in sort_pool_posts_around(around)
+    ]

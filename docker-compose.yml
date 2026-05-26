@@ -5,7 +5,7 @@
 services:
 
   server:
-    image: szurubooru/server:latest
+    image: dekarrin/szuru-server:latest
     depends_on:
       - sql
     environment:
@@ -25,7 +25,7 @@ services:
       - "./server/config.yaml:/opt/app/config.yaml"
 
   client:
-    image: szurubooru/client:latest
+    image: dekarrin/szuru-client:latest
     depends_on:
       - server
     environment:

@@ -54,8 +54,8 @@ fi
 if [[ "$(uname -m)" == 'a'* ]]; then
     echo -e "${NOTICE} ARM architecture detected.  Modfying docker-compose.yml for local build."
     # Modify docker-compose file to build locally instead of pulling from dockerhub
-    sed -zi "s|image: szurubooru/server:latest|build:\n      context: ./server|; \
-             s|image: szurubooru/client:latest|build:\n      context: ./client|" ./docker-compose.yml
+    sed -zi "s|image: dekarrin/szuru-server:latest|build:\n      context: ./server|; \
+             s|image: dekarrin/szuru-client:latest|build:\n      context: ./client|" ./docker-compose.yml
 fi
 
 
