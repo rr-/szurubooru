@@ -3,6 +3,12 @@ from datetime import datetime
 import pytest
 
 from szurubooru import db, errors, model, search
+from szurubooru.func import cache
+
+
+@pytest.fixture(autouse=True)
+def purge_cache():
+    cache.purge()
 
 
 @pytest.fixture
@@ -54,7 +60,15 @@ def executor():
 
 
 @pytest.fixture
-def auth_executor(executor, user_factory):
+def auth_executor(executor, user_factory, config_injector):
+    config_injector(
+        {
+            "privileges": {
+                "posts:list:unsafe": model.User.RANK_REGULAR,
+            }
+        }
+    )
+
     def wrapper():
         auth_user = user_factory()
         db.session.add(auth_user)
@@ -915,3 +929,28 @@ def test_search_by_tag_category(
     )
     db.session.flush()
     verify_unpaged(input, expected_post_ids)
+
+
+def test_filter_unsafe_without_privilege(
+    auth_executor,
+    verify_unpaged,
+    post_factory,
+):
+    post1 = post_factory(id=1)
+    post2 = post_factory(id=2, safety=model.Post.SAFETY_SKETCHY)
+    post3 = post_factory(id=3, safety=model.Post.SAFETY_UNSAFE)
+    db.session.add_all([post1, post2, post3])
+    db.session.flush()
+    user = auth_executor()
+    user.rank = model.User.RANK_ANONYMOUS
+    verify_unpaged("", [1, 2])
+    verify_unpaged("safety:safe", [1])
+    verify_unpaged("safety:safe,sketchy", [1, 2])
+    verify_unpaged("safety:safe,sketchy,unsafe", [1, 2])
+    # adjust user's rank and retry
+    user.rank = model.User.RANK_REGULAR
+    cache.purge()
+    verify_unpaged("", [1, 2, 3])
+    verify_unpaged("safety:safe", [1])
+    verify_unpaged("safety:safe,sketchy", [1, 2])
+    verify_unpaged("safety:safe,sketchy,unsafe", [1, 2, 3])

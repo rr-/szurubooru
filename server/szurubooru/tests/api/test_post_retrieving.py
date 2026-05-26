@@ -14,6 +14,8 @@ def inject_config(config_injector):
             "privileges": {
                 "posts:list": model.User.RANK_REGULAR,
                 "posts:view": model.User.RANK_REGULAR,
+                "posts:view:unsafe": model.User.RANK_REGULAR,
+                "posts:list:unsafe": model.User.RANK_REGULAR,
             },
         }
     )
@@ -73,7 +75,10 @@ def test_trying_to_use_special_tokens_without_logging_in(
 ):
     config_injector(
         {
-            "privileges": {"posts:list": "anonymous"},
+            "privileges": {
+                "posts:list": "anonymous",
+                "posts:list:unsafe": "regular",
+            },
         }
     )
     with pytest.raises(errors.SearchError):
@@ -124,4 +129,24 @@ def test_trying_to_retrieve_single_without_privileges(
         api.post_api.get_post(
             context_factory(user=user_factory(rank=model.User.RANK_ANONYMOUS)),
             {"post_id": 999},
+        )
+
+
+def test_trying_to_retrieve_unsafe_without_privileges(
+    user_factory, context_factory, post_factory, config_injector
+):
+    config_injector(
+        {
+            "privileges": {
+                "posts:view": "anonymous",
+                "posts:view:unsafe": "regular",
+            },
+        }
+    )
+    db.session.add(post_factory(id=1, safety=model.Post.SAFETY_UNSAFE))
+    db.session.flush()
+    with pytest.raises(errors.AuthError):
+        api.post_api.get_post(
+            context_factory(user=user_factory(rank=model.User.RANK_ANONYMOUS)),
+            {"post_id": 1},
         )
