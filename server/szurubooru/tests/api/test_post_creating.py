@@ -214,7 +214,7 @@ def test_creating_from_url_saves_source(
             )
         )
         net.download.assert_called_once_with(
-            "example.com", use_video_downloader=False
+            "example.com", use_downloader=False
         )
         posts.create_post.assert_called_once_with(
             b"content", ["tag1", "tag2"], auth_user
@@ -259,7 +259,7 @@ def test_creating_from_url_with_source_specified(
             )
         )
         net.download.assert_called_once_with(
-            "example.com", use_video_downloader=True
+            "example.com", use_downloader=True
         )
         posts.create_post.assert_called_once_with(
             b"content", ["tag1", "tag2"], auth_user

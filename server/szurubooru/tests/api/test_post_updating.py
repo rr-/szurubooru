@@ -124,7 +124,7 @@ def test_uploading_from_url_saves_source(
             {"post_id": post.post_id},
         )
         net.download.assert_called_once_with(
-            "example.com", use_video_downloader=True
+            "example.com", use_downloader=True
         )
         posts.update_post_content.assert_called_once_with(post, b"content")
         posts.update_post_source.assert_called_once_with(post, "example.com")
@@ -156,7 +156,7 @@ def test_uploading_from_url_with_source_specified(
             {"post_id": post.post_id},
         )
         net.download.assert_called_once_with(
-            "example.com", use_video_downloader=True
+            "example.com", use_downloader=True
         )
         posts.update_post_content.assert_called_once_with(post, b"content")
         posts.update_post_source.assert_called_once_with(post, "example2.com")
