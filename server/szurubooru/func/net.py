@@ -1,10 +1,10 @@
 import json
 import logging
 import subprocess
-import urllib.error
-import urllib.request
 from threading import Thread
 from typing import Any, Dict, List
+
+import requests
 
 from szurubooru import config, errors
 from szurubooru.func import mime
@@ -30,27 +30,39 @@ def download(url: str, use_video_downloader: bool = False) -> bytes:
         except errors.ThirdPartyError as ex:
             youtube_dl_error = ex
 
-    request = urllib.request.Request(url)
+    headers = {'Referer': url}
     if config.config["user_agent"]:
-        request.add_header("User-Agent", config.config["user_agent"])
-    request.add_header("Referer", url)
+        headers["User-Agent"] = config.config["user_agent"]
 
-    content_buffer = b""
+    proxies = {}
+    if config.config["proxy"]:
+        proxies["http"] = proxies["https"] = config.config["proxy"]
+
+    content_buffer = []
     length_tally = 0
     try:
-        with urllib.request.urlopen(request) as handle:
-            while chunk := handle.read(_dl_chunk_size):
-                length_tally += len(chunk)
-                if length_tally > config.config["max_dl_filesize"]:
-                    raise DownloadTooLargeError(
-                        "Download target exceeds maximum. (%d)"
-                        % (config.config["max_dl_filesize"]),
-                        extra_fields={"URL": url},
-                    )
-                content_buffer += chunk
-    except urllib.error.HTTPError as ex:
+        response = requests.get(url, headers=headers, proxies=proxies, stream=True)
+        response.raise_for_status()
+        for chunk in response.iter_content(
+            chunk_size=_dl_chunk_size,
+            decode_unicode=False,
+        ):
+            length_tally += len(chunk)
+            if length_tally > config.config["max_dl_filesize"]:
+                raise DownloadTooLargeError(
+                    "Download target exceeds maximum. (%d)"
+                    % (config.config["max_dl_filesize"]),
+                    extra_fields={"URL": url},
+                )
+            content_buffer.append(chunk)
+    except requests.HTTPError as ex:
         raise DownloadError(
             "Download target returned HTTP %d. (%s)" % (ex.code, ex.reason),
+            extra_fields={"URL": url},
+        ) from ex
+    except requests.ConnectionError as ex:
+        raise DownloadError(
+            "General error connecting to server",
             extra_fields={"URL": url},
         ) from ex
 
@@ -60,13 +72,15 @@ def download(url: str, use_video_downloader: bool = False) -> bytes:
     ):
         raise youtube_dl_error
 
-    return content_buffer
+    return b"".join(content_buffer)
 
 
 def _get_youtube_dl_content_url(url: str) -> str:
     cmd = ["yt-dlp", "--format", "best", "--no-playlist"]
     if config.config["user_agent"]:
         cmd.extend(["--user-agent", config.config["user_agent"]])
+    if config.config["proxy"]:
+        cmd.extend(["--proxy", config.config["proxy"]])
     cmd.extend(["--get-url", url])
     try:
         return (
@@ -92,19 +106,23 @@ def post_to_webhooks(payload: Dict[str, Any]) -> List[Thread]:
 
 
 def _post_to_webhook(webhook: str, payload: Dict[str, Any]) -> int:
-    req = urllib.request.Request(webhook)
-    req.data = json.dumps(
+    data = json.dumps(
         payload,
         default=lambda x: x.isoformat("T") + "Z",
     ).encode("utf-8")
-    req.add_header("Content-Type", "application/json")
+    headers = {"Content-Type": "application/json"}
+    if config.config["user_agent"]:
+        headers["User-Agent"] = config.config["user_agent"]
+    proxies = {}
+    if config.config["proxy"] and config.config["proxy_webhook"]:
+        proxies["http"] = proxies["https"] = config.config["proxy"]
     try:
-        res = urllib.request.urlopen(req)
-        if not 200 <= res.status <= 299:
+        res = requests.get(webhook, data=data, proxies=proxies, headers=headers)
+        if res.status_code not in range(200, 300):
             logger.warning(
                 f"Webhook {webhook} returned {res.status} {res.reason}"
             )
-        return res.status
-    except urllib.error.URLError as ex:
+        return res.status_code
+    except requests.RequestException as ex:
         logger.warning(f"Unable to call webhook {webhook}: {ex}")
         return 400
