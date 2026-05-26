@@ -5,28 +5,39 @@ import re
 import shlex
 import subprocess
 from io import BytesIO
-from typing import List
+from typing import List, Optional
 
 import HeifImagePlugin
 import pillow_avif
 from PIL import Image as PILImage
 
 from szurubooru import errors
-from szurubooru.func import mime, util
+from szurubooru.func import mime, util, files
 
 logger = logging.getLogger(__name__)
 
 
-def convert_heif_to_png(content: bytes) -> bytes:
-    img = PILImage.open(BytesIO(content))
-    img_byte_arr = BytesIO()
-    img.save(img_byte_arr, format="PNG")
-    return img_byte_arr.getvalue()
+def convert_heif_to_png(
+    content: Optional[bytes], content_file: Optional[str] = None
+) -> bytes:
+    if content:
+        handle = BytesIO(content)
+    else:
+        handle = files.get_handle(content_file)
+
+    with handle as f:
+        img = PILImage.open(f)
+        img_byte_arr = BytesIO()
+        img.save(img_byte_arr, format="PNG")
+        return img_byte_arr.getvalue()
 
 
 class Image:
-    def __init__(self, content: bytes) -> None:
+    def __init__(
+        self, content: Optional[bytes], content_file: Optional[str] = None
+    ) -> None:
         self.content = content
+        self.content_file = content_file
         self._reload_info()
 
     @property
@@ -257,6 +268,37 @@ class Image:
         # -91.0 dB is the minimum for 16-bit audio, assume sound if > -80.0 dB
         return meanvol > -80.0
 
+    def _execute_impl(
+        self,
+        path: str,
+        cli: List[str],
+        program: str = "ffmpeg",
+        ignore_error_if_data: bool = False,
+        get_logs: bool = False,
+    ):
+        cli = [program, "-loglevel", "32" if get_logs else "24"] + cli
+        cli = [part.format(path=path) for part in cli]
+        proc = subprocess.Popen(
+            cli,
+            stdout=subprocess.PIPE,
+            stdin=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+        )
+        out, err = proc.communicate()
+        if proc.returncode != 0:
+            logger.warning(
+                "Failed to execute ffmpeg command (cli=%r, err=%r)",
+                " ".join(shlex.quote(arg) for arg in cli),
+                err,
+            )
+            if (len(out) > 0 and not ignore_error_if_data) or len(
+                out
+            ) == 0:
+                raise errors.ProcessingError(
+                    "Error while processing image.\n" + err.decode("utf-8")
+                )
+        return err if get_logs else out
+
     def _execute(
         self,
         cli: List[str],
@@ -264,38 +306,27 @@ class Image:
         ignore_error_if_data: bool = False,
         get_logs: bool = False,
     ) -> bytes:
-        mime_type = mime.get_mime_type(self.content)
+        mime_type = mime.get_mime_type(self.content, self.content_file)
         if mime.is_heif(mime_type):
             # FFmpeg does not support HEIF.
             # https://trac.ffmpeg.org/ticket/6521
-            self.content = convert_heif_to_png(self.content)
+            self.content = convert_heif_to_png(self.content, self.content_file)
+            self.content_file = None
         extension = mime.get_extension(mime_type)
         assert extension
+
+        if not self.content:
+            content_file = files.get_full_path(self.content_file)
+            return self._execute_impl(
+                content_file, cli, program, ignore_error_if_data, get_logs
+            )
+
         with util.create_temp_file(suffix="." + extension) as handle:
             handle.write(self.content)
             handle.flush()
-            cli = [program, "-loglevel", "32" if get_logs else "24"] + cli
-            cli = [part.format(path=handle.name) for part in cli]
-            proc = subprocess.Popen(
-                cli,
-                stdout=subprocess.PIPE,
-                stdin=subprocess.DEVNULL,
-                stderr=subprocess.PIPE,
+            return self._execute_impl(
+                handle.name, cli, program, ignore_error_if_data, get_logs
             )
-            out, err = proc.communicate()
-            if proc.returncode != 0:
-                logger.warning(
-                    "Failed to execute ffmpeg command (cli=%r, err=%r)",
-                    " ".join(shlex.quote(arg) for arg in cli),
-                    err,
-                )
-                if (len(out) > 0 and not ignore_error_if_data) or len(
-                    out
-                ) == 0:
-                    raise errors.ProcessingError(
-                        "Error while processing image.\n" + err.decode("utf-8")
-                    )
-            return err if get_logs else out
 
     def _reload_info(self) -> None:
         self.info = json.loads(

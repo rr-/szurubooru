@@ -61,7 +61,7 @@ def test_creating_minimal_posts(context_factory, post_factory, user_factory):
 
         assert result == "serialized post"
         posts.create_post.assert_called_once_with(
-            "post-content", ["tag1", "tag2"], auth_user
+            "post-content", ["tag1", "tag2"], auth_user, None
         )
         posts.update_post_thumbnail.assert_called_once_with(
             post, "post-thumbnail"
@@ -121,7 +121,7 @@ def test_creating_full_posts(context_factory, post_factory, user_factory):
 
         assert result == "serialized post"
         posts.create_post.assert_called_once_with(
-            "post-content", ["tag1", "tag2"], auth_user
+            "post-content", ["tag1", "tag2"], auth_user, None
         )
         posts.update_post_safety.assert_called_once_with(post, "safe")
         posts.update_post_source.assert_called_once_with(post, "source")
@@ -174,7 +174,7 @@ def test_anonymous_uploads(
             )
         )
         posts.create_post.assert_called_once_with(
-            "post-content", ["tag1", "tag2"], None
+            "post-content", ["tag1", "tag2"], None, None
         )
 
 
@@ -217,7 +217,7 @@ def test_creating_from_url_saves_source(
             "example.com", use_video_downloader=False
         )
         posts.create_post.assert_called_once_with(
-            b"content", ["tag1", "tag2"], auth_user
+            b"content", ["tag1", "tag2"], auth_user, None
         )
         posts.update_post_source.assert_called_once_with(post, "example.com")
 
@@ -262,7 +262,7 @@ def test_creating_from_url_with_source_specified(
             "example.com", use_video_downloader=True
         )
         posts.create_post.assert_called_once_with(
-            b"content", ["tag1", "tag2"], auth_user
+            b"content", ["tag1", "tag2"], auth_user, None
         )
         posts.update_post_source.assert_called_once_with(post, "example2.com")
 
