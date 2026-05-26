@@ -24,6 +24,11 @@ def convert_heif_to_png(content: bytes) -> bytes:
     return img_byte_arr.getvalue()
 
 
+def check_for_loop(content: bytes) -> bytes:
+    img = PILImage.open(BytesIO(content))
+    return "loop" in img.info
+
+
 class Image:
     def __init__(self, content: bytes) -> None:
         self.content = content

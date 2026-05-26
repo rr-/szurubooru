@@ -35,6 +35,16 @@ shortcuts:</p>
         </tr>
 
         <tr>
+            <td><kbd>T</kbd></td>
+            <td>(In edit mode) Focus tag input</td>
+        </tr>
+
+        <tr>
+            <td><kbd>Command/Ctrl+S</kbd></td>
+            <td>(In edit mode) Save post</td>
+        </tr>
+
+        <tr>
             <td><kbd>Delete</kbd></td>
             <td>Delete post (while in edit mode)</td>
         </tr>
