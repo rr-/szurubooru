@@ -51,6 +51,22 @@
             <td>alias of <code>usages</code></td>
         </tr>
         <tr>
+            <td><code>suggests</code></td>
+            <td>with given suggested tags (accepts wildcards)</td>
+        </tr>
+        <tr>
+            <td><code>implies</code></td>
+            <td>with given implied tags (accepts wildcards)</td>
+        </tr>
+        <tr>
+            <td><code>suggested-by</code></td>
+            <td>suggested by given tags (accepts wildcards)</td>
+        </tr>
+        <tr>
+            <td><code>implied-by</code></td>
+            <td>implied by given tags (accepts wildcards)</td>
+        </tr>
+        <tr>
             <td><code>suggestion-count</code></td>
             <td>with given number of suggestions</td>
         </tr>
