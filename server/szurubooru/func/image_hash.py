@@ -7,7 +7,7 @@ from typing import Any, Callable, List, Optional, Set, Tuple
 import HeifImagePlugin
 import numpy as np
 import pillow_avif
-from PIL import Image
+from PIL import Image, ImageOps
 
 from szurubooru import config, errors
 
@@ -40,7 +40,7 @@ NpMatrix = np.ndarray
 
 def _preprocess_image(content: bytes) -> NpMatrix:
     try:
-        img = Image.open(BytesIO(content))
+        img = ImageOps.exif_transpose(Image.open(BytesIO(content)))
         return np.asarray(img.convert("L"), dtype=np.uint8)
     except (IOError, ValueError):
         raise errors.ProcessingError(
