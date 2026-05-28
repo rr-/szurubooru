@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from typing import Dict, Optional
 
 from szurubooru import config, rest
-from szurubooru.func import auth, posts, users, util
+from szurubooru.func import auth, mime, posts, users, util
 
 _cache_time = None  # type: Optional[datetime]
 _cache_result = None  # type: Optional[int]
@@ -49,6 +49,11 @@ def get_info(ctx: rest.Context, _params: Dict[str, str] = {}) -> rest.Response:
             "privileges": util.snake_case_to_lower_camel_case_keys(
                 config.config["privileges"]
             ),
+            "allowedExtensions": [
+                mime.MIME_EXTENSIONS_MAP[i]
+                for i in config.config["allowed_mime_types"]
+                if i in mime.MIME_EXTENSIONS_MAP
+            ],
         },
     }
     if auth.has_privilege(ctx.user, "posts:view:featured"):

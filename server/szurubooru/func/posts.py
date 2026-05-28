@@ -611,7 +611,11 @@ def update_post_content(post: model.Post, content: Optional[bytes]) -> None:
 
     update_signature = False
     post.mime_type = mime.get_mime_type(content)
-    if mime.is_flash(post.mime_type):
+    if post.mime_type not in config.config["allowed_mime_types"]:
+        raise InvalidPostContentError(
+            "File type not allowed: %r" % post.mime_type
+        )
+    elif mime.is_flash(post.mime_type):
         post.type = model.Post.TYPE_FLASH
     elif mime.is_image(post.mime_type):
         update_signature = True

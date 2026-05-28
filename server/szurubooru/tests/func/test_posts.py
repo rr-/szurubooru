@@ -489,6 +489,18 @@ def test_update_post_content_for_new_post(
                 },
                 "secret": "test",
                 "allow_broken_uploads": False,
+                "allowed_mime_types": [
+                    "image/png",
+                    "image/jpeg",
+                    "image/gif",
+                    "image/bmp",
+                    "image/avif",
+                    "image/heic",
+                    "image/heif",
+                    "video/webm",
+                    "video/mp4",
+                    "application/x-shockwave-flash",
+                ],
             }
         )
         output_file_path = "{}/data/posts/{}".format(tmpdir, output_file_name)
@@ -526,6 +538,7 @@ def test_update_post_content_to_existing_content(
             },
             "secret": "test",
             "allow_broken_uploads": False,
+            "allowed_mime_types": ["image/png"],
         }
     )
     post = post_factory()
@@ -553,6 +566,7 @@ def test_update_post_content_with_broken_content(
             },
             "secret": "test",
             "allow_broken_uploads": allow_broken_uploads,
+            "allowed_mime_types": ["image/png"],
         }
     )
     post = post_factory()
@@ -576,11 +590,35 @@ def test_update_post_content_with_invalid_content(
     config_injector(
         {
             "allow_broken_uploads": True,
+            "allowed_mime_types": ["application/octet-stream"],
         }
     )
     post = model.Post()
     with pytest.raises(posts.InvalidPostContentError):
         posts.update_post_content(post, input_content)
+
+
+def test_update_post_content_with_unallowed_mime_type(
+        tmpdir, config_injector, post_factory, read_asset
+):
+    config_injector(
+        {
+            "data_dir": str(tmpdir.mkdir("data")),
+            "thumbnails": {
+                "post_width": 300,
+                "post_height": 300,
+            },
+            "secret": "test",
+            "allow_broken_uploads": False,
+            "allowed_mime_types": [],
+        }
+    )
+    post = post_factory()
+    db.session.add(post)
+    db.session.flush()
+    content = read_asset("png.png")
+    with pytest.raises(posts.InvalidPostContentError):
+        posts.update_post_content(post, content)
 
 
 @pytest.mark.parametrize("is_existing", (True, False))
@@ -596,6 +634,7 @@ def test_update_post_thumbnail_to_new_one(
             },
             "secret": "test",
             "allow_broken_uploads": False,
+            "allowed_mime_types": ["image/png"],
         }
     )
     post = post_factory(id=1)
@@ -637,6 +676,7 @@ def test_update_post_thumbnail_to_default(
             },
             "secret": "test",
             "allow_broken_uploads": False,
+            "allowed_mime_types": ["image/png"],
         }
     )
     post = post_factory(id=1)
@@ -677,6 +717,7 @@ def test_update_post_thumbnail_with_broken_thumbnail(
             },
             "secret": "test",
             "allow_broken_uploads": False,
+            "allowed_mime_types": ["image/png"],
         }
     )
     post = post_factory(id=1)
@@ -721,6 +762,7 @@ def test_update_post_content_leaving_custom_thumbnail(
             },
             "secret": "test",
             "allow_broken_uploads": False,
+            "allowed_mime_types": ["image/png"],
         }
     )
     post = post_factory(id=1)
@@ -754,6 +796,11 @@ def test_update_post_content_convert_heif_to_png_when_processing(
             },
             "secret": "test",
             "allow_broken_uploads": False,
+            "allowed_mime_types": [
+                "image/avif",
+                "image/heic",
+                "image/heif",
+            ],
         }
     )
     post = post_factory(id=1)
@@ -1176,6 +1223,7 @@ def test_merge_posts_replaces_content(
                 "post_height": 300,
             },
             "secret": "test",
+            "allowed_mime_types": ["image/png"],
         }
     )
     source_post = post_factory(id=1)

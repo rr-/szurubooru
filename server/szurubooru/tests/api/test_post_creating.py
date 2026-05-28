@@ -343,6 +343,10 @@ def test_errors_not_spending_ids(
                 "uploads:use_downloader": model.User.RANK_POWER,
             },
             "secret": "test",
+            "allowed_mime_types": [
+                "image/png",
+                "image/jpeg",
+            ],
         }
     )
     auth_user = user_factory(rank=model.User.RANK_REGULAR)

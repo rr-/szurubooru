@@ -29,6 +29,18 @@ convert:
      to_webm: false
      to_mp4: false
 
+# specify which MIME types are allowed
+allowed_mime_types:
+   - image/jpeg
+   - image/png
+   - image/gif
+   - video/webm
+   - video/mp4
+   - application/x-shockwave-flash
+   - image/avif
+   - image/heif
+   - image/heic
+
 # allow posts to be uploaded even if some image processing errors occur
 allow_broken_uploads: false
 
