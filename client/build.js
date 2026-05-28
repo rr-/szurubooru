@@ -84,7 +84,7 @@ function bundleHtml() {
 
     function minifyHtml(html) {
         return require('html-minifier').minify(html, {
-            removeComments: true,
+            removeComments: false,
             collapseWhitespace: true,
             conservativeCollapse: true,
         }).trim();
