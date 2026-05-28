@@ -46,6 +46,7 @@ class PostEditSidebarControl extends events.EventTarget {
                     "posts:create:anonymous"
                 ),
                 canDeletePosts: api.hasPrivilege("posts:delete"),
+                canBanPosts: api.hasPrivilege("posts:ban"),
                 canFeaturePosts: api.hasPrivilege("posts:feature"),
                 canMergePosts: api.hasPrivilege("posts:merge"),
             })
@@ -186,6 +187,12 @@ class PostEditSidebarControl extends events.EventTarget {
             );
         }
 
+        if (this._banLinkNode) {
+            this._banLinkNode.addEventListener("click", (e) =>
+                this._evtBanClick(e)
+            );
+        }
+
         this._postNotesOverlayControl.addEventListener("blur", (e) =>
             this._evtNoteBlur(e)
         );
@@ -293,6 +300,19 @@ class PostEditSidebarControl extends events.EventTarget {
         if (confirm("Are you sure you want to delete this post?")) {
             this.dispatchEvent(
                 new CustomEvent("delete", {
+                    detail: {
+                        post: this._post,
+                    },
+                })
+            );
+        }
+    }
+
+    _evtBanClick(e) {
+        e.preventDefault();
+        if (confirm("Are you sure you want to ban this post?")) {
+            this.dispatchEvent(
+                new CustomEvent("ban", {
                     detail: {
                         post: this._post,
                     },
@@ -516,6 +536,11 @@ class PostEditSidebarControl extends events.EventTarget {
     get _deleteLinkNode() {
         return this._formNode.querySelector(".management .delete");
     }
+
+    get _banLinkNode() {
+        return this._formNode.querySelector(".management .ban");
+    }
+
 
     get _addNoteLinkNode() {
         return this._formNode.querySelector(".notes .add");

@@ -53,6 +53,9 @@ class TopNavigationController {
         if (!api.hasPrivilege("pools:list")) {
             topNavigation.hide("pools");
         }
+        if (!api.hasPrivilege("posts:ban:list")) {
+            topNavigation.hide("banned-posts");
+        }
         if (api.isLoggedIn()) {
             if (!api.hasPrivilege("users:create:any")) {
                 topNavigation.hide("register");

@@ -1,5 +1,6 @@
 import szurubooru.model.util
 from szurubooru.model.base import Base
+from szurubooru.model.bans import PostBan
 from szurubooru.model.comment import Comment, CommentScore
 from szurubooru.model.pool import Pool, PoolName, PoolPost
 from szurubooru.model.pool_category import PoolCategory

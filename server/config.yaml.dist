@@ -116,6 +116,9 @@ privileges:
     'posts:bulk-edit:tags':         power
     'posts:bulk-edit:safety':       power
     'posts:bulk-edit:delete':       power
+    'posts:ban:create':             moderator
+    'posts:ban:delete':             moderator
+    'posts:ban:list':               moderator
 
     'tags:create':                  regular
     'tags:edit:names':              power
