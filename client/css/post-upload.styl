@@ -15,12 +15,21 @@ $cancel-button-color = tomato
         &.inactive .skip-duplicates
         &.inactive .always-upload-similar
         &.inactive .pause-remain-on-error
+        &.inactive .upload-all-anonymous
+        &.inactive .expander
+        &.inactive #common-tags,
         &.uploading input[type=submit],
         &.uploading .skip-duplicates,
         &.uploading .always-upload-similar
         &.uploading .pause-remain-on-error
+        &.uploading .upload-all-anonymous
+        &.uploading .expander
         &:not(.uploading) .cancel
             display: none
+
+        &.inactive .control-strip
+        &.uploading .control-strip
+            gap: 0
 
     .dropper-container
         margin: 0 auto
@@ -30,27 +39,35 @@ $cancel-button-color = tomato
             small
                 font-size: 60%
 
-    input[type=submit]
-        margin-top: 1em
+    .expander
+        &.collapsed
+            margin-bottom: 0
+        .expander-content
+            padding: 0.5em
 
     .cancel
-        margin-top: 1em
         background: $cancel-button-color
         border-color: $cancel-button-color
         &:focus
             border: 2px solid $text-color
 
-    .skip-duplicates
-        margin-left: 1em
-
-    .always-upload-similar
-        margin-left: 1em
-
-    .pause-remain-on-error
-        margin-left: 1em
-
     form>.messages
         margin-top: 1em
+
+    .control-strip
+        display: flex
+        flex-direction: column
+        gap: 1em
+        margin-top: 1em
+
+    .control-options
+        display: flex
+        flex-wrap: wrap
+        gap: 0 1em
+
+        span
+            flex: 1 1 30%
+            white-space: nowrap
 
     .uploadables-container
         list-style-type: none
