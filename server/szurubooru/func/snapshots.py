@@ -107,6 +107,9 @@ def _create(
         entity
     )
 
+    if auth_user and not auth_user.name:
+        auth_user = None
+
     snapshot = model.Snapshot()
     snapshot.creation_time = datetime.utcnow()
     snapshot.operation = operation

@@ -2,13 +2,6 @@
 
 const views = require("../util/views.js");
 
-const KEY_TAB = 9;
-const KEY_RETURN = 13;
-const KEY_DELETE = 46;
-const KEY_ESCAPE = 27;
-const KEY_UP = 38;
-const KEY_DOWN = 40;
-
 function _getSelectionStart(input) {
     if ("selectionStart" in input) {
         return input.selectionStart;
@@ -70,11 +63,18 @@ class AutoCompleteControl {
             prefix = this._sourceInputNode.value.substring(0, index + 1);
             middle = this._sourceInputNode.value.substring(index + 1);
         }
+        suffix = spaceIndex < commaIndex ? suffix.replace(/^[^,]+/, "") : suffix.replace(/^\S+/, "");
+        suffix = suffix.trimLeft();
         this._sourceInputNode.value =
-            prefix + result.toString() + delimiter + suffix.trimLeft();
+            prefix + result.toString() + delimiter + suffix;
         if (!addSpace) {
-            this._sourceInputNode.value = this._sourceInputNode.value.trim();
+            this._sourceInputNode.value = this._sourceInputNode.value.trimLeft();
         }
+        const selection = this._sourceInputNode.value.length - suffix.length;
+        if (!addSpace) {
+            this._sourceInputNode.value = this._sourceInputNode.value.trimRight();
+        }
+        this._sourceInputNode.setSelectionRange(selection, selection);
         this._sourceInputNode.focus();
     }
 
@@ -142,34 +142,36 @@ class AutoCompleteControl {
     }
 
     _evtKeyDown(e) {
-        const key = e.which;
+        const key = (e.key || "").replace("Arrow", "");
         const shift = e.shiftKey;
         let func = null;
         if (this._isVisible) {
-            if (key === KEY_ESCAPE) {
-                func = this.hide;
-            } else if (key === KEY_TAB && shift) {
+            if (key === "Escape") {
+                func = () => {
+                    this.hide();
+                };
+            } else if (key === "Tab" && shift) {
                 func = () => {
                     this._selectPrevious();
                 };
-            } else if (key === KEY_TAB && !shift) {
+            } else if (key === "Tab" && !shift) {
                 func = () => {
                     this._selectNext();
                 };
-            } else if (key === KEY_UP) {
+            } else if (key === "Up") {
                 func = () => {
                     this._selectPrevious();
                 };
-            } else if (key === KEY_DOWN) {
+            } else if (key === "Down") {
                 func = () => {
                     this._selectNext();
                 };
-            } else if (key === KEY_RETURN && this._activeResult >= 0) {
+            } else if (key === "Enter" && this._activeResult >= 0) {
                 func = () => {
                     this._confirm(this._getActiveSuggestion());
                     this.hide();
                 };
-            } else if (key === KEY_DELETE && this._activeResult >= 0) {
+            } else if (key === "Delete" && this._activeResult >= 0) {
                 func = () => {
                     this._delete(this._getActiveSuggestion());
                     this.hide();
@@ -228,6 +230,13 @@ class AutoCompleteControl {
     }
 
     _updateResults(textToFind) {
+        if (this._options.isNegationAllowed && textToFind === "-") {
+            this._results = [];
+            this._activeResult = -1;
+            this._refreshList();
+            return;
+        }
+
         this._options.getMatches(textToFind).then((matches) => {
             const oldResults = this._results.slice();
             this._results = matches.slice(0, this._options.maxResults);
@@ -255,7 +264,7 @@ class AutoCompleteControl {
             const link = document.createElement("a");
             link.innerHTML = resultItem.caption;
             link.setAttribute("href", "");
-            link.setAttribute("data-key", resultItem.value);
+            link.setAttribute("data-key", resultItem.value._origName);
             link.addEventListener("mouseenter", (e) => {
                 e.preventDefault();
                 this._activeResult = resultIndexWorkaround;

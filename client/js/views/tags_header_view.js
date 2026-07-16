@@ -21,7 +21,7 @@ class TagsHeaderView extends events.EventTarget {
                 {
                     confirm: (tag) =>
                         this._autoCompleteControl.replaceSelectedText(
-                            misc.escapeSearchTerm(tag.names[0]),
+                            misc.escapeSearchTerm(tag.matchingNames[0]),
                             true
                         ),
                 }

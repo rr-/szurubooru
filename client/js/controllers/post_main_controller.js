@@ -41,16 +41,29 @@ class PostMainController extends BasePostController {
                     router.replace(url, ctx.state, false);
                 }
 
+                const prevPostId = aroundResponse.prev
+                        ? aroundResponse.prev.id
+                        : null;
+                const nextPostId = aroundResponse.next
+                        ? aroundResponse.next.id
+                        : null;
+
+                // preload nearby posts
+                if (prevPostId) {
+                    Post.get(prevPostId, { noProgress: true }).then(misc.preloadPostImages);
+                    PostList.getAround(prevPostId, parameters ? parameters.query : null, { noProgress: true });
+                }
+                if (nextPostId) {
+                    Post.get(nextPostId, { noProgress: true }).then(misc.preloadPostImages);
+                    PostList.getAround(nextPostId, parameters ? parameters.query : null, { noProgress: true });
+                }
+
                 this._post = post;
                 this._view = new PostMainView({
                     post: post,
                     editMode: editMode,
-                    prevPostId: aroundResponse.prev
-                        ? aroundResponse.prev.id
-                        : null,
-                    nextPostId: aroundResponse.next
-                        ? aroundResponse.next.id
-                        : null,
+                    prevPostId: prevPostId,
+                    nextPostId: nextPostId,
                     canEditPosts: api.hasPrivilege("posts:edit"),
                     canDeletePosts: api.hasPrivilege("posts:delete"),
                     canFeaturePosts: api.hasPrivilege("posts:feature"),
@@ -169,22 +182,22 @@ class PostMainController extends BasePostController {
         this._view.sidebarControl.disableForm();
         this._view.sidebarControl.clearMessages();
         const post = e.detail.post;
-        if (e.detail.safety !== undefined) {
+        if (e.detail.safety !== undefined && e.detail.safety !== null) {
             post.safety = e.detail.safety;
         }
-        if (e.detail.flags !== undefined) {
+        if (e.detail.flags !== undefined && e.detail.flags !== null) {
             post.flags = e.detail.flags;
         }
-        if (e.detail.relations !== undefined) {
+        if (e.detail.relations !== undefined && e.detail.relations !== null) {
             post.relations = e.detail.relations;
         }
-        if (e.detail.content !== undefined) {
+        if (e.detail.content !== undefined && e.detail.content !== null) {
             post.newContent = e.detail.content;
         }
-        if (e.detail.thumbnail !== undefined) {
+        if (e.detail.thumbnail !== undefined && e.detail.thumbnail !== null) {
             post.newThumbnail = e.detail.thumbnail;
         }
-        if (e.detail.source !== undefined) {
+        if (e.detail.source !== undefined && e.detail.source !== null) {
             post.source = e.detail.source;
         }
         post.save().then(

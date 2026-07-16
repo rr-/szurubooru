@@ -439,14 +439,18 @@ class Api extends events.EventTarget {
 
             abortFunction = () => {
                 req.abort(); // does *NOT* call the callback passed in .end()
-                progress.done();
+                if (!options.noProgress) {
+                    progress.done();
+                }
                 reject(
                     new Error("The request was aborted due to user cancel.")
                 );
             };
 
             req.end((error, response) => {
-                progress.done();
+                if (!options.noProgress) {
+                    progress.done();
+                }
                 abortFunction = () => {};
                 if (error) {
                     if (response && response.body) {

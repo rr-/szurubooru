@@ -40,8 +40,10 @@ def _verify_name_validity(name: str) -> None:
     if util.value_exceeds_column_size(name, model.TagName.name):
         raise InvalidTagNameError("Name is too long.")
     name_regex = config.config["tag_name_regex"]
-    if not re.match(name_regex, name):
+    if not re.fullmatch(name_regex, name):
         raise InvalidTagNameError("Name must satisfy regex %r." % name_regex)
+    if name in [".", ".."]:
+        raise InvalidTagNameError(f"Tag `{name}` is not allowed.")
 
 
 def _get_names(tag: model.Tag) -> List[str]:

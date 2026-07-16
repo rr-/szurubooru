@@ -136,12 +136,12 @@ def test_update_user_token_expiration_time_in_past(user_token_factory):
 @pytest.mark.parametrize(
     "expiration_time_str",
     [
-        datetime.utcnow().isoformat(),
-        (datetime.utcnow() - timedelta(days=1)).ctime(),
+        "2025/12/23T00:00:00",  # invalid format
+        "Mon Dec 22 17:45:49 2025",
         "1970/01/01 00:00:01.0000Z",
         "70/01/01 00:00:01.0000Z",
-        "".join(random.choice(string.ascii_letters) for _ in range(15)),
-        "".join(random.choice(string.digits) for _ in range(8)),
+        "InvalidExpString",
+        "12345678",
     ],
 )
 def test_update_user_token_expiration_time_invalid_format(

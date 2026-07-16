@@ -43,12 +43,14 @@ def get_avatar_path(user_name: str) -> str:
 def get_avatar_url(user: model.User) -> str:
     assert user
     if user.avatar_style == user.AVATAR_GRAVATAR:
-        assert user.email or user.name
+        if not user.email and not user.name:
+            return ""
         return "https://gravatar.com/avatar/%s?d=retro&s=%d" % (
             util.get_md5((user.email or user.name).lower()),
             config.config["thumbnails"]["avatar_width"],
         )
-    assert user.name
+    if not user.name:
+        return ""
     return "%s/avatars/%s.png" % (
         config.config["data_url"].rstrip("/"),
         user.name.lower(),
@@ -235,7 +237,7 @@ def update_user_name(user: model.User, name: str) -> None:
         raise InvalidUserNameError("User name is too long.")
     name = name.strip()
     name_regex = config.config["user_name_regex"]
-    if not re.match(name_regex, name):
+    if not re.fullmatch(name_regex, name):
         raise InvalidUserNameError(
             "User name %r must satisfy regex %r." % (name, name_regex)
         )
@@ -252,7 +254,7 @@ def update_user_password(user: model.User, password: str) -> None:
     if not password:
         raise InvalidPasswordError("Password cannot be empty.")
     password_regex = config.config["password_regex"]
-    if not re.match(password_regex, password):
+    if not re.fullmatch(password_regex, password):
         raise InvalidPasswordError(
             "Password must satisfy regex %r." % password_regex
         )

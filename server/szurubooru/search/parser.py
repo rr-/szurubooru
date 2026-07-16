@@ -81,7 +81,7 @@ class Parser:
                 negated = True
             if not chunk:
                 raise errors.SearchError("Empty negated token.")
-            match = re.match(r"^(.*?)(?<!\\):(.*)$", chunk)
+            match = re.fullmatch(r"^(.*?)(?<!\\):(.*)$", chunk)
             if match:
                 key, value = list(match.groups())
                 key = util.unescape(key)

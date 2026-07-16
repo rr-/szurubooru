@@ -6,7 +6,7 @@ const AbstractList = require("./abstract_list.js");
 const Pool = require("./pool.js");
 
 class PoolList extends AbstractList {
-    static search(text, offset, limit, fields) {
+    static search(text, offset, limit, fields, options) {
         return api
             .get(
                 uri.formatApiLink("pools", {
@@ -14,7 +14,8 @@ class PoolList extends AbstractList {
                     offset: offset,
                     limit: limit,
                     fields: fields.join(","),
-                })
+                }),
+                options
             )
             .then((response) => {
                 return Promise.resolve(

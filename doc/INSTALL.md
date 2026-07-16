@@ -1,5 +1,5 @@
-This assumes that you have Docker (version 17.05 or greater)
-and Docker Compose (version 1.6.0 or greater) already installed.
+This assumes that you have Docker (version 19.03 or greater)
+and the Docker Compose CLI (version 1.27.0 or greater) already installed.
 
 ### Prepare things
 
@@ -38,7 +38,7 @@ and Docker Compose (version 1.6.0 or greater) already installed.
 
     This pulls the latest containers from docker.io:
     ```console
-    user@host:szuru$ docker-compose pull
+    user@host:szuru$ docker compose pull
     ```
 
     If you have modified the application's source and would like to manually
@@ -49,17 +49,17 @@ and Docker Compose (version 1.6.0 or greater) already installed.
 
     For first run, it is recommended to start the database separately:
     ```console
-    user@host:szuru$ docker-compose up -d sql
+    user@host:szuru$ docker compose up -d sql
     ```
 
     To start all containers:
     ```console
-    user@host:szuru$ docker-compose up -d
+    user@host:szuru$ docker compose up -d
     ```
 
     To view/monitor the application logs:
     ```console
-    user@host:szuru$ docker-compose logs -f
+    user@host:szuru$ docker compose logs -f
     # (CTRL+C to exit)
     ```
 
@@ -84,13 +84,13 @@ and Docker Compose (version 1.6.0 or greater) already installed.
 2. Build the containers:
 
     ```console
-    user@host:szuru$ docker-compose build
+    user@host:szuru$ docker compose build
     ```
 
     That will attempt to build both containers, but you can specify `client`
     or `server` to make it build only one.
 
-    If `docker-compose build` spits out:
+    If `docker compose build` spits out:
 
     ```
     ERROR: Service 'server' failed to build: failed to parse platform : "" is an invalid component of "": platform specifier component must match "^[A-Za-z0-9_-]+$": invalid argument
@@ -102,7 +102,7 @@ and Docker Compose (version 1.6.0 or greater) already installed.
     user@host:szuru$ export DOCKER_BUILDKIT=1; export COMPOSE_DOCKER_CLI_BUILD=1
     ```
 
-    ...and run `docker-compose build` again.
+    ...and run `docker compose build` again.
 
 *Note: If your changes are not taking effect in your builds, consider building
 with `--no-cache`.*
@@ -117,7 +117,7 @@ with `--no-cache`.*
     run from docker:
 
     ```console
-    user@host:szuru$ docker-compose run server ./szuru-admin --help
+    user@host:szuru$ docker compose run server ./szuru-admin --help
     ```
 
     will give you a breakdown on all available commands.

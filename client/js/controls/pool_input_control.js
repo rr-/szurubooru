@@ -10,9 +10,6 @@ const events = require("../events.js");
 const views = require("../util/views.js");
 const PoolAutoCompleteControl = require("./pool_auto_complete_control.js");
 
-const KEY_SPACE = 32;
-const KEY_RETURN = 13;
-
 const SOURCE_INIT = "init";
 const SOURCE_IMPLICATION = "implication";
 const SOURCE_USER_INPUT = "user-input";

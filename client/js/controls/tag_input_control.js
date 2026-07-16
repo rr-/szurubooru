@@ -10,9 +10,6 @@ const events = require("../events.js");
 const views = require("../util/views.js");
 const TagAutoCompleteControl = require("./tag_auto_complete_control.js");
 
-const KEY_SPACE = 32;
-const KEY_RETURN = 13;
-
 const SOURCE_INIT = "init";
 const SOURCE_IMPLICATION = "implication";
 const SOURCE_USER_INPUT = "user-input";
@@ -114,6 +111,7 @@ class TagInputControl extends events.EventTarget {
                 },
                 verticalShift: -2,
                 isTaggedWith: (tagName) => this.tags.isTaggedWith(tagName),
+                isNegationAllowed: false,
             }
         );
 
@@ -273,7 +271,7 @@ class TagInputControl extends events.EventTarget {
     }
 
     _evtInputKeyDown(e) {
-        if (e.which === KEY_RETURN || e.which === KEY_SPACE) {
+        if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
             this._hideAutoComplete();
             this.addTagByText(this._tagInputNode.value, SOURCE_USER_INPUT);
@@ -386,7 +384,7 @@ class TagInputControl extends events.EventTarget {
                     );
                 }
                 for (let suggestion of tag.suggestions || []) {
-                    this._suggestions.set(suggestion, 5);
+                    this._suggestions.set(suggestion._origName, 5);
                 }
                 if (this._suggestions.length) {
                     this._openSuggestionsPopup();

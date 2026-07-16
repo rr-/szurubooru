@@ -1,0 +1,54 @@
+## Docker Compose configuration for dev iteration
+##
+## Data is transient by using named vols.
+## Run: docker-compose -f ./docker-compose.dev.yml up
+services:
+
+  server:
+    build:
+      context: ./server
+      target: development
+    depends_on:
+      - sql
+    environment:
+      ## These should be the names of the dependent containers listed below,
+      ## or FQDNs/IP addresses if these services are running outside of Docker
+      POSTGRES_HOST: sql
+      ## Credentials for database:
+      POSTGRES_USER:
+      POSTGRES_PASSWORD:
+      ## Commented Values are Default:
+      #POSTGRES_DB: defaults to same as POSTGRES_USER
+      #POSTGRES_PORT: 5432
+      #LOG_SQL: 0 (1 for verbose SQL logs)
+      THREADS:
+    volumes:
+      - "data:/data"
+      - "./server/:/opt/app/"
+
+  client:
+    build:
+      context: ./client
+      target: development
+    depends_on:
+      - server
+    volumes:
+      - "data:/data:ro"
+      - "./client/:/opt/app/"
+      - "/opt/app/public/"
+    ports:
+      - "${PORT}:80"
+      - "8081:8081"
+
+  sql:
+    image: postgres:11-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER:
+      POSTGRES_PASSWORD:
+    volumes:
+      - "sql:/var/lib/postgresql/data"
+
+volumes:
+  data:
+  sql:

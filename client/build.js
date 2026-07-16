@@ -315,7 +315,7 @@ function makeOutputDirs() {
 }
 
 function watch() {
-    let wss = new WebSocket.Server({ port: 8080 });
+    let wss = new WebSocket.Server({ port: environment === "development" ? 8081 : 8080 });
     const liveReload = !process.argv.includes('--no-live-reload');
 
     function emitReload() {

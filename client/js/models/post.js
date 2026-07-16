@@ -199,8 +199,8 @@ class Post extends events.EventTarget {
         return returnedPromise;
     }
 
-    static get(id) {
-        return api.get(uri.formatApiLink("post", id)).then((response) => {
+    static get(id, options) {
+        return api.get(uri.formatApiLink("post", id), options).then((response) => {
             return Promise.resolve(Post.fromResponse(response));
         });
     }
@@ -271,7 +271,7 @@ class Post extends events.EventTarget {
         if (this._newContent) {
             files.content = this._newContent;
         }
-        if (this._newThumbnail !== undefined) {
+        if (this._newThumbnail !== undefined && this._newThumbnail !== null) {
             files.thumbnail = this._newThumbnail;
         }
         if (this._source !== this._orig._source) {

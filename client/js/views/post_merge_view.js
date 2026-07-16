@@ -3,7 +3,6 @@
 const events = require("../events.js");
 const views = require("../util/views.js");
 
-const KEY_RETURN = 13;
 const template = views.getTemplate("post-merge");
 const sideTemplate = views.getTemplate("post-merge-side");
 
@@ -110,8 +109,7 @@ class PostMergeView extends events.EventTarget {
     }
 
     _evtPostSearchFieldKeyDown(e) {
-        const key = e.which;
-        if (key !== KEY_RETURN) {
+        if (e.key !== "Enter") {
             return;
         }
         e.target.blur();

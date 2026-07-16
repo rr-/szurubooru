@@ -21,7 +21,7 @@ class PoolsHeaderView extends events.EventTarget {
                 {
                     confirm: (pool) =>
                         this._autoCompleteControl.replaceSelectedText(
-                            misc.escapeSearchTerm(pool.names[0]),
+                            misc.escapeSearchTerm(pool.matchingNames[0]),
                             true
                         ),
                 }
