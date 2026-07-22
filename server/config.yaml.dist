@@ -23,6 +23,10 @@ thumbnails:
 user_agent:
 max_dl_filesize: 25.0E+6 # maximum filesize limit in bytes
 
+# Proxy server to use for outbound requests. This is used for the downloader
+# and for direct URL fetches, and optionally for webhooks too (see proxy_webhooks below)
+proxy: # example to use Tor: socks5h://localhost:9050
+
 # automatically convert animated GIF uploads to video formats
 convert:
    gif:
@@ -64,6 +68,9 @@ user_name_regex: '^[a-zA-Z0-9_-]{1,32}$'
 # containing a snapshot resource as JSON. See doc/API.md for details
 webhooks:
     # - https://api.example.com/webhooks/
+# the default is true for safety's sake, however, if you trust the webhook operator
+# with your anonymity, you may set this to false
+proxy_webhooks: true
 
 default_rank: regular
 
