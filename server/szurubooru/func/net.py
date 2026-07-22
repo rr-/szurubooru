@@ -57,7 +57,7 @@ def download(url: str, use_video_downloader: bool = False) -> bytes:
             content_buffer.append(chunk)
     except requests.HTTPError as ex:
         raise DownloadError(
-            "Download target returned HTTP %d. (%s)" % (ex.code, ex.reason),
+            "Download target returned HTTP %d. (%s)" % (ex.response.status_code, ex.args[0]),
             extra_fields={"URL": url},
         ) from ex
     except requests.ConnectionError as ex:
