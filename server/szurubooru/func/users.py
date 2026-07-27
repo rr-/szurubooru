@@ -117,7 +117,13 @@ class UserSerializer(serialization.BaseSerializer):
             "likedPostCount": self.serialize_liked_post_count,
             "dislikedPostCount": self.serialize_disliked_post_count,
             "email": self.serialize_email,
+            "searchHistory": self.serialize_search_history,
         }
+
+    def serialize_search_history(self) -> Any:
+        if (self.auth_user and self.user and self.auth_user.user_id == self.user.user_id) or (self.auth_user and self.auth_user.rank in (model.User.RANK_MODERATOR, model.User.RANK_ADMINISTRATOR)):
+            return self.user.search_history
+        return None
 
     def serialize_name(self) -> Any:
         return self.user.name
@@ -337,3 +343,8 @@ def reset_user_password(user: model.User) -> str:
     user.password_hash = password_hash
     user.password_revision = revision
     return password
+
+
+def update_user_search_history(user: model.User, search_history: str) -> None:
+    assert user
+    user.search_history = search_history

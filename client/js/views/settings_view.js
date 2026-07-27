@@ -18,6 +18,16 @@ class SettingsView extends events.EventTarget {
 
         views.decorateValidator(this._formNode);
         this._formNode.addEventListener("submit", (e) => this._evtSubmit(e));
+
+        const clearHistoryBtn = this._hostNode.querySelector("#clear-search-history");
+        if (clearHistoryBtn) {
+            clearHistoryBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                if (confirm("Are you sure you want to clear your search history?")) {
+                    this.dispatchEvent(new CustomEvent("clearHistory"));
+                }
+            });
+        }
     }
 
     clearMessages() {
@@ -46,6 +56,7 @@ class SettingsView extends events.EventTarget {
                         .checked,
                     darkTheme: this._find("dark-theme").checked,
                     postFlow: this._find("post-flow").checked,
+                    searchHistoryEnabled: this._find("search-history-enabled").checked,
                 },
             })
         );

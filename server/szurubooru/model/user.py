@@ -34,6 +34,7 @@ class User(Base):
     avatar_style = sa.Column(
         "avatar_style", sa.Unicode(32), nullable=False, default=AVATAR_GRAVATAR
     )
+    search_history = sa.Column("search_history", sa.Text, nullable=True)
 
     comments = sa.orm.relationship("Comment", back_populates="user")
 

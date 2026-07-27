@@ -370,18 +370,42 @@ input[type=file]:focus+.file-dropper,
                 display: block
                 padding: 0.1em 0.5em
                 transition: none
-            &.active a, a:hover
+             &.active a, a:hover
                 background: $button-enabled-background-color
                 color: $button-enabled-text-color
-                span
+                span, .clear-history, .show-more-history
                     color: $button-enabled-text-color
-            .disabled
+            .disabled, .clear-history, .show-more-history
                 color: $inactive-link-color
+            &.history
+                position: relative
+                a
+                    padding-right: 2.2em
+                .remove-history
+                    position: absolute
+                    right: 0.6em
+                    top: 50%
+                    transform: translateY(-50%)
+                    cursor: pointer
+                    color: $inactive-link-color
+                    font-weight: bold
+                    font-size: 1.1em
+                    z-index: 1
+                    &:hover
+                        color: #f44
+                &.active, &:hover
+                    .remove-history
+                        color: rgba(255, 255, 255, 0.7)
+                        &:hover
+                            color: #ff8888
 
 .darktheme .autocomplete
     background: $window-color-darktheme
-    ul li .disabled
-        color: $inactive-link-color-darktheme
+    ul li
+        .disabled, .clear-history, .show-more-history
+            color: $inactive-link-color-darktheme
+        &.history .remove-history
+            color: $inactive-link-color-darktheme
 
 .anticomplete
     display: none

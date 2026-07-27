@@ -181,12 +181,19 @@ class PostsHeaderView extends events.EventTarget {
         this._autoCompleteControl = new TagAutoCompleteControl(
             this._queryInputNode,
             {
-                confirm: (tag) =>
-                    this._autoCompleteControl.replaceSelectedText(
-                        misc.escapeSearchTerm(tag.matchingNames[0]),
-                        true
-                    ),
+                confirm: (item) => {
+                    if (item.isHistory) {
+                        this._queryInputNode.value = item.value;
+                        this._navigate();
+                    } else {
+                        this._autoCompleteControl.replaceSelectedText(
+                            misc.escapeSearchTerm(item.matchingNames[0]),
+                            true
+                        );
+                    }
+                },
                 isNegationAllowed: true,
+                enableHistory: true,
             }
         );
 

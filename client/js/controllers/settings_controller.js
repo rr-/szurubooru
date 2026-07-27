@@ -12,6 +12,11 @@ class SettingsController {
             settings: settings.get(),
         });
         this._view.addEventListener("submit", (e) => this._evtSubmit(e));
+        this._view.addEventListener("clearHistory", () => {
+            const searchHistory = require("../util/search_history.js");
+            searchHistory.clearQueryHistory();
+            this._view.showSuccess("Search history cleared.");
+        });
     }
 
     _evtSubmit(e) {

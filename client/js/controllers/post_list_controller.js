@@ -10,6 +10,7 @@ const PageController = require("../controllers/page_controller.js");
 const PostsHeaderView = require("../views/posts_header_view.js");
 const PostsPageView = require("../views/posts_page_view.js");
 const EmptyView = require("../views/empty_view.js");
+const searchHistory = require("../util/search_history.js");
 
 const fields = [
     "id",
@@ -135,6 +136,9 @@ class PostListController {
     }
 
     _syncPageController() {
+        if (this._ctx.parameters.query) {
+            searchHistory.addQueryToHistory(this._ctx.parameters.query);
+        }
         this._pageController.run({
             parameters: this._ctx.parameters,
             defaultLimit: parseInt(settings.get().postsPerPage),
