@@ -1,10 +1,11 @@
 from datetime import datetime
 from typing import Dict, List, Optional
 
-from szurubooru import db, errors, model, rest, search
+from szurubooru import config, db, errors, model, rest, search
 from szurubooru.func import (
     auth,
     favorites,
+    files,
     mime,
     posts,
     scores,
@@ -307,4 +308,45 @@ def get_posts_by_image(
             }
             for distance, post in lookalikes
         ],
+    }
+
+
+@rest.routes.get("/post/(?P<post_id>[^/]+)/auto-tags/?")
+def get_post_auto_tags(
+    ctx: rest.Context, params: Dict[str, str]
+) -> rest.Response:
+    auth.verify_privilege(ctx.user, "posts:edit:tags")
+    post_id = int(params["post_id"])
+    post = posts.get_post_by_id(post_id)
+    if post.type != model.Post.TYPE_IMAGE:
+        raise errors.ValidationError("Only image posts can be auto-tagged.")
+
+    # Read image content
+    content = files.get(posts.get_post_content_path(post))
+
+    # Run tagger
+    from szurubooru.func import tagger
+    res = tagger.get_tags_from_tagger(content)
+    if not res:
+        raise errors.ThirdPartyError("Tagger service returned no tags or is unavailable.")
+
+    tags_list, auto_safety = res
+    # Map category types
+    tagger_conf = config.config.get("tagger", {})
+    mapped_categories = tagger_conf.get("category_mappings", {
+        "general": "general",
+        "character": "character"
+    })
+
+    ret_tags = []
+    for name, cat in tags_list:
+        db_category = mapped_categories.get(cat, cat)
+        ret_tags.append({
+            "name": name,
+            "category": db_category
+        })
+
+    return {
+        "tags": ret_tags,
+        "safety": auto_safety
     }

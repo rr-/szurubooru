@@ -326,6 +326,10 @@ class Post extends events.EventTarget {
             );
     }
 
+    getAutoTags() {
+        return api.get(uri.formatApiLink("post", this.id, "auto-tags"));
+    }
+
     feature() {
         return api
             .post(uri.formatApiLink("featured-post"), { id: this._id })

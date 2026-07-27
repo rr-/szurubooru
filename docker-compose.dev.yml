@@ -49,6 +49,14 @@ services:
     volumes:
       - "sql:/var/lib/postgresql/data"
 
+  tagger:
+    build:
+      context: ./tagger
+    volumes:
+      - "./server/config.yaml:/opt/app/config.yaml"
+      - "hf_cache:/data/huggingface_cache"
+
 volumes:
   data:
   sql:
+  hf_cache:

@@ -70,6 +70,9 @@
         <% if (ctx.canEditPostTags) { %>
             <section class='tags'>
                 <%= ctx.makeTextInput({}) %>
+                <% if (ctx.taggerEnabled && ctx.post.type === 'image') { %>
+                    <button type='button' class='auto-tag-btn'>Auto-tag image</button>
+                <% } %>
             </section>
         <% } %>
 

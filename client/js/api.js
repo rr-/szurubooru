@@ -108,6 +108,10 @@ class Api extends events.EventTarget {
         return !!remoteConfig.enableSafety;
     }
 
+    taggerEnabled() {
+        return !!remoteConfig.taggerEnabled;
+    }
+
     hasPrivilege(lookup) {
         let minViableRank = null;
         for (let p of Object.keys(remoteConfig.privileges)) {

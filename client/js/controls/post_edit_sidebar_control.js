@@ -29,6 +29,7 @@ class PostEditSidebarControl extends events.EventTarget {
             template({
                 post: this._post,
                 enableSafety: api.safetyEnabled(),
+                taggerEnabled: api.taggerEnabled(),
                 hasClipboard: document.queryCommandSupported("copy"),
                 canEditPostSafety: api.hasPrivilege("posts:edit:safety"),
                 canEditPostSource: api.hasPrivilege("posts:edit:source"),
@@ -89,6 +90,12 @@ class PostEditSidebarControl extends events.EventTarget {
         if (this._formNode) {
             this._formNode.addEventListener("submit", (e) =>
                 this._evtSubmit(e)
+            );
+        }
+
+        if (this._autoTagBtnNode) {
+            this._autoTagBtnNode.addEventListener("click", (e) =>
+                this._evtAutoTagClick(e)
             );
         }
 
@@ -391,6 +398,36 @@ class PostEditSidebarControl extends events.EventTarget {
         this._postNotesOverlayControl.switchToPassiveEdit();
     }
 
+    _evtAutoTagClick(e) {
+        e.preventDefault();
+        if (!this._autoTagBtnNode) return;
+        this._autoTagBtnNode.setAttribute("disabled", "disabled");
+        this._autoTagBtnNode.textContent = "Tagging...";
+        this._post.getAutoTags()
+            .then((response) => {
+                const addPromises = response.tags.map((tag) => {
+                    return this._tagControl.addTagByName(tag.name, "suggestions");
+                });
+                return Promise.all(addPromises).then(() => {
+                    if (response.safety && this._safetyButtonNodes.length) {
+                        for (let node of this._safetyButtonNodes) {
+                            if (node.value.toLowerCase() === response.safety.toLowerCase()) {
+                                node.checked = true;
+                                node.dispatchEvent(new Event("change"));
+                            }
+                        }
+                    }
+                    this._autoTagBtnNode.removeAttribute("disabled");
+                    this._autoTagBtnNode.textContent = "Auto-tag image";
+                });
+            })
+            .catch((err) => {
+                this._autoTagBtnNode.removeAttribute("disabled");
+                this._autoTagBtnNode.textContent = "Auto-tag image";
+                alert(err.message || "Failed to auto-tag image.");
+            });
+    }
+
     _evtSubmit(e) {
         e.preventDefault();
         this.dispatchEvent(
@@ -445,6 +482,10 @@ class PostEditSidebarControl extends events.EventTarget {
 
     get _submitButtonNode() {
         return this._hostNode.querySelector(".submit");
+    }
+
+    get _autoTagBtnNode() {
+        return this._formNode.querySelector(".auto-tag-btn");
     }
 
     get _safetyButtonNodes() {
