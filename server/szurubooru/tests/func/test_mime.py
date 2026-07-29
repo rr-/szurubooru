@@ -7,6 +7,7 @@ from szurubooru.func import mime
     "input_path,expected_mime_type",
     [
         ("mp4.mp4", "video/mp4"),
+        ("mp4-m4v.mp4", "video/x-m4v"),
         ("mov.mov", "video/quicktime"),
         ("webm.webm", "video/webm"),
         ("flash.swf", "application/x-shockwave-flash"),
@@ -20,7 +21,7 @@ from szurubooru.func import mime
         ("heif.heif", "image/heif"),
         ("heic.heic", "image/heic"),
         ("heic-heix.heic", "image/heic"),
-        ("text.txt", "application/octet-stream"),
+        ("text.txt", "text/plain"),
     ],
 )
 def test_get_mime_type(read_asset, input_path, expected_mime_type):
@@ -35,6 +36,8 @@ def test_get_mime_type_for_empty_file():
     "mime_type,expected_extension",
     [
         ("video/mp4", "mp4"),
+        ("video/x-m4v", "mp4"),
+        ("video/m4v", "mp4"),
         ("video/webm", "webm"),
         ("video/quicktime", "mov"),
         ("application/x-shockwave-flash", "swf"),
@@ -72,6 +75,8 @@ def test_is_flash(input_mime_type, expected_state):
         ("VIDEO/WEBM", True),
         ("video/mp4", True),
         ("VIDEO/MP4", True),
+        ("video/x-m4v", True),
+        ("VIDEO/M4V", True),
         ("video/quicktime", True),
         ("VIDEO/QUICKTIME", True),
         ("video/anything_else", False),
@@ -100,7 +105,9 @@ def test_is_video(input_mime_type, expected_state):
         ("IMAGE/AVIF", True),
         ("IMAGE/HEIC", True),
         ("IMAGE/HEIF", True),
+        ("image/webp", True),
         ("image/anything_else", False),
+        ("video/webm", False),
         ("not an image", False),
     ],
 )

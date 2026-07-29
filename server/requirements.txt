@@ -12,3 +12,4 @@ pytz>=2026.2
 pyyaml>=6.0
 SQLAlchemy>=2.0.0
 yt-dlp
+python-magic>=0.4
