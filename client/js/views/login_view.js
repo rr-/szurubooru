@@ -17,31 +17,42 @@ class LoginView extends events.EventTarget {
                 userNamePattern: api.getUserNameRegex(),
                 passwordPattern: api.getPasswordRegex(),
                 canSendMails: api.canSendMails(),
+                oidcEnabled: api.oidcEnabled(),
+                oidcButtonLabel: api.oidcButtonLabel(),
+                oidcButtonIcon: api.oidcButtonIcon(),
+                disablePasswordAuth: api.disablePasswordAuth(),
             })
         );
         views.syncScrollPosition();
 
-        views.decorateValidator(this._formNode);
-        this._userNameInputNode.setAttribute(
-            "pattern",
-            api.getUserNameRegex()
-        );
-        this._passwordInputNode.setAttribute(
-            "pattern",
-            api.getPasswordRegex()
-        );
-        this._formNode.addEventListener("submit", (e) => {
-            e.preventDefault();
-            this.dispatchEvent(
-                new CustomEvent("submit", {
-                    detail: {
-                        name: this._userNameInputNode.value,
-                        password: this._passwordInputNode.value,
-                        remember: this._rememberInputNode.checked,
-                    },
-                })
+        if (this._formNode) {
+            views.decorateValidator(this._formNode);
+            this._userNameInputNode.setAttribute(
+                "pattern",
+                api.getUserNameRegex()
             );
-        });
+            this._passwordInputNode.setAttribute(
+                "pattern",
+                api.getPasswordRegex()
+            );
+            this._formNode.addEventListener("submit", (e) => {
+                e.preventDefault();
+                this.dispatchEvent(
+                    new CustomEvent("submit", {
+                        detail: {
+                            name: this._userNameInputNode.value,
+                            password: this._passwordInputNode.value,
+                            remember: this._rememberInputNode.checked,
+                        },
+                    })
+                );
+            });
+        }
+        if (this._oidcBtnNode) {
+            this._oidcBtnNode.addEventListener("click", () => {
+                this.dispatchEvent(new CustomEvent("oidcLogin"));
+            });
+        }
     }
 
     get _formNode() {
@@ -60,12 +71,20 @@ class LoginView extends events.EventTarget {
         return this._formNode.querySelector("[name=remember-user]");
     }
 
+    get _oidcBtnNode() {
+        return this._hostNode.querySelector(".oidc-login-btn");
+    }
+
     disableForm() {
-        views.disableForm(this._formNode);
+        if (this._formNode) {
+            views.disableForm(this._formNode);
+        }
     }
 
     enableForm() {
-        views.enableForm(this._formNode);
+        if (this._formNode) {
+            views.enableForm(this._formNode);
+        }
     }
 
     clearMessages() {

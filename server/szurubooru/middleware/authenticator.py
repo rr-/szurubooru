@@ -1,7 +1,7 @@
 import base64
 from typing import Optional, Tuple
 
-from szurubooru import errors, model, rest
+from szurubooru import config, errors, model, rest
 from szurubooru.func import auth, user_tokens, users
 from szurubooru.rest.errors import HttpBadRequest
 
@@ -34,6 +34,10 @@ def _get_user(ctx: rest.Context, bump_login: bool) -> Optional[model.User]:
     try:
         auth_type, credentials = ctx.get_header("Authorization").split(" ", 1)
         if auth_type.lower() == "basic":
+            if (config.config.get("oidc") or {}).get("disable_password_auth"):
+                raise errors.AuthError(
+                    "Password authentication is disabled. Please use SSO."
+                )
             username, password = (
                 base64.decodebytes(credentials.encode("ascii"))
                 .decode("utf8")

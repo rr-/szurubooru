@@ -16,6 +16,21 @@ class LoginController {
 
         this._loginView = new LoginView();
         this._loginView.addEventListener("submit", (e) => this._evtLogin(e));
+        this._loginView.addEventListener("oidcLogin", () =>
+            this._evtOidcLogin()
+        );
+    }
+
+    _evtOidcLogin() {
+        this._loginView.clearMessages();
+        api.getOidcAuthorizationUrl().then(
+            (response) => {
+                window.location.href = response.authorizationUrl;
+            },
+            (error) => {
+                this._loginView.showError(error.message);
+            }
+        );
     }
 
     _evtLogin(e) {

@@ -10,6 +10,13 @@ const EmptyView = require("../views/empty_view.js");
 
 class UserRegistrationController {
     constructor() {
+        if (api.disablePasswordAuth()) {
+            this._view = new EmptyView();
+            this._view.showError(
+                "Registration is disabled. Please log in with SSO."
+            );
+            return;
+        }
         if (!api.hasPrivilege("users:create:self")) {
             this._view = new EmptyView();
             this._view.showError("Registration is closed.");

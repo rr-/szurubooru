@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from typing import Dict, Optional
 
 from szurubooru import config, rest
-from szurubooru.func import auth, posts, users, util
+from szurubooru.func import auth, oidc, posts, users, util
 
 _cache_time = None  # type: Optional[datetime]
 _cache_result = None  # type: Optional[int]
@@ -55,6 +55,10 @@ def get_info(ctx: rest.Context, _params: Dict[str, str] = {}) -> rest.Response:
             "enableSafety": config.config["enable_safety"],
             "contactEmail": config.config["contact_email"],
             "canSendMails": bool(config.config["smtp"]["host"]),
+            "oidcEnabled": oidc.is_enabled(),
+            "oidcButtonLabel": (config.config.get("oidc") or {}).get("button_label") or "Log in with SSO",
+            "oidcButtonIcon": (config.config.get("oidc") or {}).get("button_icon") or None,
+            "disablePasswordAuth": bool((config.config.get("oidc") or {}).get("disable_password_auth", False)),
             "privileges": util.snake_case_to_lower_camel_case_keys(
                 config.config["privileges"]
             ),

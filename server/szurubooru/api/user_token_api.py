@@ -1,6 +1,6 @@
 from typing import Dict
 
-from szurubooru import model, rest
+from szurubooru import config, model, rest
 from szurubooru.func import auth, serialization, user_tokens, users, versions
 
 
@@ -42,6 +42,9 @@ def create_user_token(
         user_tokens.update_user_token_expiration_time(
             user_token, expiration_time
         )
+    else:
+        default_expiry = int(config.config.get("token_expiry") or 0)
+        user_tokens.apply_expiry_seconds(user_token, default_expiry)
     ctx.session.add(user_token)
     ctx.session.commit()
     return _serialize(ctx, user_token)

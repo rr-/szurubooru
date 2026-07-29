@@ -104,6 +104,22 @@ class Api extends events.EventTarget {
         return !!remoteConfig.canSendMails;
     }
 
+    oidcEnabled() {
+        return !!remoteConfig.oidcEnabled;
+    }
+
+    oidcButtonLabel() {
+        return remoteConfig.oidcButtonLabel || "Log in with SSO";
+    }
+
+    oidcButtonIcon() {
+        return remoteConfig.oidcButtonIcon || null;
+    }
+
+    disablePasswordAuth() {
+        return !!remoteConfig.disablePasswordAuth;
+    }
+
     safetyEnabled() {
         return !!remoteConfig.enableSafety;
     }
@@ -273,6 +289,22 @@ class Api extends events.EventTarget {
 
     isCurrentAuthToken(userToken) {
         return userToken.token === this.token;
+    }
+
+    getOidcAuthorizationUrl() {
+        return this._wrappedRequest("auth/oidc", request.get, {}, {});
+    }
+
+    exchangeOidcCode(code, state) {
+        this.cache = {};
+        return this._wrappedRequest(
+            "auth/oidc",
+            request.post,
+            { code: code, state: state },
+            {}
+        ).then((response) => {
+            return this.loginWithToken(response.userName, response.token, true);
+        });
     }
 
     _getFullUrl(url) {
