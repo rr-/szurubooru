@@ -29,7 +29,7 @@ function _formatBasicChange(diff, text) {
     return lines;
 }
 
-function _makeResourceLink(type, id) {
+function _makeResourceLink(type, id, data) {
     if (type === "post") {
         return views.makePostLink(id, true);
     } else if (type === "tag") {
@@ -37,7 +37,7 @@ function _makeResourceLink(type, id) {
     } else if (type === "tag_category") {
         return 'category "' + id + '"';
     } else if (type === "pool") {
-        return views.makePoolLink(id, true);
+        return views.makePoolLink(id, false, false, data);
     }
 }
 

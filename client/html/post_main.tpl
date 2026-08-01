@@ -1,4 +1,4 @@
-<div class='content-wrapper transparent post-view'>
+<div class='content-wrapper transparent-container post-view'>
     <aside class='sidebar'>
         <nav class='buttons'>
             <article class='previous-post'>

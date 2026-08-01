@@ -10,28 +10,27 @@
                         <span class='type' data-type='<%- post.type %>'>
                             <% if (post.type == 'video' || post.type == 'flash' || post.type == 'animation') { %>
                                 <span class='icon'><i class='fa fa-film'></i></span>
-                            <% } else { %>
-                                <%- post.type %>
                             <% } %>
+                            <%- post.type %>
                         </span>
                         <% if (post.score || post.favoriteCount || post.commentCount) { %>
                             <span class='stats'>
                                 <% if (post.score) { %>
                                     <span class='icon'>
                                         <i class='fa fa-thumbs-up'></i>
-                                        <%- post.score %>
+                                        <span style="display: none">score:</span><%- post.score %>
                                     </span>
                                 <% } %>
                                 <% if (post.favoriteCount) { %>
                                     <span class='icon'>
                                         <i class='fa fa-heart'></i>
-                                        <%- post.favoriteCount %>
+                                        <span style="display: none">favorites:</span><%- post.favoriteCount %>
                                     </span>
                                 <% } %>
                                 <% if (post.commentCount) { %>
                                     <span class='icon'>
                                         <i class='fa fa-commenting'></i>
-                                        <%- post.commentCount %>
+                                        <span style="display: none">comments:</span><%- post.commentCount %>
                                     </span>
                                 <% } %>
                             </span>

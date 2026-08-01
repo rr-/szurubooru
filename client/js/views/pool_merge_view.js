@@ -58,6 +58,11 @@ class PoolMergeView extends events.EventTarget {
 
     _evtSubmit(e) {
         e.preventDefault();
+        if (!this._targetPoolId) {
+            this.clearMessages();
+            this.showError("You must select a pool name from autocomplete.");
+            return;
+        }
         this.dispatchEvent(
             new CustomEvent("submit", {
                 detail: {

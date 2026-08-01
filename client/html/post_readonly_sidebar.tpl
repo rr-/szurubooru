@@ -1,7 +1,7 @@
 <div class='readonly-sidebar'>
     <article class='details'>
         <section class='download'>
-            <a rel='external' href='<%- ctx.post.contentUrl %>'>
+            <a href='<%- ctx.post.contentUrl %>' download>
                 <i class='fa fa-download'></i><!--
             --><%= ctx.makeFileSize(ctx.post.fileSize) %> <!--
                 --><%- {
