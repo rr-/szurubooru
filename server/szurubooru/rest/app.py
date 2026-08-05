@@ -74,7 +74,8 @@ def application(
 ) -> Tuple[bytes]:
     try:
         ctx = _create_context(env)
-        if "application/json" not in ctx.get_header("Accept"):
+        accept_header = ctx.get_header("Accept")
+        if accept_header != "*/*" and "application/json" not in accept_header:
             raise errors.HttpNotAcceptable(
                 "ValidationError", "This API only supports JSON responses."
             )
