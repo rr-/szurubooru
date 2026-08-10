@@ -97,20 +97,12 @@ FLAG_MAP = {
 }
 
 
-def get_post_security_hash(id: int) -> str:
-    return hmac.new(
-        config.config["secret"].encode("utf8"),
-        msg=str(id).encode("utf-8"),
-        digestmod="md5",
-    ).hexdigest()[0:16]
-
-
 def get_post_content_url(post: model.Post) -> str:
     assert post
     return "%s/posts/%d_%s.%s" % (
         config.config["data_url"].rstrip("/"),
         post.post_id,
-        get_post_security_hash(post.post_id),
+        post.checksum,
         mime.get_extension(post.mime_type) or "dat",
     )
 
@@ -120,7 +112,7 @@ def get_post_thumbnail_url(post: model.Post) -> str:
     return "%s/generated-thumbnails/%d_%s.jpg" % (
         config.config["data_url"].rstrip("/"),
         post.post_id,
-        get_post_security_hash(post.post_id),
+        post.checksum,
     )
 
 
@@ -129,7 +121,7 @@ def get_post_content_path(post: model.Post) -> str:
     assert post.post_id
     return "posts/%d_%s.%s" % (
         post.post_id,
-        get_post_security_hash(post.post_id),
+        post.checksum,
         mime.get_extension(post.mime_type) or "dat",
     )
 
@@ -138,7 +130,7 @@ def get_post_thumbnail_path(post: model.Post) -> str:
     assert post
     return "generated-thumbnails/%d_%s.jpg" % (
         post.post_id,
-        get_post_security_hash(post.post_id),
+        post.checksum,
     )
 
 
@@ -146,7 +138,7 @@ def get_post_thumbnail_backup_path(post: model.Post) -> str:
     assert post
     return "posts/custom-thumbnails/%d_%s.dat" % (
         post.post_id,
-        get_post_security_hash(post.post_id),
+        post.checksum,
     )
 
 
