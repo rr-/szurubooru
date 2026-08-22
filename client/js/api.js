@@ -100,6 +100,10 @@ class Api extends events.EventTarget {
         return remoteConfig.contactEmail;
     }
 
+    getAllowedExtensions() {
+    	return remoteConfig.allowedExtensions;
+    }
+
     canSendMails() {
         return !!remoteConfig.canSendMails;
     }
