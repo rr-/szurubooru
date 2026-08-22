@@ -90,6 +90,7 @@ function _makeTopNavigation() {
     ret.add("login", new TopNavigationItem("L", "Log in", "login"));
     ret.add("logout", new TopNavigationItem("O", "Logout", "logout"));
     ret.add("help", new TopNavigationItem("E", "Help", "help"));
+    ret.add("banned-posts", new TopNavigationItem("B", "Banned posts", "banned-posts"));
     ret.add(
         "settings",
         new TopNavigationItem(null, "<i class='fa fa-cog'></i>", "settings")

@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import sqlalchemy as sa
+from szurubooru.func.bans import PostBannedError
 
 from szurubooru import config, db, errors, model, rest
 from szurubooru.func import (
@@ -48,6 +49,7 @@ class PostAlreadyUploadedError(errors.ValidationError):
                 "otherPostId": other_post.post_id,
             },
         )
+
 
 
 class InvalidPostIdError(errors.ValidationError):
@@ -634,12 +636,22 @@ def update_post_content(post: model.Post, content: Optional[bytes]) -> None:
         .filter(model.Post.post_id != post.post_id)
         .one_or_none()
     )
+
     if (
         other_post
         and other_post.post_id
         and other_post.post_id != post.post_id
     ):
         raise PostAlreadyUploadedError(other_post)
+
+
+    post_ban = (db.session.query(model.PostBan)
+                .filter(model.PostBan.checksum == post.checksum)
+                .one_or_none()
+    )
+    if (post_ban):
+        raise PostBannedError()
+
 
     if update_signature:
         purge_post_signature(post)
@@ -806,6 +818,11 @@ def feature_post(post: model.Post, user: Optional[model.User]) -> None:
 def delete(post: model.Post) -> None:
     assert post
     db.session.delete(post)
+
+
+def ban(ban: model.PostBan) -> None:
+    assert ban
+    db.session.add(ban)
 
 
 def merge_posts(
