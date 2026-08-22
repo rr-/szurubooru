@@ -175,6 +175,7 @@ class PostReadonlySidebarControl extends events.EventTarget {
             oldNode.classList.remove("active");
         }
         newNode.classList.add("active");
+        document.querySelector(".content").dataset.fit = className;
     }
 
     _evtAddToFavoritesClick(e) {
