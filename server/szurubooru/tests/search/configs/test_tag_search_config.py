@@ -373,6 +373,120 @@ def test_filter_by_implication_count(
 @pytest.mark.parametrize(
     "input,expected_tag_names",
     [
+        ("suggests:sug1", ["t1", "t3"]),
+        ("suggests:sug2", ["t1"]),
+        ("suggests:sug3", ["t2"]),
+        ("suggests:t1", []),
+        ("-suggests:sug1", ["sug1", "sug2", "sug3", "t2"]),
+    ],
+)
+def test_filter_by_suggests_tags(
+    verify_unpaged, tag_factory, input, expected_tag_names
+):
+    sug1 = tag_factory(names=["sug1"])
+    sug2 = tag_factory(names=["sug2"])
+    sug3 = tag_factory(names=["sug3"])
+    tag1 = tag_factory(names=["t1"])
+    tag2 = tag_factory(names=["t2"])
+    tag3 = tag_factory(names=["t3"])
+    db.session.add_all([sug1, sug3, tag2, sug2, tag1, tag3])
+    tag1.suggestions.append(sug1)
+    tag1.suggestions.append(sug2)
+    tag2.suggestions.append(sug3)
+    tag3.suggestions.append(sug1)
+    db.session.flush()
+    verify_unpaged(input, expected_tag_names)
+
+
+@pytest.mark.parametrize(
+    "input,expected_tag_names",
+    [
+        ("suggested-by:t1", ["sug1", "sug2"]),
+        ("suggested-by:t2", ["sug3"]),
+        ("suggested-by:t3", ["sug4", "t2"]),
+        ("-suggested-by:t3", ["sug1", "sug2", "sug3", "t1", "t3",]),
+    ],
+)
+def test_filter_by_suggests_by_tags(
+    verify_unpaged, tag_factory, input, expected_tag_names
+):
+    sug1 = tag_factory(names=["sug1"])
+    sug2 = tag_factory(names=["sug2"])
+    sug3 = tag_factory(names=["sug3"])
+    sug4 = tag_factory(names=["sug4"])
+    tag1 = tag_factory(names=["t1"])
+    tag2 = tag_factory(names=["t2"])
+    tag3 = tag_factory(names=["t3"])
+    db.session.add_all([sug1, sug3, tag2, sug2, tag1, tag3, sug4])
+    tag1.suggestions.append(sug1)
+    tag1.suggestions.append(sug2)
+    tag2.suggestions.append(sug3)
+    tag3.suggestions.append(tag2)
+    tag3.suggestions.append(sug4)
+    db.session.flush()
+    verify_unpaged(input, expected_tag_names)
+
+
+@pytest.mark.parametrize(
+    "input,expected_tag_names",
+    [
+        ("implies:sug1", ["t1", "t3"]),
+        ("implies:sug2", ["t1"]),
+        ("implies:sug3", ["t2"]),
+        ("implies:t1", []),
+        ("-implies:sug1", ["sug1", "sug2", "sug3", "t2"]),
+    ],
+)
+def test_filter_by_implies_tags(
+    verify_unpaged, tag_factory, input, expected_tag_names
+):
+    sug1 = tag_factory(names=["sug1"])
+    sug2 = tag_factory(names=["sug2"])
+    sug3 = tag_factory(names=["sug3"])
+    tag1 = tag_factory(names=["t1"])
+    tag2 = tag_factory(names=["t2"])
+    tag3 = tag_factory(names=["t3"])
+    db.session.add_all([sug1, sug3, tag2, sug2, tag1, tag3])
+    tag1.implications.append(sug1)
+    tag1.implications.append(sug2)
+    tag2.implications.append(sug3)
+    tag3.implications.append(sug1)
+    db.session.flush()
+    verify_unpaged(input, expected_tag_names)
+
+
+@pytest.mark.parametrize(
+    "input,expected_tag_names",
+    [
+        ("implied-by:t1", ["sug1", "sug2"]),
+        ("implied-by:t2", ["sug3"]),
+        ("implied-by:t3", ["sug4", "t2",]),
+        ("-implied-by:t3", ["sug1", "sug2", "sug3", "t1", "t3",]),
+    ],
+)
+def test_filter_by_implied_by_tags(
+    verify_unpaged, tag_factory, input, expected_tag_names
+):
+    sug1 = tag_factory(names=["sug1"])
+    sug2 = tag_factory(names=["sug2"])
+    sug3 = tag_factory(names=["sug3"])
+    sug4 = tag_factory(names=["sug4"])
+    tag1 = tag_factory(names=["t1"])
+    tag2 = tag_factory(names=["t2"])
+    tag3 = tag_factory(names=["t3"])
+    db.session.add_all([sug1, sug3, tag2, sug2, tag1, tag3, sug4])
+    tag1.implications.append(sug1)
+    tag1.implications.append(sug2)
+    tag2.implications.append(sug3)
+    tag3.implications.append(tag2)
+    tag3.implications.append(sug4)
+    db.session.flush()
+    verify_unpaged(input, expected_tag_names)
+
+
+@pytest.mark.parametrize(
+    "input,expected_tag_names",
+    [
         ("", ["t1", "t2"]),
         ("sort:name", ["t1", "t2"]),
         ("-sort:name", ["t2", "t1"]),

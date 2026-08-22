@@ -226,3 +226,38 @@ def create_subquery_filter(
         return query.filter(expression)
 
     return wrapper
+
+
+def create_nested_filter(
+    left_id_column: SaColumn,
+    right_id_column: SaColumn,
+    filter_column: SaColumn,
+    nested_id_column: SaColumn,
+    nested_filter_column: SaColumn,
+    filter_factory: SaColumn,
+    subquery_decorator: Callable[[SaQuery], None] = None,
+) -> Filter:
+    filter_func = filter_factory(nested_filter_column)
+
+    def wrapper(
+        query: SaQuery,
+        criterion: Optional[criteria.BaseCriterion],
+        negated: bool,
+    ) -> SaQuery:
+        assert criterion
+        nested = db.session.query(nested_id_column.label("foreign_id"))
+        nested = nested.options(sa.orm.lazyload("*"))
+        nested = filter_func(nested, criterion, False)
+        nested = nested.subquery("t")
+        subquery = db.session.query(right_id_column.label("foreign_id"))
+        if subquery_decorator:
+            subquery = subquery_decorator(subquery)
+        subquery = subquery.options(sa.orm.lazyload("*"))
+        subquery = subquery.filter(filter_column.in_(nested))
+        subquery = subquery.subquery("t")
+        expression = left_id_column.in_(subquery)
+        if negated:
+            expression = ~expression
+        return query.filter(expression)
+
+    return wrapper
