@@ -5,6 +5,15 @@ const views = require("../util/views.js");
 
 const template = views.getTemplate("settings");
 
+// A geometric progression centered on the default, so that every step is an
+// equally sized visual jump. Keys are formatted to a fixed number of decimals
+// to stay out of the integer-index bucket, which would reorder the 1x entry
+// to the front of the select.
+const postSizes = {};
+for (let scale of [0.63, 0.7, 0.79, 0.89, 1, 1.12, 1.26, 1.42, 1.6]) {
+    postSizes[scale.toFixed(2)] = Math.round(scale * 100) + "%";
+}
+
 class SettingsView extends events.EventTarget {
     constructor(ctx) {
         super();
@@ -12,7 +21,7 @@ class SettingsView extends events.EventTarget {
         this._hostNode = document.getElementById("content-holder");
         views.replaceContent(
             this._hostNode,
-            template({ browsingSettings: ctx.settings })
+            template({ browsingSettings: ctx.settings, postSizes: postSizes })
         );
         views.syncScrollPosition();
 
@@ -46,6 +55,7 @@ class SettingsView extends events.EventTarget {
                         .checked,
                     darkTheme: this._find("dark-theme").checked,
                     postFlow: this._find("post-flow").checked,
+                    postSize: parseFloat(this._find("post-size").value),
                 },
             })
         );
