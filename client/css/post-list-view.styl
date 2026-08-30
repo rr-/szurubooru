@@ -16,11 +16,11 @@
             margin: 0 0.25em 0.5em 0.25em
             display: inline-block
             text-align: left
-            min-width: 10em
-            width: 12vw
+            min-width: calc(10em * var(--post-scale, 1))
+            width: calc(12vw * var(--post-scale, 1))
             &:not(.flexbox-dummy)
-                min-height: 7.5em
-                height: 9vw
+                min-height: calc(7.5em * var(--post-scale, 1))
+                height: calc(9vw * var(--post-scale, 1))
 
             .thumbnail-wrapper
                 display: inline-block
@@ -164,7 +164,19 @@
             min-width: inherit
             width: inherit
             &:not(.flexbox-dummy)
-                height: 14vw
+                height: calc(14vw * var(--post-scale, 1))
+                // Flex hands every item the same absolute share of the row's
+                // free space, so the larger sizes - which fit fewer items per
+                // row - stretch each thumbnail further and, under
+                // background-size: cover, crop away more of it. A grow factor
+                // below 1 leaves part of that free space unclaimed and keeps
+                // cropping level across sizes. The dummies keep their grow of
+                // 1 so that they still absorb the last row.
+                flex-grow: 0.15
+                // Portrait phones fit two or three thumbnails per row, few
+                // enough that the reduced factor leaves a visible ragged edge.
+                @media (max-width: 560px)
+                    flex-grow: 0.45
             .thumbnail
                 outline-offset: -1px
             .thumbnail-wrapper.no-tags

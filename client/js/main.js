@@ -42,6 +42,15 @@ const pools = require("./pools.js");
 const api = require("./api.js");
 const settings = require("./models/settings.js");
 
+// The post list is rebuilt on every navigation, so the scale is carried by the
+// one node the router never replaces rather than written onto the thumbnails.
+const applyPostSize = () => {
+    document.documentElement.style.setProperty(
+        "--post-scale",
+        settings.get().postSize
+    );
+};
+
 Promise.resolve()
     .then(() => api.fetchConfig())
     .then(
@@ -99,6 +108,8 @@ Promise.resolve()
         if (settings.get().darkTheme) {
             document.body.classList.add("darktheme");
         }
+        applyPostSize();
+        settings.addEventListener("change", applyPostSize);
     })
     .then(() => api.loginFromCookies())
     .then(

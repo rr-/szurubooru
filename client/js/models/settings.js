@@ -19,6 +19,7 @@ const defaultSettings = {
     tagUnderscoresAsSpaces: false,
     darkTheme: false,
     postFlow: false,
+    postSize: 1,
 };
 
 class Settings extends events.EventTarget {
