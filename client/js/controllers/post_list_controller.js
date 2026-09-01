@@ -166,6 +166,7 @@ class PostListController {
                         markedForDeletion: this._postsMarkedForDeletion,
                     },
                     postFlow: settings.get().postFlow,
+                    fitThumbnails: settings.get().fitThumbnails,
                 });
                 const view = new PostsPageView(pageCtx);
                 view.addEventListener("tag", (e) => this._evtTag(e));

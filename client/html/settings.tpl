@@ -58,6 +58,15 @@
 
             <li>
                 <%= ctx.makeCheckbox({
+                    text: 'Fit thumbnails',
+                    name: 'fit-thumbnails',
+                    checked: ctx.browsingSettings.fitThumbnails,
+                }) %>
+                <p class='hint'>Show whole thumbnails on a plain backdrop instead of cropping them to fill their cells. Does not apply while post flow is enabled.</p>
+            </li>
+
+            <li>
+                <%= ctx.makeCheckbox({
                     text: 'Enable transparency grid',
                     name: 'transparency-grid',
                     checked: ctx.browsingSettings.transparencyGrid,
