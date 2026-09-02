@@ -57,6 +57,29 @@
             </li>
 
             <li>
+                <label>Post cell shape</label>
+                <%= ctx.makeRadio({
+                    text: 'Landscape',
+                    name: 'post-grid-shape',
+                    value: 'landscape',
+                    selectedValue: ctx.browsingSettings.postGridShape,
+                }) %>
+                <%= ctx.makeRadio({
+                    text: 'Square',
+                    name: 'post-grid-shape',
+                    value: 'square',
+                    selectedValue: ctx.browsingSettings.postGridShape,
+                }) %>
+                <%= ctx.makeRadio({
+                    text: 'Portrait',
+                    name: 'post-grid-shape',
+                    value: 'portrait',
+                    selectedValue: ctx.browsingSettings.postGridShape,
+                }) %>
+                <p class='hint'>Shape of the thumbnail cells on the post search page. Landscape is the current layout. Square cells are 1:1 and portrait cells are 2:3. Does not apply while post flow is enabled.</p>
+            </li>
+
+            <li>
                 <%= ctx.makeCheckbox({
                     text: 'Enable transparency grid',
                     name: 'transparency-grid',

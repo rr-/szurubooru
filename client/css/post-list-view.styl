@@ -174,6 +174,35 @@
                 .thumbnail
                     outline: 2px solid $main-color !important
 
+// Fixed cell shapes apply to the grid only: laying thumbnails out at their
+// own aspect ratio is the whole point of the flow.
+.post-list:not(.post-flow)
+    &.cell-square, &.cell-portrait
+        ul
+            // the default stretch would blow the cells up to the line's cross
+            // size and break the ratio
+            align-items: flex-start
+
+            li:not(.flexbox-dummy)
+                // aspect-ratio can only drive the height while that height is
+                // indefinite, so the grid's fixed height and its floor have to
+                // go; the two width bases are kept as a floor so that narrow
+                // viewports don't end up with a wall of tiny cells.
+                // unquote(), because stylus has a max() of its own that would
+                // resolve this at build time and drop the em bound
+                width: unquote('max(12vw, 10em)')
+                // a cell wider than the row would push out a horizontal
+                // scrollbar
+                max-width: 100%
+                height: auto
+                min-width: 0
+                min-height: 0
+
+    &.cell-square ul li:not(.flexbox-dummy)
+        aspect-ratio: 1
+    &.cell-portrait ul li:not(.flexbox-dummy)
+        aspect-ratio: 2/3
+
 .post-list-header
     white-space: nowrap
     text-align: left
