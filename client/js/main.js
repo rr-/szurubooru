@@ -100,7 +100,20 @@ Promise.resolve()
             document.body.classList.add("darktheme");
         }
     })
-    .then(() => api.loginFromCookies())
+    .then(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has("code") && urlParams.has("state")) {
+            const code = urlParams.get("code");
+            const state = urlParams.get("state");
+            window.history.replaceState(
+                {},
+                document.title,
+                window.location.pathname
+            );
+            return api.exchangeOidcCode(code, state);
+        }
+        return api.loginFromCookies();
+    })
     .then(
         () => {
             tags.refreshCategoryColorMap();

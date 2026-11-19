@@ -65,6 +65,10 @@ user_name_regex: '^[a-zA-Z0-9_-]{1,32}$'
 webhooks:
     # - https://api.example.com/webhooks/
 
+# default token expiry for all logins, in seconds. 0 means tokens never expire.
+# can be overridden per-login-method (e.g. oidc.expires)
+token_expiry: 0
+
 default_rank: regular
 
 privileges:
@@ -168,6 +172,32 @@ privileges:
 
     'uploads:create':               regular
     'uploads:use_downloader':       power
+
+# OpenID Connect (OIDC) single sign-on
+# Set client_id, client_secret, and issuer to enable SSO login.
+# redirect_uri must be your site's base URL (the SPA root), registered with
+# your OIDC provider exactly as written here.
+oidc:
+    client_id:       # example: my-client
+    client_secret:   # example: mysecret
+    issuer:          # example: https://auth.example.com
+    # must be registered with your OIDC provider and must point to your site root
+    redirect_uri:    # example: https://example.com
+    scopes: 'openid email profile'
+    # set to no to prevent automatic account creation on first OIDC login
+    allow_registration: yes
+    # disable username/password login and self-registration; users must log in via SSO
+    disable_password_auth: no
+    # optional custom label for the SSO button (default: 'Log in with SSO')
+    button_label:
+    # optional URL to an icon image shown on the SSO button
+    button_icon:
+    # OIDC claim containing the user's avatar/profile picture URL
+    # standard value is 'picture'; leave blank to disable avatar import
+    avatar_claim: picture
+    # OIDC login token expiry, in seconds. 0 means no expiry.
+    # Overrides the global token_expiry for OIDC logins. If unset, falls back to token_expiry.
+    expires: 21600
 
 ## ONLY SET THESE IF DEPLOYING OUTSIDE OF DOCKER
 #debug: 0 # generate server logs?

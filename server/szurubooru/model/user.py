@@ -34,6 +34,7 @@ class User(Base):
     avatar_style = sa.Column(
         "avatar_style", sa.Unicode(32), nullable=False, default=AVATAR_GRAVATAR
     )
+    oidc_subject = sa.Column("oidc_subject", sa.Unicode(256), nullable=True, unique=True)
 
     comments = sa.orm.relationship("Comment", back_populates="user")
 

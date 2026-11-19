@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Any, Callable, Dict, List, Optional
 
 import pytz
@@ -148,3 +148,10 @@ def update_user_token_note(user_token: model.UserToken, note: str) -> None:
 def bump_usage_time(user_token: model.UserToken) -> None:
     assert user_token
     user_token.last_usage_time = datetime.utcnow()
+
+
+def apply_expiry_seconds(user_token: model.UserToken, seconds: int) -> None:
+    """Set token expiry from a duration in seconds. 0 means no expiry."""
+    if seconds and seconds > 0:
+        user_token.expiration_time = datetime.utcnow() + timedelta(seconds=seconds)
+        update_user_token_edit_time(user_token)

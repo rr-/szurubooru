@@ -59,7 +59,7 @@ class TopNavigationController {
             }
             topNavigation.hide("login");
         } else {
-            if (!api.hasPrivilege("users:create:self")) {
+            if (!api.hasPrivilege("users:create:self") || api.disablePasswordAuth()) {
                 topNavigation.hide("register");
             }
             topNavigation.hide("account");

@@ -1,6 +1,6 @@
 from typing import Any, Dict
 
-from szurubooru import model, rest, search
+from szurubooru import config, errors, model, rest, search
 from szurubooru.func import auth, serialization, users, versions
 
 _search_executor = search.Executor(search.configs.UserSearchConfig())
@@ -32,6 +32,10 @@ def create_user(
     ctx: rest.Context, _params: Dict[str, str] = {}
 ) -> rest.Response:
     if ctx.user.user_id is None:
+        if (config.config.get("oidc") or {}).get("disable_password_auth"):
+            raise errors.AuthError(
+                "Password registration is disabled. Please use SSO."
+            )
         auth.verify_privilege(ctx.user, "users:create:self")
     else:
         auth.verify_privilege(ctx.user, "users:create:any")
