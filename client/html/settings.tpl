@@ -57,6 +57,16 @@
             </li>
 
             <li>
+                <%= ctx.makeSelect({
+                    text: 'Thumbnail size',
+                    name: 'post-size',
+                    keyValues: ctx.postSizes,
+                    selectedKey: ctx.browsingSettings.postSize.toFixed(2),
+                }) %>
+                <p class='hint'>Scales the thumbnails on the post search page relative to their default size.</p>
+            </li>
+
+            <li>
                 <%= ctx.makeCheckbox({
                     text: 'Enable transparency grid',
                     name: 'transparency-grid',
