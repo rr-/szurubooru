@@ -90,6 +90,20 @@
                 }) %>
                 <p class='hint'>Display all underscores as if they were spaces. This is only a visual change, which means that you'll still have to use underscores when searching or editing tags.</p>
             </li>
+
+            <li>
+                <%= ctx.makeCheckbox({
+                    text: 'Enable search history',
+                    name: 'search-history-enabled',
+                    checked: ctx.browsingSettings.searchHistoryEnabled,
+                }) %>
+                <p class='hint'>Save and show your previous search queries.</p>
+            </li>
+
+            <li>
+                <input type='button' id='clear-search-history' class='discourage' value='Clear search history'/>
+                <p class='hint'>Delete all saved search queries from this browser.</p>
+            </li>
         </ul>
 
         <div class='messages'></div>

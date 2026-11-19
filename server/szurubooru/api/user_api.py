@@ -87,6 +87,9 @@ def update_user(ctx: rest.Context, params: Dict[str, str]) -> rest.Response:
             ctx.get_param_as_string("avatarStyle"),
             ctx.get_file("avatar", default=b""),
         )
+    if ctx.has_param("searchHistory"):
+        auth.verify_privilege(ctx.user, "users:edit:%s:email" % infix)
+        users.update_user_search_history(user, ctx.get_param_as_string("searchHistory"))
     ctx.session.commit()
     return _serialize(ctx, user)
 

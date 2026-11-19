@@ -40,6 +40,8 @@ class AutoCompleteControl {
         this._showTimeout = null;
         this._results = [];
         this._activeResult = -1;
+        this._isHistoryExpanded = false;
+        this._historyLimit = 10;
 
         this._install();
     }
@@ -48,6 +50,8 @@ class AutoCompleteControl {
         window.clearTimeout(this._showTimeout);
         this._suggestionDiv.style.display = "none";
         this._isVisible = false;
+        this._isHistoryExpanded = false;
+        this._historyLimit = 10;
     }
 
     replaceSelectedText(result, addSpace) {
@@ -81,10 +85,26 @@ class AutoCompleteControl {
     _delete(result) {
         if (this._options.delete) {
             this._options.delete(result);
+            if (this._options.getHistoryMatches && !this._sourceInputNode.value) {
+                this._updateHistoryResults();
+            }
         }
     }
 
     _confirm(result) {
+        if (result && result.isShowMore) {
+            this._isHistoryExpanded = true;
+            this._historyLimit = (this._historyLimit || 10) + 10;
+            this._updateHistoryResults();
+            return;
+        }
+        if (result && result.isClearHistory) {
+            if (this._options.clearHistory) {
+                this._options.clearHistory();
+            }
+            this.hide();
+            return;
+        }
         if (this._options.confirm) {
             this._options.confirm(result);
         } else {
@@ -100,10 +120,40 @@ class AutoCompleteControl {
     _showOrHide() {
         const textToFind = this._options.getTextToFind();
         if (!textToFind || !textToFind.length) {
-            this.hide();
+            if (this._options.getHistoryMatches && !this._sourceInputNode.value) {
+                this._updateHistoryResults();
+            } else {
+                this.hide();
+            }
         } else {
             this._updateResults(textToFind);
         }
+    }
+
+    _updateHistoryResults() {
+        this._options.getHistoryMatches().then((matches) => {
+            const oldResults = this._results.slice();
+            const limit = this._isHistoryExpanded ? (this._historyLimit || 10) : 10;
+            this._results = matches.slice(0, limit);
+            if (matches.length > limit) {
+                this._results.push({
+                    caption: '<span class="show-more-history"><i class="fa fa-chevron-down"></i> Show more</span>',
+                    value: { isShowMore: true }
+                });
+            }
+            if (this._results.length > 0 && this._options.clearHistory) {
+                this._results.push({
+                    caption: '<span class="clear-history"><i class="fa fa-trash"></i> Clear search history</span>',
+                    value: { isClearHistory: true }
+                });
+            }
+            const oldResultsHash = JSON.stringify(oldResults);
+            const newResultsHash = JSON.stringify(this._results);
+            if (oldResultsHash !== newResultsHash) {
+                this._activeResult = -1;
+            }
+            this._refreshList();
+        });
     }
 
     _install() {
@@ -123,6 +173,12 @@ class AutoCompleteControl {
         );
         this._sourceInputNode.addEventListener("blur", (e) =>
             this._evtBlur(e)
+        );
+        this._sourceInputNode.addEventListener("focus", (e) =>
+            this._evtFocus(e)
+        );
+        this._sourceInputNode.addEventListener("click", (e) =>
+            this._evtClick(e)
         );
 
         this._suggestionDiv = views.htmlToDom(
@@ -168,8 +224,11 @@ class AutoCompleteControl {
                 };
             } else if (key === "Enter" && this._activeResult >= 0) {
                 func = () => {
-                    this._confirm(this._getActiveSuggestion());
-                    this.hide();
+                    const activeSuggestion = this._getActiveSuggestion();
+                    this._confirm(activeSuggestion);
+                    if (!activeSuggestion || !activeSuggestion.isShowMore) {
+                        this.hide();
+                    }
                 };
             } else if (key === "Delete" && this._activeResult >= 0) {
                 func = () => {
@@ -197,6 +256,14 @@ class AutoCompleteControl {
         window.setTimeout(() => {
             this.hide();
         }, 50);
+    }
+
+    _evtFocus(e) {
+        this._showOrHide();
+    }
+
+    _evtClick(e) {
+        this._showOrHide();
     }
 
     _getActiveSuggestion() {
@@ -261,10 +328,26 @@ class AutoCompleteControl {
         for (let [resultIndex, resultItem] of this._results.entries()) {
             let resultIndexWorkaround = resultIndex;
             const listItem = document.createElement("li");
+            if (resultItem.isHistory) {
+                listItem.classList.add("history");
+            }
             const link = document.createElement("a");
             link.innerHTML = resultItem.caption;
             link.setAttribute("href", "");
-            link.setAttribute("data-key", resultItem.value._origName);
+            if (resultItem.value && resultItem.value._origName) {
+                link.setAttribute("data-key", resultItem.value._origName);
+            }
+            if (resultItem.isHistory) {
+                const removeLink = document.createElement("span");
+                removeLink.className = "remove-history";
+                removeLink.innerHTML = "&times;";
+                removeLink.addEventListener("mousedown", (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this._delete(resultItem.value);
+                });
+                listItem.appendChild(removeLink);
+            }
             link.addEventListener("mouseenter", (e) => {
                 e.preventDefault();
                 this._activeResult = resultIndexWorkaround;
@@ -273,8 +356,14 @@ class AutoCompleteControl {
             link.addEventListener("mousedown", (e) => {
                 e.preventDefault();
                 this._activeResult = resultIndexWorkaround;
-                this._confirm(this._getActiveSuggestion());
-                this.hide();
+                const activeSuggestion = this._getActiveSuggestion();
+                this._confirm(activeSuggestion);
+                if (!activeSuggestion || !activeSuggestion.isShowMore) {
+                    this.hide();
+                }
+            });
+            link.addEventListener("click", (e) => {
+                e.preventDefault();
             });
             listItem.appendChild(link);
             this._suggestionList.appendChild(listItem);

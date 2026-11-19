@@ -25,12 +25,19 @@ class HomeView {
             this._autoCompleteControl = new TagAutoCompleteControl(
                 this._searchInputNode,
                 {
-                    confirm: (tag) =>
-                        this._autoCompleteControl.replaceSelectedText(
-                            misc.escapeSearchTerm(tag.matchingNames[0]),
-                            true
-                        ),
+                    confirm: (item) => {
+                        if (item.isHistory) {
+                            this._searchInputNode.value = item.value;
+                            this._evtFormSubmit(new Event("submit"));
+                        } else {
+                            this._autoCompleteControl.replaceSelectedText(
+                                misc.escapeSearchTerm(item.matchingNames[0]),
+                                true
+                            );
+                        }
+                    },
                     isNegationAllowed: true,
+                    enableHistory: true,
                 }
             );
             this._formNode.addEventListener("submit", (e) =>
