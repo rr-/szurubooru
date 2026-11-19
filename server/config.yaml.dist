@@ -169,6 +169,26 @@ privileges:
     'uploads:create':               regular
     'uploads:use_downloader':       power
 
+# auto-tagger configuration
+tagger:
+    enabled: false
+    auto_tag_on_upload: true
+    url: http://tagger:8000
+    model: SmilingWolf/wd-eva02-large-tagger-v3
+    # Map tagger classes (general, character) to szuruboorus tag category names
+    category_mappings:
+        general: general
+        character: character
+    classify_safety: true
+    # Map models 4 safety ratings (general, sensitive, questionable, explicit) to szuruboorus 3 safety ratings (safe, sketchy, unsafe)
+    safety_mappings:
+        general: safe
+        sensitive: sketchy
+        questionable: sketchy
+        explicit: unsafe
+    # Threshold for predicting tags (0.0 to 1.0)
+    threshold: 0.35
+
 ## ONLY SET THESE IF DEPLOYING OUTSIDE OF DOCKER
 #debug: 0 # generate server logs?
 #show_sql: 0 # show sql in server logs?

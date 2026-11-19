@@ -179,11 +179,12 @@ def get_tags_by_names(names: List[str]) -> List[model.Tag]:
 
 def get_or_create_tags_by_names(
     names: List[str],
+    category_mappings: Optional[Dict[str, str]] = None,
 ) -> Tuple[List[model.Tag], List[model.Tag]]:
     names = util.icase_unique(names)
     existing_tags = get_tags_by_names(names)
     new_tags = []
-    tag_category_name = tag_categories.get_default_category_name()
+    default_category_name = tag_categories.get_default_category_name()
     for name in names:
         found = False
         for existing_tag in existing_tags:
@@ -193,9 +194,24 @@ def get_or_create_tags_by_names(
                 found = True
                 break
         if not found:
+            category_name = default_category_name
+            if category_mappings:
+                mapped_name = category_mappings.get(name.lower())
+                if mapped_name:
+                    category_name = mapped_name
+
+            # Ensure tag category exists
+            try:
+                tag_categories.get_category_by_name(category_name)
+            except tag_categories.TagCategoryNotFoundError:
+                # Create category
+                new_cat = tag_categories.create_category(category_name, "default", 1)
+                db.session.add(new_cat)
+                db.session.flush()
+
             new_tag = create_tag(
                 names=[name],
-                category_name=tag_category_name,
+                category_name=category_name,
                 suggestions=[],
                 implications=[],
             )

@@ -44,3 +44,13 @@ services:
       POSTGRES_PASSWORD:
     volumes:
       - "${MOUNT_SQL}:/var/lib/postgresql/data"
+
+  tagger:
+    image: szurubooru/tagger:latest
+    restart: unless-stopped
+    volumes:
+      - "./server/config.yaml:/opt/app/config.yaml"
+      - "hf_cache:/data/huggingface_cache"
+
+volumes:
+  hf_cache:

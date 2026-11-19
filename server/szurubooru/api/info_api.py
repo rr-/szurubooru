@@ -53,6 +53,7 @@ def get_info(ctx: rest.Context, _params: Dict[str, str] = {}) -> rest.Response:
             "tagCategoryNameRegex": config.config["tag_category_name_regex"],
             "defaultUserRank": config.config["default_rank"],
             "enableSafety": config.config["enable_safety"],
+            "taggerEnabled": config.config.get("tagger", {}).get("enabled", False),
             "contactEmail": config.config["contact_email"],
             "canSendMails": bool(config.config["smtp"]["host"]),
             "privileges": util.snake_case_to_lower_camel_case_keys(

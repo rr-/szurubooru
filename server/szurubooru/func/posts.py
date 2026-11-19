@@ -419,7 +419,38 @@ def create_post(
     post.mime_type = ""
 
     update_post_content(post, content)
-    new_tags = update_post_tags(post, tag_names)
+
+    auto_tags = []
+    auto_safety = None
+    category_mappings = {}
+
+    from szurubooru.func import tagger
+    if (
+        post.type == model.Post.TYPE_IMAGE
+        and tagger.is_tagger_enabled()
+        and config.config.get("tagger", {}).get("auto_tag_on_upload", True)
+    ):
+        res = tagger.get_tags_from_tagger(content)
+        if res:
+            tags_list, auto_safety = res
+            tagger_conf = config.config.get("tagger", {})
+            mapped_categories = tagger_conf.get("category_mappings", {
+                "general": "general",
+                "character": "character"
+            })
+            for name, cat in tags_list:
+                db_category = mapped_categories.get(cat, cat)
+                category_mappings[name.lower()] = db_category
+                auto_tags.append(name)
+
+            if auto_safety:
+                post._auto_safety = auto_safety
+
+    all_tag_names = list(util.icase_unique(tag_names + auto_tags))
+    if category_mappings:
+        new_tags = update_post_tags(post, all_tag_names, category_mappings)
+    else:
+        new_tags = update_post_tags(post, all_tag_names)
 
     db.session.add(post)
     return post, new_tags
@@ -427,6 +458,8 @@ def create_post(
 
 def update_post_safety(post: model.Post, safety: str) -> None:
     assert post
+    if hasattr(post, "_auto_safety") and getattr(post, "_auto_safety") is not None:
+        safety = getattr(post, "_auto_safety")
     safety = util.flip(SAFETY_MAP).get(safety, None)
     if not safety:
         raise InvalidPostSafetyError(
@@ -696,10 +729,17 @@ def generate_post_thumbnail(post: model.Post) -> None:
 
 
 def update_post_tags(
-    post: model.Post, tag_names: List[str]
+    post: model.Post,
+    tag_names: List[str],
+    category_mappings: Optional[Dict[str, str]] = None,
 ) -> List[model.Tag]:
     assert post
-    existing_tags, new_tags = tags.get_or_create_tags_by_names(tag_names)
+    if category_mappings is not None:
+        existing_tags, new_tags = tags.get_or_create_tags_by_names(
+            tag_names, category_mappings
+        )
+    else:
+        existing_tags, new_tags = tags.get_or_create_tags_by_names(tag_names)
     post.tags = existing_tags + new_tags
     return new_tags
 
