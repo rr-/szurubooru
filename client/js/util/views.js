@@ -111,7 +111,7 @@ function makeSelect(options) {
 }
 
 function makeInput(options) {
-    options.value = options.value || "";
+    options.value = options.value === 0 ? 0 : options.value || "";
     return _makeLabel(options) + makeElement("input", options);
 }
 
@@ -261,7 +261,7 @@ function makePoolLink(id, includeHash, includeCount, pool, name) {
 }
 
 function makeUserLink(user) {
-    let text = makeThumbnail(user ? user.avatarUrl : null);
+    let text = makeThumbnail(user ? user.avatarUrl : "img/favicon.png");
     text += user && user.name ? misc.escapeHtml(user.name) : "Anonymous";
     const link =
         user && user.name && api.hasPrivilege("users:view")
@@ -300,6 +300,8 @@ function _serializeElement(name, attributes) {
                     attributes[key] === undefined
                 ) {
                     return "";
+                } else if (attributes[key] === 0) {
+                    return `${key}="0"`;
                 }
                 const attribute = misc.escapeHtml(attributes[key] || "");
                 return `${key}="${attribute}"`;
@@ -321,6 +323,7 @@ function emptyContent(target) {
 }
 
 function replaceContent(target, source) {
+    if (!target) return;
     emptyContent(target);
     if (source instanceof NodeList) {
         for (let child of [...source]) {
@@ -457,6 +460,7 @@ function getTemplate(templatePath) {
             makeCssName: misc.makeCssName,
             makeNumericInput: makeNumericInput,
             formatClientLink: uri.formatClientLink,
+            escapeTagName: uri.escapeTagName,
         });
         return htmlToDom(templateFactory(ctx));
     };

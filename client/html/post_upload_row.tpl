@@ -85,7 +85,7 @@
                             <div class='controls'>
                                 <%= ctx.makeCheckbox({text: 'Copy tags', name: 'copy-tags'}) %>
                                 <br/>
-                                <%= ctx.makeCheckbox({text: 'Add relation', name: 'add-relation'}) %>
+                                <%= ctx.makeCheckbox({text: 'Add relation', name: 'add-relation', checked: true}) %>
                             </div>
                         </li>
                     <% } %>

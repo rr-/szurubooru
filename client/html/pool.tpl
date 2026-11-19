@@ -2,6 +2,7 @@
     <h1><%- ctx.getPrettyName(ctx.pool.names[0]) %></h1>
     <nav class='buttons'><!--
         --><ul><!--
+            --><li data-name='view'><a href='<%- ctx.formatClientLink('posts', {query: 'pool:' + ctx.pool.id}) %>'>View</a></li><!--
             --><li data-name='summary'><a href='<%- ctx.formatClientLink('pool', ctx.pool.id) %>'>Summary</a></li><!--
             --><% if (ctx.canEditAnything) { %><!--
                 --><li data-name='edit'><a href='<%- ctx.formatClientLink('pool', ctx.pool.id, 'edit') %>'>Edit</a></li><!--

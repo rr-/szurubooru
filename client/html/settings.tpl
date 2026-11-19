@@ -28,7 +28,6 @@
                     name: 'dark-theme',
                     checked: ctx.browsingSettings.darkTheme,
                 }) %>
-                <p class='hint'>Changing this setting will require you to refresh the page for it to apply.</p>
             </li>
 
             <li>

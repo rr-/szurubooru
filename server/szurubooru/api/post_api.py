@@ -21,7 +21,7 @@ _search_executor = search.Executor(_search_executor_config)
 def _get_post_id(params: Dict[str, str]) -> int:
     try:
         return int(params["post_id"])
-    except TypeError:
+    except (TypeError, ValueError):
         raise posts.InvalidPostIdError(
             "Invalid post ID: %r." % params["post_id"]
         )
@@ -161,7 +161,9 @@ def update_post(ctx: rest.Context, params: Dict[str, str]) -> rest.Response:
         posts.update_post_notes(post, ctx.get_param_as_list("notes"))
     if ctx.has_param("flags"):
         auth.verify_privilege(ctx.user, "posts:edit:flags")
-        posts.update_post_flags(post, ctx.get_param_as_string_list("flags"))
+        posts.update_post_flags(post, ctx.get_param_as_string_list("flags"), remove=True)
+    else:
+        posts.update_post_flags(post, post.flags, remove=True)
     if ctx.has_file("thumbnail"):
         auth.verify_privilege(ctx.user, "posts:edit:thumbnail")
         posts.update_post_thumbnail(post, ctx.get_file("thumbnail"))

@@ -1,4 +1,4 @@
-<div class='content-wrapper transparent' id='home'>
+<div class='content-wrapper transparent-container' id='home'>
     <div class='messages'></div>
     <header>
         <h1><%- ctx.name %></h1>

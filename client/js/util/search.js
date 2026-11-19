@@ -5,7 +5,8 @@ const keyboard = require("../util/keyboard.js");
 const views = require("./views.js");
 
 function searchInputNodeFocusHelper(inputNode) {
-    keyboard.bind("q", () => {
+    keyboard.bind("q", (e) => {
+        e.preventDefault();
         inputNode.focus();
         inputNode.setSelectionRange(
             inputNode.value.length,
