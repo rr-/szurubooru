@@ -46,6 +46,7 @@ class SettingsView extends events.EventTarget {
                         .checked,
                     darkTheme: this._find("dark-theme").checked,
                     postFlow: this._find("post-flow").checked,
+                    postGridShape: this._findChecked("post-grid-shape").value,
                 },
             })
         );
@@ -57,6 +58,10 @@ class SettingsView extends events.EventTarget {
 
     _find(nodeName) {
         return this._formNode.querySelector("[name=" + nodeName + "]");
+    }
+
+    _findChecked(nodeName) {
+        return this._formNode.querySelector("[name=" + nodeName + "]:checked");
     }
 }
 
