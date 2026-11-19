@@ -3,7 +3,7 @@ from typing import Any, Dict, Optional, Tuple
 import sqlalchemy as sa
 
 from szurubooru import db, errors, model
-from szurubooru.func import util
+from szurubooru.func import auth, util
 from szurubooru.search import criteria, tokens
 from szurubooru.search.configs import util as search_util
 from szurubooru.search.configs.base_search_config import (
@@ -150,6 +150,15 @@ def _category_filter(
     return query.filter(expr)
 
 
+def _safety_filter(
+    query: SaQuery, criterion: Optional[criteria.BaseCriterion], negated: bool
+) -> SaQuery:
+    assert criterion
+    return search_util.create_str_filter(
+        model.Post.safety, _safety_transformer
+    )(query, criterion, negated)
+
+
 class PostSearchConfig(BaseSearchConfig):
     def __init__(self) -> None:
         self.user = None  # type: Optional[model.User]
@@ -208,7 +217,21 @@ class PostSearchConfig(BaseSearchConfig):
         return db.session.query(model.Post)
 
     def finalize_query(self, query: SaQuery) -> SaQuery:
+        if self.user and not auth.has_privilege(self.user, "posts:list:unsafe"):
+            # exclude unsafe posts:
+            query = _safety_filter(
+                query,
+                criteria.PlainCriterion(
+                    model.Post.SAFETY_UNSAFE, model.Post.SAFETY_UNSAFE
+                ),
+                negated=True,
+            )
         return query.order_by(model.Post.post_id.desc())
+
+
+    @property
+    def can_list_unsafe(self) -> bool:
+        return self.user and auth.has_privilege(self.user, "posts:list:unsafe")
 
     @property
     def id_column(self) -> SaColumn:
@@ -363,12 +386,7 @@ class PostSearchConfig(BaseSearchConfig):
                         model.Post.last_feature_time
                     ),
                 ),
-                (
-                    ["safety", "rating"],
-                    search_util.create_str_filter(
-                        model.Post.safety, _safety_transformer
-                    ),
-                ),
+                (["safety", "rating"], _safety_filter),
                 (["note-text"], _note_filter),
                 (
                     ["flag"],
